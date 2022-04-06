@@ -10,7 +10,7 @@ Lines_fpp = file_fpp.read()
 for ndv in range(1, 3):
     Lines_f90 = Lines_fpp.replace("dual", f"dual{ndv}") # Replace type name
     Lines_f90 = Lines_f90.replace("ndv_literal", f"{ndv}", 1) # Replace first occurence of ndv_literal with integer ndv
-    Lines_f90 = Lines_f90.replace("dnad_mod", f"dnad{ndv}_mod", 1) # Replace module name
+    Lines_f90 = Lines_f90.replace("dnad_mod", f"dnad{ndv}_mod") # Replace module name
 
     # Write f90 file
     filename_f90 = os.path.normpath(base_path + f"/dnad{ndv}_mod.f90") #Remove /../

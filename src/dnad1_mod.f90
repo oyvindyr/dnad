@@ -1395,7 +1395,7 @@ contains
     ! DOT PRODUCT two dual1 number vectors
     ! <res, dres> = <u, du> . <v, dv> = <u . v, u . dv + v . du>
     !-----------------------------------------
-    function dot_product_dd(u, v) result(res)
+    pure function dot_product_dd(u, v) result(res)
         type(dual1), intent(in) :: u(:), v(:)
         type(dual1) :: res
 
@@ -1482,7 +1482,7 @@ contains
     ! MULTIPLY two dual1 number matrices
     ! <res, dres> = <u, du> . <v, dv> = <u . v, du . v + u . dv>
     !----------------------------------------
-    function matmul_dd(u,v) result(res)
+    pure function matmul_dd(u,v) result(res)
         type(dual1), intent(in) :: u(:,:), v(:,:)
         type(dual1) :: res(size(u,1), size(v,2))
 
@@ -1502,7 +1502,7 @@ contains
     !
     ! <u,up>.<v,vp>=<u.v,up.v+u.vp>
     !----------------------------------------
-    function matmul_dv(u, v) result(res)
+    pure function matmul_dv(u, v) result(res)
         type(dual1), intent(in) :: u(:,:), v(:)
         type(dual1) :: res(size(u,1))
         integer :: i
@@ -1520,7 +1520,7 @@ contains
     !
     ! <u,up>.<v,vp>=<u.v,up.v+u.vp>
     !----------------------------------------
-    function matmul_vd(u, v) result(res)
+    pure function matmul_vd(u, v) result(res)
         type(dual1), intent(in) :: u(:), v(:,:)
         type(dual1) :: res(size(v, 2))
         integer::i
@@ -1611,7 +1611,7 @@ contains
     !-----------------------------------------
     ! Obtain the max value of vector u
     !----------------------------------------
-    function maxval_d(u) result(res)
+    pure function maxval_d(u) result(res)
         type(dual1), intent(in) :: u(:)
         integer :: iloc(1)
         type(dual1) :: res
@@ -1665,7 +1665,7 @@ contains
   !-----------------------------------------
     ! Obtain the min value of vector u
     !----------------------------------------
-    function minval_d(u) result(res)
+    pure function minval_d(u) result(res)
         type(dual1), intent(in) :: u(:)
         integer :: iloc(1)
         type(dual1) :: res
@@ -1780,7 +1780,7 @@ contains
     !-----------------------------------------
     ! Sum of a dual1 array
     !-----------------------------------------
-    function sum_d(u) result(res)
+    pure function sum_d(u) result(res)
         type(dual1), intent(in) :: u(:)
         type(dual1) :: res
         integer :: i
@@ -1797,7 +1797,7 @@ contains
     ! Find the location of the max value in an
     ! array of dual1 numbers
     !-----------------------------------------
-    function maxloc_d(array) result(ind)
+    pure function maxloc_d(array) result(ind)
         type(dual1), intent(in) :: array(:)
         integer :: ind(1)
 
@@ -1813,4 +1813,4 @@ contains
 
     end function set_NaN
 
-end module dnad_mod
+end module dnad1_mod
