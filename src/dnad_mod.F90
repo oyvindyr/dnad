@@ -514,7 +514,7 @@ contains
     ! <res, dres> = <r, 0> + <v, dv> = <r + v, dv>
     !-----------------------------------------
     elemental function add_rd(r, v) result(res)
-        real, intent(in) :: r
+        real(wp), intent(in) :: r
         type(dual), intent(in) :: v
         type(dual) :: res
 
