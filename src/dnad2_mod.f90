@@ -99,12 +99,12 @@ module dnad2_mod
 
     implicit none
 
-    integer, parameter :: wp = kind(0.d0)
+    integer, parameter :: real_kind = kind(0.d0)
     integer, parameter :: number_of_derivatives = 2 ! ndv_literal will be replaced by pre-processor
 
     private
 
-    real(wp) :: negative_one = -1.0_wp
+    real(real_kind) :: negative_one = -1.0_real_kind
 
     public dual2
     type :: dual2  ! make this private will create difficulty to use the
@@ -113,8 +113,8 @@ module dnad2_mod
                         ! other units using this module in which D is defined
                         ! as type(dual2).
         sequence
-        real(wp) :: x  ! functional value
-        real(wp) :: dx(number_of_derivatives)  ! derivative
+        real(real_kind) :: x  ! functional value
+        real(real_kind) :: dx(number_of_derivatives)  ! derivative
     end type dual2
 
 
@@ -398,7 +398,7 @@ contains
          type(dual2), intent(out) :: u
          integer, intent(in) :: i
 
-         u%x = real(i, wp)  ! This is faster than direct assignment
+         u%x = real(i, real_kind)  ! This is faster than direct assignment
          u%dx = 0.0_wp
 
     end subroutine assign_di
@@ -410,7 +410,7 @@ contains
     !-----------------------------------------
     elemental subroutine assign_dr(u, r)
         type(dual2), intent(out) :: u
-        real(wp), intent(in) :: r
+        real(real_kind), intent(in) :: r
 
         u%x = r
         u%dx = 0.0_wp
@@ -473,7 +473,7 @@ contains
          integer, intent(in) :: i
          type(dual2) :: res
 
-         res%x = real(i, wp) + u%x
+         res%x = real(i, real_kind) + u%x
          res%dx = u%dx
 
     end function add_di
@@ -485,7 +485,7 @@ contains
     !-----------------------------------------
     elemental function add_dr(u, r) result(res)
         type(dual2), intent(in) :: u
-        real(wp), intent(in) :: r
+        real(real_kind), intent(in) :: r
         type(dual2) :: res
 
         res%x = r + u%x
@@ -503,7 +503,7 @@ contains
         type(dual2), intent(in) :: v
         type(dual2) :: res
 
-        res%x = real(i, wp) + v%x
+        res%x = real(i, real_kind) + v%x
         res%dx = v%dx
 
     end function add_id
@@ -514,7 +514,7 @@ contains
     ! <res, dres> = <r, 0> + <v, dv> = <r + v, dv>
     !-----------------------------------------
     elemental function add_rd(r, v) result(res)
-        real(wp), intent(in) :: r
+        real(real_kind), intent(in) :: r
         type(dual2), intent(in) :: v
         type(dual2) :: res
 
@@ -566,7 +566,7 @@ contains
         integer, intent(in) :: i
         type(dual2) :: res
 
-        res%x = u%x - real(i, wp)
+        res%x = u%x - real(i, real_kind)
         res%dx = u%dx
 
     end function minus_di
@@ -578,7 +578,7 @@ contains
     !-------------------------------------------------
     elemental function minus_dr(u, r) result(res)
         type (dual2), intent(in) :: u
-        real(wp),intent(in) :: r
+        real(real_kind),intent(in) :: r
         type(dual2) :: res
 
         res%x = u%x - r
@@ -596,7 +596,7 @@ contains
         type(dual2), intent(in) :: v
         type(dual2) :: res
 
-        res%x = real(i, wp) - v%x
+        res%x = real(i, real_kind) - v%x
         res%dx = -v%dx
 
     end function minus_id
@@ -607,7 +607,7 @@ contains
     ! <res, dres> = r - <v, dv> = <r - v, -dv>
     !-------------------------------------------------
     elemental function minus_rd(r, v) result(res)
-         real(wp), intent(in) :: r
+         real(real_kind), intent(in) :: r
          type(dual2), intent(in) :: v
          type(dual2) :: res
 
@@ -646,9 +646,9 @@ contains
         integer, intent(in) :: i
         type(dual2) :: res
 
-        real(wp) :: r
+        real(real_kind) :: r
 
-        r = real(i, wp)
+        r = real(i, real_kind)
         res%x = r * u%x
         res%dx = r * u%dx
 
@@ -660,7 +660,7 @@ contains
     !----------------------------------------
     elemental function mult_dr(u, r) result(res)
         type(dual2), intent(in) :: u
-        real(wp), intent(in) :: r
+        real(real_kind), intent(in) :: r
         type(dual2) :: res
 
         res%x = u%x * r
@@ -678,9 +678,9 @@ contains
         type(dual2), intent(in) :: v
         type(dual2) :: res
 
-        real(wp) :: r
+        real(real_kind) :: r
 
-        r = real(i, wp)
+        r = real(i, real_kind)
         res%x = r * v%x
         res%dx = r * v%dx
 
@@ -692,7 +692,7 @@ contains
     ! <res, dres> = r * <v, dv> = <r * v, r * dv>
     !-----------------------------------------
     elemental function mult_rd(r, v) result(res)
-        real(wp), intent(in) :: r
+        real(real_kind), intent(in) :: r
         type(dual2), intent(in) :: v
         type(dual2) :: res
 
@@ -743,7 +743,7 @@ contains
     !----------------------------------------
     elemental function div_dr(u, r) result(res)
         type(dual2), intent(in) :: u
-        real(wp), intent(in) :: r
+        real(real_kind), intent(in) :: r
         type(dual2) :: res
 
         res%x = u%x / r
@@ -761,10 +761,10 @@ contains
         type(dual2), intent(in) :: v
         type(dual2) :: res
 
-        real(wp) :: inv
+        real(real_kind) :: inv
 
         inv = 1.0_wp / v%x
-        res%x = real(i, wp) * inv
+        res%x = real(i, real_kind) * inv
         res%dx = -res%x * inv * v%dx
 
     end function div_id
@@ -775,11 +775,11 @@ contains
     ! <res, dres> = r / <u, du> = <r / u, -r / u^2 * du>
     !-----------------------------------------
     elemental function div_rd(r, v) result(res)
-        real(wp), intent(in) :: r
+        real(real_kind), intent(in) :: r
         type(dual2), intent(in) :: v
         type(dual2) :: res
 
-        real(wp) :: inv
+        real(real_kind) :: inv
 
         inv = 1.0_wp / v%x
         res%x = r * inv
@@ -802,11 +802,11 @@ contains
         integer, intent(in) :: i
         type(dual2) :: res
 
-        real(wp) :: pow_x
+        real(real_kind) :: pow_x
 
         pow_x = u%x ** (i - 1)
         res%x = u%x * pow_x
-        res%dx = real(i, wp) * pow_x * u%dx
+        res%dx = real(i, real_kind) * pow_x * u%dx
 
     end function pow_i
 
@@ -816,10 +816,10 @@ contains
     !-----------------------------------------
     elemental function pow_r(u, r) result(res)
         type(dual2), intent(in) :: u
-        real(wp), intent(in) :: r
+        real(real_kind), intent(in) :: r
         type(dual2) :: res
 
-        real(wp) :: pow_x
+        real(real_kind) :: pow_x
 
         pow_x = u%x ** (r - 1.0_wp)
         res%x = u%x * pow_x
@@ -869,7 +869,7 @@ contains
          integer, intent(in) :: rhs
          logical :: res
 
-         res = (lhs%x == real(rhs, wp))
+         res = (lhs%x == real(rhs, real_kind))
 
     end function eq_di
 
@@ -880,7 +880,7 @@ contains
     !-----------------------------------------
     elemental function eq_dr(lhs, rhs) result(res)
         type(dual2), intent(in) :: lhs
-        real(wp), intent(in) :: rhs
+        real(real_kind), intent(in) :: rhs
         logical::res
 
         res = (lhs%x == rhs)
@@ -907,7 +907,7 @@ contains
     ! simply compare the functional value.
     !-----------------------------------------
     elemental function eq_rd(lhs, rhs) result(res)
-         real(wp), intent(in) :: lhs
+         real(real_kind), intent(in) :: lhs
          type(dual2), intent(in) :: rhs
          logical :: res
 
@@ -954,7 +954,7 @@ contains
     !-----------------------------------------
     elemental function le_dr(lhs, rhs) result(res)
          type(dual2), intent(in) :: lhs
-         real(wp), intent(in) :: rhs
+         real(real_kind), intent(in) :: rhs
          logical :: res
 
          res = (lhs%x <= rhs)
@@ -981,7 +981,7 @@ contains
     ! simply compare the functional value.
     !-----------------------------------------
     elemental function le_rd(lhs, rhs) result(res)
-         real(wp), intent(in) :: lhs
+         real(real_kind), intent(in) :: lhs
          type(dual2), intent(in) :: rhs
          logical :: res
 
@@ -1026,7 +1026,7 @@ contains
     !----------------------------------------
     elemental function lt_dr(lhs, rhs) result(res)
         type(dual2), intent(in) :: lhs
-        real(wp), intent(in) :: rhs
+        real(real_kind), intent(in) :: rhs
         logical :: res
 
         res = (lhs%x < rhs)
@@ -1051,7 +1051,7 @@ contains
     ! compare a real with a dual2
     !----------------------------------------
     elemental function lt_rd(lhs, rhs) result(res)
-         real(wp), intent(in) :: lhs
+         real(real_kind), intent(in) :: lhs
          type(dual2), intent(in) :: rhs
          logical :: res
 
@@ -1096,7 +1096,7 @@ contains
     !-----------------------------------------
     elemental function ge_dr(lhs, rhs) result(res)
         type(dual2), intent(in) :: lhs
-        real(wp), intent(in) :: rhs
+        real(real_kind), intent(in) :: rhs
         logical :: res
 
         res = (lhs%x >= rhs)
@@ -1121,7 +1121,7 @@ contains
     ! compare a real with a dual2
     !-----------------------------------------
     elemental function ge_rd(lhs, rhs) result(res)
-         real(wp), intent(in) :: lhs
+         real(real_kind), intent(in) :: lhs
          type(dual2), intent(in) :: rhs
          logical :: res
 
@@ -1166,7 +1166,7 @@ contains
     !-----------------------------------------
     elemental function gt_dr(lhs, rhs) result(res)
         type(dual2), intent(in) :: lhs
-        real(wp), intent(in) :: rhs
+        real(real_kind), intent(in) :: rhs
         logical :: res
 
         res = (lhs%x > rhs)
@@ -1191,7 +1191,7 @@ contains
     ! compare a real with a dual2
     !-----------------------------------------
     elemental function gt_rd(lhs, rhs) result(res)
-         real(wp), intent(in) :: lhs
+         real(real_kind), intent(in) :: lhs
          type(dual2), intent(in) :: rhs
          logical :: res
 
@@ -1236,7 +1236,7 @@ contains
     !-----------------------------------------
     elemental function ne_dr(lhs, rhs) result(res)
         type(dual2), intent(in) :: lhs
-        real(wp), intent(in) :: rhs
+        real(real_kind), intent(in) :: rhs
         logical :: res
 
         res = (lhs%x /= rhs)
@@ -1261,7 +1261,7 @@ contains
     ! compare a real with a dual2
     !-----------------------------------------
     elemental function ne_rd(lhs, rhs) result(res)
-        real(wp), intent(in) :: lhs
+        real(real_kind), intent(in) :: lhs
         type(dual2), intent(in) :: rhs
         logical :: res
 
@@ -1360,7 +1360,7 @@ contains
         type(dual2), intent(in) :: u, v
         type(dual2) :: res
 
-        real(wp) :: usq_plus_vsq
+        real(real_kind) :: usq_plus_vsq
 
         res%x = atan2(u%x, v%x)
 
@@ -1410,7 +1410,7 @@ contains
         type(dual2), intent(in) :: u
         type(dual2) :: res
 
-        real(wp) :: exp_x
+        real(real_kind) :: exp_x
 
         exp_x = exp(u%x)
         res%x = exp_x
@@ -1459,7 +1459,7 @@ contains
         type(dual2), intent(in) :: u
         type(dual2) :: res
 
-        real(wp) :: inv
+        real(real_kind) :: inv
 
         inv = 1.0_wp / (u%x * log(10.0_wp))
         res%x = log10(u%x)
@@ -1569,7 +1569,7 @@ contains
     !----------------------------------------
     elemental function max_dr(u, r) result(res)
         type(dual2), intent(in) :: u
-        real(wp), intent(in) :: r
+        real(real_kind), intent(in) :: r
         type(dual2) :: res
 
         if (u%x > r) then
@@ -1585,7 +1585,7 @@ contains
     ! Obtain the max of a real and a dual2
     !---------------------------------------------------
      elemental function max_rd(n, u) result(res)
-        real(wp), intent(in) :: n
+        real(real_kind), intent(in) :: n
         type(dual2), intent(in) :: u
         type(dual2) :: res
 
@@ -1640,7 +1640,7 @@ contains
     !----------------------------------------
     elemental function min_dr(u, r) result(res)
         type(dual2), intent(in) :: u
-        real(wp), intent(in) :: r
+        real(real_kind), intent(in) :: r
         type(dual2) :: res
 
         if (u%x < r) then
@@ -1700,7 +1700,7 @@ contains
     ! the result will be |a| if b%x>=0, -|a| if b%x<0,ELEMENTAL
     !----------------------------------------------------------------
     elemental function sign_rd(val1, val2) result(res)
-        real(wp), intent(in) :: val1
+        real(real_kind), intent(in) :: val1
         type(dual2), intent(in) :: val2
         type(dual2) :: res
 
@@ -1800,7 +1800,7 @@ contains
 
     ! Not part of any interface:
     elemental function set_NaN() result(res)
-        real(wp) :: res
+        real(real_kind) :: res
 
         res = sqrt(negative_one)
 
