@@ -714,11 +714,8 @@ contains
         type(dual), intent(in) :: u, v
         type(dual) :: res
 
-        real(wp) :: inv
-
-        inv = 1.0_wp / v%x
-        res%x = u%x * inv
-        res%dx = (u%dx - res%x * v%dx) * inv
+        res%x = u%x / v%x
+        res%dx = (u%dx - res%x * v%dx) / v%x
 
     end function div_dd
 
@@ -732,11 +729,8 @@ contains
         integer, intent(in) :: i
         type(dual) :: res
 
-        real(wp) :: inv
-
-        inv = 1.0_wp / real(i, wp)
-        res%x = u%x * inv
-        res%dx = u%dx * inv
+        res%x = u%x / i
+        res%dx = u%dx / i
 
     end function div_di
 
@@ -748,13 +742,10 @@ contains
     elemental function div_dr(u, r) result(res)
         type(dual), intent(in) :: u
         real(wp), intent(in) :: r
-        type(dual):: res
+        type(dual) :: res
 
-        real(wp) :: inv
-
-        inv = 1.0_wp / r
-        res%x = u%x * inv
-        res%dx = u%dx * inv
+        res%x = u%x / r
+        res%dx = u%dx / r
 
     end function div_dr
 
@@ -1449,11 +1440,8 @@ contains
         type(dual), intent(in) :: u
         type(dual) :: res
 
-        real(wp) :: inv
-
-        inv = 1.0_wp / u%x
         res%x = log(u%x)
-        res%dx = u%dx * inv
+        res%dx = u%dx / u%x
 
     end function log_d
 
