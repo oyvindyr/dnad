@@ -105,7 +105,9 @@ module dnad_mod
     private
 
     real(wp) :: negative_one = -1.0_wp
-    type,public:: dual  ! make this private will create difficulty to use the
+
+    public dual
+    type :: dual  ! make this private will create difficulty to use the
                         ! original write/read commands, hence x and dx are
                         ! variables which can be accessed using D%x and D%dx in
                         ! other units using this module in which D is defined

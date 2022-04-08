@@ -100,19 +100,21 @@ module dnad2_mod
     implicit none
 
     integer, parameter :: wp = kind(0.d0)
-    integer, parameter :: ndv = 2 ! ndv_literal will be replaced by pre-processor
+    integer, parameter :: number_of_derivatives = 2 ! ndv_literal will be replaced by pre-processor
 
     private
 
     real(wp) :: negative_one = -1.0_wp
-    type,public:: dual2  ! make this private will create difficulty to use the
+
+    public dual2
+    type :: dual2  ! make this private will create difficulty to use the
                         ! original write/read commands, hence x and dx are
                         ! variables which can be accessed using D%x and D%dx in
                         ! other units using this module in which D is defined
                         ! as type(dual2).
         sequence
         real(wp) :: x  ! functional value
-        real(wp) :: dx(ndv)  ! derivative
+        real(wp) :: dx(number_of_derivatives)  ! derivative
     end type dual2
 
 
@@ -714,11 +716,8 @@ contains
         type(dual2), intent(in) :: u, v
         type(dual2) :: res
 
-        real(wp) :: inv
-
-        inv = 1.0_wp / v%x
-        res%x = u%x * inv
-        res%dx = (u%dx - res%x * v%dx) * inv
+        res%x = u%x / v%x
+        res%dx = (u%dx - res%x * v%dx) / v%x
 
     end function div_dd
 
@@ -732,11 +731,8 @@ contains
         integer, intent(in) :: i
         type(dual2) :: res
 
-        real(wp) :: inv
-
-        inv = 1.0_wp / real(i, wp)
-        res%x = u%x * inv
-        res%dx = u%dx * inv
+        res%x = u%x / i
+        res%dx = u%dx / i
 
     end function div_di
 
@@ -748,13 +744,10 @@ contains
     elemental function div_dr(u, r) result(res)
         type(dual2), intent(in) :: u
         real(wp), intent(in) :: r
-        type(dual2):: res
+        type(dual2) :: res
 
-        real(wp) :: inv
-
-        inv = 1.0_wp / r
-        res%x = u%x * inv
-        res%dx = u%dx * inv
+        res%x = u%x / r
+        res%dx = u%dx / r
 
     end function div_dr
 
@@ -1296,7 +1289,7 @@ contains
             res%dx = -u%dx
          else
             res%x = 0.0_wp
-            do i = 1, ndv
+            do i = 1, number_of_derivatives
                 if (u%dx(i) .eq. 0.0_wp) then
                     res%dx(i) = 0.0_wp
                 else
@@ -1402,7 +1395,7 @@ contains
         integer :: i
 
         res%x = dot_product(u%x, v%x)
-        do i = 1, ndv
+        do i = 1, number_of_derivatives
             res%dx(i) = dot_product(u%x, v%dx(i)) + dot_product(v%x, u%dx(i))
         end do
 
@@ -1449,11 +1442,8 @@ contains
         type(dual2), intent(in) :: u
         type(dual2) :: res
 
-        real(wp) :: inv
-
-        inv = 1.0_wp / u%x
         res%x = log(u%x)
-        res%dx = u%dx * inv
+        res%dx = u%dx / u%x
 
     end function log_d
 
@@ -1489,7 +1479,7 @@ contains
         integer :: i
 
         res%x = matmul(u%x, v%x)
-        do i = 1, ndv
+        do i = 1, number_of_derivatives
             res%dx(i) = matmul(u%dx(i), v%x) + matmul(u%x, v%dx(i))
         end do
 
@@ -1508,7 +1498,7 @@ contains
         integer :: i
 
         res%x = matmul(u%x, v%x)
-        do i = 1, ndv
+        do i = 1, number_of_derivatives
             res%dx(i) = matmul(u%dx(i), v%x) + matmul(u%x, v%dx(i))
         end do
 
@@ -1526,7 +1516,7 @@ contains
         integer::i
 
         res%x = matmul(u%x, v%x)
-        do i = 1, ndv
+        do i = 1, number_of_derivatives
             res%dx(i) = matmul(u%dx(i), v%x) + matmul(u%x, v%dx(i))
         end do
 
@@ -1765,7 +1755,7 @@ contains
         if (res%x .ne. 0.0_wp) then
             res%dx = 0.5_wp * u%dx / res%x
         else
-            do i = 1, ndv
+            do i = 1, number_of_derivatives
                 if (u%dx(i) .eq. 0.0_wp) then
                     res%dx(i) = 0.0_wp
                 else
@@ -1786,7 +1776,7 @@ contains
         integer :: i
 
         res%x = sum(u%x)
-        do i = 1, ndv
+        do i = 1, number_of_derivatives
             res%dx(i) = sum(u%dx(i))
         end do
 
@@ -1806,6 +1796,9 @@ contains
     end function maxloc_d
 
 
+
+
+    ! Not part of any interface:
     elemental function set_NaN() result(res)
         real(wp) :: res
 
