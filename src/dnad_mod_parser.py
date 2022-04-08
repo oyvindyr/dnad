@@ -6,6 +6,8 @@ _Interface_routines = None
 _Routine_code = None
 
 _dual_type_name = "dual"
+_real_kind_name = "real_kind"
+_number_of_derivatives_name = "number_of_derivatives"
 
 def read_file(fname):
 
@@ -19,12 +21,15 @@ def read_file(fname):
     
     return "dummy string"
 
-def write_type_def_to_str(dual_type_name, real_kind, number_of_derivatives):
+def write_type_def_to_str(dual_type_name, real_kind_name, number_of_derivatives_name):
 
     Type_def_code = _Type_def_code
     Type_def_code[0] = Type_def_code[0].rstrip() + " ! Auto-generated interface. Do not edit. \n"
     s = "".join(Type_def_code)
     s = s.replace(_dual_type_name, dual_type_name)
+    s = s.replace(_real_kind_name, real_kind_name)
+    s = s.replace(_number_of_derivatives_name, number_of_derivatives_name)
+    return s
 
 
 def write_interfaces_to_str(selected_interfaces):
@@ -47,10 +52,7 @@ def write_interfaces_to_str(selected_interfaces):
     return s
 
 
-
-
-
-def write_interface_routines_to_str(selected_interfaces, dual_type_name):
+def write_interface_routines_to_str(selected_interfaces, dual_type_name, real_kind_name, number_of_derivatives_name):
 
     Interface_routines = _Interface_routines
     Routine_code = _Routine_code
@@ -71,8 +73,11 @@ def write_interface_routines_to_str(selected_interfaces, dual_type_name):
         for routine in Interface_routines[interface]: # Loop over routines in current interface
             Routine_code[routine][0] = Routine_code[routine][0].rstrip() + " ! Auto-generated routine. Do not edit. \n"
             s += "".join(Routine_code[routine])
-        
-        s = s.replace("type("+_dual_type_name+")", "type("+dual_type_name+")")
+    
+    # Replace names:
+    s = s.replace("type("+_dual_type_name+")", "type("+dual_type_name+")")
+    s = s.replace(_real_kind_name, real_kind_name)
+    s = s.replace(_number_of_derivatives_name, number_of_derivatives_name)
     return s
 
 
