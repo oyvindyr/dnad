@@ -100,7 +100,7 @@ module dnad_mod
     implicit none
 
     integer, parameter :: wp = kind(0.d0)
-    integer, parameter :: ndv = ndv_literal ! ndv_literal will be replaced by pre-processor
+    integer, parameter :: number_of_derivatives = ndv_literal ! ndv_literal will be replaced by pre-processor
 
     private
 
@@ -112,7 +112,7 @@ module dnad_mod
                         ! as type(dual).
         sequence
         real(wp) :: x  ! functional value
-        real(wp) :: dx(ndv)  ! derivative
+        real(wp) :: dx(number_of_derivatives)  ! derivative
     end type dual
 
 
@@ -1287,7 +1287,7 @@ contains
             res%dx = -u%dx
          else
             res%x = 0.0_wp
-            do i = 1, ndv
+            do i = 1, number_of_derivatives
                 if (u%dx(i) .eq. 0.0_wp) then
                     res%dx(i) = 0.0_wp
                 else
@@ -1393,7 +1393,7 @@ contains
         integer :: i
 
         res%x = dot_product(u%x, v%x)
-        do i = 1, ndv
+        do i = 1, number_of_derivatives
             res%dx(i) = dot_product(u%x, v%dx(i)) + dot_product(v%x, u%dx(i))
         end do
 
@@ -1477,7 +1477,7 @@ contains
         integer :: i
 
         res%x = matmul(u%x, v%x)
-        do i = 1, ndv
+        do i = 1, number_of_derivatives
             res%dx(i) = matmul(u%dx(i), v%x) + matmul(u%x, v%dx(i))
         end do
 
@@ -1496,7 +1496,7 @@ contains
         integer :: i
 
         res%x = matmul(u%x, v%x)
-        do i = 1, ndv
+        do i = 1, number_of_derivatives
             res%dx(i) = matmul(u%dx(i), v%x) + matmul(u%x, v%dx(i))
         end do
 
@@ -1514,7 +1514,7 @@ contains
         integer::i
 
         res%x = matmul(u%x, v%x)
-        do i = 1, ndv
+        do i = 1, number_of_derivatives
             res%dx(i) = matmul(u%dx(i), v%x) + matmul(u%x, v%dx(i))
         end do
 
@@ -1753,7 +1753,7 @@ contains
         if (res%x .ne. 0.0_wp) then
             res%dx = 0.5_wp * u%dx / res%x
         else
-            do i = 1, ndv
+            do i = 1, number_of_derivatives
                 if (u%dx(i) .eq. 0.0_wp) then
                     res%dx(i) = 0.0_wp
                 else
@@ -1774,7 +1774,7 @@ contains
         integer :: i
 
         res%x = sum(u%x)
-        do i = 1, ndv
+        do i = 1, number_of_derivatives
             res%dx(i) = sum(u%dx(i))
         end do
 
@@ -1794,6 +1794,9 @@ contains
     end function maxloc_d
 
 
+
+
+    ! Not part of any interface:
     elemental function set_NaN() result(res)
         real(wp) :: res
 
