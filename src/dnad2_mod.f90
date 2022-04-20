@@ -399,7 +399,7 @@ contains
          integer, intent(in) :: i
 
          u%x = real(i, real_kind)  ! This is faster than direct assignment
-         u%dx = 0.0_wp
+         u%dx = 0.0_real_kind
 
     end subroutine assign_di
 
@@ -413,7 +413,7 @@ contains
         real(real_kind), intent(in) :: r
 
         u%x = r
-        u%dx = 0.0_wp
+        u%dx = 0.0_real_kind
 
     end subroutine assign_dr
 
@@ -763,7 +763,7 @@ contains
 
         real(real_kind) :: inv
 
-        inv = 1.0_wp / v%x
+        inv = 1.0_real_kind / v%x
         res%x = real(i, real_kind) * inv
         res%dx = -res%x * inv * v%dx
 
@@ -781,7 +781,7 @@ contains
 
         real(real_kind) :: inv
 
-        inv = 1.0_wp / v%x
+        inv = 1.0_real_kind / v%x
         res%x = r * inv
         res%dx = -res%x * inv * v%dx
 
@@ -821,7 +821,7 @@ contains
 
         real(real_kind) :: pow_x
 
-        pow_x = u%x ** (r - 1.0_wp)
+        pow_x = u%x ** (r - 1.0_real_kind)
         res%x = u%x * pow_x
         res%dx = r * pow_x * u%dx
 
@@ -1288,10 +1288,10 @@ contains
             res%x = -u%x
             res%dx = -u%dx
          else
-            res%x = 0.0_wp
+            res%x = 0.0_real_kind
             do i = 1, number_of_derivatives
-                if (u%dx(i) .eq. 0.0_wp) then
-                    res%dx(i) = 0.0_wp
+                if (u%dx(i) .eq. 0.0_real_kind) then
+                    res%dx(i) = 0.0_real_kind
                 else
                     res%dx(i) = set_NaN()
                 end if
@@ -1310,10 +1310,10 @@ contains
         type(dual2) :: res
 
         res%x = acos(u%x)
-        if (u%x == 1.0_wp .or. u%x == -1.0_wp) then
+        if (u%x == 1.0_real_kind .or. u%x == -1.0_real_kind) then
             res%dx = set_Nan()  ! Undefined derivative
         else
-            res%dx = -u%dx / sqrt(1.0_wp - u%x**2)
+            res%dx = -u%dx / sqrt(1.0_real_kind - u%x**2)
         end if
 
     end function acos_d
@@ -1328,10 +1328,10 @@ contains
         type(dual2) :: res
 
         res%x = asin(u%x)
-        if (u%x == 1.0_wp .or. u%x == -1.0_wp) then
+        if (u%x == 1.0_real_kind .or. u%x == -1.0_real_kind) then
             res%dx = set_NaN()  ! Undefined derivative
         else
-            res%dx = u%dx / sqrt(1.0_wp - u%x**2)
+            res%dx = u%dx / sqrt(1.0_real_kind - u%x**2)
         end if
 
     end function asin_d
@@ -1346,7 +1346,7 @@ contains
         type(dual2) :: res
 
         res%x = atan(u%x)
-        res%dx = u%dx / (1.0_wp + u%x**2)
+        res%dx = u%dx / (1.0_real_kind + u%x**2)
 
     end function atan_d
 
@@ -1461,7 +1461,7 @@ contains
 
         real(real_kind) :: inv
 
-        inv = 1.0_wp / (u%x * log(10.0_wp))
+        inv = 1.0_real_kind / (u%x * log(10.0_real_kind))
         res%x = log10(u%x)
         res%dx = u%dx * inv
 
@@ -1686,7 +1686,7 @@ contains
         type(dual2), intent(in) :: val1, val2
         type(dual2) :: res
 
-        if (val2%x < 0.0_wp) then
+        if (val2%x < 0.0_real_kind) then
             res = -abs(val1)
         else
             res =  abs(val1)
@@ -1704,7 +1704,7 @@ contains
         type(dual2), intent(in) :: val2
         type(dual2) :: res
 
-        if (val2%x < 0.0_wp) then
+        if (val2%x < 0.0_real_kind) then
             res = -abs(val1)
         else
             res = abs(val1)
@@ -1752,12 +1752,12 @@ contains
 
         res%x = sqrt(u%x)
 
-        if (res%x .ne. 0.0_wp) then
-            res%dx = 0.5_wp * u%dx / res%x
+        if (res%x .ne. 0.0_real_kind) then
+            res%dx = 0.5_real_kind * u%dx / res%x
         else
             do i = 1, number_of_derivatives
-                if (u%dx(i) .eq. 0.0_wp) then
-                    res%dx(i) = 0.0_wp
+                if (u%dx(i) .eq. 0.0_real_kind) then
+                    res%dx(i) = 0.0_real_kind
                 else
                     res%dx(i) = set_NaN()
                 end if
