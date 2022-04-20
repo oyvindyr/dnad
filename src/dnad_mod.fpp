@@ -1809,6 +1809,7 @@ contains
 
         res = sqrt(r)
 
+        
     end function fastsqrt_r
 
     !-----------------------------------------
