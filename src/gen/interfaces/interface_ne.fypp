@@ -1,9 +1,0 @@
-#:def interface_ne 
-    interface operator (/=)
-        module procedure ne_dd  !compare two dual numbers, elemental
-        module procedure ne_di  !compare a dual and an integer, elemental
-        module procedure ne_dr  !compare dual with a real, elemental
-        module procedure ne_id ! compare integer with a dual number, elemental
-        module procedure ne_rd ! compare a real with a dual number, elemental
-    end interface
-#:enddef 

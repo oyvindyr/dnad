@@ -1,6 +1,0 @@
-#:def interface_min 
-    interface min
-        module procedure min_dd ! min of from two to four dual numbers, elemental
-        module procedure min_dr ! min of a dual and a real, elemental
-    end interface
-#:enddef 

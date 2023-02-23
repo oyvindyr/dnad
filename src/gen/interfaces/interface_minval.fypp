@@ -1,5 +1,0 @@
-#:def interface_minval 
-    interface minval
-        module procedure minval_d ! obtain the maxval  of a dual number vectgor
-    end interface
-#:enddef 

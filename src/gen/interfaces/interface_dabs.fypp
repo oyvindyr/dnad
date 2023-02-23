@@ -1,5 +1,0 @@
-#:def interface_dabs 
-    interface dabs
-        module procedure abs_d ! same as abs, used for some old fortran commands
-    end interface
-#:enddef 

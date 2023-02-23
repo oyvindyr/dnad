@@ -1,0 +1,130 @@
+#:def dnad_public_interface_statements(selected_interfaces) 
+  #:set interface_list = selected_interfaces.split(',')
+  #:if "=" in interface_list 
+    public assignment (=)
+  #:endif 
+  #:if "+" in interface_list 
+    public operator (+)
+  #:endif 
+  #:if "-" in interface_list 
+    public operator (-)
+  #:endif 
+  #:if "*" in interface_list 
+    public operator (*)
+  #:endif 
+  #:if "/" in interface_list 
+    public operator (/)
+  #:endif 
+  #:if "**" in interface_list 
+    public operator (**)
+  #:endif 
+  #:if "==" in interface_list 
+    public operator (==)
+  #:endif 
+  #:if "<=" in interface_list 
+    public operator (<=)
+  #:endif 
+  #:if "<" in interface_list 
+    public operator (<)
+  #:endif 
+  #:if ">=" in interface_list 
+    public operator (>=)
+  #:endif 
+  #:if ">" in interface_list 
+    public operator (>)
+  #:endif 
+  #:if "/=" in interface_list 
+    public operator (/=)
+  #:endif 
+  #:if "abs" in interface_list 
+    public abs
+  #:endif 
+  #:if "dabs" in interface_list 
+    public dabs
+  #:endif 
+  #:if "acos" in interface_list 
+    public acos
+  #:endif 
+  #:if "asin" in interface_list 
+    public asin
+  #:endif 
+  #:if "atan" in interface_list 
+    public atan
+  #:endif 
+  #:if "atan2" in interface_list 
+    public atan2
+  #:endif 
+  #:if "cos" in interface_list 
+    public cos
+  #:endif 
+  #:if "dcos" in interface_list 
+    public dcos
+  #:endif 
+  #:if "dot_product" in interface_list 
+    public dot_product
+  #:endif 
+  #:if "exp" in interface_list 
+    public exp
+  #:endif 
+  #:if "int" in interface_list 
+    public int
+  #:endif 
+  #:if "log" in interface_list 
+    public log
+  #:endif 
+  #:if "log10" in interface_list 
+    public log10
+  #:endif 
+  #:if "matmul" in interface_list 
+    public matmul
+  #:endif 
+  #:if "max" in interface_list 
+    public max
+  #:endif 
+  #:if "dmax1" in interface_list 
+    public dmax1
+  #:endif 
+  #:if "maxval" in interface_list 
+    public maxval
+  #:endif 
+  #:if "min" in interface_list 
+    public min
+  #:endif 
+  #:if "dmin1" in interface_list 
+    public dmin1
+  #:endif 
+  #:if "minval" in interface_list 
+    public minval
+  #:endif 
+  #:if "nint" in interface_list 
+    public nint
+  #:endif 
+  #:if "sign" in interface_list 
+    public  sign
+  #:endif 
+  #:if "sin" in interface_list 
+    public sin
+  #:endif 
+  #:if "dsin" in interface_list 
+    public dsin
+  #:endif 
+  #:if "tan" in interface_list 
+    public tan
+  #:endif 
+  #:if "dtan" in interface_list 
+    public dtan
+  #:endif 
+  #:if "sqrt" in interface_list 
+    public sqrt
+  #:endif 
+  #:if "fastsqrt" in interface_list 
+    public fastsqrt
+  #:endif 
+  #:if "sum" in interface_list 
+    public sum
+  #:endif 
+  #:if "maxloc" in interface_list 
+    public maxloc
+  #:endif 
+ 
+#:enddef 

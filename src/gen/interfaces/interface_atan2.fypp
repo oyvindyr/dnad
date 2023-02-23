@@ -1,5 +1,0 @@
-#:def interface_atan2 
-    interface atan2
-        module procedure atan2_d ! arctan of a dual number, elemental
-    end interface
-#:enddef 

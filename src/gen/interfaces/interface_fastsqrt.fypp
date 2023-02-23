@@ -1,6 +1,0 @@
-#:def interface_fastsqrt 
-    interface fastsqrt
-        module procedure fastsqrt_r ! placeholder for intrinsic sqrt
-        module procedure fastsqrt_d ! obtain the sqrt of a dual number, elemental
-    end interface
-#:enddef 

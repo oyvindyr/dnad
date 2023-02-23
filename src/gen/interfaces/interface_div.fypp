@@ -1,9 +1,0 @@
-#:def interface_div 
-    interface operator (/)
-        module procedure div_dd ! dual/dual,elemental
-        module procedure div_di ! dual/integer, elemental
-        module procedure div_dr ! dual/real,emental
-        module procedure div_id ! integer/dual, elemental
-        module procedure div_rd ! real/dual, elemental
-    end interface
-#:enddef 

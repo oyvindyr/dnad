@@ -1,4 +1,4 @@
-#:def dual_type(dual_type, real_kind, number_of_derivatives, statement)
+#:def dnad_dual_type(dual_type, real_kind, number_of_derivatives, statement)
 
     type :: ${dual_type}$
         #! statement can for instance be 'sequence' or nothing

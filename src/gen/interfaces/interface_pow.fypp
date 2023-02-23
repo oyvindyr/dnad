@@ -1,7 +1,0 @@
-#:def interface_pow 
-    interface operator (**)
-        module procedure pow_i ! dual number to an integer power,elemental
-        module procedure pow_r ! dual number to a real power, elemental
-        module procedure pow_d ! dual number to a dual power, elemental
-    end interface
-#:enddef 

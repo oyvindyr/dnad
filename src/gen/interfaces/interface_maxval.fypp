@@ -1,5 +1,0 @@
-#:def interface_maxval 
-    interface maxval
-        module procedure maxval_d ! maxval of a dual number vector
-    end interface
-#:enddef 

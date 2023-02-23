@@ -1,5 +1,0 @@
-#:def interface_acos 
-    interface acos
-        module procedure acos_d ! arccosine of a dual number, elemental
-    end interface
-#:enddef 

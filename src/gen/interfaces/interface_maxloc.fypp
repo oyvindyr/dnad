@@ -1,5 +1,0 @@
-#:def interface_maxloc 
-    interface maxloc
-        module procedure maxloc_d ! location of max in a dual array
-    end interface
-#:enddef 

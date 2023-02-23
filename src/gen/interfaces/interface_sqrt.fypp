@@ -1,5 +1,0 @@
-#:def interface_sqrt 
-    interface sqrt
-        module procedure sqrt_d ! obtain the sqrt of a dual number, elemental
-    end interface
-#:enddef 

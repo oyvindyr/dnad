@@ -1,5 +1,0 @@
-#:def interface_int 
-    interface int
-        module procedure int_d ! integer part of a dual number, elemental
-    end interface
-#:enddef 

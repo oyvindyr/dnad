@@ -1,5 +1,0 @@
-#:def interface_log 
-    interface log
-        module procedure log_d ! log of a dual number, elemental
-    end interface
-#:enddef 

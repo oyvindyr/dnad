@@ -1,9 +1,0 @@
-#:def interface_mult 
-    interface operator (*)
-        module procedure mult_dd    ! dual*dual, elemental
-        module procedure mult_di    ! dual*integer,elemental
-        module procedure mult_dr    ! dual*real,elemental
-        module procedure mult_id    ! integer*dual,elemental
-        module procedure mult_rd    ! real*dual,elemental
-    end interface
-#:enddef 

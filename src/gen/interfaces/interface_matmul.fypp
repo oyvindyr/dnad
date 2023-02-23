@@ -1,7 +1,0 @@
-#:def interface_matmul 
-    interface matmul
-        module procedure matmul_dd ! multiply two dual matrices
-        module procedure matmul_dv ! multiply a dual matrix with a dual vector
-        module procedure matmul_vd ! multiply a dual vector with a dual matrix
-    end interface
-#:enddef 
