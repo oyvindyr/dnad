@@ -1,0 +1,5 @@
+#:def interface_dot_product 
+    interface dot_product
+        module procedure dot_product_dd ! dot product two dual number vectors
+    end interface
+#:enddef 

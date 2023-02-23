@@ -1,0 +1,52 @@
+#:def implementations_div(dual_type, real_kind, number_of_derivatives) 
+    elemental function div_dd(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u, v
+        type(${dual_type}$) :: res
+
+        res%x = u%x / v%x
+        res%dx = (u%dx - res%x * v%dx) / v%x
+
+    end function div_dd
+    elemental function div_di(u, i) result(res)
+        type(${dual_type}$), intent(in) :: u
+        integer, intent(in) :: i
+        type(${dual_type}$) :: res
+
+        res%x = u%x / i
+        res%dx = u%dx / i
+
+    end function div_di
+    elemental function div_dr(u, r) result(res)
+        type(${dual_type}$), intent(in) :: u
+        real(${real_kind}$), intent(in) :: r
+        type(${dual_type}$) :: res
+
+        res%x = u%x / r
+        res%dx = u%dx / r
+
+    end function div_dr
+    elemental function div_id(i, v) result(res)
+        integer, intent(in) :: i
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+
+        real(${real_kind}$) :: inv
+
+        inv = 1.0_${real_kind}$ / v%x
+        res%x = real(i, ${real_kind}$) * inv
+        res%dx = -res%x * inv * v%dx
+
+    end function div_id
+    elemental function div_rd(r, v) result(res)
+        real(${real_kind}$), intent(in) :: r
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+
+        real(${real_kind}$) :: inv
+
+        inv = 1.0_${real_kind}$ / v%x
+        res%x = r * inv
+        res%dx = -res%x * inv * v%dx
+
+    end function div_rd
+#:enddef 

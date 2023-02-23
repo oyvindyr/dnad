@@ -1,0 +1,18 @@
+#:def implementations_fastsqrt(dual_type, real_kind, number_of_derivatives) 
+    elemental function fastsqrt_r(r) result(res)
+        real(${real_kind}$), intent(in) :: r
+        real(${real_kind}$) :: res
+
+        res = sqrt(r)
+
+        
+    end function fastsqrt_r
+    elemental function fastsqrt_d(u) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$) :: res
+
+        res%x = sqrt(u%x)
+        res%dx = 0.5_${real_kind}$ * u%dx / res%x
+
+    end function fastsqrt_d
+#:enddef 

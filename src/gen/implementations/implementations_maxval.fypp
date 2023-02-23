@@ -1,0 +1,11 @@
+#:def implementations_maxval(dual_type, real_kind, number_of_derivatives) 
+    pure function maxval_d(u) result(res)
+        type(${dual_type}$), intent(in) :: u(:)
+        integer :: iloc(1)
+        type(${dual_type}$) :: res
+
+        iloc=maxloc(u%x)
+        res=u(iloc(1))
+
+    end function maxval_d
+#:enddef 

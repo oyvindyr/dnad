@@ -1,0 +1,10 @@
+#:def implementations_dsin(dual_type, real_kind, number_of_derivatives) 
+    elemental function sin_d(u) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$) :: res
+
+        res%x = sin(u%x)
+        res%dx = cos(u%x) * u%dx
+
+    end function sin_d
+#:enddef 

@@ -1,0 +1,9 @@
+#:def implementations_nint(dual_type, real_kind, number_of_derivatives) 
+    elemental function nint_d(u) result(res)
+        type(${dual_type}$), intent(in) :: u
+        integer :: res
+
+        res=nint(u%x)
+
+    end function nint_d
+#:enddef 

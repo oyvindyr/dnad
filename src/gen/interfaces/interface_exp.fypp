@@ -1,0 +1,5 @@
+#:def interface_exp 
+    interface exp
+        module procedure exp_d ! exponential of a dual number, elemental
+    end interface
+#:enddef 

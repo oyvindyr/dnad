@@ -1,0 +1,8 @@
+#:def interface_assign 
+    interface assignment (=)
+        module procedure assign_di  ! dual=integer, elemental
+        module procedure assign_dr  ! dual=real, elemental
+        module procedure assign_id  ! integer=dual, elemental
+        module procedure assign_rd  ! real=dual, elemental
+    end interface
+#:enddef 

@@ -1,0 +1,6 @@
+#:def interface_sign 
+    interface  sign
+      module procedure  sign_dd ! sign(a,b) with two dual numbers, elemental
+      module procedure  sign_rd ! sign(a,b) with a real and a dual, elemental
+    end interface
+#:enddef 

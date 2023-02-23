@@ -1,0 +1,9 @@
+#:def interface_ge 
+    interface operator (>=)
+        module procedure ge_dd ! compare two dual numbers, elemental
+        module procedure ge_di ! compare dual with integer, elemental
+        module procedure ge_dr ! compare dual with a real number, elemental
+        module procedure ge_id ! compare integer with a dual number, elemental
+        module procedure ge_rd ! compare a real with a dual number, elemental
+    end interface
+#:enddef 

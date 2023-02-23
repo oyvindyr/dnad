@@ -1,0 +1,10 @@
+#:def implementations_dtan(dual_type, real_kind, number_of_derivatives) 
+    elemental function tan_d(u) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$) :: res
+
+        res%x = tan(u%x)
+        res%dx = u%dx / cos(u%x)**2
+
+    end function tan_d
+#:enddef 

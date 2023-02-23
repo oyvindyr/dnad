@@ -1,0 +1,9 @@
+#:def interface_gt 
+    interface operator (>)
+        module procedure gt_dd  !compare two dual numbers, elemental
+        module procedure gt_di  !compare a dual and an integer, elemental
+        module procedure gt_dr  !compare dual with a real, elemental
+        module procedure gt_id ! compare integer with a dual number, elemental
+        module procedure gt_rd ! compare a real with a dual number, elemental
+    end interface
+#:enddef 

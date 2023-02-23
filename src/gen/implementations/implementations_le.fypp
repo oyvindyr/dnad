@@ -1,0 +1,41 @@
+#:def implementations_le(dual_type, real_kind, number_of_derivatives) 
+    elemental function le_dd(lhs, rhs) result(res)
+         type(${dual_type}$), intent(in) :: lhs, rhs
+         logical :: res
+
+         res = (lhs%x <= rhs%x)
+
+    end function le_dd
+    elemental function le_di(lhs, rhs) result(res)
+         type(${dual_type}$), intent(in) :: lhs
+         integer, intent(in) :: rhs
+         logical :: res
+
+         res = (lhs%x <= rhs)
+
+    end function le_di
+    elemental function le_dr(lhs, rhs) result(res)
+         type(${dual_type}$), intent(in) :: lhs
+         real(${real_kind}$), intent(in) :: rhs
+         logical :: res
+
+         res = (lhs%x <= rhs)
+
+    end function le_dr
+    elemental function le_id(i, rhs) result(res)
+         integer, intent(in) :: i
+         type(${dual_type}$), intent(in) :: rhs
+         logical :: res
+
+         res = (i <= rhs%x)
+
+    end function le_id
+    elemental function le_rd(lhs, rhs) result(res)
+         real(${real_kind}$), intent(in) :: lhs
+         type(${dual_type}$), intent(in) :: rhs
+         logical :: res
+
+         res = (lhs <= rhs%x)
+
+    end function le_rd
+#:enddef 

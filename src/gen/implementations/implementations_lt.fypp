@@ -1,0 +1,41 @@
+#:def implementations_lt(dual_type, real_kind, number_of_derivatives) 
+    elemental function lt_dd(lhs, rhs) result(res)
+        type(${dual_type}$), intent(in) :: lhs, rhs
+        logical :: res
+
+        res = (lhs%x < rhs%x)
+
+    end function lt_dd
+    elemental function lt_di(lhs, rhs) result(res)
+        type(${dual_type}$), intent(in) :: lhs
+        integer, intent(in) :: rhs
+        logical :: res
+
+        res = (lhs%x < rhs)
+
+    end function lt_di
+    elemental function lt_dr(lhs, rhs) result(res)
+        type(${dual_type}$), intent(in) :: lhs
+        real(${real_kind}$), intent(in) :: rhs
+        logical :: res
+
+        res = (lhs%x < rhs)
+
+    end function lt_dr
+    elemental function lt_id(i, rhs) result(res)
+         integer, intent(in) :: i
+         type(${dual_type}$), intent(in) :: rhs
+         logical :: res
+
+         res = (i < rhs%x)
+
+    end function lt_id
+    elemental function lt_rd(lhs, rhs) result(res)
+         real(${real_kind}$), intent(in) :: lhs
+         type(${dual_type}$), intent(in) :: rhs
+         logical :: res
+
+         res = (lhs < rhs%x)
+
+    end function lt_rd
+#:enddef 

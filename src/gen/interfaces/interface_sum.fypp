@@ -1,0 +1,5 @@
+#:def interface_sum 
+    interface sum
+        module procedure sum_d ! sum a dual array
+    end interface
+#:enddef 

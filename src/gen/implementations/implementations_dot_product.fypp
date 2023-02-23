@@ -1,0 +1,14 @@
+#:def implementations_dot_product(dual_type, real_kind, number_of_derivatives) 
+    pure function dot_product_dd(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u(:), v(:)
+        type(${dual_type}$) :: res
+
+        integer :: i
+
+        res%x = dot_product(u%x, v%x)
+        do i = 1, ${number_of_derivatives}$
+            res%dx(i) = dot_product(u%x, v%dx(i)) + dot_product(v%x, u%dx(i))
+        end do
+
+    end function dot_product_dd
+#:enddef 

@@ -1,0 +1,10 @@
+#:def implementations_atan(dual_type, real_kind, number_of_derivatives) 
+    elemental function atan_d(u) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$) :: res
+
+        res%x = atan(u%x)
+        res%dx = u%dx / (1.0_${real_kind}$ + u%x**2)
+
+    end function atan_d
+#:enddef 

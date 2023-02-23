@@ -1,0 +1,5 @@
+#:def interface_dmax1 
+    interface dmax1
+        module procedure max_dd ! max of from two to four dual numbers, elemental
+    end interface
+#:enddef 

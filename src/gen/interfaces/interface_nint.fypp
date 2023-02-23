@@ -1,0 +1,5 @@
+#:def interface_nint 
+    interface nint
+        module procedure nint_d ! nearest integer to the argument, elemental
+    end interface
+#:enddef 

@@ -1,0 +1,41 @@
+#:def implementations_eq(dual_type, real_kind, number_of_derivatives) 
+    elemental function eq_dd(lhs, rhs) result(res)
+         type(${dual_type}$), intent(in) :: lhs, rhs
+         logical :: res
+
+         res = (lhs%x == rhs%x)
+
+    end function eq_dd
+    elemental function eq_di(lhs, rhs) result(res)
+         type(${dual_type}$), intent(in) :: lhs
+         integer, intent(in) :: rhs
+         logical :: res
+
+         res = (lhs%x == real(rhs, ${real_kind}$))
+
+    end function eq_di
+    elemental function eq_dr(lhs, rhs) result(res)
+        type(${dual_type}$), intent(in) :: lhs
+        real(${real_kind}$), intent(in) :: rhs
+        logical::res
+
+        res = (lhs%x == rhs)
+
+    end function eq_dr
+    elemental function eq_id(lhs, rhs) result(res)
+         integer, intent(in) :: lhs
+         type(${dual_type}$), intent(in) :: rhs
+         logical :: res
+
+         res = (lhs == rhs%x)
+
+    end function eq_id
+    elemental function eq_rd(lhs, rhs) result(res)
+         real(${real_kind}$), intent(in) :: lhs
+         type(${dual_type}$), intent(in) :: rhs
+         logical :: res
+
+         res = (lhs == rhs%x)
+
+    end function eq_rd
+#:enddef 

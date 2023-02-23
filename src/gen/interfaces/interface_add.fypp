@@ -1,0 +1,10 @@
+#:def interface_add 
+    interface operator (+)
+        module procedure add_d   ! +dual number, elemental
+        module procedure add_dd  ! dual + dual, elemental
+        module procedure add_di  ! dual + integer, elemental
+        module procedure add_dr  ! dual + real, elemental
+        module procedure add_id  ! integer + dual, elemental
+        module procedure add_rd  ! real + dual, elemental
+    end interface
+#:enddef 

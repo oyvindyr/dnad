@@ -1,0 +1,41 @@
+#:def implementations_gt(dual_type, real_kind, number_of_derivatives) 
+    elemental function gt_dd(lhs, rhs) result(res)
+        type(${dual_type}$), intent(in) :: lhs, rhs
+        logical :: res
+
+        res = (lhs%x > rhs%x)
+
+    end function gt_dd
+    elemental function gt_di(lhs, rhs) result(res)
+        type(${dual_type}$), intent(in) :: lhs
+        integer, intent(in) :: rhs
+        logical :: res
+
+        res = (lhs%x > rhs)
+
+    end function gt_di
+    elemental function gt_dr(lhs, rhs) result(res)
+        type(${dual_type}$), intent(in) :: lhs
+        real(${real_kind}$), intent(in) :: rhs
+        logical :: res
+
+        res = (lhs%x > rhs)
+
+    end function gt_dr
+    elemental function gt_id(i, rhs) result(res)
+        integer, intent(in) :: i
+        type(${dual_type}$), intent(in) :: rhs
+        logical :: res
+
+        res = (i > rhs%x)
+
+    end function gt_id
+    elemental function gt_rd(lhs, rhs) result(res)
+         real(${real_kind}$), intent(in) :: lhs
+         type(${dual_type}$), intent(in) :: rhs
+         logical :: res
+
+         res = (lhs > rhs%x)
+
+    end function gt_rd
+#:enddef 

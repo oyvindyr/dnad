@@ -1,0 +1,5 @@
+#:def interface_dmin1 
+    interface dmin1
+        module procedure min_dd ! min of from two to four dual numbers, elemental
+    end interface
+#:enddef 

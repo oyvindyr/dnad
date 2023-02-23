@@ -1,0 +1,14 @@
+#:def implementations_atan2(dual_type, real_kind, number_of_derivatives) 
+    elemental function atan2_d(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u, v
+        type(${dual_type}$) :: res
+
+        real(${real_kind}$) :: usq_plus_vsq
+
+        res%x = atan2(u%x, v%x)
+
+        usq_plus_vsq = u%x**2 + v%x**2
+        res%dx = v%x / usq_plus_vsq * u%dx - u%x / usq_plus_vsq * v%dx
+
+    end function atan2_d
+#:enddef 

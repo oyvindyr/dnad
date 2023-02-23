@@ -1,0 +1,5 @@
+#:def interface_cos 
+    interface cos
+        module procedure cos_d ! cosine of a dual number, elemental
+    end interface
+#:enddef 

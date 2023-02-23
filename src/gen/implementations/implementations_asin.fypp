@@ -1,0 +1,14 @@
+#:def implementations_asin(dual_type, real_kind, number_of_derivatives) 
+    elemental function asin_d(u) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$) :: res
+
+        res%x = asin(u%x)
+        if (u%x == 1.0_${real_kind}$ .or. u%x == -1.0_${real_kind}$) then
+            res%dx = set_NaN()  ! Undefined derivative
+        else
+            res%dx = u%dx / sqrt(1.0_${real_kind}$ - u%x**2)
+        end if
+
+    end function asin_d
+#:enddef 

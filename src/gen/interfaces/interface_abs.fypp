@@ -1,0 +1,5 @@
+#:def interface_abs 
+    interface abs
+        module procedure abs_d  ! absolute value of a dual number, elemental
+    end interface
+#:enddef 

@@ -1,0 +1,52 @@
+#:def implementations_mult(dual_type, real_kind, number_of_derivatives) 
+    elemental function mult_dd(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u, v
+        type(${dual_type}$) :: res
+
+        res%x = u%x * v%x
+        res%dx = u%x * v%dx + v%x * u%dx
+
+    end function mult_dd
+    elemental function mult_di(u, i) result(res)
+        type(${dual_type}$), intent(in) :: u
+        integer, intent(in) :: i
+        type(${dual_type}$) :: res
+
+        real(${real_kind}$) :: r
+
+        r = real(i, ${real_kind}$)
+        res%x = r * u%x
+        res%dx = r * u%dx
+
+    end function mult_di
+    elemental function mult_dr(u, r) result(res)
+        type(${dual_type}$), intent(in) :: u
+        real(${real_kind}$), intent(in) :: r
+        type(${dual_type}$) :: res
+
+        res%x = u%x * r
+        res%dx = u%dx * r
+
+    end function mult_dr
+    elemental function mult_id(i, v) result(res)
+        integer, intent(in) :: i
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+
+        real(${real_kind}$) :: r
+
+        r = real(i, ${real_kind}$)
+        res%x = r * v%x
+        res%dx = r * v%dx
+
+    end function mult_id
+    elemental function mult_rd(r, v) result(res)
+        real(${real_kind}$), intent(in) :: r
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+
+        res%x = r * v%x
+        res%dx = r * v%dx
+
+    end function mult_rd
+#:enddef 

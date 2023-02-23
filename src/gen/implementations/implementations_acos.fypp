@@ -1,0 +1,14 @@
+#:def implementations_acos(dual_type, real_kind, number_of_derivatives) 
+    elemental function acos_d(u) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$) :: res
+
+        res%x = acos(u%x)
+        if (u%x == 1.0_${real_kind}$ .or. u%x == -1.0_${real_kind}$) then
+            res%dx = set_Nan()  ! Undefined derivative
+        else
+            res%dx = -u%dx / sqrt(1.0_${real_kind}$ - u%x**2)
+        end if
+
+    end function acos_d
+#:enddef 

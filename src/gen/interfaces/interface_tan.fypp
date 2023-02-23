@@ -1,0 +1,5 @@
+#:def interface_tan 
+    interface tan
+        module procedure tan_d ! obtain sine of a dual number, elemental
+    end interface
+#:enddef 

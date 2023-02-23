@@ -1,0 +1,9 @@
+#:def implementations_maxloc(dual_type, real_kind, number_of_derivatives) 
+    pure function maxloc_d(array) result(ind)
+        type(${dual_type}$), intent(in) :: array(:)
+        integer :: ind(1)
+
+        ind = maxloc(array%x)
+
+    end function maxloc_d
+#:enddef 

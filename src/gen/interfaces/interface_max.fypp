@@ -1,0 +1,8 @@
+#:def interface_max 
+    interface max
+        module procedure max_dd ! max of from two to four dual numbers, elemental
+        module procedure max_di ! max of a dual number and an integer, elemental
+        module procedure max_dr ! max of a dual number and a real, elemental
+        module procedure max_rd ! max of a real,and a dual number,  elemental
+    end interface
+#:enddef 

@@ -1,0 +1,5 @@
+#:def interface_dsin 
+    interface dsin
+        module procedure sin_d ! obtain sine of a dual number, elemental
+    end interface
+#:enddef 

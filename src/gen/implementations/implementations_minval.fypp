@@ -1,0 +1,11 @@
+#:def implementations_minval(dual_type, real_kind, number_of_derivatives) 
+    pure function minval_d(u) result(res)
+        type(${dual_type}$), intent(in) :: u(:)
+        integer :: iloc(1)
+        type(${dual_type}$) :: res
+
+        iloc=minloc(u%x)
+        res=u(iloc(1))
+
+    end function minval_d
+#:enddef 

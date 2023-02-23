@@ -1,0 +1,9 @@
+#:def implementations_int(dual_type, real_kind, number_of_derivatives) 
+    elemental function int_d(u) result(res)
+         type(${dual_type}$), intent(in) :: u
+         integer :: res
+
+         res = int(u%x)
+
+    end function int_d
+#:enddef 

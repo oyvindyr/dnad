@@ -1,0 +1,22 @@
+#:def implementations_sqrt(dual_type, real_kind, number_of_derivatives) 
+    elemental function sqrt_d(u) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$) :: res
+        integer :: i
+
+        res%x = sqrt(u%x)
+
+        if (res%x .ne. 0.0_${real_kind}$) then
+            res%dx = 0.5_${real_kind}$ * u%dx / res%x
+        else
+            do i = 1, ${number_of_derivatives}$
+                if (u%dx(i) .eq. 0.0_${real_kind}$) then
+                    res%dx(i) = 0.0_${real_kind}$
+                else
+                    res%dx(i) = set_NaN()
+                end if
+            end do
+        end if
+
+    end function sqrt_d
+#:enddef 

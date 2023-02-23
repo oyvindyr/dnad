@@ -1,0 +1,10 @@
+#:def implementations_log(dual_type, real_kind, number_of_derivatives) 
+    elemental function log_d(u) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$) :: res
+
+        res%x = log(u%x)
+        res%dx = u%dx / u%x
+
+    end function log_d
+#:enddef 

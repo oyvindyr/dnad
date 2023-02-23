@@ -1,0 +1,5 @@
+#:def interface_asin 
+    interface asin
+        module procedure asin_d ! arcsine of a dual number, elemental
+    end interface
+#:enddef 

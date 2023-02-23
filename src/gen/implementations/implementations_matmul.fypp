@@ -1,0 +1,36 @@
+#:def implementations_matmul(dual_type, real_kind, number_of_derivatives) 
+    pure function matmul_dd(u,v) result(res)
+        type(${dual_type}$), intent(in) :: u(:,:), v(:,:)
+        type(${dual_type}$) :: res(size(u,1), size(v,2))
+
+        integer :: i
+
+        res%x = matmul(u%x, v%x)
+        do i = 1, ${number_of_derivatives}$
+            res%dx(i) = matmul(u%dx(i), v%x) + matmul(u%x, v%dx(i))
+        end do
+
+    end function matmul_dd
+    pure function matmul_dv(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u(:,:), v(:)
+        type(${dual_type}$) :: res(size(u,1))
+        integer :: i
+
+        res%x = matmul(u%x, v%x)
+        do i = 1, ${number_of_derivatives}$
+            res%dx(i) = matmul(u%dx(i), v%x) + matmul(u%x, v%dx(i))
+        end do
+
+    end function matmul_dv
+    pure function matmul_vd(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u(:), v(:,:)
+        type(${dual_type}$) :: res(size(v, 2))
+        integer::i
+
+        res%x = matmul(u%x, v%x)
+        do i = 1, ${number_of_derivatives}$
+            res%dx(i) = matmul(u%dx(i), v%x) + matmul(u%x, v%dx(i))
+        end do
+
+    end function matmul_vd
+#:enddef 
