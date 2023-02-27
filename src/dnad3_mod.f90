@@ -99,7 +99,7 @@
 
 
 
-module dnad_mod
+module dnad3_mod
     use, intrinsic :: iso_fortran_env, only: dp => real64
 
     integer, parameter :: num_deriv = 3
