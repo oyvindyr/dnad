@@ -3,7 +3,6 @@
   #:if not defined('set_undefined')
     #:set set_undefined = True
   #:endif
-
   #:if "=" in interface_list 
     elemental subroutine assign_di(u, i)
          type(${dual_type}$), intent(out) :: u
@@ -36,7 +35,6 @@
 
     end subroutine assign_rd
   #:endif 
- 
   #:if "+" in interface_list 
     elemental function add_d(u) result(res)
          type(${dual_type}$), intent(in) :: u
@@ -90,7 +88,6 @@
 
     end function add_rd
   #:endif 
- 
   #:if "-" in interface_list 
     elemental function minus_d(u) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -145,7 +142,6 @@
 
     end function minus_rd
   #:endif 
- 
   #:if "*" in interface_list 
     elemental function mult_dd(u, v) result(res)
         type(${dual_type}$), intent(in) :: u, v
@@ -198,7 +194,6 @@
 
     end function mult_rd
   #:endif 
- 
   #:if "/" in interface_list 
     elemental function div_dd(u, v) result(res)
         type(${dual_type}$), intent(in) :: u, v
@@ -251,7 +246,6 @@
 
     end function div_rd
   #:endif 
- 
   #:if "**" in interface_list 
     elemental function pow_i(u, i) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -286,7 +280,6 @@
 
     end function pow_d
   #:endif 
- 
   #:if "==" in interface_list 
     elemental function eq_dd(lhs, rhs) result(res)
          type(${dual_type}$), intent(in) :: lhs, rhs
@@ -328,7 +321,6 @@
 
     end function eq_rd
   #:endif 
- 
   #:if "<=" in interface_list 
     elemental function le_dd(lhs, rhs) result(res)
          type(${dual_type}$), intent(in) :: lhs, rhs
@@ -370,7 +362,6 @@
 
     end function le_rd
   #:endif 
- 
   #:if "<" in interface_list 
     elemental function lt_dd(lhs, rhs) result(res)
         type(${dual_type}$), intent(in) :: lhs, rhs
@@ -412,7 +403,6 @@
 
     end function lt_rd
   #:endif 
- 
   #:if ">=" in interface_list 
     elemental function ge_dd(lhs, rhs) result(res)
         type(${dual_type}$), intent(in) :: lhs, rhs
@@ -454,7 +444,6 @@
 
     end function ge_rd
   #:endif 
- 
   #:if ">" in interface_list 
     elemental function gt_dd(lhs, rhs) result(res)
         type(${dual_type}$), intent(in) :: lhs, rhs
@@ -496,7 +485,6 @@
 
     end function gt_rd
   #:endif 
- 
   #:if "/=" in interface_list 
     elemental function ne_dd(lhs, rhs) result(res)
         type(${dual_type}$), intent(in) :: lhs, rhs
@@ -538,7 +526,6 @@
 
     end function ne_rd
   #:endif 
- 
   #:if "abs" in interface_list or "dabs" in interface_list
     elemental function abs_d(u) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -566,7 +553,6 @@
 
     end function abs_d
   #:endif 
- 
   #:if "acos" in interface_list 
     elemental function acos_d(u) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -586,7 +572,6 @@
 
     end function acos_d
   #:endif 
- 
   #:if "asin" in interface_list 
     elemental function asin_d(u) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -605,7 +590,6 @@
 
     end function asin_d
   #:endif 
- 
   #:if "atan" in interface_list 
     elemental function atan_d(u) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -616,7 +600,6 @@
 
     end function atan_d
   #:endif 
- 
   #:if "atan2" in interface_list 
     elemental function atan2_d(u, v) result(res)
         type(${dual_type}$), intent(in) :: u, v
@@ -631,7 +614,6 @@
 
     end function atan2_d
   #:endif 
- 
   #:if "cos" in interface_list or "dcos" in interface_list
     elemental function cos_d(u) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -642,7 +624,6 @@
 
     end function cos_d
   #:endif 
- 
   #:if "dot_product" in interface_list 
     pure function dot_product_dd(u, v) result(res)
         type(${dual_type}$), intent(in) :: u(:), v(:)
@@ -657,7 +638,6 @@
 
     end function dot_product_dd
   #:endif 
- 
   #:if "exp" in interface_list 
     elemental function exp_d(u) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -671,7 +651,6 @@
 
     end function exp_d
   #:endif 
- 
   #:if "int" in interface_list 
     elemental function int_d(u) result(res)
          type(${dual_type}$), intent(in) :: u
@@ -681,7 +660,6 @@
 
     end function int_d
   #:endif 
- 
   #:if "log" in interface_list 
     elemental function log_d(u) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -692,7 +670,6 @@
 
     end function log_d
   #:endif 
- 
   #:if "log10" in interface_list 
     elemental function log10_d(u) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -706,7 +683,6 @@
 
     end function log10_d
   #:endif 
- 
   #:if "matmul" in interface_list 
     pure function matmul_dd(u,v) result(res)
         type(${dual_type}$), intent(in) :: u(:,:), v(:,:)
@@ -743,7 +719,6 @@
 
     end function matmul_vd
   #:endif 
- 
   #:if "max" in interface_list
     elemental function max_dd(val1, val2) result(res)
         type(${dual_type}$), intent(in) :: val1, val2
@@ -793,7 +768,6 @@
 
     end function max_rd
   #:endif 
- 
   #:if "dmax1" in interface_list 
     elemental function dmax1_dd(val1, val2, val3, val4,val5) result(res)
         type(${dual_type}$), intent(in) :: val1, val2
@@ -817,7 +791,6 @@
 
     end function dmax1_dd
   #:endif 
- 
   #:if "maxval" in interface_list 
     pure function maxval_d(u) result(res)
         type(${dual_type}$), intent(in) :: u(:)
@@ -829,7 +802,6 @@
 
     end function maxval_d
   #:endif 
- 
   #:if "min" in interface_list 
     elemental function min_dd(val1, val2) result(res)
         type(${dual_type}$), intent(in) :: val1, val2
@@ -855,7 +827,6 @@
 
     end function min_dr
   #:endif 
- 
   #:if "dmin1" in interface_list 
     elemental function dmin1_dd(val1, val2, val3, val4) result(res)
         type(${dual_type}$), intent(in) :: val1, val2
@@ -876,7 +847,6 @@
 
     end function dmin1_dd
   #:endif 
- 
   #:if "minval" in interface_list 
     pure function minval_d(u) result(res)
         type(${dual_type}$), intent(in) :: u(:)
@@ -888,7 +858,6 @@
 
     end function minval_d
   #:endif 
- 
   #:if "nint" in interface_list 
     elemental function nint_d(u) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -898,7 +867,6 @@
 
     end function nint_d
   #:endif 
- 
   #:if "sign" in interface_list 
     elemental function sign_dd(val1, val2) result(res)
         type(${dual_type}$), intent(in) :: val1, val2
@@ -924,7 +892,6 @@
 
      end function sign_rd
   #:endif 
- 
   #:if "sin" in interface_list or "dsin" in interface_list
     elemental function sin_d(u) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -935,7 +902,6 @@
 
     end function sin_d
   #:endif 
- 
   #:if "tan" in interface_list or "dtan" in interface_list
     elemental function tan_d(u) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -946,7 +912,6 @@
 
     end function tan_d
   #:endif 
- 
   #:if "sqrt" in interface_list 
     elemental function sqrt_d(u) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -973,7 +938,6 @@
 
     end function sqrt_d
   #:endif 
- 
   #:if "sum" in interface_list 
     pure function sum_d(u) result(res)
         type(${dual_type}$), intent(in) :: u(:)
@@ -987,7 +951,6 @@
 
     end function sum_d
   #:endif 
- 
   #:if "maxloc" in interface_list 
     pure function maxloc_d(array) result(ind)
         type(${dual_type}$), intent(in) :: array(:)
@@ -997,5 +960,4 @@
 
     end function maxloc_d
   #:endif 
- 
 #:enddef 
