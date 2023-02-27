@@ -1,5 +1,9 @@
 #:def dnad_implementations(dual_type, real_kind, number_of_derivatives, selected_interfaces) 
   #:set interface_list = dnad.select_interfaces(selected_interfaces)
+  #:if not defined('set_undefined')
+    #:set set_undefined = True
+  #:endif
+
   #:if "=" in interface_list 
     elemental subroutine assign_di(u, i)
          type(${dual_type}$), intent(out) :: u
@@ -541,13 +545,8 @@
         type(${dual_type}$) :: res
         integer :: i
 
-        if(u%x > 0) then
-            res%x = u%x
-            res%dx = u%dx
-        else if (u%x < 0) then
-            res%x = -u%x
-            res%dx = -u%dx
-        else
+      #:if set_undefined
+        if (u%x == 0) then
             res%x = 0.0_${real_kind}$
             do i = 1, ${number_of_derivatives}$
                 if (u%dx(i) .eq. 0.0_${real_kind}$) then
@@ -556,7 +555,14 @@
                     res%dx(i) = set_NaN()
                 end if
             end do
-        endif
+        else 
+            res%x = abs(u%x)
+            res%dx = abs(u%dx)
+        end if
+      #:else 
+        res%x = abs(u%x)
+        res%dx = abs(u%dx)
+      #:endif
 
     end function abs_d
   #:endif 
@@ -567,11 +573,16 @@
         type(${dual_type}$) :: res
 
         res%x = acos(u%x)
+    
+      #:if set_undefined
         if (u%x == 1.0_${real_kind}$ .or. u%x == -1.0_${real_kind}$) then
             res%dx = set_Nan()  ! Undefined derivative
         else
             res%dx = -u%dx / sqrt(1.0_${real_kind}$ - u%x**2)
         end if
+      #:else 
+        res%dx = -u%dx / sqrt(1.0_${real_kind}$ - u%x**2)
+      #:endif
 
     end function acos_d
   #:endif 
@@ -582,11 +593,15 @@
         type(${dual_type}$) :: res
 
         res%x = asin(u%x)
+      #:if set_undefined
         if (u%x == 1.0_${real_kind}$ .or. u%x == -1.0_${real_kind}$) then
             res%dx = set_NaN()  ! Undefined derivative
         else
             res%dx = u%dx / sqrt(1.0_${real_kind}$ - u%x**2)
         end if
+      #:else 
+        res%dx = u%dx / sqrt(1.0_${real_kind}$ - u%x**2)
+      #:endif
 
     end function asin_d
   #:endif 
@@ -933,11 +948,6 @@
   #:endif 
  
   #:if "sqrt" in interface_list 
-
-    #:if not defined('set_nan')
-        #:set set_nan = True
-    #:endif
-
     elemental function sqrt_d(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
@@ -945,7 +955,7 @@
 
         res%x = sqrt(u%x)
 
-      #:if set_nan
+      #:if set_undefined
         if (res%x .ne. 0.0_${real_kind}$) then
             res%dx = 0.5_${real_kind}$ * u%dx / res%x
         else
