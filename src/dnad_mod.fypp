@@ -100,24 +100,33 @@
 #:include 'macros/dnad_interfaces.fypp'
 #:include 'macros/dnad_implementations.fypp'
 
-#! Number of design variables:
-#:set number_of_derivatives = 1
 
+#! number_of_derivatives must be defined in fypp call
 #:set dual_type = "dual" + str(number_of_derivatives)
 
-#:set selected_interfaces = "=, +, -, *, /, **, ==, <=, <, >=, >, /=, abs, dabs, acos, asin, atan, atan2, cos, dcos, dot_product, exp, int, log, log10, matmul, max, dmax1, maxval, min, dmin1, minval, nint, sign, sin, dsin, tan, dtan, sqrt, fastsqrt, sum, maxloc"
+#! select_interfaces is a comma separated list or "--all"
+#:set selected_interfaces = "--all"
 
 module dnad_mod
     use, intrinsic :: iso_fortran_env, only: dp => real64
+
+    real(dp) :: negative_one = -1.0_dp
 
     @:dnad_public_interface_statements(${selected_interfaces}$)
     
     @:dnad_dual_type(${dual_type}$, dp, ${number_of_derivatives}$, sequence)
 
-    @:dnad_interfaces(${dual_type}$, dp, ${number_of_derivatives}$, ${selected_interfaces}$)
+    @:dnad_interfaces(${selected_interfaces}$)
 
 contains
 
-    @:implementations(dual, dp, 2, ${selected_interfaces}$)
+    @:dnad_implementations(${dual_type}$, dp, ${number_of_derivatives}$, ${selected_interfaces}$)
+
+    elemental function set_NaN() result(res)
+        real(dp) :: res
+
+        res = sqrt(negative_one)
+
+    end function set_NaN
 
 end module

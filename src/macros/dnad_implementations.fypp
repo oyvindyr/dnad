@@ -1,6 +1,5 @@
 #:def dnad_implementations(dual_type, real_kind, number_of_derivatives, selected_interfaces) 
- 
-  #:set interface_list = selected_interfaces.split(",") 
+  #:set interface_list = dnad.select_interfaces(selected_interfaces)
   #:if "=" in interface_list 
     elemental subroutine assign_di(u, i)
          type(${dual_type}$), intent(out) :: u
@@ -536,19 +535,19 @@
     end function ne_rd
   #:endif 
  
-  #:if "abs" in interface_list 
+  #:if "abs" in interface_list or "dabs" in interface_list
     elemental function abs_d(u) result(res)
-         type(${dual_type}$), intent(in) :: u
-         type(${dual_type}$) :: res
-         integer :: i
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$) :: res
+        integer :: i
 
-         if(u%x > 0) then
+        if(u%x > 0) then
             res%x = u%x
             res%dx = u%dx
-         else if (u%x < 0) then
+        else if (u%x < 0) then
             res%x = -u%x
             res%dx = -u%dx
-         else
+        else
             res%x = 0.0_${real_kind}$
             do i = 1, ${number_of_derivatives}$
                 if (u%dx(i) .eq. 0.0_${real_kind}$) then
@@ -557,33 +556,7 @@
                     res%dx(i) = set_NaN()
                 end if
             end do
-         endif
-
-    end function abs_d
-  #:endif 
- 
-  #:if "dabs" in interface_list 
-    elemental function abs_d(u) result(res)
-         type(${dual_type}$), intent(in) :: u
-         type(${dual_type}$) :: res
-         integer :: i
-
-         if(u%x > 0) then
-            res%x = u%x
-            res%dx = u%dx
-         else if (u%x < 0) then
-            res%x = -u%x
-            res%dx = -u%dx
-         else
-            res%x = 0.0_${real_kind}$
-            do i = 1, ${number_of_derivatives}$
-                if (u%dx(i) .eq. 0.0_${real_kind}$) then
-                    res%dx(i) = 0.0_${real_kind}$
-                else
-                    res%dx(i) = set_NaN()
-                end if
-            end do
-         endif
+        endif
 
     end function abs_d
   #:endif 
@@ -644,18 +617,7 @@
     end function atan2_d
   #:endif 
  
-  #:if "cos" in interface_list 
-    elemental function cos_d(u) result(res)
-        type(${dual_type}$), intent(in) :: u
-        type(${dual_type}$) :: res
-
-        res%x = cos(u%x)
-        res%dx = -sin(u%x) * u%dx
-
-    end function cos_d
-  #:endif 
- 
-  #:if "dcos" in interface_list 
+  #:if "cos" in interface_list or "dcos" in interface_list
     elemental function cos_d(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
@@ -767,25 +729,15 @@
     end function matmul_vd
   #:endif 
  
-  #:if "max" in interface_list 
-    elemental function max_dd(val1, val2, val3, val4,val5) result(res)
+  #:if "max" in interface_list
+    elemental function max_dd(val1, val2) result(res)
         type(${dual_type}$), intent(in) :: val1, val2
-        type(${dual_type}$), intent(in), optional :: val3, val4,val5
         type(${dual_type}$) :: res
 
         if (val1%x > val2%x) then
             res = val1
         else
             res = val2
-        endif
-        if(present(val3))then
-           if(res%x < val3%x) res = val3
-        endif
-        if(present(val4))then
-           if(res%x < val4%x) res = val4
-        endif
-        if(present(val5))then
-           if(res%x < val5%x) res = val5
         endif
 
     end function max_dd
@@ -828,7 +780,7 @@
   #:endif 
  
   #:if "dmax1" in interface_list 
-    elemental function max_dd(val1, val2, val3, val4,val5) result(res)
+    elemental function dmax1_dd(val1, val2, val3, val4,val5) result(res)
         type(${dual_type}$), intent(in) :: val1, val2
         type(${dual_type}$), intent(in), optional :: val3, val4,val5
         type(${dual_type}$) :: res
@@ -848,7 +800,7 @@
            if(res%x < val5%x) res = val5
         endif
 
-    end function max_dd
+    end function dmax1_dd
   #:endif 
  
   #:if "maxval" in interface_list 
@@ -864,21 +816,14 @@
   #:endif 
  
   #:if "min" in interface_list 
-    elemental function min_dd(val1, val2, val3, val4) result(res)
+    elemental function min_dd(val1, val2) result(res)
         type(${dual_type}$), intent(in) :: val1, val2
-        type(${dual_type}$), intent(in), optional :: val3, val4
         type(${dual_type}$) :: res
 
         if (val1%x < val2%x) then
             res = val1
         else
             res = val2
-        endif
-        if(present(val3))then
-           if(res%x > val3%x) res = val3
-        endif
-        if(present(val4))then
-           if(res%x > val4%x) res = val4
         endif
 
     end function min_dd
@@ -897,7 +842,7 @@
   #:endif 
  
   #:if "dmin1" in interface_list 
-    elemental function min_dd(val1, val2, val3, val4) result(res)
+    elemental function dmin1_dd(val1, val2, val3, val4) result(res)
         type(${dual_type}$), intent(in) :: val1, val2
         type(${dual_type}$), intent(in), optional :: val3, val4
         type(${dual_type}$) :: res
@@ -914,7 +859,7 @@
            if(res%x > val4%x) res = val4
         endif
 
-    end function min_dd
+    end function dmin1_dd
   #:endif 
  
   #:if "minval" in interface_list 
@@ -965,7 +910,7 @@
      end function sign_rd
   #:endif 
  
-  #:if "sin" in interface_list 
+  #:if "sin" in interface_list or "dsin" in interface_list
     elemental function sin_d(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
@@ -976,29 +921,7 @@
     end function sin_d
   #:endif 
  
-  #:if "dsin" in interface_list 
-    elemental function sin_d(u) result(res)
-        type(${dual_type}$), intent(in) :: u
-        type(${dual_type}$) :: res
-
-        res%x = sin(u%x)
-        res%dx = cos(u%x) * u%dx
-
-    end function sin_d
-  #:endif 
- 
-  #:if "tan" in interface_list 
-    elemental function tan_d(u) result(res)
-        type(${dual_type}$), intent(in) :: u
-        type(${dual_type}$) :: res
-
-        res%x = tan(u%x)
-        res%dx = u%dx / cos(u%x)**2
-
-    end function tan_d
-  #:endif 
- 
-  #:if "dtan" in interface_list 
+  #:if "tan" in interface_list or "dtan" in interface_list
     elemental function tan_d(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
@@ -1010,6 +933,11 @@
   #:endif 
  
   #:if "sqrt" in interface_list 
+
+    #:if not defined('set_nan')
+        #:set set_nan = True
+    #:endif
+
     elemental function sqrt_d(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
@@ -1017,6 +945,7 @@
 
         res%x = sqrt(u%x)
 
+      #:if set_nan
         if (res%x .ne. 0.0_${real_kind}$) then
             res%dx = 0.5_${real_kind}$ * u%dx / res%x
         else
@@ -1028,27 +957,11 @@
                 end if
             end do
         end if
+      #:else
+        res%dx = 0.5_${real_kind}$ * u%dx / res%x
+      #:endif
 
     end function sqrt_d
-  #:endif 
- 
-  #:if "fastsqrt" in interface_list 
-    elemental function fastsqrt_r(r) result(res)
-        real(${real_kind}$), intent(in) :: r
-        real(${real_kind}$) :: res
-
-        res = sqrt(r)
-
-        
-    end function fastsqrt_r
-    elemental function fastsqrt_d(u) result(res)
-        type(${dual_type}$), intent(in) :: u
-        type(${dual_type}$) :: res
-
-        res%x = sqrt(u%x)
-        res%dx = 0.5_${real_kind}$ * u%dx / res%x
-
-    end function fastsqrt_d
   #:endif 
  
   #:if "sum" in interface_list 

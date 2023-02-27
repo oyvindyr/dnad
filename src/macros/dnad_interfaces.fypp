@@ -1,6 +1,5 @@
 #:def dnad_interfaces(selected_interfaces) 
- 
-  #:set interface_list = selected_interfaces.split(",") 
+  #:set interface_list = dnad.select_interfaces(selected_interfaces)
   #:if "=" in interface_list 
     interface assignment (=)
         module procedure assign_di  ! dual=integer, elemental
@@ -208,7 +207,7 @@
  
   #:if "max" in interface_list 
     interface max
-        module procedure max_dd ! max of from two to four dual numbers, elemental
+        module procedure max_dd ! max of two dual numbers, elemental
         module procedure max_di ! max of a dual number and an integer, elemental
         module procedure max_dr ! max of a dual number and a real, elemental
         module procedure max_rd ! max of a real,and a dual number,  elemental
@@ -217,7 +216,7 @@
  
   #:if "dmax1" in interface_list 
     interface dmax1
-        module procedure max_dd ! max of from two to four dual numbers, elemental
+        module procedure dmax1_dd ! max of from two to four dual numbers, elemental
     end interface
   #:endif 
  
@@ -236,7 +235,7 @@
  
   #:if "dmin1" in interface_list 
     interface dmin1
-        module procedure min_dd ! min of from two to four dual numbers, elemental
+        module procedure dmin1_dd ! min of from two to four dual numbers, elemental
     end interface
   #:endif 
  

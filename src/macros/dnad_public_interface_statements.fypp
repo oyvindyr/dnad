@@ -1,5 +1,5 @@
 #:def dnad_public_interface_statements(selected_interfaces) 
-  #:set interface_list = selected_interfaces.split(',')
+  #:set interface_list = dnad.select_interfaces(selected_interfaces)
   #:if "=" in interface_list 
     public assignment (=)
   #:endif 
