@@ -117,9 +117,6 @@
   #:if "sqrt" in interface_list 
     public sqrt
   #:endif 
-  #:if "fastsqrt" in interface_list 
-    public fastsqrt
-  #:endif 
   #:if "sum" in interface_list 
     public sum
   #:endif 

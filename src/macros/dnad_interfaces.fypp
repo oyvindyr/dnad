@@ -249,12 +249,6 @@
         module procedure sqrt_d ! obtain the sqrt of a dual number, elemental
     end interface
   #:endif 
-  #:if "fastsqrt" in interface_list 
-    interface fastsqrt
-        module procedure fastsqrt_r ! placeholder for intrinsic sqrt
-        module procedure fastsqrt_d ! obtain the sqrt of a dual number, elemental
-    end interface
-  #:endif 
   #:if "sum" in interface_list 
     interface sum
         module procedure sum_d ! sum a dual array

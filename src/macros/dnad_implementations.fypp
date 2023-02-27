@@ -1,8 +1,5 @@
-#:def dnad_implementations(dual_type, real_kind, number_of_derivatives, selected_interfaces) 
+#:def dnad_implementations(dual_type, real_kind, number_of_derivatives, selected_interfaces, set_undefined=True) 
   #:set interface_list = dnad.select_interfaces(selected_interfaces)
-  #:if not defined('set_undefined')
-    #:set set_undefined = True
-  #:endif
   #:if "=" in interface_list 
     elemental subroutine assign_di(u, i)
          type(${dual_type}$), intent(out) :: u

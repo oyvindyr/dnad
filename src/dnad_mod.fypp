@@ -100,33 +100,44 @@
 #:include 'macros/dnad_interfaces.fypp'
 #:include 'macros/dnad_implementations.fypp'
 
+#! When set_undefined = False, the dnad functions assume that the derivative exists. It is does not exist (for instance for abs(0.0))
+#! the result will be undefined. When set_undefined = True (or not defined) some logic is included in the mathematical functions to
+#! determine if the derivative exists of not, and call a function set_NaN() when it does not exist. Using set_undefined = False is 
+#! believed to be faster.
+#:set set_undefined = True
 
 #! number_of_derivatives must be defined in fypp call
 #:set dual_type = "dual" + str(number_of_derivatives)
 
-#! select_interfaces is a comma separated list or "--all"
+#! selected_interfaces is a comma separated list or "--all"
 #:set selected_interfaces = "--all"
 
 module dnad_mod
     use, intrinsic :: iso_fortran_env, only: dp => real64
 
+    integer, parameter :: num_deriv = ${number_of_derivatives}$
+
+  #:if set_undefined
+    ! Workaround to make pure functions produce NaN's deliberately:
     real(dp) :: negative_one = -1.0_dp
+  #:endif
 
     @:dnad_public_interface_statements(${selected_interfaces}$)
     
-    @:dnad_dual_type(${dual_type}$, dp, ${number_of_derivatives}$, sequence)
+    @:dnad_dual_type(${dual_type}$, dp, num_deriv, sequence)
 
     @:dnad_interfaces(${selected_interfaces}$)
 
 contains
 
-    @:dnad_implementations(${dual_type}$, dp, ${number_of_derivatives}$, ${selected_interfaces}$)
+    @:dnad_implementations(${dual_type}$, dp, num_deriv, ${selected_interfaces}$, ${set_undefined}$)
 
+  #:if set_undefined
+    ! Workaround to make pure functions produce NaN's deliberately:
     elemental function set_NaN() result(res)
         real(dp) :: res
-
         res = sqrt(negative_one)
-
     end function set_NaN
+  #:endif
 
 end module
