@@ -1,196 +1,39 @@
-#:def dnad_implementations(dual_type, real_kind, number_of_derivatives, selected_interfaces, set_undefined=True) 
+#:def dnad_implementations(dual_type, real_kind, number_of_derivatives, selected_interfaces, set_undefined=True, ddual_type=None) 
   #:set interface_list = dnad.select_interfaces(selected_interfaces)
+  #!
+  #!
   #:if "=" in interface_list 
-    elemental subroutine assign_di(u, i)
-         type(${dual_type}$), intent(out) :: u
-         integer, intent(in) :: i
-
-         u%x = real(i, ${real_kind}$)  ! This is faster than direct assignment
-         u%dx = 0.0_${real_kind}$
-
-    end subroutine assign_di
-    elemental subroutine assign_dr(u, r)
-        type(${dual_type}$), intent(out) :: u
-        real(${real_kind}$), intent(in) :: r
-
-        u%x = r
-        u%dx = 0.0_${real_kind}$
-
-    end subroutine assign_dr
-    elemental subroutine assign_id(i, v)
-         type(${dual_type}$), intent(in) :: v
-         integer, intent(out) :: i
-
-         i = int(v%x)
-
-    end subroutine assign_id
-    elemental subroutine assign_rd(r, v)
-         type(${dual_type}$), intent(in) :: v
-         real(${real_kind}$), intent(out) :: r
-
-         r = v%x
-
-    end subroutine assign_rd
+    @:assign(${dual_type}$, ${real_kind}$, i, r, d)
+   #:if ddual_type is not None 
+    @:assign(${ddual_type}$, ${real_kind}$, i, r, dd)
+   #:endif
   #:endif 
+  #!
+  #!
   #:if "+" in interface_list 
-    elemental function add_d(u) result(res)
-         type(${dual_type}$), intent(in) :: u
-         type(${dual_type}$) :: res
-
-         res = u  ! Faster than assigning component wise
-
-    end function add_d
-    elemental function add_dd(u, v) result(res)
-         type(${dual_type}$), intent(in) :: u, v
-         type(${dual_type}$) :: res
-
-         res%x = u%x + v%x
-         res%dx = u%dx + v%dx
-
-    end function add_dd
-    elemental function add_di(u, i) result(res)
-         type(${dual_type}$), intent(in) :: u
-         integer, intent(in) :: i
-         type(${dual_type}$) :: res
-
-         res%x = real(i, ${real_kind}$) + u%x
-         res%dx = u%dx
-
-    end function add_di
-    elemental function add_dr(u, r) result(res)
-        type(${dual_type}$), intent(in) :: u
-        real(${real_kind}$), intent(in) :: r
-        type(${dual_type}$) :: res
-
-        res%x = r + u%x
-        res%dx = u%dx
-
-    end function add_dr
-    elemental function add_id(i, v) result(res)
-        integer, intent(in) :: i
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
-
-        res%x = real(i, ${real_kind}$) + v%x
-        res%dx = v%dx
-
-    end function add_id
-    elemental function add_rd(r, v) result(res)
-        real(${real_kind}$), intent(in) :: r
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
-
-        res%x = r + v%x
-        res%dx = v%dx
-
-    end function add_rd
-  #:endif 
+    @:add(${dual_type}$, ${real_kind}$, i, r, d)
+   #:if ddual_type is not None 
+    @:add(${ddual_type}$, ${real_kind}$, i, r, dd)
+   #:endif 
+  #:endif
+  #!
+  #! 
   #:if "-" in interface_list 
-    elemental function minus_d(u) result(res)
-        type(${dual_type}$), intent(in) :: u
-        type(${dual_type}$) :: res
-
-        res%x = -u%x
-        res%dx = -u%dx
-
-    end function minus_d
-    elemental function minus_dd(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u, v
-        type(${dual_type}$) :: res
-
-        res%x = u%x - v%x
-        res%dx = u%dx - v%dx
-
-    end function minus_dd
-    elemental function minus_di(u, i) result(res)
-        type(${dual_type}$), intent(in) :: u
-        integer, intent(in) :: i
-        type(${dual_type}$) :: res
-
-        res%x = u%x - real(i, ${real_kind}$)
-        res%dx = u%dx
-
-    end function minus_di
-    elemental function minus_dr(u, r) result(res)
-        type(${dual_type}$), intent(in) :: u
-        real(${real_kind}$),intent(in) :: r
-        type(${dual_type}$) :: res
-
-        res%x = u%x - r
-        res%dx = u%dx
-
-    end function minus_dr
-    elemental function minus_id(i, v) result(res)
-        integer, intent(in) :: i
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
-
-        res%x = real(i, ${real_kind}$) - v%x
-        res%dx = -v%dx
-
-    end function minus_id
-    elemental function minus_rd(r, v) result(res)
-         real(${real_kind}$), intent(in) :: r
-         type(${dual_type}$), intent(in) :: v
-         type(${dual_type}$) :: res
-
-        res%x = r - v%x
-        res%dx = -v%dx
-
-    end function minus_rd
+    @:minus(${dual_type}$, ${real_kind}$, i, r, d)
+   #:if ddual_type is not None
+    @:minus(${ddual_type}$, ${real_kind}$, i, r, dd)
+   #:endif 
   #:endif 
+  #!
+  #! 
   #:if "*" in interface_list 
-    elemental function mult_dd(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u, v
-        type(${dual_type}$) :: res
-
-        res%x = u%x * v%x
-        res%dx = u%x * v%dx + v%x * u%dx
-
-    end function mult_dd
-    elemental function mult_di(u, i) result(res)
-        type(${dual_type}$), intent(in) :: u
-        integer, intent(in) :: i
-        type(${dual_type}$) :: res
-
-        real(${real_kind}$) :: r
-
-        r = real(i, ${real_kind}$)
-        res%x = r * u%x
-        res%dx = r * u%dx
-
-    end function mult_di
-    elemental function mult_dr(u, r) result(res)
-        type(${dual_type}$), intent(in) :: u
-        real(${real_kind}$), intent(in) :: r
-        type(${dual_type}$) :: res
-
-        res%x = u%x * r
-        res%dx = u%dx * r
-
-    end function mult_dr
-    elemental function mult_id(i, v) result(res)
-        integer, intent(in) :: i
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
-
-        real(${real_kind}$) :: r
-
-        r = real(i, ${real_kind}$)
-        res%x = r * v%x
-        res%dx = r * v%dx
-
-    end function mult_id
-    elemental function mult_rd(r, v) result(res)
-        real(${real_kind}$), intent(in) :: r
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
-
-        res%x = r * v%x
-        res%dx = r * v%dx
-
-    end function mult_rd
+    @:mult(${dual_type}$, ${real_kind}$, i, r, d)
+   #:if ddual_type is not None
+    @:mult(${ddual_type}$, ${real_kind}$, i, r, dd)
+   #:endif 
   #:endif 
+  #!
+  #! 
   #:if "/" in interface_list 
     elemental function div_dd(u, v) result(res)
         type(${dual_type}$), intent(in) :: u, v
@@ -529,7 +372,7 @@
         type(${dual_type}$) :: res
         integer :: i
 
-      #:if set_undefined
+      #:if set_undefined == True
         if (u%x == 0) then
             res%x = 0.0_${real_kind}$
             do i = 1, ${number_of_derivatives}$
@@ -557,7 +400,7 @@
 
         res%x = acos(u%x)
     
-      #:if set_undefined
+      #:if set_undefined == True
         if (u%x == 1.0_${real_kind}$ .or. u%x == -1.0_${real_kind}$) then
             res%dx = set_Nan()  ! Undefined derivative
         else
@@ -575,7 +418,7 @@
         type(${dual_type}$) :: res
 
         res%x = asin(u%x)
-      #:if set_undefined
+      #:if set_undefined == True
         if (u%x == 1.0_${real_kind}$ .or. u%x == -1.0_${real_kind}$) then
             res%dx = set_NaN()  ! Undefined derivative
         else
@@ -658,14 +501,10 @@
     end function int_d
   #:endif 
   #:if "log" in interface_list 
-    elemental function log_d(u) result(res)
-        type(${dual_type}$), intent(in) :: u
-        type(${dual_type}$) :: res
-
-        res%x = log(u%x)
-        res%dx = u%dx / u%x
-
-    end function log_d
+    @:log(${dual_type}$, d)
+   #:if ddual_type is not None
+    @:log(${ddual_type}$, dd)
+   #:endif
   #:endif 
   #:if "log10" in interface_list 
     elemental function log10_d(u) result(res)
@@ -910,30 +749,10 @@
     end function tan_d
   #:endif 
   #:if "sqrt" in interface_list 
-    elemental function sqrt_d(u) result(res)
-        type(${dual_type}$), intent(in) :: u
-        type(${dual_type}$) :: res
-        integer :: i
-
-        res%x = sqrt(u%x)
-
-      #:if set_undefined
-        if (res%x .ne. 0.0_${real_kind}$) then
-            res%dx = 0.5_${real_kind}$ * u%dx / res%x
-        else
-            do i = 1, ${number_of_derivatives}$
-                if (u%dx(i) .eq. 0.0_${real_kind}$) then
-                    res%dx(i) = 0.0_${real_kind}$
-                else
-                    res%dx(i) = set_NaN()
-                end if
-            end do
-        end if
-      #:else
-        res%dx = 0.5_${real_kind}$ * u%dx / res%x
-      #:endif
-
-    end function sqrt_d
+    @:sqrt(${dual_type}$, ${real_kind}$, d, ${set_undefined}$)
+   #:if ddual_type is not None
+    @:sqrt(${ddual_type}$, ${real_kind}$, dd, ${set_undefined}$)
+   #:endif
   #:endif 
   #:if "sum" in interface_list 
     pure function sum_d(u) result(res)
@@ -958,3 +777,238 @@
     end function maxloc_d
   #:endif 
 #:enddef 
+
+#:def assign(dual_type, real_kind, iname, rname, dname)
+    elemental subroutine assign_${dname}$_${iname}$(u, i)
+         type(${dual_type}$), intent(out) :: u
+         integer, intent(in) :: i
+
+         u%x = real(i, ${real_kind}$)  ! This is faster than direct assignment
+         u%dx = 0.0_${real_kind}$
+
+    end subroutine
+    elemental subroutine assign_${dname}$_${rname}$(u, r)
+        type(${dual_type}$), intent(out) :: u
+        real(${real_kind}$), intent(in) :: r
+
+        u%x = r
+        u%dx = 0.0_${real_kind}$
+
+    end subroutine
+    elemental subroutine assign_${iname}$_${dname}$(i, v)
+         type(${dual_type}$), intent(in) :: v
+         integer, intent(out) :: i
+
+         i = int(v%x)
+
+    end subroutine
+    elemental subroutine assign_${rname}$_${dname}$(r, v)
+         type(${dual_type}$), intent(in) :: v
+         real(${real_kind}$), intent(out) :: r
+
+         r = v%x
+
+    end subroutine
+#:enddef
+
+#:def add(dual_type, real_kind, iname, rname, dname)
+    elemental function add_unary_${dname}$(u) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$) :: res
+
+        res = u  ! Faster than assigning component wise
+
+    end function
+    elemental function add_${dname}$_${dname}$(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u, v
+        type(${dual_type}$) :: res
+
+        res%x = u%x + v%x
+        res%dx = u%dx + v%dx
+
+    end function
+    elemental function add_${dname}$_${iname}$(u, i) result(res)
+        type(${dual_type}$), intent(in) :: u
+        integer, intent(in) :: i
+        type(${dual_type}$) :: res
+
+        res%x = real(i, ${real_kind}$) + u%x
+        res%dx = u%dx
+
+    end function
+    elemental function add_${dname}$_${rname}$(u, r) result(res)
+        type(${dual_type}$), intent(in) :: u
+        real(${real_kind}$), intent(in) :: r
+        type(${dual_type}$) :: res
+
+        res%x = r + u%x
+        res%dx = u%dx
+
+    end function
+    elemental function add_${iname}$_${dname}$(i, v) result(res)
+        integer, intent(in) :: i
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+
+        res%x = real(i, ${real_kind}$) + v%x
+        res%dx = v%dx
+
+    end function
+    elemental function add_${rname}$_${dname}$(r, v) result(res)
+        real(${real_kind}$), intent(in) :: r
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+
+        res%x = r + v%x
+        res%dx = v%dx
+
+    end function
+#:enddef
+
+#:def minus(dual_type, real_kind, iname, rname, dname)
+    elemental function minus_unary_${dname}$(u) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$) :: res
+
+        res%x = -u%x
+        res%dx = -u%dx
+
+    end function
+    elemental function minus_${dname}$_${dname}$(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u, v
+        type(${dual_type}$) :: res
+
+        res%x = u%x - v%x
+        res%dx = u%dx - v%dx
+
+    end function
+    elemental function minus_${dname}$_${iname}$(u, i) result(res)
+        type(${dual_type}$), intent(in) :: u
+        integer, intent(in) :: i
+        type(${dual_type}$) :: res
+
+        res%x = u%x - real(i, ${real_kind}$)
+        res%dx = u%dx
+
+    end function
+    elemental function minus_${dname}$_${rname}$(u, r) result(res)
+        type(${dual_type}$), intent(in) :: u
+        real(${real_kind}$),intent(in) :: r
+        type(${dual_type}$) :: res
+
+        res%x = u%x - r
+        res%dx = u%dx
+
+    end function
+    elemental function minus_${iname}$_${dname}$(i, v) result(res)
+        integer, intent(in) :: i
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+
+        res%x = real(i, ${real_kind}$) - v%x
+        res%dx = -v%dx
+
+    end function
+    elemental function minus_${rname}$_${dname}$(r, v) result(res)
+         real(${real_kind}$), intent(in) :: r
+         type(${dual_type}$), intent(in) :: v
+         type(${dual_type}$) :: res
+
+        res%x = r - v%x
+        res%dx = -v%dx
+
+    end function
+#:enddef
+
+#:def mult(dual_type, real_kind, iname, rname, dname)
+    elemental function mult_${dname}$_${dname}$(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u, v
+        type(${dual_type}$) :: res
+
+        res%x = u%x * v%x
+        res%dx = u%x * v%dx + v%x * u%dx
+
+    end function
+    elemental function mult_${dname}$_${iname}$(u, i) result(res)
+        type(${dual_type}$), intent(in) :: u
+        integer, intent(in) :: i
+        type(${dual_type}$) :: res
+
+        real(${real_kind}$) :: r
+
+        r = real(i, ${real_kind}$)
+        res%x = r * u%x
+        res%dx = r * u%dx
+
+    end function
+    elemental function mult_${dname}$_${rname}$(u, r) result(res)
+        type(${dual_type}$), intent(in) :: u
+        real(${real_kind}$), intent(in) :: r
+        type(${dual_type}$) :: res
+
+        res%x = u%x * r
+        res%dx = u%dx * r
+
+    end function
+    elemental function mult_${iname}$_${dname}$(i, v) result(res)
+        integer, intent(in) :: i
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+
+        real(${real_kind}$) :: r
+
+        r = real(i, ${real_kind}$)
+        res%x = r * v%x
+        res%dx = r * v%dx
+
+    end function
+    elemental function mult_${rname}$_${dname}$(r, v) result(res)
+        real(${real_kind}$), intent(in) :: r
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+
+        res%x = r * v%x
+        res%dx = r * v%dx
+
+    end function
+#:enddef
+
+#:def log(dual_type, dname)
+    elemental function log_${dname}$(u) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$) :: res
+
+        res%x = log(u%x)
+        res%dx = u%dx / u%x
+
+    end function
+#:enddef
+
+#:def sqrt(dual_type, real_kind, dname, set_undefined)
+    elemental function sqrt_${dname}$(u) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$) :: res
+      #:if set_undefined == False
+        integer :: i
+      #:endif
+
+        res%x = sqrt(u%x)
+
+      #:if set_undefined == True
+        if (res%x .ne. 0.0_${real_kind}$) then
+            res%dx = 0.5_${real_kind}$ * u%dx / res%x
+        else
+            do i = 1, ${number_of_derivatives}$
+                if (u%dx(i) .eq. 0.0_${real_kind}$) then
+                    res%dx(i) = 0.0_${real_kind}$
+                else
+                    res%dx(i) = set_NaN()
+                end if
+            end do
+        end if
+      #:else
+        res%dx = 0.5_${real_kind}$ * u%dx / res%x
+      #:endif
+
+    end function
+#:enddef

@@ -1,40 +1,69 @@
-#:def dnad_interfaces(selected_interfaces) 
+#:def dnad_interfaces(selected_interfaces, has_double_dual=False) 
   #:set interface_list = dnad.select_interfaces(selected_interfaces)
   #:if "=" in interface_list 
     interface assignment (=)
-        module procedure assign_di  ! dual=integer, elemental
-        module procedure assign_dr  ! dual=real, elemental
-        module procedure assign_id  ! integer=dual, elemental
-        module procedure assign_rd  ! real=dual, elemental
+        module procedure assign_d_i  ! dual=integer, elemental
+        module procedure assign_d_r  ! dual=real, elemental
+        module procedure assign_i_d  ! integer=dual, elemental
+        module procedure assign_r_d  ! real=dual, elemental
+      #:if has_double_dual
+        module procedure assign_dd_i  ! dual=integer, elemental
+        module procedure assign_dd_r  ! dual=real, elemental
+        module procedure assign_i_dd  ! integer=dual, elemental
+        module procedure assign_r_dd  ! real=dual, elemental
+      #:endif
     end interface
   #:endif 
   #:if "+" in interface_list 
     interface operator (+)
-        module procedure add_d   ! +dual number, elemental
-        module procedure add_dd  ! dual + dual, elemental
-        module procedure add_di  ! dual + integer, elemental
-        module procedure add_dr  ! dual + real, elemental
-        module procedure add_id  ! integer + dual, elemental
-        module procedure add_rd  ! real + dual, elemental
+        module procedure add_unary_d   ! +dual number, elemental
+        module procedure add_d_d       ! dual + dual, elemental
+        module procedure add_d_i       ! dual + integer, elemental
+        module procedure add_d_r       ! dual + real, elemental
+        module procedure add_i_d       ! integer + dual, elemental
+        module procedure add_r_d       ! real + dual, elemental
+      #:if has_double_dual
+        module procedure add_unary_dd  ! +dual number, elemental
+        module procedure add_dd_dd     ! dual + dual, elemental
+        module procedure add_dd_i      ! dual + integer, elemental
+        module procedure add_dd_r      ! dual + real, elemental
+        module procedure add_i_dd      ! integer + dual, elemental
+        module procedure add_r_dd      ! real + dual, elemental
+      #:endif
     end interface
   #:endif 
   #:if "-" in interface_list 
     interface operator (-)
-        module procedure minus_d   ! negate a dual number,elemental
-        module procedure minus_dd  ! dual -dual,elemental
-        module procedure minus_di  ! dual-integer,elemental
-        module procedure minus_dr  ! dual-real,elemental
-        module procedure minus_id  ! integer-dual,elemental
-        module procedure minus_rd  ! real-dual,elemental
+        module procedure minus_unary_d  ! negate a dual number,elemental
+        module procedure minus_d_d      ! dual -dual,elemental
+        module procedure minus_d_i      ! dual-integer,elemental
+        module procedure minus_d_r      ! dual-real,elemental
+        module procedure minus_i_d      ! integer-dual,elemental
+        module procedure minus_r_d      ! real-dual,elemental
+      #:if has_double_dual
+        module procedure minus_unary_dd ! negate a dual number,elemental
+        module procedure minus_dd_dd    ! dual -dual,elemental
+        module procedure minus_dd_i     ! dual-integer,elemental
+        module procedure minus_dd_r     ! dual-real,elemental
+        module procedure minus_i_dd     ! integer-dual,elemental
+        module procedure minus_r_dd     ! real-dual,elemental
+      #:endif
     end interface
   #:endif 
   #:if "*" in interface_list 
     interface operator (*)
-        module procedure mult_dd    ! dual*dual, elemental
-        module procedure mult_di    ! dual*integer,elemental
-        module procedure mult_dr    ! dual*real,elemental
-        module procedure mult_id    ! integer*dual,elemental
-        module procedure mult_rd    ! real*dual,elemental
+        module procedure mult_d_d    ! dual*dual, elemental
+        module procedure mult_d_i    ! dual*integer,elemental
+        module procedure mult_d_r    ! dual*real,elemental
+        module procedure mult_i_d    ! integer*dual,elemental
+        module procedure mult_r_d    ! real*dual,elemental
+      #:if has_double_dual
+        module procedure mult_dd_dd  ! dual*dual, elemental
+        module procedure mult_dd_i   ! dual*integer,elemental
+        module procedure mult_dd_r   ! dual*real,elemental
+        module procedure mult_i_dd   ! integer*dual,elemental
+        module procedure mult_r_dd   ! real*dual,elemental
+      #:endif
     end interface
   #:endif 
   #:if "/" in interface_list 
@@ -165,6 +194,9 @@
   #:if "log" in interface_list 
     interface log
         module procedure log_d ! log of a dual number, elemental
+      #:if has_double_dual 
+        module procedure log_dd ! log of a dual number, elemental
+      #:endif
     end interface
   #:endif 
   #:if "log10" in interface_list 
@@ -247,6 +279,9 @@
   #:if "sqrt" in interface_list 
     interface sqrt
         module procedure sqrt_d ! obtain the sqrt of a dual number, elemental
+      #:if has_double_dual 
+        module procedure sqrt_dd ! obtain the sqrt of a dual number, elemental
+      #:endif
     end interface
   #:endif 
   #:if "sum" in interface_list 

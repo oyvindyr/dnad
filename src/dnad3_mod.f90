@@ -94,11 +94,6 @@
 !*  - Forked from original DNAD repository, see https://cdmhub.org/resources/374
 !*
 !******************************************************************************
-
-
-
-
-
 module dnad3_mod
     use, intrinsic :: iso_fortran_env, only: dp => real64
 
@@ -152,40 +147,69 @@ module dnad3_mod
     
 
     type :: dual3
+        !! dual number type
         sequence
         real(dp) :: x  ! functional value
         real(dp) :: dx(num_deriv)  ! derivative
     end type
 
+    type :: ddual3
+        !! double dual number type with dual dx component
+        sequence
+        real(dp) :: x  ! functional value
+        type(dual3) :: dx(num_deriv)  ! derivative
+    end type
+
 
     interface assignment (=)
-        module procedure assign_di  ! dual=integer, elemental
-        module procedure assign_dr  ! dual=real, elemental
-        module procedure assign_id  ! integer=dual, elemental
-        module procedure assign_rd  ! real=dual, elemental
+        module procedure assign_d_i  ! dual=integer, elemental
+        module procedure assign_d_r  ! dual=real, elemental
+        module procedure assign_i_d  ! integer=dual, elemental
+        module procedure assign_r_d  ! real=dual, elemental
+        module procedure assign_dd_i  ! dual=integer, elemental
+        module procedure assign_dd_r  ! dual=real, elemental
+        module procedure assign_i_dd  ! integer=dual, elemental
+        module procedure assign_r_dd  ! real=dual, elemental
     end interface
     interface operator (+)
-        module procedure add_d   ! +dual number, elemental
-        module procedure add_dd  ! dual + dual, elemental
-        module procedure add_di  ! dual + integer, elemental
-        module procedure add_dr  ! dual + real, elemental
-        module procedure add_id  ! integer + dual, elemental
-        module procedure add_rd  ! real + dual, elemental
+        module procedure add_unary_d   ! +dual number, elemental
+        module procedure add_d_d       ! dual + dual, elemental
+        module procedure add_d_i       ! dual + integer, elemental
+        module procedure add_d_r       ! dual + real, elemental
+        module procedure add_i_d       ! integer + dual, elemental
+        module procedure add_r_d       ! real + dual, elemental
+        module procedure add_unary_dd  ! +dual number, elemental
+        module procedure add_dd_dd     ! dual + dual, elemental
+        module procedure add_dd_i      ! dual + integer, elemental
+        module procedure add_dd_r      ! dual + real, elemental
+        module procedure add_i_dd      ! integer + dual, elemental
+        module procedure add_r_dd      ! real + dual, elemental
     end interface
     interface operator (-)
-        module procedure minus_d   ! negate a dual number,elemental
-        module procedure minus_dd  ! dual -dual,elemental
-        module procedure minus_di  ! dual-integer,elemental
-        module procedure minus_dr  ! dual-real,elemental
-        module procedure minus_id  ! integer-dual,elemental
-        module procedure minus_rd  ! real-dual,elemental
+        module procedure minus_unary_d  ! negate a dual number,elemental
+        module procedure minus_d_d      ! dual -dual,elemental
+        module procedure minus_d_i      ! dual-integer,elemental
+        module procedure minus_d_r      ! dual-real,elemental
+        module procedure minus_i_d      ! integer-dual,elemental
+        module procedure minus_r_d      ! real-dual,elemental
+        module procedure minus_unary_dd ! negate a dual number,elemental
+        module procedure minus_dd_dd    ! dual -dual,elemental
+        module procedure minus_dd_i     ! dual-integer,elemental
+        module procedure minus_dd_r     ! dual-real,elemental
+        module procedure minus_i_dd     ! integer-dual,elemental
+        module procedure minus_r_dd     ! real-dual,elemental
     end interface
     interface operator (*)
-        module procedure mult_dd    ! dual*dual, elemental
-        module procedure mult_di    ! dual*integer,elemental
-        module procedure mult_dr    ! dual*real,elemental
-        module procedure mult_id    ! integer*dual,elemental
-        module procedure mult_rd    ! real*dual,elemental
+        module procedure mult_d_d    ! dual*dual, elemental
+        module procedure mult_d_i    ! dual*integer,elemental
+        module procedure mult_d_r    ! dual*real,elemental
+        module procedure mult_i_d    ! integer*dual,elemental
+        module procedure mult_r_d    ! real*dual,elemental
+        module procedure mult_dd_dd  ! dual*dual, elemental
+        module procedure mult_dd_i   ! dual*integer,elemental
+        module procedure mult_dd_r   ! dual*real,elemental
+        module procedure mult_i_dd   ! integer*dual,elemental
+        module procedure mult_r_dd   ! real*dual,elemental
     end interface
     interface operator (/)
         module procedure div_dd ! dual/dual,elemental
@@ -338,61 +362,91 @@ module dnad3_mod
 
 contains
 
-    elemental subroutine assign_di(u, i)
+    elemental subroutine assign_d_i(u, i)
          type(dual3), intent(out) :: u
          integer, intent(in) :: i
 
          u%x = real(i, dp)  ! This is faster than direct assignment
          u%dx = 0.0_dp
 
-    end subroutine assign_di
-    elemental subroutine assign_dr(u, r)
+    end subroutine
+    elemental subroutine assign_d_r(u, r)
         type(dual3), intent(out) :: u
         real(dp), intent(in) :: r
 
         u%x = r
         u%dx = 0.0_dp
 
-    end subroutine assign_dr
-    elemental subroutine assign_id(i, v)
+    end subroutine
+    elemental subroutine assign_i_d(i, v)
          type(dual3), intent(in) :: v
          integer, intent(out) :: i
 
          i = int(v%x)
 
-    end subroutine assign_id
-    elemental subroutine assign_rd(r, v)
+    end subroutine
+    elemental subroutine assign_r_d(r, v)
          type(dual3), intent(in) :: v
          real(dp), intent(out) :: r
 
          r = v%x
 
-    end subroutine assign_rd
-    elemental function add_d(u) result(res)
-         type(dual3), intent(in) :: u
-         type(dual3) :: res
-
-         res = u  ! Faster than assigning component wise
-
-    end function add_d
-    elemental function add_dd(u, v) result(res)
-         type(dual3), intent(in) :: u, v
-         type(dual3) :: res
-
-         res%x = u%x + v%x
-         res%dx = u%dx + v%dx
-
-    end function add_dd
-    elemental function add_di(u, i) result(res)
-         type(dual3), intent(in) :: u
+    end subroutine
+    elemental subroutine assign_dd_i(u, i)
+         type(ddual3), intent(out) :: u
          integer, intent(in) :: i
-         type(dual3) :: res
 
-         res%x = real(i, dp) + u%x
-         res%dx = u%dx
+         u%x = real(i, dp)  ! This is faster than direct assignment
+         u%dx = 0.0_dp
 
-    end function add_di
-    elemental function add_dr(u, r) result(res)
+    end subroutine
+    elemental subroutine assign_dd_r(u, r)
+        type(ddual3), intent(out) :: u
+        real(dp), intent(in) :: r
+
+        u%x = r
+        u%dx = 0.0_dp
+
+    end subroutine
+    elemental subroutine assign_i_dd(i, v)
+         type(ddual3), intent(in) :: v
+         integer, intent(out) :: i
+
+         i = int(v%x)
+
+    end subroutine
+    elemental subroutine assign_r_dd(r, v)
+         type(ddual3), intent(in) :: v
+         real(dp), intent(out) :: r
+
+         r = v%x
+
+    end subroutine
+    elemental function add_unary_d(u) result(res)
+        type(dual3), intent(in) :: u
+        type(dual3) :: res
+
+        res = u  ! Faster than assigning component wise
+
+    end function
+    elemental function add_d_d(u, v) result(res)
+        type(dual3), intent(in) :: u, v
+        type(dual3) :: res
+
+        res%x = u%x + v%x
+        res%dx = u%dx + v%dx
+
+    end function
+    elemental function add_d_i(u, i) result(res)
+        type(dual3), intent(in) :: u
+        integer, intent(in) :: i
+        type(dual3) :: res
+
+        res%x = real(i, dp) + u%x
+        res%dx = u%dx
+
+    end function
+    elemental function add_d_r(u, r) result(res)
         type(dual3), intent(in) :: u
         real(dp), intent(in) :: r
         type(dual3) :: res
@@ -400,8 +454,8 @@ contains
         res%x = r + u%x
         res%dx = u%dx
 
-    end function add_dr
-    elemental function add_id(i, v) result(res)
+    end function
+    elemental function add_i_d(i, v) result(res)
         integer, intent(in) :: i
         type(dual3), intent(in) :: v
         type(dual3) :: res
@@ -409,8 +463,8 @@ contains
         res%x = real(i, dp) + v%x
         res%dx = v%dx
 
-    end function add_id
-    elemental function add_rd(r, v) result(res)
+    end function
+    elemental function add_r_d(r, v) result(res)
         real(dp), intent(in) :: r
         type(dual3), intent(in) :: v
         type(dual3) :: res
@@ -418,24 +472,75 @@ contains
         res%x = r + v%x
         res%dx = v%dx
 
-    end function add_rd
-    elemental function minus_d(u) result(res)
+    end function
+    elemental function add_unary_dd(u) result(res)
+        type(ddual3), intent(in) :: u
+        type(ddual3) :: res
+
+        res = u  ! Faster than assigning component wise
+
+    end function
+    elemental function add_dd_dd(u, v) result(res)
+        type(ddual3), intent(in) :: u, v
+        type(ddual3) :: res
+
+        res%x = u%x + v%x
+        res%dx = u%dx + v%dx
+
+    end function
+    elemental function add_dd_i(u, i) result(res)
+        type(ddual3), intent(in) :: u
+        integer, intent(in) :: i
+        type(ddual3) :: res
+
+        res%x = real(i, dp) + u%x
+        res%dx = u%dx
+
+    end function
+    elemental function add_dd_r(u, r) result(res)
+        type(ddual3), intent(in) :: u
+        real(dp), intent(in) :: r
+        type(ddual3) :: res
+
+        res%x = r + u%x
+        res%dx = u%dx
+
+    end function
+    elemental function add_i_dd(i, v) result(res)
+        integer, intent(in) :: i
+        type(ddual3), intent(in) :: v
+        type(ddual3) :: res
+
+        res%x = real(i, dp) + v%x
+        res%dx = v%dx
+
+    end function
+    elemental function add_r_dd(r, v) result(res)
+        real(dp), intent(in) :: r
+        type(ddual3), intent(in) :: v
+        type(ddual3) :: res
+
+        res%x = r + v%x
+        res%dx = v%dx
+
+    end function
+    elemental function minus_unary_d(u) result(res)
         type(dual3), intent(in) :: u
         type(dual3) :: res
 
         res%x = -u%x
         res%dx = -u%dx
 
-    end function minus_d
-    elemental function minus_dd(u, v) result(res)
+    end function
+    elemental function minus_d_d(u, v) result(res)
         type(dual3), intent(in) :: u, v
         type(dual3) :: res
 
         res%x = u%x - v%x
         res%dx = u%dx - v%dx
 
-    end function minus_dd
-    elemental function minus_di(u, i) result(res)
+    end function
+    elemental function minus_d_i(u, i) result(res)
         type(dual3), intent(in) :: u
         integer, intent(in) :: i
         type(dual3) :: res
@@ -443,8 +548,8 @@ contains
         res%x = u%x - real(i, dp)
         res%dx = u%dx
 
-    end function minus_di
-    elemental function minus_dr(u, r) result(res)
+    end function
+    elemental function minus_d_r(u, r) result(res)
         type(dual3), intent(in) :: u
         real(dp),intent(in) :: r
         type(dual3) :: res
@@ -452,8 +557,8 @@ contains
         res%x = u%x - r
         res%dx = u%dx
 
-    end function minus_dr
-    elemental function minus_id(i, v) result(res)
+    end function
+    elemental function minus_i_d(i, v) result(res)
         integer, intent(in) :: i
         type(dual3), intent(in) :: v
         type(dual3) :: res
@@ -461,8 +566,8 @@ contains
         res%x = real(i, dp) - v%x
         res%dx = -v%dx
 
-    end function minus_id
-    elemental function minus_rd(r, v) result(res)
+    end function
+    elemental function minus_r_d(r, v) result(res)
          real(dp), intent(in) :: r
          type(dual3), intent(in) :: v
          type(dual3) :: res
@@ -470,16 +575,68 @@ contains
         res%x = r - v%x
         res%dx = -v%dx
 
-    end function minus_rd
-    elemental function mult_dd(u, v) result(res)
+    end function
+    elemental function minus_unary_dd(u) result(res)
+        type(ddual3), intent(in) :: u
+        type(ddual3) :: res
+
+        res%x = -u%x
+        res%dx = -u%dx
+
+    end function
+    elemental function minus_dd_dd(u, v) result(res)
+        type(ddual3), intent(in) :: u, v
+        type(ddual3) :: res
+
+        res%x = u%x - v%x
+        res%dx = u%dx - v%dx
+
+    end function
+    elemental function minus_dd_i(u, i) result(res)
+        type(ddual3), intent(in) :: u
+        integer, intent(in) :: i
+        type(ddual3) :: res
+
+        res%x = u%x - real(i, dp)
+        res%dx = u%dx
+
+    end function
+    elemental function minus_dd_r(u, r) result(res)
+        type(ddual3), intent(in) :: u
+        real(dp),intent(in) :: r
+        type(ddual3) :: res
+
+        res%x = u%x - r
+        res%dx = u%dx
+
+    end function
+    elemental function minus_i_dd(i, v) result(res)
+        integer, intent(in) :: i
+        type(ddual3), intent(in) :: v
+        type(ddual3) :: res
+
+        res%x = real(i, dp) - v%x
+        res%dx = -v%dx
+
+    end function
+    elemental function minus_r_dd(r, v) result(res)
+         real(dp), intent(in) :: r
+         type(ddual3), intent(in) :: v
+         type(ddual3) :: res
+
+        res%x = r - v%x
+        res%dx = -v%dx
+
+    end function
+    elemental function mult_d_d(u, v) result(res)
         type(dual3), intent(in) :: u, v
         type(dual3) :: res
 
         res%x = u%x * v%x
         res%dx = u%x * v%dx + v%x * u%dx
 
-    end function mult_dd
-    elemental function mult_di(u, i) result(res)
+    end function
+    elemental function mult_d_i(u, i) result(res)
         type(dual3), intent(in) :: u
         integer, intent(in) :: i
         type(dual3) :: res
@@ -490,8 +647,8 @@ contains
         res%x = r * u%x
         res%dx = r * u%dx
 
-    end function mult_di
-    elemental function mult_dr(u, r) result(res)
+    end function
+    elemental function mult_d_r(u, r) result(res)
         type(dual3), intent(in) :: u
         real(dp), intent(in) :: r
         type(dual3) :: res
@@ -499,8 +656,8 @@ contains
         res%x = u%x * r
         res%dx = u%dx * r
 
-    end function mult_dr
-    elemental function mult_id(i, v) result(res)
+    end function
+    elemental function mult_i_d(i, v) result(res)
         integer, intent(in) :: i
         type(dual3), intent(in) :: v
         type(dual3) :: res
@@ -511,8 +668,8 @@ contains
         res%x = r * v%x
         res%dx = r * v%dx
 
-    end function mult_id
-    elemental function mult_rd(r, v) result(res)
+    end function
+    elemental function mult_r_d(r, v) result(res)
         real(dp), intent(in) :: r
         type(dual3), intent(in) :: v
         type(dual3) :: res
@@ -520,7 +677,57 @@ contains
         res%x = r * v%x
         res%dx = r * v%dx
 
-    end function mult_rd
+    end function
+    elemental function mult_dd_dd(u, v) result(res)
+        type(ddual3), intent(in) :: u, v
+        type(ddual3) :: res
+
+        res%x = u%x * v%x
+        res%dx = u%x * v%dx + v%x * u%dx
+
+    end function
+    elemental function mult_dd_i(u, i) result(res)
+        type(ddual3), intent(in) :: u
+        integer, intent(in) :: i
+        type(ddual3) :: res
+
+        real(dp) :: r
+
+        r = real(i, dp)
+        res%x = r * u%x
+        res%dx = r * u%dx
+
+    end function
+    elemental function mult_dd_r(u, r) result(res)
+        type(ddual3), intent(in) :: u
+        real(dp), intent(in) :: r
+        type(ddual3) :: res
+
+        res%x = u%x * r
+        res%dx = u%dx * r
+
+    end function
+    elemental function mult_i_dd(i, v) result(res)
+        integer, intent(in) :: i
+        type(ddual3), intent(in) :: v
+        type(ddual3) :: res
+
+        real(dp) :: r
+
+        r = real(i, dp)
+        res%x = r * v%x
+        res%dx = r * v%dx
+
+    end function
+    elemental function mult_r_dd(r, v) result(res)
+        real(dp), intent(in) :: r
+        type(ddual3), intent(in) :: v
+        type(ddual3) :: res
+
+        res%x = r * v%x
+        res%dx = r * v%dx
+
+    end function
     elemental function div_dd(u, v) result(res)
         type(dual3), intent(in) :: u, v
         type(dual3) :: res

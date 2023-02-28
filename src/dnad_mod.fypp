@@ -94,6 +94,10 @@
 !*  - Forked from original DNAD repository, see https://cdmhub.org/resources/374
 !*
 !******************************************************************************
+#:mute
+
+
+#! variable 'number_of_derivatives' must be defined in call to fypp
 
 #:include 'macros/dnad_dual_type.fypp'
 #:include 'macros/dnad_public_interface_statements.fypp'
@@ -106,12 +110,16 @@
 #! believed to be faster.
 #:set set_undefined = True
 
-#! number_of_derivatives must be defined in fypp call
+#! Dual number type:
 #:set dual_type = "dual" + str(number_of_derivatives)
+#! Double dual number type:
+#:set has_double_dual = True
+#:set ddual_type = "ddual" + str(number_of_derivatives)
 
 #! selected_interfaces is a comma separated list or "--all"
 #:set selected_interfaces = "--all"
 
+#:endmute
 module dnad${number_of_derivatives}$_mod
     use, intrinsic :: iso_fortran_env, only: dp => real64
 
@@ -124,13 +132,13 @@ module dnad${number_of_derivatives}$_mod
 
     @:dnad_public_interface_statements(${selected_interfaces}$)
     
-    @:dnad_dual_type(${dual_type}$, dp, num_deriv, sequence)
+    @:dnad_dual_type(${dual_type}$, dp, num_deriv, sequence, ${ddual_type}$)
 
-    @:dnad_interfaces(${selected_interfaces}$)
+    @:dnad_interfaces(${selected_interfaces}$, ${has_double_dual}$)
 
 contains
 
-    @:dnad_implementations(${dual_type}$, dp, num_deriv, ${selected_interfaces}$, ${set_undefined}$)
+    @:dnad_implementations(${dual_type}$, dp, num_deriv, ${selected_interfaces}$, ${set_undefined}$, ${ddual_type}$)
 
   #:if set_undefined
     ! Workaround to make pure functions produce NaN's deliberately:
