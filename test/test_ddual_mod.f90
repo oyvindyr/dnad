@@ -117,13 +117,14 @@ contains
             xd(i)%dx(1)%x       = 1.0_dp    ! dx/dx
             xd(i)%dx(1)%dx(1:2) = [1.0_dp, 0.0_dp]         ! [d**2x/dx**2, d**2x/dxdy] 
             xd(i)%dx(2)%x       = 0         ! dx/dy
-            xd(i)%dx(2)%dx(1:2) = [0.0_dp, 1.0_dp]         ! [d**2x/dxdy, d**2x/dydy] 
+            xd(i)%dx(2)%dx(1:2) = [0.0_dp, 0.0_dp]         ! [d**2x/dxdy, d**2x/dydy] 
 
             yd(i)%x = y(i)
             yd(i)%dx(1)%x       = 0         ! dy/dx
-            yd(i)%dx(1)%dx(1:2) = [1.0_dp, 0.0_dp]         ! [d**2y/dx**2, d**2y/dxdy] 
+            yd(i)%dx(1)%dx(1:2) = [0.0_dp, 0.0_dp]         ! [d**2y/dx**2, d**2y/dxdy] 
             yd(i)%dx(2)%x       = 1.0_dp    ! dy/dy
             yd(i)%dx(2)%dx(1:2) = [0.0_dp, 1.0_dp]         ! [d**2y/dxdy, d**2y/dy**2] 
+
         end do
 
         fd = test_function_ddual(xd, yd)
@@ -176,7 +177,7 @@ contains
         ddf(1, 1) = -log(y)/(4*x**1.5_dp)  ! d**2f/dx**2
         ddf(2, 2) = -sqrt(x)/(y**2)        ! d**2f/dy**2
         ddf(2, 1) = 1/(2*sqrt(x)*y)        ! d**2f/dxdy
-        ddf(1, 2) = ddf(1, 2)              ! d**2f/dydx
+        ddf(1, 2) = ddf(2, 1)              ! d**2f/dydx
     end subroutine
 
     elemental subroutine assign_d_i(u, i)

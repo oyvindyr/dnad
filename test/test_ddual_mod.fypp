@@ -46,40 +46,38 @@ contains
         real(dp), dimension(2, nval) :: df, df_fasit
         real(dp), dimension(2, 2, nval) :: ddf, ddf_fasit
 
-        type(ddual_xy), dimension(nval) :: xd, yd, fd
+        type(ddual_xy), dimension(nval) :: xdd, ydd, fdd
+        type(dual_xy), dimension(nval) :: xd, xxd, xyd, yd, d, yyd
 
         call random_number(x)
         call random_number(y)
 
         ! Initialize dual inputs:
         do i = 1, nval
-            xd(i)%x = x(i)
-            xd(i)%dx(1)%x       = 1.0_dp    ! dx/dx
-            xd(i)%dx(1)%dx(1:2) = 0         ! [d**2x/dx**2, d**2x/dxdy] 
-            xd(i)%dx(2)%x       = 0         ! dx/dy
-            xd(i)%dx(2)%dx(1:2) = 0         ! [d**2x/dxdy, d**2x/dydy] 
+            xdd(i)%x = x(i)
+            xdd(i)%dx(1)%x       = 1.0_dp    ! dx/dx
+            xdd(i)%dx(1)%dx(1:2) = [1.0_dp, 0.0_dp]         ! [d**2x/dx**2, d**2x/dxdy] 
+            xdd(i)%dx(2)%x       = 0         ! dx/dy
+            xdd(i)%dx(2)%dx(1:2) = [0.0_dp, 0.0_dp]         ! [d**2x/dxdy, d**2x/dydy] 
 
-            yd(i)%x = y(i)
-            yd(i)%dx(1)%x       = 0         ! dy/dx
-            yd(i)%dx(1)%dx(1:2) = 0         ! [d**2y/dx**2, d**2y/dxdy] 
-            yd(i)%dx(2)%x       = 1.0_dp    ! dy/dy
-            yd(i)%dx(2)%dx(1:2) = 0         ! [d**2y/dxdy, d**2y/dy**2] 
+            ydd(i)%x = y(i)
+            ydd(i)%dx(1)%x       = 0         ! dy/dx
+            ydd(i)%dx(1)%dx(1:2) = [0.0_dp, 0.0_dp]         ! [d**2y/dx**2, d**2y/dxdy] 
+            ydd(i)%dx(2)%x       = 1.0_dp    ! dy/dy
+            ydd(i)%dx(2)%dx(1:2) = [0.0_dp, 1.0_dp]         ! [d**2y/dxdy, d**2y/dy**2] 
 
-            ! xd(i)%x = x(i)
-            ! xd(i)%dx(1)%x       = 1.0_dp    ! dx/dx
-            ! xd(i)%dx(1)%dx(1:2) = [1.0_dp, 0.0_dp]         ! [d**2x/dx**2, d**2x/dxdy] 
-            ! xd(i)%dx(2)%x       = 0         ! dx/dy
-            ! xd(i)%dx(2)%dx(1:2) = [0.0_dp, 1.0_dp]         ! [d**2x/dxdy, d**2x/dydy] 
-
-            ! yd(i)%x = y(i)
-            ! yd(i)%dx(1)%x       = 0         ! dy/dx
-            ! yd(i)%dx(1)%dx(1:2) = [1.0_dp, 0.0_dp]         ! [d**2y/dx**2, d**2y/dxdy] 
-            ! yd(i)%dx(2)%x       = 1.0_dp    ! dy/dy
-            ! yd(i)%dx(2)%dx(1:2) = [0.0_dp, 1.0_dp]         ! [d**2y/dxdy, d**2y/dy**2] 
+            xd(i)  = dual_xy(x(i)  , [1.0_dp, 0.0_dp, 0.0_dp, 0.0_dp, 0.0_dp, 0.0_dp])
+            xxd(i) = dual_xy(1.0_dp, [0.0_dp, 0.0_dp, 0.0_dp, 0.0_dp, 0.0_dp, 0.0_dp])
+            xyd(i) = dual_xy(0.0_dp, [0.0_dp, 0.0_dp, 0.0_dp, 0.0_dp, 0.0_dp, 0.0_dp])
+            yd(i)  = dual_xy(y(i)  , [0.0_dp, 0.0_dp, 0.0_dp, 1.0_dp, 0.0_dp, 0.0_dp])
+            yxd(i) = dual_xy(0.0_dp, [0.0_dp, 0.0_dp, 0.0_dp, 0.0_dp, 0.0_dp, 0.0_dp])
+            yyd(i) = dual_xy(1.0_dp, [0.0_dp, 0.0_dp, 0.0_dp, 0.0_dp, 0.0_dp, 0.0_dp])
 
         end do
 
-        fd = test_function_ddual(xd, yd)
+        do i = 1, nval
+            fdd(i) = test_function_ddual_wrap(xd(i), xxd(i), xyd(i), yd(i), yxd(i), yyd(i))
+        end do
 
         ! Extract function value, gradient and hessian for all values:
         do i = 1, nval
@@ -112,7 +110,21 @@ contains
       
     end function
 
-    elemental function test_function_ddual(x, y) result(f)
+    pure function test_function_ddual_wrap(x, xx, xy, y, yx, yy) result(fd)
+        type(dual_xy), intent(in) :: x, xx, xy, y, yx, yy
+        type(dual_xy) :: fd
+
+        type(ddual_xy) :: xd, yd
+
+        xd%x = x
+        xd%dx = [xx, xy]
+        yd%x = y
+        yd%dx = [yx, yy]
+
+        fd = test_function_ddual(x, y)
+    end function
+
+    pure function test_function_ddual(x, y) result(f)
         type(ddual_xy), intent(in) :: x, y
         type(ddual_xy) :: f
         f = sqrt(x)*log(y)
@@ -129,7 +141,7 @@ contains
         ddf(1, 1) = -log(y)/(4*x**1.5_dp)  ! d**2f/dx**2
         ddf(2, 2) = -sqrt(x)/(y**2)        ! d**2f/dy**2
         ddf(2, 1) = 1/(2*sqrt(x)*y)        ! d**2f/dxdy
-        ddf(1, 2) = ddf(1, 2)              ! d**2f/dydx
+        ddf(1, 2) = ddf(2, 1)              ! d**2f/dydx
     end subroutine
 
     @:dnad_implementations(dual_xy, dp, num_deriv, ${selected_interfaces}$, ${set_undefined}$, ddual_xy)

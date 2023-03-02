@@ -76,6 +76,62 @@
 \begin_body
 
 \begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+f\left(x,y\right)=\sqrt{x}\log\left(y\right)
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial f}{\partial x}=\frac{\log y}{2\sqrt{x}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial f}{\partial y}=\frac{\sqrt{x}}{y}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial^{2}f}{\partial x^{2}}=\frac{-\log y}{4x^{3/2}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial^{2}f}{\partial y^{2}}=\frac{-\sqrt{x}}{y^{2}}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial^{2}f}{\partial x\partial y}=\frac{1}{2\sqrt{x}y}
+\end{equation}
+
+\end_inset
+
 
 \end_layout
 
