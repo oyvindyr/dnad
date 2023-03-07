@@ -1,0 +1,84 @@
+#:def pow_d(dual_type, real_kind, is_pure=True, test_coverage=False)
+    #!set elemental_purity = dnad.elemental_purity(is_pure, test_coverage)
+    ${elemental_purity}$ function pow_d_i(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        integer, intent(in) :: v
+        type(${dual_type}$) :: res
+        res%x = u%x**v
+        res%dx = u%dx*u%x**v*v/u%x
+      #:if test_coverage == True
+        pow_d_i_counter = pow_d_i_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function pow_d_r(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        real(${real_kind}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        res%x = u%x**v
+        res%dx = u%dx*u%x**v*v/u%x
+      #:if test_coverage == True
+        pow_d_r_counter = pow_d_r_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function pow_d_d(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        res%x = u%x**v%x
+        res%dx = u%dx*u%x**v%x*v%x/u%x + u%x**v%x*v%dx*log(u%x)
+      #:if test_coverage == True
+        pow_d_d_counter = pow_d_d_counter + 1
+      #:endif
+    end function
+#:enddef
+#:def pow_hd(dual_type, real_kind, is_pure=True, test_coverage=False)
+    #!set elemental_purity = dnad.elemental_purity(is_pure, test_coverage)
+    ${elemental_purity}$ function pow_hd_i(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        integer, intent(in) :: v
+        type(${dual_type}$) :: res
+        integer :: j
+        res%x = u%x**v
+        res%dx = u%dx*u%x**v*v/u%x
+        do j = 1, ${number_of_derivatives}$
+            res%ddx(:, j) = u%ddx(:, j)*u%x**v*v/u%x + u%dx*u%dx(j)*(u%x**v*v**2/ &
+      u%x**2 - u%x**v*v/u%x**2)
+        end do
+      #:if test_coverage == True
+        pow_hd_i_counter = pow_hd_i_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function pow_hd_r(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        real(${real_kind}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        integer :: j
+        res%x = u%x**v
+        res%dx = u%dx*u%x**v*v/u%x
+        do j = 1, ${number_of_derivatives}$
+            res%ddx(:, j) = u%ddx(:, j)*u%x**v*v/u%x + u%dx*u%dx(j)*(u%x**v*v**2/ &
+      u%x**2 - u%x**v*v/u%x**2)
+        end do
+      #:if test_coverage == True
+        pow_hd_r_counter = pow_hd_r_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function pow_hd_hd(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        integer :: j
+        res%x = u%x**v%x
+        res%dx = u%dx*u%x**v%x*v%x/u%x + u%x**v%x*v%dx*log(u%x)
+        do j = 1, ${number_of_derivatives}$
+            res%ddx(:, j) = u%ddx(:, j)*u%x**v%x*v%x/u%x + u%dx(j)*(u%dx*(u%x**v%x*v%x**2/ &
+      u%x**2 - u%x**v%x*v%x/u%x**2) + v%dx*(u%x**v%x*v%x*log(u%x)/u%x &
+      + u%x**v%x/u%x)) + u%x**v%x*v%ddx(:, j)*log(u%x) + v%dx(j)*(u%dx*(u%x** &
+      v%x*v%x*log(u%x)/u%x + u%x**v%x/u%x) + u%x**v%x*v%dx*log(u%x)**2 &
+      )
+        end do
+      #:if test_coverage == True
+        pow_hd_hd_counter = pow_hd_hd_counter + 1
+      #:endif
+    end function
+#:enddef

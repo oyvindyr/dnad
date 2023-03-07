@@ -1,0 +1,221 @@
+#:mute
+
+#:include '../src/macros/dnad_dual_types.fypp'
+#:include '../src/macros/dnad_interfaces.fypp'
+#:include '../src/macros/dnad_implementations.fypp'
+
+#! Include call counters to check test coverage:
+#: set test_coverage = True
+
+#: set number_of_derivatives = "num_deriv"
+
+#! When set_undefined = False, the dnad functions assume that the derivative exists. It is does not exist (for instance for abs(0.0))
+#! the result will be undefined. When set_undefined = True (or not defined) some logic is included in the mathematical functions to
+#! determine if the derivative exists of not, and call a function set_NaN() when it does not exist. Using set_undefined = False is 
+#! believed to be faster.
+#:set set_undefined = False
+
+#! selected_interfaces is a comma separated list or "--all"
+#!set selected_interfaces = "=,*,log,sqrt"
+#:set selected_interfaces = "--all"
+
+#:endmute
+module test_hdual2_mod
+    use, intrinsic :: iso_fortran_env, only: dp => real64
+    implicit none
+
+    integer, parameter :: num_deriv = 3
+
+    ! Implementation call counters to show test coverage:
+  #:for impl in dnad.all_implementations
+    integer :: ${impl+"_counter"}$ = 0
+  #:endfor
+
+  #:if set_undefined
+    ! Workaround to make pure functions produce NaN's deliberately:
+    real(dp) :: negative_one = -1.0_dp
+  #:endif
+    
+    @:dnad_dual_type(dual_uvw, dp, num_deriv, sequence)
+    @:dnad_hdual_type(hdual_uvw, dp, num_deriv, sequence)
+
+    @:dnad_interfaces(${selected_interfaces}$, has_dual=${True}$, has_hyper_dual=${True}$)
+    
+contains
+
+    function test_hdual2() result(is_ok)
+        logical :: is_ok
+           
+        real(dp), parameter :: abs_tol = 1.0e-12_dp
+
+        integer, parameter :: nval = 5
+
+        integer :: i
+
+        real(dp), dimension(nval) :: u, v, w
+        real(dp), dimension(nval) :: r1, r2, r3
+        integer, dimension(nval) :: i1, i2, i3
+        real(dp), dimension(nval) :: fvd, fvh, fv_fasit
+        real(dp), dimension(num_deriv, nval) :: dfd, dfh, df_fasit
+        real(dp), dimension(num_deriv, num_deriv, nval) :: ddfh, ddf_fasit
+
+        type(dual_uvw), dimension(nval) :: ud, vd, wd, fd
+        type(hdual_uvw), dimension(nval) :: uhd, vhd, whd, fhd
+
+        call random_number(u)
+        u = 5*u + 0.1_dp
+        call random_number(v)
+        v = 5*v + 0.1_dp
+        call random_number(w)
+        w = 5*w + 0.1_dp
+        call random_number(r1)
+        r1 = 5*r1 + 0.1_dp
+        call random_number(r2)
+        r2 = 5*r2 + 0.1_dp
+        call random_number(r3)
+        r3 = 5*r3 + 0.1_dp
+        i1 = ceiling(r1)
+        i2 = ceiling(r2)
+        i3 = ceiling(r3)
+
+
+        ! Initialize dual inputs:
+        do i = 1, nval
+            ud(i)%x  = u(i)
+            ud(i)%dx = [1.0_dp, 0.0_dp, 0.0_dp]
+            
+            vd(i)%x  = v(i)
+            vd(i)%dx = [0.0_dp, 1.0_dp, 0.0_dp]
+            
+            wd(i)%x  = w(i)
+            wd(i)%dx = [0.0_dp, 0.0_dp, 1.0_dp]
+
+            uhd(i)%x  = u(i)
+            uhd(i)%dx = [1.0_dp, 0.0_dp, 0.0_dp]
+            uhd(i)%ddx = 0.0_dp
+
+            vhd(i)%x  = v(i)
+            vhd(i)%dx = [0.0_dp, 1.0_dp, 0.0_dp]
+            vhd(i)%ddx = 0.0_dp
+
+            whd(i)%x  = w(i)
+            whd(i)%dx = [0.0_dp, 0.0_dp, 1.0_dp]
+            whd(i)%ddx = 0.0_dp
+
+        end do
+
+        fd = test_function_dual(ud, vd, wd, r1, r2, r3, i1, i2, i3)
+        fhd = test_function_hdual(uhd, vhd, whd, r1, r2, r3, i1, i2, i3)
+
+        ! Extract function value, gradient and hessian for all values:
+        do i = 1, nval
+
+            fvd(i) = fd(i)
+            dfd(:, i) = fd(i)%dx
+
+            fvh(i) = fhd(i)
+            dfh(:, i) = fhd(i)%dx
+            ddfh(:, :, i) = fhd(i)%ddx
+
+        end do
+
+        ! Fasit:
+        do i = 1, nval
+            call test_function_analytic(u(i), v(i), w(i), r1(i), r2(i), r3(i), i1(i), i2(i), i3(i), &
+                    fv_fasit(i), df_fasit(:, i), ddf_fasit(:, :, i))
+        end do
+
+        if ((maxval(abs(fvd - fv_fasit)) < abs_tol) .and. &
+                (maxval(abs(fvh - fv_fasit)) < abs_tol) .and. &
+                (maxval(abs(dfd - df_fasit)) < abs_tol) .and. &
+                (maxval(abs(dfh - df_fasit)) < abs_tol) .and. &
+                (maxval(abs(ddfh - ddf_fasit)) < abs_tol)) then
+            is_ok = .true.
+        else
+            is_ok = .false.
+            print*,"f_diff:"
+            print*, fvh - fv_fasit
+            print*,"df_diff:"
+            print*, dfh - df_fasit
+            print*,"ddf_diff:"
+            print*, ddfh - ddf_fasit
+        end if
+
+        #:if test_coverage == True
+        #:for impl in dnad.all_implementations
+        print*, ${'"'+impl+'_counter: ", ' + impl+'_counter'}$
+        #:endfor
+        #:endif
+
+        if (is_ok) then
+            print *, "test_hdual2: ok"
+        else
+            print *, "test_hdual2: failed"
+        end if
+
+        print*,'Hess matrix: '
+        do i = 1, num_deriv
+            print*,ddfh(i,:,1)
+        end do
+      
+    end function
+
+  #:for dual_name, dual_type in zip(['dual', 'hdual'], ['dual_uvw', 'hdual_uvw'])
+    impure elemental function test_function_${dual_name}$(u, v, w, r1, r2, r3, i1, i2, i3) result(f)
+        !! Test function for dual numbers. It is "impure" only because we use global counter variables to
+        !! check test coverage. In "normal" use, it would be pure.
+        type(${dual_type}$), intent(in) :: u, v, w
+        real(dp), intent(in) :: r1, r2, r3
+        integer, intent(in) :: i1, i2, i3
+        type(${dual_type}$) :: f
+        f = i3/(2*v + 1) + r3/(2*u + 1) - u/(2*w + 1) + u/(2*i2 + 1) + u**i1 + u &
+            **r1 - u**v + sqrt(v)*log(u) + w/(2*r2 + 1) + (i1*v - i2*u + r1*u &
+            - r2*w)**2
+    end function
+  #:endfor
+
+    pure subroutine test_function_analytic(u, v, w, r1, r2, r3, i1, i2, i3, f, df, ddf)
+        !! Test function with analytic gradient and Hessian. (Thanks to Sympy fortran-generator!)
+        real(dp), intent(in) :: u, v, w, r1, r2, r3
+        integer, intent(in) :: i1, i2, i3
+        real(dp), intent(out) :: f           ! function value
+        real(dp), intent(out) :: df(num_deriv)       ! gradient
+        real(dp), intent(out) :: ddf(num_deriv, num_deriv)   ! Hessian
+        f = i3/(2*v + 1) + r3/(2*u + 1) - u/(2*w + 1) + u/(2*i2 + 1) + u**i1 + u &
+            **r1 - u**v + sqrt(v)*log(u) + w/(2*r2 + 1) + (i1*v - i2*u + r1*u &
+            - r2*w)**2
+        df(1) = i1*u**i1/u + r1*u**r1/u - 2*r3/(2*u + 1)**2 + (-2*i2 + 2*r1)* &
+            (i1*v - i2*u + r1*u - r2*w) - 1/(2*w + 1) + 1d0/(2*i2 + 1) - u**v &
+            *v/u + sqrt(v)/u
+        df(2) = 2*i1*(i1*v - i2*u + r1*u - r2*w) - 2*i3/(2*v + 1)**2 - u**v* &
+            log(u) + (1.0d0/2.0d0)*log(u)/sqrt(v)
+        df(3) = -2*r2*(i1*v - i2*u + r1*u - r2*w) + 2*u/(2*w + 1)**2 + 1d0/(2 &
+            *r2 + 1)
+        ddf(1, 1) = i1**2*u**i1/u**2 - i1*u**i1/u**2 + r1**2*u**r1/u**2 - r1*u** &
+            r1/u**2 + 8*r3/(2*u + 1)**3 + (-2*i2 + 2*r1)*(-i2 + r1) - u**v*v &
+            **2/u**2 + u**v*v/u**2 - sqrt(v)/u**2
+        ddf(2, 1) = i1*(-2*i2 + 2*r1) - u**v*v*log(u)/u - u**v/u + (1.0d0/2.0d0) &
+            /(u*sqrt(v))
+        ddf(3, 1) = -r2*(-2*i2 + 2*r1) + 2/(2*w + 1)**2
+        ddf(1, 2) = i1*(-2*i2 + 2*r1) - u**v*v*log(u)/u - u**v/u + (1.0d0/2.0d0) &
+            /(u*sqrt(v))
+        ddf(2, 2) = 2*i1**2 + 8*i3/(2*v + 1)**3 - u**v*log(u)**2 - 1.0d0/4.0d0* &
+            log(u)/v**(3.0d0/2.0d0)
+        ddf(3, 2) = -2*i1*r2
+        ddf(1, 3) = -r2*(-2*i2 + 2*r1) + 2/(2*w + 1)**2
+        ddf(2, 3) = -2*i1*r2
+        ddf(3, 3) = 2*r2**2 - 8*u/(2*w + 1)**3
+    end subroutine
+
+    @:dnad_implementations(dp, num_deriv, selected_interfaces=${selected_interfaces}$, set_undefined=${set_undefined}$, &
+            dual_type=dual_uvw, hdual_type=hdual_uvw)
+    
+  #:if set_undefined
+    ! Workaround to make pure functions produce NaN's deliberately:
+    elemental function set_NaN() result(res)
+        real(dp) :: res
+        res = sqrt(negative_one)
+    end function set_NaN
+  #:endif
+    
+end module

@@ -1,0 +1,126 @@
+#:def mult_d(dual_type, real_kind, is_pure=True, test_coverage=False)
+    #!set elemental_purity = dnad.elemental_purity(is_pure, test_coverage)
+    ${elemental_purity}$ function mult_d_d(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        res%x = u%x*v%x
+        res%dx = u%dx*v%x + u%x*v%dx
+      #:if test_coverage == True
+        mult_d_d_counter = mult_d_d_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function mult_d_r(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        real(${real_kind}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        res%x = u%x*v
+        res%dx = u%dx*v
+      #:if test_coverage == True
+        mult_d_r_counter = mult_d_r_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function mult_r_d(u, v) result(res)
+        real(${real_kind}$), intent(in) :: u
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        res%x = u*v%x
+        res%dx = u*v%dx
+      #:if test_coverage == True
+        mult_r_d_counter = mult_r_d_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function mult_d_i(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        integer, intent(in) :: v
+        type(${dual_type}$) :: res
+        res%x = u%x*v
+        res%dx = u%dx*v
+      #:if test_coverage == True
+        mult_d_i_counter = mult_d_i_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function mult_i_d(u, v) result(res)
+        integer, intent(in) :: u
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        res%x = u*v%x
+        res%dx = u*v%dx
+      #:if test_coverage == True
+        mult_i_d_counter = mult_i_d_counter + 1
+      #:endif
+    end function
+#:enddef
+#:def mult_hd(dual_type, real_kind, is_pure=True, test_coverage=False)
+    #!set elemental_purity = dnad.elemental_purity(is_pure, test_coverage)
+    ${elemental_purity}$ function mult_hd_hd(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        integer :: j
+        res%x = u%x*v%x
+        res%dx = u%dx*v%x + u%x*v%dx
+        do j = 1, ${number_of_derivatives}$
+            res%ddx(:, j) = u%ddx(:, j)*v%x + u%dx*v%dx(j) + u%dx(j)*v%dx + u%x*v%ddx(:, j)
+        end do
+      #:if test_coverage == True
+        mult_hd_hd_counter = mult_hd_hd_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function mult_hd_r(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        real(${real_kind}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        integer :: j
+        res%x = u%x*v
+        res%dx = u%dx*v
+        do j = 1, ${number_of_derivatives}$
+            res%ddx(:, j) = u%ddx(:, j)*v
+        end do
+      #:if test_coverage == True
+        mult_hd_r_counter = mult_hd_r_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function mult_r_hd(u, v) result(res)
+        real(${real_kind}$), intent(in) :: u
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        integer :: j
+        res%x = u*v%x
+        res%dx = u*v%dx
+        do j = 1, ${number_of_derivatives}$
+            res%ddx(:, j) = u*v%ddx(:, j)
+        end do
+      #:if test_coverage == True
+        mult_r_hd_counter = mult_r_hd_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function mult_hd_i(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        integer, intent(in) :: v
+        type(${dual_type}$) :: res
+        integer :: j
+        res%x = u%x*v
+        res%dx = u%dx*v
+        do j = 1, ${number_of_derivatives}$
+            res%ddx(:, j) = u%ddx(:, j)*v
+        end do
+      #:if test_coverage == True
+        mult_hd_i_counter = mult_hd_i_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function mult_i_hd(u, v) result(res)
+        integer, intent(in) :: u
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        integer :: j
+        res%x = u*v%x
+        res%dx = u*v%dx
+        do j = 1, ${number_of_derivatives}$
+            res%ddx(:, j) = u*v%ddx(:, j)
+        end do
+      #:if test_coverage == True
+        mult_i_hd_counter = mult_i_hd_counter + 1
+      #:endif
+    end function
+#:enddef

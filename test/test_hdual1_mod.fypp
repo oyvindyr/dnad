@@ -1,0 +1,193 @@
+#:mute
+
+#:include '../src/macros/dnad_dual_types.fypp'
+#:include '../src/macros/dnad_interfaces.fypp'
+#:include '../src/macros/dnad_implementations.fypp'
+
+#! Include call counters to check test coverage:
+#: set test_coverage = True
+#:if test_coverage == True
+    #: set elemental_purity = "impure elemental"
+    #: set pure_type = ""
+#:else
+    #: set elemental_purity = "elemental"
+    #: set pure_type = "pure"
+#:endif
+
+#: set number_of_derivatives = "num_deriv"
+
+#! When set_undefined = False, the dnad functions assume that the derivative exists. It is does not exist (for instance for abs(0.0))
+#! the result will be undefined. When set_undefined = True (or not defined) some logic is included in the mathematical functions to
+#! determine if the derivative exists of not, and call a function set_NaN() when it does not exist. Using set_undefined = False is 
+#! believed to be faster.
+#:set set_undefined = False
+
+#! selected_interfaces is a comma separated list or "--all"
+#!set selected_interfaces = "=,*,log,sqrt"
+#:set selected_interfaces = "--all"
+
+#:endmute
+module test_hdual1_mod
+    use, intrinsic :: iso_fortran_env, only: dp => real64
+    implicit none
+
+    integer, parameter :: num_deriv = 2
+
+    ! Implementation call counters to show test coverage:
+  #:for impl in dnad.all_implementations
+    integer :: ${impl+"_counter"}$ = 0
+  #:endfor
+
+  #:if set_undefined
+    ! Workaround to make pure functions produce NaN's deliberately:
+    real(dp) :: negative_one = -1.0_dp
+  #:endif
+    
+    @:dnad_dual_type(dual_xy, dp, num_deriv, sequence)
+    @:dnad_hdual_type(hdual_xy, dp, num_deriv, sequence)
+
+    @:dnad_interfaces(${selected_interfaces}$, has_dual=${True}$, has_hyper_dual=${True}$)
+    
+contains
+
+    function test_hdual1() result(is_ok)
+        logical :: is_ok
+           
+        real(dp), parameter :: abs_tol = 1.0e-14_dp
+
+        integer, parameter :: nval = 5
+
+        integer :: i
+
+        real(dp), dimension(nval) :: x, y
+        real(dp), dimension(nval) :: fvd, fvh, fv_fasit
+        real(dp), dimension(2, nval) :: dfd, dfh, df_fasit
+        real(dp), dimension(2, 2, nval) :: ddfh, ddf_fasit
+
+        type(dual_xy), dimension(nval) :: xd, yd, fd
+        type(hdual_xy), dimension(nval) :: xhd, yhd, fhd
+
+        call random_number(x)
+        x = 5*x + 0.1_dp
+        call random_number(y)
+        y = 5*y + 0.1_dp
+
+
+        ! Initialize dual inputs:
+        do i = 1, nval
+            xd(i)%x  = x(i)
+            xd(i)%dx = [1.0_dp, 0.0_dp]
+            
+            yd(i)%x  = y(i)
+            yd(i)%dx = [0.0_dp, 1.0_dp]
+
+            xhd(i)%x  = x(i)
+            xhd(i)%dx = [1.0_dp, 0.0_dp]
+            xhd(i)%ddx = 0.0_dp
+
+            yhd(i)%x  = y(i)
+            yhd(i)%dx = [0.0_dp, 1.0_dp]
+            yhd(i)%ddx = 0.0_dp
+
+        end do
+
+        fd = test_function_dual(xd, yd)
+        fhd = test_function_hdual(xhd, yhd)
+
+        ! Extract function value, gradient and hessian for all values:
+        do i = 1, nval
+
+            fvd(i) = fd(i)
+            dfd(:, i) = fd(i)%dx
+
+            fvh(i) = fhd(i)
+            dfh(:, i) = fhd(i)%dx
+            ddfh(:, :, i) = fhd(i)%ddx
+
+        end do
+
+        ! Fasit:
+        do i = 1, nval
+            call test_function_analytic(x(i), y(i), fv_fasit(i), df_fasit(:, i), ddf_fasit(:, :, i))
+        end do
+
+        if ((maxval(abs(fvd - fv_fasit)) < abs_tol) .and. &
+                (maxval(abs(fvh - fv_fasit)) < abs_tol) .and. &
+                (maxval(abs(dfd - df_fasit)) < abs_tol) .and. &
+                (maxval(abs(dfh - df_fasit)) < abs_tol) .and. &
+                (maxval(abs(ddfh - ddf_fasit)) < abs_tol)) then
+            is_ok = .true.
+        else
+            is_ok = .false.
+            print*,"f_diff:"
+            print*, fvh - fv_fasit
+            print*,"df_diff:"
+            print*, dfh - df_fasit
+            print*,"ddf_diff:"
+            print*, ddfh - ddf_fasit
+        end if
+
+        #:if test_coverage == True
+        #:for impl in dnad.all_implementations
+        print*, ${'"'+impl+'_counter: ", ' + impl+'_counter'}$
+        #:endfor
+        #:endif
+
+        if (is_ok) then
+            print *, "test_hdual: ok"
+        else
+            print *, "test_hdual: failed"
+        end if
+
+        ! print*, "f:"
+        ! print*, f
+        ! print*, "f_fasit:"
+        ! print*, f_fasit
+        ! print*, "df:"
+        ! print*, df
+        ! print*, "df_fasit:"
+        ! print*, df_fasit
+        ! print*, "ddf:"
+        ! print*, ddf
+        ! print*, "ddf_fasit:"
+        ! print*, ddf_fasit
+      
+    end function
+
+    impure elemental function test_function_dual(x, y) result(f)
+        type(dual_xy), intent(in) :: x, y
+        type(dual_xy) :: f
+        f = sqrt(x)*log(y)
+    end function
+    impure elemental function test_function_hdual(x, y) result(f)
+        type(hdual_xy), intent(in) :: x, y
+        type(hdual_xy) :: f
+        f = sqrt(x)*log(y)
+    end function
+
+    pure subroutine test_function_analytic(x, y, f, df, ddf)
+        real(dp), intent(in) :: x, y
+        real(dp), intent(out) :: f           ! function value
+        real(dp), intent(out) :: df(2)       ! gradient
+        real(dp), intent(out) :: ddf(2, 2)   ! Hessian
+        f = sqrt(x)*log(y)
+        df(1) = log(y)/(2*sqrt(x))  ! df/dx
+        df(2) = sqrt(x)/y           ! df/dy
+        ddf(1, 1) = -log(y)/(4*x**1.5_dp)  ! d**2f/dx**2
+        ddf(2, 2) = -sqrt(x)/(y**2)        ! d**2f/dy**2
+        ddf(2, 1) = 1/(2*sqrt(x)*y)        ! d**2f/dxdy
+        ddf(1, 2) = ddf(2, 1)              ! d**2f/dydx
+    end subroutine
+
+    @:dnad_implementations(dp, num_deriv, selected_interfaces=${selected_interfaces}$, set_undefined=${set_undefined}$, &
+            dual_type=dual_xy, hdual_type=hdual_xy)
+    
+  #:if set_undefined
+    ! Workaround to make pure functions produce NaN's deliberately:
+    elemental function set_NaN() result(res)
+        real(dp) :: res
+        res = sqrt(negative_one)
+    end function set_NaN
+  #:endif
+    
+end module

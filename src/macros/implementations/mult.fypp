@@ -1,0 +1,60 @@
+#:def mult(dual_type, real_kind, dual_id, number_of_derivatives)
+    elemental function mult_${dual_id}$_${dual_id}$(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u, v
+        type(${dual_type}$) :: res
+        res%x = u%x*v%x
+        res%dx = u%dx*v%x + u%x*v%dx
+      #:if dual_id == "hd"
+        res%dx2 = u%dx2*v%x + u%x*v%dx2
+        do i = 1, ${number_of_derivatives}$
+            res%ddx(:,i) = u%ddx(:,i)*v%x + u%dx*v%dx2(i) + u%dx2(i)*v%dx + u%x*v%ddx(:,i)
+        end do
+      #:endif
+    end function
+#!    elemental function mult_${dual_id}$_r(u, v) result(res)
+#!        type(${dual_type}$), intent(in) :: u
+#!        real(${real_kind}$), intent(in) :: v
+#!        type(${dual_type}$) :: res
+#!        res%x = u%x + v
+#!        res%dx = u%dx
+#!      #:if dual_id == "hd"
+#!        res%dx2 = u%dx2
+#!        res%ddx = u%ddx
+#!      #:endif
+#!    end function
+#!    elemental function mult_r_${dual_id}$(u, v) result(res)
+#!        real(${real_kind}$), intent(in) :: u
+#!        type(${dual_type}$), intent(in) :: v
+#!        type(${dual_type}$) :: res
+#!        res%x  = u + v%x
+#!        res%dx = v%dx
+#!      #:if dual_id == "hd"
+#!        res%dx2 = v%dx2
+#!        res%ddx = v%ddx
+#!      #:endif
+#!    end function
+#!    elemental function mult_${dual_id}$_i(u, v) result(res)
+#!        type(${dual_type}$), intent(in) :: u
+#!        integer, intent(in) :: v
+#!        type(${dual_type}$) :: res
+#!        res%x = u%x + v
+#!        res%dx = u%dx
+#!      #:if dual_id == "hd"
+#!        res%dx2 = u%dx2
+#!        res%ddx = u%ddx
+#!      #:endif
+#!    end function
+#!    elemental function mult_i_${dual_id}$(u, v) result(res)
+#!        integer, intent(in) :: u
+#!        type(${dual_type}$), intent(in) :: v
+#!        type(${dual_type}$) :: res
+#!        res%x  = u + v%x
+#!        res%dx = v%dx
+#!      #:if dual_id == "hd"
+#!        res%dx2 = v%dx2
+#!        res%ddx = v%ddx
+#!      #:endif
+#!    end function
+
+
+#:enddef

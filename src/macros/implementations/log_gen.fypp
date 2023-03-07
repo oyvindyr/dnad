@@ -1,0 +1,26 @@
+#:def log_d(dual_type, real_kind)
+    ${elemental_purity}$ function log_d(u) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$) :: res
+        res%x = log(u%x)
+        res%dx = u%dx/u%x
+      #:if test_coverage == True
+        log_d_counter = log_d_counter + 1
+      #:endif
+    end function
+#:enddef
+#:def log_hd(dual_type, real_kind)
+    ${elemental_purity}$ function log_hd(u) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$) :: res
+        integer :: j
+        res%x = log(u%x)
+        res%dx = u%dx/u%x
+        do j = 1, ${number_of_derivatives}$
+            res%ddx(:, j) = u%ddx(:, j)/u%x - u%dx*u%dx(j)/u%x**2
+        end do
+      #:if test_coverage == True
+        log_hd_counter = log_hd_counter + 1
+      #:endif
+    end function
+#:enddef

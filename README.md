@@ -11,3 +11,8 @@ Alternatively, you can import dnadN_mod.f90 into your module (replace N with int
 ```
 fypp -M src/macros -m dnad --define=number_of_derivatives=3 src/dnad_mod.fypp src/dnad3_mod.f90
 ```
+
+Preprocess unit test with:
+```
+fypp -I src/macros/implementations -M src/macros -m dnad test/test_hdual_mod.fypp test/test_hdual_mod.f90
+```

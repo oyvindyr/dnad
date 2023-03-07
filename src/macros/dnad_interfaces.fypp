@@ -1,85 +1,112 @@
-#:def dnad_interfaces(selected_interfaces, has_double_dual=False) 
+#:def dnad_interfaces(selected_interfaces, has_dual=False, has_hyper_dual=False) 
+  #:if has_dual == False and has_hyper_dual == False
+    #:stop "has_dual and has_hyper_dual cannot both be False"
+  #:endif
   #:set interface_list = dnad.select_interfaces(selected_interfaces)
   #:if "=" in interface_list 
     interface assignment (=)
+      #:if has_dual
         module procedure assign_d_i  ! dual=integer, elemental
         module procedure assign_d_r  ! dual=real, elemental
         module procedure assign_i_d  ! integer=dual, elemental
         module procedure assign_r_d  ! real=dual, elemental
-      #:if has_double_dual
-        module procedure assign_dd_i  ! dual=integer, elemental
-        module procedure assign_dd_r  ! dual=real, elemental
-        module procedure assign_i_dd  ! integer=dual, elemental
-        module procedure assign_r_dd  ! real=dual, elemental
+      #:endif
+      #:if has_hyper_dual
+        module procedure assign_hd_i  ! dual=integer, elemental
+        module procedure assign_hd_r  ! dual=real, elemental
+        module procedure assign_i_hd  ! integer=dual, elemental
+        module procedure assign_r_hd  ! real=dual, elemental
       #:endif
     end interface
   #:endif 
   #:if "+" in interface_list 
     interface operator (+)
-        module procedure add_unary_d   ! +dual number, elemental
+      #:if has_dual
+        module procedure unary_add_d   ! +dual number, elemental
         module procedure add_d_d       ! dual + dual, elemental
         module procedure add_d_i       ! dual + integer, elemental
         module procedure add_d_r       ! dual + real, elemental
         module procedure add_i_d       ! integer + dual, elemental
         module procedure add_r_d       ! real + dual, elemental
-      #:if has_double_dual
-        module procedure add_unary_dd  ! +dual number, elemental
-        module procedure add_dd_dd     ! dual + dual, elemental
-        module procedure add_dd_i      ! dual + integer, elemental
-        module procedure add_dd_r      ! dual + real, elemental
-        module procedure add_i_dd      ! integer + dual, elemental
-        module procedure add_r_dd      ! real + dual, elemental
+      #:endif
+      #:if has_hyper_dual
+        module procedure unary_add_hd  ! +dual number, elemental
+        module procedure add_hd_hd     ! dual + dual, elemental
+        module procedure add_hd_i      ! dual + integer, elemental
+        module procedure add_hd_r      ! dual + real, elemental
+        module procedure add_i_hd      ! integer + dual, elemental
+        module procedure add_r_hd      ! real + dual, elemental
       #:endif
     end interface
   #:endif 
   #:if "-" in interface_list 
     interface operator (-)
-        module procedure minus_unary_d  ! negate a dual number,elemental
+      #:if has_dual
+        module procedure unary_minus_d  ! negate a dual number,elemental
         module procedure minus_d_d      ! dual -dual,elemental
         module procedure minus_d_i      ! dual-integer,elemental
         module procedure minus_d_r      ! dual-real,elemental
         module procedure minus_i_d      ! integer-dual,elemental
         module procedure minus_r_d      ! real-dual,elemental
-      #:if has_double_dual
-        module procedure minus_unary_dd ! negate a dual number,elemental
-        module procedure minus_dd_dd    ! dual -dual,elemental
-        module procedure minus_dd_i     ! dual-integer,elemental
-        module procedure minus_dd_r     ! dual-real,elemental
-        module procedure minus_i_dd     ! integer-dual,elemental
-        module procedure minus_r_dd     ! real-dual,elemental
+      #:endif
+      #:if has_hyper_dual
+        module procedure unary_minus_hd ! negate a dual number,elemental
+        module procedure minus_hd_hd    ! dual -dual,elemental
+        module procedure minus_hd_i     ! dual-integer,elemental
+        module procedure minus_hd_r     ! dual-real,elemental
+        module procedure minus_i_hd     ! integer-dual,elemental
+        module procedure minus_r_hd     ! real-dual,elemental
       #:endif
     end interface
   #:endif 
   #:if "*" in interface_list 
     interface operator (*)
+      #:if has_dual 
         module procedure mult_d_d    ! dual*dual, elemental
         module procedure mult_d_i    ! dual*integer,elemental
         module procedure mult_d_r    ! dual*real,elemental
         module procedure mult_i_d    ! integer*dual,elemental
         module procedure mult_r_d    ! real*dual,elemental
-      #:if has_double_dual
-        module procedure mult_dd_dd  ! dual*dual, elemental
-        module procedure mult_dd_i   ! dual*integer,elemental
-        module procedure mult_dd_r   ! dual*real,elemental
-        module procedure mult_i_dd   ! integer*dual,elemental
-        module procedure mult_r_dd   ! real*dual,elemental
+      #:endif
+      #:if has_hyper_dual
+        module procedure mult_hd_hd  ! dual*dual, elemental
+        module procedure mult_hd_i   ! dual*integer,elemental
+        module procedure mult_hd_r   ! dual*real,elemental
+        module procedure mult_i_hd   ! integer*dual,elemental
+        module procedure mult_r_hd   ! real*dual,elemental
       #:endif
     end interface
   #:endif 
   #:if "/" in interface_list 
     interface operator (/)
-        module procedure div_dd ! dual/dual,elemental
-        module procedure div_di ! dual/integer, elemental
-        module procedure div_dr ! dual/real,emental
-        module procedure div_id ! integer/dual, elemental
-        module procedure div_rd ! real/dual, elemental
+      #:if has_dual
+        module procedure div_d_d    ! dual/dual, elemental
+        module procedure div_d_r    ! dual/real, elemental
+        module procedure div_r_d    ! real/dual, elemental
+        module procedure div_d_i    ! dual/integer, elemental
+        module procedure div_i_d    ! integer/dual, elemental
+      #:endif
+      #:if has_hyper_dual
+        module procedure div_hd_hd  ! hdual/hdual, elemental
+        module procedure div_hd_r   ! hdual/real, elemental
+        module procedure div_r_hd   ! real/hdual, elemental
+        module procedure div_hd_i   ! hdual/integer, elemental
+        module procedure div_i_hd   ! integer/hdual, elemental
+      #:endif
     end interface
   #:endif 
   #:if "**" in interface_list 
     interface operator (**)
-        module procedure pow_i ! dual number to an integer power,elemental
-        module procedure pow_r ! dual number to a real power, elemental
-        module procedure pow_d ! dual number to a dual power, elemental
+      #:if has_dual
+        module procedure pow_d_i ! dual number to an integer power,elemental
+        module procedure pow_d_r ! dual number to a real power, elemental
+        module procedure pow_d_d ! dual number to a dual power, elemental
+      #:endif
+      #:if has_hyper_dual
+        module procedure pow_hd_i ! hdual number to an integer power,elemental
+        module procedure pow_hd_r ! hdual number to a real power, elemental
+        module procedure pow_hd_hd ! hdual number to a hdual power, elemental
+      #:endif
     end interface
   #:endif 
   #:if "==" in interface_list 
@@ -193,9 +220,11 @@
   #:endif 
   #:if "log" in interface_list 
     interface log
+      #:if has_dual
         module procedure log_d ! log of a dual number, elemental
-      #:if has_double_dual 
-        module procedure log_dd ! log of a dual number, elemental
+      #:endif
+      #:if has_hyper_dual 
+        module procedure log_hd ! log of a dual number, elemental
       #:endif
     end interface
   #:endif 
@@ -278,9 +307,11 @@
   #:endif 
   #:if "sqrt" in interface_list 
     interface sqrt
+      #:if has_dual
         module procedure sqrt_d ! obtain the sqrt of a dual number, elemental
-      #:if has_double_dual 
-        module procedure sqrt_dd ! obtain the sqrt of a dual number, elemental
+      #:endif
+      #:if has_hyper_dual 
+        module procedure sqrt_hd ! obtain the sqrt of a dual number, elemental
       #:endif
     end interface
   #:endif 

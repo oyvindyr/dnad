@@ -1,0 +1,69 @@
+#:def minus(dual_type, real_kind, dual_id)
+    elemental function minus_unary_${dual_id}$(u) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$) :: res
+        res%x = -u%x
+        res%dx = -u%dx
+      #:if dual_id == "hd"
+        res%dx2 = -u%dx2
+        res%ddx = -u%ddx
+      #:endif
+    end function
+    elemental function minus_${dual_id}$_${dual_id}$(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u, v
+        type(${dual_type}$) :: res
+        res%x = u%x - v%x
+        res%dx = u%dx - v%dx
+      #:if dual_id == "hd"
+        res%dx2 = u%dx2 - v%dx2
+        res%ddx = u%ddx - v%ddx
+      #:endif
+    end function
+    elemental function minus_${dual_id}$_r(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        real(${real_kind}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        res%x = u%x - v
+        res%dx = u%dx
+      #:if dual_id == "hd"
+        res%dx2 = u%dx2
+        res%ddx = u%ddx
+      #:endif
+    end function
+    elemental function minus_r_${dual_id}$(u, v) result(res)
+        real(${real_kind}$), intent(in) :: u
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        res%x  = u - v%x
+        res%dx = -v%dx
+      #:if dual_id == "hd"
+        res%dx2 = -v%dx2
+        res%ddx = -v%ddx
+      #:endif
+    end function
+    elemental function minus_${dual_id}$_i(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        integer, intent(in) :: v
+        type(${dual_type}$) :: res
+        res%x = u%x - v
+        res%dx = u%dx
+      #:if dual_id == "hd"
+        res%dx2 = u%dx2
+        res%ddx = u%ddx
+      #:endif
+    end function
+    elemental function minus_i_${dual_id}$(u, v) result(res)
+        integer, intent(in) :: u
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        res%x  = u - v%x
+        res%dx = -v%dx
+      #:if dual_id == "hd"
+        res%dx2 = -v%dx2
+        res%ddx = -v%ddx
+      #:endif
+    end function
+
+
+
+#:enddef

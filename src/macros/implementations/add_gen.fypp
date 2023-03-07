@@ -1,0 +1,148 @@
+#:def add_d(dual_type, real_kind, is_pure=True, test_coverage=False)
+    #!set elemental_purity = dnad.elemental_purity(is_pure, test_coverage)
+    ${elemental_purity}$ function unary_add_d(u) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$) :: res
+        res%x = u%x
+        res%dx = u%dx
+      #:if test_coverage == True
+        unary_add_d_counter = unary_add_d_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function add_d_d(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        res%x = u%x + v%x
+        res%dx = u%dx + v%dx
+      #:if test_coverage == True
+        add_d_d_counter = add_d_d_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function add_d_r(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        real(${real_kind}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        res%x = u%x + v
+        res%dx = u%dx
+      #:if test_coverage == True
+        add_d_r_counter = add_d_r_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function add_r_d(u, v) result(res)
+        real(${real_kind}$), intent(in) :: u
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        res%x = u + v%x
+        res%dx = v%dx
+      #:if test_coverage == True
+        add_r_d_counter = add_r_d_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function add_d_i(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        integer, intent(in) :: v
+        type(${dual_type}$) :: res
+        res%x = u%x + v
+        res%dx = u%dx
+      #:if test_coverage == True
+        add_d_i_counter = add_d_i_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function add_i_d(u, v) result(res)
+        integer, intent(in) :: u
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        res%x = u + v%x
+        res%dx = v%dx
+      #:if test_coverage == True
+        add_i_d_counter = add_i_d_counter + 1
+      #:endif
+    end function
+#:enddef
+#:def add_hd(dual_type, real_kind, is_pure=True, test_coverage=False)
+    #!set elemental_purity = dnad.elemental_purity(is_pure, test_coverage)
+    ${elemental_purity}$ function unary_add_hd(u) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$) :: res
+        integer :: j
+        res%x = u%x
+        res%dx = u%dx
+        do j = 1, ${number_of_derivatives}$
+            res%ddx(:, j) = u%ddx(:, j)
+        end do
+      #:if test_coverage == True
+        unary_add_hd_counter = unary_add_hd_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function add_hd_hd(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        integer :: j
+        res%x = u%x + v%x
+        res%dx = u%dx + v%dx
+        do j = 1, ${number_of_derivatives}$
+            res%ddx(:, j) = u%ddx(:, j) + v%ddx(:, j)
+        end do
+      #:if test_coverage == True
+        add_hd_hd_counter = add_hd_hd_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function add_hd_r(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        real(${real_kind}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        integer :: j
+        res%x = u%x + v
+        res%dx = u%dx
+        do j = 1, ${number_of_derivatives}$
+            res%ddx(:, j) = u%ddx(:, j)
+        end do
+      #:if test_coverage == True
+        add_hd_r_counter = add_hd_r_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function add_r_hd(u, v) result(res)
+        real(${real_kind}$), intent(in) :: u
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        integer :: j
+        res%x = u + v%x
+        res%dx = v%dx
+        do j = 1, ${number_of_derivatives}$
+            res%ddx(:, j) = v%ddx(:, j)
+        end do
+      #:if test_coverage == True
+        add_r_hd_counter = add_r_hd_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function add_hd_i(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        integer, intent(in) :: v
+        type(${dual_type}$) :: res
+        integer :: j
+        res%x = u%x + v
+        res%dx = u%dx
+        do j = 1, ${number_of_derivatives}$
+            res%ddx(:, j) = u%ddx(:, j)
+        end do
+      #:if test_coverage == True
+        add_hd_i_counter = add_hd_i_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function add_i_hd(u, v) result(res)
+        integer, intent(in) :: u
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        integer :: j
+        res%x = u + v%x
+        res%dx = v%dx
+        do j = 1, ${number_of_derivatives}$
+            res%ddx(:, j) = v%ddx(:, j)
+        end do
+      #:if test_coverage == True
+        add_i_hd_counter = add_i_hd_counter + 1
+      #:endif
+    end function
+#:enddef

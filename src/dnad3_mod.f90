@@ -300,6 +300,7 @@ module dnad3_mod
     end interface
     interface log
         module procedure log_d ! log of a dual number, elemental
+        module procedure log_dd ! log of a dual number, elemental
     end interface
     interface log10
         module procedure log10_d ! log of a dual number, elemental
@@ -352,6 +353,7 @@ module dnad3_mod
     end interface
     interface sqrt
         module procedure sqrt_d ! obtain the sqrt of a dual number, elemental
+        module procedure sqrt_dd ! obtain the sqrt of a dual number, elemental
     end interface
     interface sum
         module procedure sum_d ! sum a dual array
@@ -425,105 +427,95 @@ contains
     elemental function add_unary_d(u) result(res)
         type(dual3), intent(in) :: u
         type(dual3) :: res
-
         res = u  ! Faster than assigning component wise
-
     end function
     elemental function add_d_d(u, v) result(res)
         type(dual3), intent(in) :: u, v
         type(dual3) :: res
-
         res%x = u%x + v%x
         res%dx = u%dx + v%dx
-
     end function
-    elemental function add_d_i(u, i) result(res)
+    elemental function add_d_r(u, v) result(res)
         type(dual3), intent(in) :: u
-        integer, intent(in) :: i
+        real(dp), intent(in) :: v
         type(dual3) :: res
-
-        res%x = real(i, dp) + u%x
+        res%x = u%x + v
         res%dx = u%dx
-
     end function
-    elemental function add_d_r(u, r) result(res)
+    elemental function add_r_d(v, u) result(res)
         type(dual3), intent(in) :: u
-        real(dp), intent(in) :: r
+        real(dp), intent(in) :: v
         type(dual3) :: res
-
-        res%x = r + u%x
+        res%x = u%x + v
         res%dx = u%dx
-
     end function
-    elemental function add_i_d(i, v) result(res)
-        integer, intent(in) :: i
-        type(dual3), intent(in) :: v
+    elemental function add_d_i(u, v) result(res)
+        type(dual3), intent(in) :: u
+        integer, intent(in) :: v
         type(dual3) :: res
-
-        res%x = real(i, dp) + v%x
-        res%dx = v%dx
-
+        res%x = u%x + v
+        res%dx = u%dx
     end function
-    elemental function add_r_d(r, v) result(res)
-        real(dp), intent(in) :: r
-        type(dual3), intent(in) :: v
+    elemental function add_i_d(v, u) result(res)
+        type(dual3), intent(in) :: u
+        integer, intent(in) :: v
         type(dual3) :: res
-
-        res%x = r + v%x
-        res%dx = v%dx
-
+        res%x = u%x + v
+        res%dx = u%dx
     end function
-    elemental function add_unary_dd(u) result(res)
+
+
+    elemental function add_unary_hd(u) result(res)
         type(ddual3), intent(in) :: u
         type(ddual3) :: res
-
         res = u  ! Faster than assigning component wise
-
     end function
-    elemental function add_dd_dd(u, v) result(res)
+    elemental function add_hd_hd(u, v) result(res)
         type(ddual3), intent(in) :: u, v
         type(ddual3) :: res
-
         res%x = u%x + v%x
         res%dx = u%dx + v%dx
-
+        res%dx2 = u%dx2 + v%dx2
+        res%ddx = u%ddx + v%ddx
     end function
-    elemental function add_dd_i(u, i) result(res)
+    elemental function add_hd_r(u, v) result(res)
         type(ddual3), intent(in) :: u
-        integer, intent(in) :: i
+        real(dp), intent(in) :: v
         type(ddual3) :: res
-
-        res%x = real(i, dp) + u%x
+        res%x = u%x + v
         res%dx = u%dx
-
+        res%dx2 = u%dx2
+        res%ddx = u%ddx
     end function
-    elemental function add_dd_r(u, r) result(res)
+    elemental function add_r_hd(v, u) result(res)
         type(ddual3), intent(in) :: u
-        real(dp), intent(in) :: r
+        real(dp), intent(in) :: v
         type(ddual3) :: res
-
-        res%x = r + u%x
+        res%x = u%x + v
         res%dx = u%dx
-
+        res%dx2 = u%dx2
+        res%ddx = u%ddx
     end function
-    elemental function add_i_dd(i, v) result(res)
-        integer, intent(in) :: i
-        type(ddual3), intent(in) :: v
+    elemental function add_hd_i(u, v) result(res)
+        type(ddual3), intent(in) :: u
+        integer, intent(in) :: v
         type(ddual3) :: res
-
-        res%x = real(i, dp) + v%x
-        res%dx = v%dx
-
+        res%x = u%x + v
+        res%dx = u%dx
+        res%dx2 = u%dx2
+        res%ddx = u%ddx
     end function
-    elemental function add_r_dd(r, v) result(res)
-        real(dp), intent(in) :: r
-        type(ddual3), intent(in) :: v
+    elemental function add_i_hd(v, u) result(res)
+        type(ddual3), intent(in) :: u
+        integer, intent(in) :: v
         type(ddual3) :: res
-
-        res%x = r + v%x
-        res%dx = v%dx
-
+        res%x = u%x + v
+        res%dx = u%dx
+        res%dx2 = u%dx2
+        res%ddx = u%ddx
     end function
+
+
     elemental function minus_unary_d(u) result(res)
         type(dual3), intent(in) :: u
         type(dual3) :: res
@@ -1049,19 +1041,8 @@ contains
         type(dual3) :: res
         integer :: i
 
-        if (u%x == 0) then
-            res%x = 0.0_dp
-            do i = 1, num_deriv
-                if (u%dx(i) .eq. 0.0_dp) then
-                    res%dx(i) = 0.0_dp
-                else
-                    res%dx(i) = set_NaN()
-                end if
-            end do
-        else 
-            res%x = abs(u%x)
-            res%dx = abs(u%dx)
-        end if
+        res%x = abs(u%x)
+        res%dx = abs(u%dx)
 
     end function abs_d
     elemental function acos_d(u) result(res)
@@ -1070,11 +1051,7 @@ contains
 
         res%x = acos(u%x)
     
-        if (u%x == 1.0_dp .or. u%x == -1.0_dp) then
-            res%dx = set_Nan()  ! Undefined derivative
-        else
-            res%dx = -u%dx / sqrt(1.0_dp - u%x**2)
-        end if
+        res%dx = -u%dx / sqrt(1.0_dp - u%x**2)
 
     end function acos_d
     elemental function asin_d(u) result(res)
@@ -1082,11 +1059,7 @@ contains
         type(dual3) :: res
 
         res%x = asin(u%x)
-        if (u%x == 1.0_dp .or. u%x == -1.0_dp) then
-            res%dx = set_NaN()  ! Undefined derivative
-        else
-            res%dx = u%dx / sqrt(1.0_dp - u%x**2)
-        end if
+        res%dx = u%dx / sqrt(1.0_dp - u%x**2)
 
     end function asin_d
     elemental function atan_d(u) result(res)
@@ -1154,7 +1127,15 @@ contains
         res%x = log(u%x)
         res%dx = u%dx / u%x
 
-    end function log_d
+    end function
+    elemental function log_dd(u) result(res)
+        type(ddual3), intent(in) :: u
+        type(ddual3) :: res
+
+        res%x = log(u%x)
+        res%dx = u%dx / u%x
+
+    end function
     elemental function log10_d(u) result(res)
         type(dual3), intent(in) :: u
         type(dual3) :: res
@@ -1376,23 +1357,21 @@ contains
     elemental function sqrt_d(u) result(res)
         type(dual3), intent(in) :: u
         type(dual3) :: res
-        integer :: i
 
         res%x = sqrt(u%x)
 
-        if (res%x .ne. 0.0_dp) then
-            res%dx = 0.5_dp * u%dx / res%x
-        else
-            do i = 1, num_deriv
-                if (u%dx(i) .eq. 0.0_dp) then
-                    res%dx(i) = 0.0_dp
-                else
-                    res%dx(i) = set_NaN()
-                end if
-            end do
-        end if
+        res%dx = 0.5_dp * u%dx / res%x
 
-    end function sqrt_d
+    end function
+    elemental function sqrt_dd(u) result(res)
+        type(ddual3), intent(in) :: u
+        type(ddual3) :: res
+
+        res%x = sqrt(u%x)
+
+        res%dx = 0.5_dp * u%dx / res%x
+
+    end function
     pure function sum_d(u) result(res)
         type(dual3), intent(in) :: u(:)
         type(dual3) :: res
