@@ -6,15 +6,6 @@
 
 #! Include call counters to check test coverage:
 #: set test_coverage = True
-#:if test_coverage == True
-    #: set elemental_purity = "impure elemental"
-    #: set pure_type = ""
-#:else
-    #: set elemental_purity = "elemental"
-    #: set pure_type = "pure"
-#:endif
-
-#: set number_of_derivatives = "num_deriv"
 
 #! When set_undefined = False, the dnad functions assume that the derivative exists. It is does not exist (for instance for abs(0.0))
 #! the result will be undefined. When set_undefined = True (or not defined) some logic is included in the mathematical functions to
@@ -46,7 +37,7 @@ module test_hdual1_mod
     @:dnad_dual_type(dual_xy, dp, num_deriv, sequence)
     @:dnad_hdual_type(hdual_xy, dp, num_deriv, sequence)
 
-    @:dnad_interfaces(${selected_interfaces}$, has_dual=${True}$, has_hyper_dual=${True}$)
+    $:dnad_interfaces(selected_interfaces, has_dual=True, has_hyper_dual=True)
     
 contains
 
@@ -75,19 +66,12 @@ contains
 
         ! Initialize dual inputs:
         do i = 1, nval
-            xd(i)%x  = x(i)
-            xd(i)%dx = [1.0_dp, 0.0_dp]
+
+            xd(i) = initialize_dual(x(i), 1)
+            yd(i) = initialize_dual(y(i), 2)
             
-            yd(i)%x  = y(i)
-            yd(i)%dx = [0.0_dp, 1.0_dp]
-
-            xhd(i)%x  = x(i)
-            xhd(i)%dx = [1.0_dp, 0.0_dp]
-            xhd(i)%ddx = 0.0_dp
-
-            yhd(i)%x  = y(i)
-            yhd(i)%dx = [0.0_dp, 1.0_dp]
-            yhd(i)%ddx = 0.0_dp
+            xhd(i) = initialize_hdual(x(i), 1)
+            yhd(i) = initialize_hdual(y(i), 2)
 
         end do
 
@@ -102,7 +86,7 @@ contains
 
             fvh(i) = fhd(i)
             dfh(:, i) = fhd(i)%dx
-            ddfh(:, :, i) = fhd(i)%ddx
+            ddfh(:, :, i) = hessian(fhd(i))
 
         end do
 
@@ -179,8 +163,8 @@ contains
         ddf(1, 2) = ddf(2, 1)              ! d**2f/dydx
     end subroutine
 
-    @:dnad_implementations(dp, num_deriv, selected_interfaces=${selected_interfaces}$, set_undefined=${set_undefined}$, &
-            dual_type=dual_xy, hdual_type=hdual_xy)
+    $:dnad_implementations("dp", "num_deriv", selected_interfaces=selected_interfaces, set_undefined=set_undefined, &
+            dual_type="dual_xy", hdual_type="hdual_xy", test_coverage=test_coverage)
     
   #:if set_undefined
     ! Workaround to make pure functions produce NaN's deliberately:

@@ -7,8 +7,6 @@
 #! Include call counters to check test coverage:
 #: set test_coverage = True
 
-#: set number_of_derivatives = "num_deriv"
-
 #! When set_undefined = False, the dnad functions assume that the derivative exists. It is does not exist (for instance for abs(0.0))
 #! the result will be undefined. When set_undefined = True (or not defined) some logic is included in the mathematical functions to
 #! determine if the derivative exists of not, and call a function set_NaN() when it does not exist. Using set_undefined = False is 
@@ -39,7 +37,7 @@ module test_hdual2_mod
     @:dnad_dual_type(dual_uvw, dp, num_deriv, sequence)
     @:dnad_hdual_type(hdual_uvw, dp, num_deriv, sequence)
 
-    @:dnad_interfaces(${selected_interfaces}$, has_dual=${True}$, has_hyper_dual=${True}$)
+    $:dnad_interfaces(selected_interfaces, has_dual=True, has_hyper_dual=True)
     
 contains
 
@@ -81,26 +79,14 @@ contains
 
         ! Initialize dual inputs:
         do i = 1, nval
-            ud(i)%x  = u(i)
-            ud(i)%dx = [1.0_dp, 0.0_dp, 0.0_dp]
-            
-            vd(i)%x  = v(i)
-            vd(i)%dx = [0.0_dp, 1.0_dp, 0.0_dp]
-            
-            wd(i)%x  = w(i)
-            wd(i)%dx = [0.0_dp, 0.0_dp, 1.0_dp]
 
-            uhd(i)%x  = u(i)
-            uhd(i)%dx = [1.0_dp, 0.0_dp, 0.0_dp]
-            uhd(i)%ddx = 0.0_dp
+            ud(i) = initialize_dual(u(i), 1)
+            vd(i) = initialize_dual(v(i), 2)
+            wd(i) = initialize_dual(w(i), 3)
 
-            vhd(i)%x  = v(i)
-            vhd(i)%dx = [0.0_dp, 1.0_dp, 0.0_dp]
-            vhd(i)%ddx = 0.0_dp
-
-            whd(i)%x  = w(i)
-            whd(i)%dx = [0.0_dp, 0.0_dp, 1.0_dp]
-            whd(i)%ddx = 0.0_dp
+            uhd(i) = initialize_hdual(u(i), 1)
+            vhd(i) = initialize_hdual(v(i), 2)
+            whd(i) = initialize_hdual(w(i), 3)
 
         end do
 
@@ -115,7 +101,7 @@ contains
 
             fvh(i) = fhd(i)
             dfh(:, i) = fhd(i)%dx
-            ddfh(:, :, i) = fhd(i)%ddx
+            ddfh(:, :, i) = hessian(fhd(i))
 
         end do
 
@@ -207,8 +193,8 @@ contains
         ddf(3, 3) = 2*r2**2 - 8*u/(2*w + 1)**3
     end subroutine
 
-    @:dnad_implementations(dp, num_deriv, selected_interfaces=${selected_interfaces}$, set_undefined=${set_undefined}$, &
-            dual_type=dual_uvw, hdual_type=hdual_uvw)
+    $:dnad_implementations("dp", "num_deriv", dual_type="dual_uvw", hdual_type="hdual_uvw", selected_interfaces=selected_interfaces, &
+            set_undefined=set_undefined, test_coverage=test_coverage)
     
   #:if set_undefined
     ! Workaround to make pure functions produce NaN's deliberately:

@@ -131,15 +131,19 @@ module test_hdual1_mod
         !! dual number type
         sequence
         real(dp) :: x = 0  ! functional value
-        real(dp) :: dx(num_deriv) = 0  ! derivative
+        real(dp) :: dx(num_deriv) = 0  ! derivatives
     end type
     type :: hdual_xy
         !! hyper-dual number type
         sequence
         real(dp) :: x = 0  ! functional value
-        real(dp) :: dx(num_deriv) = 0  ! derivative
-        real(dp) :: ddx(num_deriv, num_deriv) = 0  ! derivative
+        real(dp) :: dx(num_deriv) = 0  ! derivatives
+        real(dp) :: ddx(num_deriv, num_deriv) = 0  ! Hessian
     end type
+
+    interface hessian ! Extract Hessian from a hyper-dual number
+        module procedure hessian_matrix
+    end interface
 
     interface assignment (=)
         module procedure assign_d_i  ! dual=integer, elemental
@@ -377,19 +381,12 @@ contains
 
         ! Initialize dual inputs:
         do i = 1, nval
-            xd(i)%x  = x(i)
-            xd(i)%dx = [1.0_dp, 0.0_dp]
+
+            xd(i) = initialize_dual(x(i), 1)
+            yd(i) = initialize_dual(y(i), 2)
             
-            yd(i)%x  = y(i)
-            yd(i)%dx = [0.0_dp, 1.0_dp]
-
-            xhd(i)%x  = x(i)
-            xhd(i)%dx = [1.0_dp, 0.0_dp]
-            xhd(i)%ddx = 0.0_dp
-
-            yhd(i)%x  = y(i)
-            yhd(i)%dx = [0.0_dp, 1.0_dp]
-            yhd(i)%ddx = 0.0_dp
+            xhd(i) = initialize_hdual(x(i), 1)
+            yhd(i) = initialize_hdual(y(i), 2)
 
         end do
 
@@ -404,7 +401,7 @@ contains
 
             fvh(i) = fhd(i)
             dfh(:, i) = fhd(i)%dx
-            ddfh(:, :, i) = fhd(i)%ddx
+            ddfh(:, :, i) = hessian(fhd(i))
 
         end do
 
@@ -596,7 +593,47 @@ contains
         ddf(1, 2) = ddf(2, 1)              ! d**2f/dydx
     end subroutine
 
-    impure elemental  subroutine assign_d_i(u, i)
+    pure function initialize_dual(val, idiff) result(d)
+        real(dp), intent(in) :: val
+        integer, intent(in) :: idiff
+        type(dual_xy) :: d
+        
+        d%x = val
+        d%dx = 0
+        d%dx(idiff) = 1
+
+    end function
+    pure function initialize_hdual(val, idiff) result(d)
+        real(dp), intent(in) :: val
+        integer, intent(in) :: idiff
+        type(hdual_xy) :: d
+        
+        d%x = val
+        d%dx = 0
+        d%ddx = 0
+        d%dx(idiff) = 1
+
+    end function
+    pure function hessian_matrix(d) result(m)
+        type(hdual_xy), intent(in) :: d
+        real(dp) :: m(num_deriv, num_deriv)
+        
+        integer i, j, k
+
+        ! k = 0
+        ! do j = 1, num_deriv
+        !     k = k + 1
+        !     m(j, j) = d%ddx(k)
+        !     do i = j+1, num_deriv
+        !         k = k + 1
+        !         m(i, j) = d%ddx(k)
+        !         m(j, i) = d%ddx(k)
+        !     end do
+        ! end do
+        m = d%ddx
+
+    end function
+    subroutine assign_d_i(u, i)
         type(dual_xy), intent(out) :: u
         integer, intent(in) :: i
 
@@ -605,7 +642,7 @@ contains
         assign_d_i_counter = assign_d_i_counter + 1
 
     end subroutine
-    impure elemental  subroutine assign_d_r(u, r)
+    subroutine assign_d_r(u, r)
         type(dual_xy), intent(out) :: u
         real(dp), intent(in) :: r
 
@@ -614,7 +651,7 @@ contains
         assign_d_r_counter = assign_d_r_counter + 1
 
     end subroutine
-    impure elemental  subroutine assign_i_d(i, v)
+    subroutine assign_i_d(i, v)
         type(dual_xy), intent(in) :: v
         integer, intent(out) :: i
 
@@ -622,7 +659,7 @@ contains
         assign_i_d_counter = assign_i_d_counter + 1
 
     end subroutine
-    impure elemental  subroutine assign_r_d(r, v)
+    subroutine assign_r_d(r, v)
         type(dual_xy), intent(in) :: v
         real(dp), intent(out) :: r
 
@@ -630,7 +667,7 @@ contains
         assign_r_d_counter = assign_r_d_counter + 1
 
     end subroutine
-    impure elemental  subroutine assign_hd_i(u, i)
+    subroutine assign_hd_i(u, i)
         type(hdual_xy), intent(out) :: u
         integer, intent(in) :: i
 
@@ -640,7 +677,7 @@ contains
         assign_hd_i_counter = assign_hd_i_counter + 1
 
     end subroutine
-    impure elemental  subroutine assign_hd_r(u, r)
+    subroutine assign_hd_r(u, r)
         type(hdual_xy), intent(out) :: u
         real(dp), intent(in) :: r
 
@@ -650,7 +687,7 @@ contains
         assign_hd_r_counter = assign_hd_r_counter + 1
 
     end subroutine
-    impure elemental  subroutine assign_i_hd(i, v)
+    subroutine assign_i_hd(i, v)
         type(hdual_xy), intent(in) :: v
         integer, intent(out) :: i
 
@@ -658,7 +695,7 @@ contains
         assign_i_hd_counter = assign_i_hd_counter + 1
 
     end subroutine
-    impure elemental  subroutine assign_r_hd(r, v)
+    subroutine assign_r_hd(r, v)
         type(hdual_xy), intent(in) :: v
         real(dp), intent(out) :: r
 
@@ -669,6 +706,7 @@ contains
     impure elemental function unary_add_d(u) result(res)
         type(dual_xy), intent(in) :: u
         type(dual_xy) :: res
+        
         res%x = u%x
         res%dx = u%dx
         unary_add_d_counter = unary_add_d_counter + 1
@@ -677,6 +715,7 @@ contains
         type(dual_xy), intent(in) :: u
         type(dual_xy), intent(in) :: v
         type(dual_xy) :: res
+        
         res%x = u%x + v%x
         res%dx = u%dx + v%dx
         add_d_d_counter = add_d_d_counter + 1
@@ -685,6 +724,7 @@ contains
         type(dual_xy), intent(in) :: u
         real(dp), intent(in) :: v
         type(dual_xy) :: res
+        
         res%x = u%x + v
         res%dx = u%dx
         add_d_r_counter = add_d_r_counter + 1
@@ -693,6 +733,7 @@ contains
         real(dp), intent(in) :: u
         type(dual_xy), intent(in) :: v
         type(dual_xy) :: res
+        
         res%x = u + v%x
         res%dx = v%dx
         add_r_d_counter = add_r_d_counter + 1
@@ -701,6 +742,7 @@ contains
         type(dual_xy), intent(in) :: u
         integer, intent(in) :: v
         type(dual_xy) :: res
+        
         res%x = u%x + v
         res%dx = u%dx
         add_d_i_counter = add_d_i_counter + 1
@@ -709,6 +751,7 @@ contains
         integer, intent(in) :: u
         type(dual_xy), intent(in) :: v
         type(dual_xy) :: res
+        
         res%x = u + v%x
         res%dx = v%dx
         add_i_d_counter = add_i_d_counter + 1
@@ -717,6 +760,7 @@ contains
         type(hdual_xy), intent(in) :: u
         type(hdual_xy) :: res
         integer :: j
+        
         res%x = u%x
         res%dx = u%dx
         do j = 1, num_deriv
@@ -729,6 +773,7 @@ contains
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
         integer :: j
+        
         res%x = u%x + v%x
         res%dx = u%dx + v%dx
         do j = 1, num_deriv
@@ -741,6 +786,7 @@ contains
         real(dp), intent(in) :: v
         type(hdual_xy) :: res
         integer :: j
+        
         res%x = u%x + v
         res%dx = u%dx
         do j = 1, num_deriv
@@ -753,6 +799,7 @@ contains
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
         integer :: j
+        
         res%x = u + v%x
         res%dx = v%dx
         do j = 1, num_deriv
@@ -765,6 +812,7 @@ contains
         integer, intent(in) :: v
         type(hdual_xy) :: res
         integer :: j
+        
         res%x = u%x + v
         res%dx = u%dx
         do j = 1, num_deriv
@@ -777,6 +825,7 @@ contains
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
         integer :: j
+        
         res%x = u + v%x
         res%dx = v%dx
         do j = 1, num_deriv
@@ -787,6 +836,7 @@ contains
     impure elemental function unary_minus_d(u) result(res)
         type(dual_xy), intent(in) :: u
         type(dual_xy) :: res
+        
         res%x = -u%x
         res%dx = -u%dx
         unary_minus_d_counter = unary_minus_d_counter + 1
@@ -795,6 +845,7 @@ contains
         type(dual_xy), intent(in) :: u
         type(dual_xy), intent(in) :: v
         type(dual_xy) :: res
+        
         res%x = u%x - v%x
         res%dx = u%dx - v%dx
         minus_d_d_counter = minus_d_d_counter + 1
@@ -803,6 +854,7 @@ contains
         type(dual_xy), intent(in) :: u
         real(dp), intent(in) :: v
         type(dual_xy) :: res
+        
         res%x = u%x - v
         res%dx = u%dx
         minus_d_r_counter = minus_d_r_counter + 1
@@ -811,6 +863,7 @@ contains
         real(dp), intent(in) :: u
         type(dual_xy), intent(in) :: v
         type(dual_xy) :: res
+        
         res%x = u - v%x
         res%dx = -v%dx
         minus_r_d_counter = minus_r_d_counter + 1
@@ -819,6 +872,7 @@ contains
         type(dual_xy), intent(in) :: u
         integer, intent(in) :: v
         type(dual_xy) :: res
+        
         res%x = u%x - v
         res%dx = u%dx
         minus_d_i_counter = minus_d_i_counter + 1
@@ -827,6 +881,7 @@ contains
         integer, intent(in) :: u
         type(dual_xy), intent(in) :: v
         type(dual_xy) :: res
+        
         res%x = u - v%x
         res%dx = -v%dx
         minus_i_d_counter = minus_i_d_counter + 1
@@ -835,6 +890,7 @@ contains
         type(hdual_xy), intent(in) :: u
         type(hdual_xy) :: res
         integer :: j
+        
         res%x = -u%x
         res%dx = -u%dx
         do j = 1, num_deriv
@@ -847,6 +903,7 @@ contains
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
         integer :: j
+        
         res%x = u%x - v%x
         res%dx = u%dx - v%dx
         do j = 1, num_deriv
@@ -859,6 +916,7 @@ contains
         real(dp), intent(in) :: v
         type(hdual_xy) :: res
         integer :: j
+        
         res%x = u%x - v
         res%dx = u%dx
         do j = 1, num_deriv
@@ -871,6 +929,7 @@ contains
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
         integer :: j
+        
         res%x = u - v%x
         res%dx = -v%dx
         do j = 1, num_deriv
@@ -883,6 +942,7 @@ contains
         integer, intent(in) :: v
         type(hdual_xy) :: res
         integer :: j
+        
         res%x = u%x - v
         res%dx = u%dx
         do j = 1, num_deriv
@@ -895,6 +955,7 @@ contains
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
         integer :: j
+        
         res%x = u - v%x
         res%dx = -v%dx
         do j = 1, num_deriv
@@ -906,6 +967,7 @@ contains
         type(dual_xy), intent(in) :: u
         type(dual_xy), intent(in) :: v
         type(dual_xy) :: res
+        
         res%x = u%x*v%x
         res%dx = u%dx*v%x + u%x*v%dx
         mult_d_d_counter = mult_d_d_counter + 1
@@ -914,6 +976,7 @@ contains
         type(dual_xy), intent(in) :: u
         real(dp), intent(in) :: v
         type(dual_xy) :: res
+        
         res%x = u%x*v
         res%dx = u%dx*v
         mult_d_r_counter = mult_d_r_counter + 1
@@ -922,6 +985,7 @@ contains
         real(dp), intent(in) :: u
         type(dual_xy), intent(in) :: v
         type(dual_xy) :: res
+        
         res%x = u*v%x
         res%dx = u*v%dx
         mult_r_d_counter = mult_r_d_counter + 1
@@ -930,6 +994,7 @@ contains
         type(dual_xy), intent(in) :: u
         integer, intent(in) :: v
         type(dual_xy) :: res
+        
         res%x = u%x*v
         res%dx = u%dx*v
         mult_d_i_counter = mult_d_i_counter + 1
@@ -938,6 +1003,7 @@ contains
         integer, intent(in) :: u
         type(dual_xy), intent(in) :: v
         type(dual_xy) :: res
+        
         res%x = u*v%x
         res%dx = u*v%dx
         mult_i_d_counter = mult_i_d_counter + 1
@@ -947,6 +1013,7 @@ contains
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
         integer :: j
+        
         res%x = u%x*v%x
         res%dx = u%dx*v%x + u%x*v%dx
         do j = 1, num_deriv
@@ -959,6 +1026,7 @@ contains
         real(dp), intent(in) :: v
         type(hdual_xy) :: res
         integer :: j
+        
         res%x = u%x*v
         res%dx = u%dx*v
         do j = 1, num_deriv
@@ -971,6 +1039,7 @@ contains
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
         integer :: j
+        
         res%x = u*v%x
         res%dx = u*v%dx
         do j = 1, num_deriv
@@ -983,6 +1052,7 @@ contains
         integer, intent(in) :: v
         type(hdual_xy) :: res
         integer :: j
+        
         res%x = u%x*v
         res%dx = u%dx*v
         do j = 1, num_deriv
@@ -995,6 +1065,7 @@ contains
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
         integer :: j
+        
         res%x = u*v%x
         res%dx = u*v%dx
         do j = 1, num_deriv
@@ -1006,22 +1077,30 @@ contains
         type(dual_xy), intent(in) :: u
         type(dual_xy), intent(in) :: v
         type(dual_xy) :: res
-        res%x = u%x/v%x
-        res%dx = u%dx/v%x - u%x*v%dx/v%x**2
+        real(dp) :: t0,t1
+        
+        t0 = 1.0_dp/v%x
+        t1 = t0*u%x
+        res%x = t1
+        res%dx = t0*(-t1*v%dx + u%dx)
         div_d_d_counter = div_d_d_counter + 1
     end function
     impure elemental function div_d_r(u, v) result(res)
         type(dual_xy), intent(in) :: u
         real(dp), intent(in) :: v
         type(dual_xy) :: res
-        res%x = u%x/v
-        res%dx = u%dx/v
+        real(dp) :: t0
+        
+        t0 = 1.0_dp/v
+        res%x = t0*u%x
+        res%dx = t0*u%dx
         div_d_r_counter = div_d_r_counter + 1
     end function
     impure elemental function div_r_d(u, v) result(res)
         real(dp), intent(in) :: u
         type(dual_xy), intent(in) :: v
         type(dual_xy) :: res
+        
         res%x = u/v%x
         res%dx = -u*v%dx/v%x**2
         div_r_d_counter = div_r_d_counter + 1
@@ -1030,14 +1109,18 @@ contains
         type(dual_xy), intent(in) :: u
         integer, intent(in) :: v
         type(dual_xy) :: res
-        res%x = u%x/v
-        res%dx = u%dx/v
+        real(dp) :: t0
+        
+        t0 = 1.0_dp/v
+        res%x = t0*u%x
+        res%dx = t0*u%dx
         div_d_i_counter = div_d_i_counter + 1
     end function
     impure elemental function div_i_d(u, v) result(res)
         integer, intent(in) :: u
         type(dual_xy), intent(in) :: v
         type(dual_xy) :: res
+        
         res%x = u/v%x
         res%dx = -u*v%dx/v%x**2
         div_i_d_counter = div_i_d_counter + 1
@@ -1047,11 +1130,15 @@ contains
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
         integer :: j
-        res%x = u%x/v%x
-        res%dx = u%dx/v%x - u%x*v%dx/v%x**2
+        real(dp) :: t0,t1
+        
+        t0 = 1.0_dp/v%x
+        t1 = t0*u%x
+        res%x = t1
+        res%dx = t0*(-t1*v%dx + u%dx)
         do j = 1, num_deriv
-            res%ddx(:, j) = u%ddx(:, j)/v%x - u%dx(j)*v%dx/v%x**2 - u%x*v%ddx(:, j)/v%x**2 + &
-      v%dx(j)*(-u%dx/v%x**2 + 2*u%x*v%dx/v%x**3)
+            res%ddx(:, j) = t0*(-t0*u%dx(j)*v%dx - t0*v%dx(j)*(-2*t1*v%dx + u%dx) - &
+      t1*v%ddx(:, j) + u%ddx(:, j))
         end do
         div_hd_hd_counter = div_hd_hd_counter + 1
     end function
@@ -1060,10 +1147,13 @@ contains
         real(dp), intent(in) :: v
         type(hdual_xy) :: res
         integer :: j
-        res%x = u%x/v
-        res%dx = u%dx/v
+        real(dp) :: t0
+        
+        t0 = 1.0_dp/v
+        res%x = t0*u%x
+        res%dx = t0*u%dx
         do j = 1, num_deriv
-            res%ddx(:, j) = u%ddx(:, j)/v
+            res%ddx(:, j) = t0*u%ddx(:, j)
         end do
         div_hd_r_counter = div_hd_r_counter + 1
     end function
@@ -1072,10 +1162,14 @@ contains
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
         integer :: j
-        res%x = u/v%x
-        res%dx = -u*v%dx/v%x**2
+        real(dp) :: t0,t1
+        
+        t0 = 1.0_dp/v%x
+        t1 = u/v%x**2
+        res%x = t0*u
+        res%dx = -t1*v%dx
         do j = 1, num_deriv
-            res%ddx(:, j) = -u*v%ddx(:, j)/v%x**2 + 2*u*v%dx*v%dx(j)/v%x**3
+            res%ddx(:, j) = t1*(2*t0*v%dx*v%dx(j) - v%ddx(:, j))
         end do
         div_r_hd_counter = div_r_hd_counter + 1
     end function
@@ -1084,10 +1178,13 @@ contains
         integer, intent(in) :: v
         type(hdual_xy) :: res
         integer :: j
-        res%x = u%x/v
-        res%dx = u%dx/v
+        real(dp) :: t0
+        
+        t0 = 1.0_dp/v
+        res%x = t0*u%x
+        res%dx = t0*u%dx
         do j = 1, num_deriv
-            res%ddx(:, j) = u%ddx(:, j)/v
+            res%ddx(:, j) = t0*u%ddx(:, j)
         end do
         div_hd_i_counter = div_hd_i_counter + 1
     end function
@@ -1096,10 +1193,14 @@ contains
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
         integer :: j
-        res%x = u/v%x
-        res%dx = -u*v%dx/v%x**2
+        real(dp) :: t0,t1
+        
+        t0 = 1.0_dp/v%x
+        t1 = u/v%x**2
+        res%x = t0*u
+        res%dx = -t1*v%dx
         do j = 1, num_deriv
-            res%ddx(:, j) = -u*v%ddx(:, j)/v%x**2 + 2*u*v%dx*v%dx(j)/v%x**3
+            res%ddx(:, j) = t1*(2*t0*v%dx*v%dx(j) - v%ddx(:, j))
         end do
         div_i_hd_counter = div_i_hd_counter + 1
     end function
@@ -1107,24 +1208,33 @@ contains
         type(dual_xy), intent(in) :: u
         integer, intent(in) :: v
         type(dual_xy) :: res
-        res%x = u%x**v
-        res%dx = u%dx*u%x**v*v/u%x
+        real(dp) :: t0
+        
+        t0 = u%x**v
+        res%x = t0
+        res%dx = t0*u%dx*v/u%x
         pow_d_i_counter = pow_d_i_counter + 1
     end function
     impure elemental function pow_d_r(u, v) result(res)
         type(dual_xy), intent(in) :: u
         real(dp), intent(in) :: v
         type(dual_xy) :: res
-        res%x = u%x**v
-        res%dx = u%dx*u%x**v*v/u%x
+        real(dp) :: t0
+        
+        t0 = u%x**v
+        res%x = t0
+        res%dx = t0*u%dx*v/u%x
         pow_d_r_counter = pow_d_r_counter + 1
     end function
     impure elemental function pow_d_d(u, v) result(res)
         type(dual_xy), intent(in) :: u
         type(dual_xy), intent(in) :: v
         type(dual_xy) :: res
-        res%x = u%x**v%x
-        res%dx = u%dx*u%x**v%x*v%x/u%x + u%x**v%x*v%dx*log(u%x)
+        real(dp) :: t0
+        
+        t0 = u%x**v%x
+        res%x = t0
+        res%dx = t0*(u%dx*v%x/u%x + v%dx*log(u%x))
         pow_d_d_counter = pow_d_d_counter + 1
     end function
     impure elemental function pow_hd_i(u, v) result(res)
@@ -1132,11 +1242,15 @@ contains
         integer, intent(in) :: v
         type(hdual_xy) :: res
         integer :: j
-        res%x = u%x**v
-        res%dx = u%dx*u%x**v*v/u%x
+        real(dp) :: t0,t1,t2
+        
+        t0 = u%x**v
+        t1 = 1.0_dp/u%x
+        t2 = t0*v
+        res%x = t0
+        res%dx = t1*t2*u%dx
         do j = 1, num_deriv
-            res%ddx(:, j) = u%ddx(:, j)*u%x**v*v/u%x + u%dx*u%dx(j)*(u%x**v*v**2/ &
-      u%x**2 - u%x**v*v/u%x**2)
+            res%ddx(:, j) = t1*t2*(t1*u%dx*u%dx(j)*(v - 1) + u%ddx(:, j))
         end do
         pow_hd_i_counter = pow_hd_i_counter + 1
     end function
@@ -1145,11 +1259,15 @@ contains
         real(dp), intent(in) :: v
         type(hdual_xy) :: res
         integer :: j
-        res%x = u%x**v
-        res%dx = u%dx*u%x**v*v/u%x
+        real(dp) :: t0,t1,t2
+        
+        t0 = u%x**v
+        t1 = 1.0_dp/u%x
+        t2 = t0*v
+        res%x = t0
+        res%dx = t1*t2*u%dx
         do j = 1, num_deriv
-            res%ddx(:, j) = u%ddx(:, j)*u%x**v*v/u%x + u%dx*u%dx(j)*(u%x**v*v**2/ &
-      u%x**2 - u%x**v*v/u%x**2)
+            res%ddx(:, j) = t1*t2*(t1*u%dx*u%dx(j)*(v - 1) + u%ddx(:, j))
         end do
         pow_hd_r_counter = pow_hd_r_counter + 1
     end function
@@ -1158,14 +1276,17 @@ contains
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
         integer :: j
-        res%x = u%x**v%x
-        res%dx = u%dx*u%x**v%x*v%x/u%x + u%x**v%x*v%dx*log(u%x)
+        real(dp) :: t0,t1,t2,t3
+        
+        t0 = u%x**v%x
+        t1 = log(u%x)
+        t2 = 1.0_dp/u%x
+        t3 = t1*v%x + 1
+        res%x = t0
+        res%dx = t0*(t1*v%dx + t2*u%dx*v%x)
         do j = 1, num_deriv
-            res%ddx(:, j) = u%ddx(:, j)*u%x**v%x*v%x/u%x + u%dx(j)*(u%dx*(u%x**v%x*v%x**2/ &
-      u%x**2 - u%x**v%x*v%x/u%x**2) + v%dx*(u%x**v%x*v%x*log(u%x)/u%x &
-      + u%x**v%x/u%x)) + u%x**v%x*v%ddx(:, j)*log(u%x) + v%dx(j)*(u%dx*(u%x** &
-      v%x*v%x*log(u%x)/u%x + u%x**v%x/u%x) + u%x**v%x*v%dx*log(u%x)**2 &
-      )
+            res%ddx(:, j) = t0*(t1*v%ddx(:, j) + t2*u%ddx(:, j)*v%x + t2*u%dx(j)*(t2*u%dx*v%x*( &
+      v%x - 1) + t3*v%dx) + v%dx(j)*(t1**2*v%dx + t2*t3*u%dx))
         end do
         pow_hd_hd_counter = pow_hd_hd_counter + 1
     end function
@@ -1490,6 +1611,7 @@ contains
     impure elemental function log_d(u) result(res)
         type(dual_xy), intent(in) :: u
         type(dual_xy) :: res
+        
         res%x = log(u%x)
         res%dx = u%dx/u%x
         log_d_counter = log_d_counter + 1
@@ -1498,10 +1620,13 @@ contains
         type(hdual_xy), intent(in) :: u
         type(hdual_xy) :: res
         integer :: j
+        real(dp) :: t0
+        
+        t0 = 1.0_dp/u%x
         res%x = log(u%x)
-        res%dx = u%dx/u%x
+        res%dx = t0*u%dx
         do j = 1, num_deriv
-            res%ddx(:, j) = u%ddx(:, j)/u%x - u%dx*u%dx(j)/u%x**2
+            res%ddx(:, j) = t0*(-t0*u%dx*u%dx(j) + u%ddx(:, j))
         end do
         log_hd_counter = log_hd_counter + 1
     end function
@@ -1726,19 +1851,25 @@ contains
     impure elemental function sqrt_d(u) result(res)
         type(dual_xy), intent(in) :: u
         type(dual_xy) :: res
-        res%x = sqrt(u%x)
-        res%dx = 0.5_dp*u%dx/sqrt(u%x)
+        real(dp) :: t0
+        
+        t0 = sqrt(u%x)
+        res%x = t0
+        res%dx = 0.5_dp*u%dx/t0
         sqrt_d_counter = sqrt_d_counter + 1
     end function
     impure elemental function sqrt_hd(u) result(res)
         type(hdual_xy), intent(in) :: u
         type(hdual_xy) :: res
         integer :: j
-        res%x = sqrt(u%x)
-        res%dx = 0.5_dp*u%dx/sqrt(u%x)
+        real(dp) :: t0,t1
+        
+        t0 = sqrt(u%x)
+        t1 = 1.0_dp/t0
+        res%x = t0
+        res%dx = 0.5_dp*t1*u%dx
         do j = 1, num_deriv
-            res%ddx(:, j) = 0.5_dp*u%ddx(:, j)/sqrt(u%x) - 0.25_dp*u%dx*u%dx(j)/ &
-      u%x**1.5_dp
+            res%ddx(:, j) = (0.25_dp)*t1*(2*u%ddx(:, j) - u%dx*u%dx(j)/u%x)
         end do
         sqrt_hd_counter = sqrt_hd_counter + 1
     end function

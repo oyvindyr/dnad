@@ -1,0 +1,29 @@
+#:def mac(is_pure, test_coverage)
+    I am in macro 1
+    #:if is_pure and not test_coverage
+        #:set elemental_purity = "elemental"
+    #:else
+        #:set elemental_purity = "impure elemental"
+    #:endif
+    ${elemental_purity}$
+
+#:enddef
+
+#:def mac2(is_pure, test_coverage)
+    I am in macro 2
+    #: set elemental_purity = dnad.elemental_purity(is_pure, test_coverage)
+    ${elemental_purity}$
+#:enddef
+
+
+
+
+#:set is_pure = False
+#:set test_coverage = False
+
+
+$:mac(is_pure, test_coverage)
+$:mac2(is_pure, test_coverage)
+
+
+

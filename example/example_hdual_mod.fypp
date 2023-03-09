@@ -1,0 +1,113 @@
+#:mute
+
+#:include '../src/macros/dnad_dual_types.fypp'
+#:include '../src/macros/dnad_interfaces.fypp'
+#:include '../src/macros/dnad_implementations.fypp'
+
+#! When set_undefined = False, the dnad functions assume that the derivative exists. It is does not exist (for instance for abs(0.0))
+#! the result will be undefined. When set_undefined = True (or not defined) some logic is included in the mathematical functions to
+#! determine if the derivative exists of not, and call a function set_NaN() when it does not exist. Using set_undefined = False is 
+#! believed to be faster.
+#:set set_undefined = False
+
+#! selected_interfaces is a comma separated list or "--all"
+#:set selected_interfaces = "=,+,*,**,log,sqrt"
+
+#:endmute
+module example_hdual_mod
+    use, intrinsic :: iso_fortran_env, only: dp => real64
+    implicit none
+
+    private
+    public :: example_hdual
+
+    integer, parameter :: num_deriv = 3 ! Number of derivatives
+
+  #:if set_undefined
+    ! Workaround to make pure functions produce NaN's deliberately:
+    real(dp) :: negative_one = -1.0_dp
+  #:endif
+    
+    #! Inject the dual type definitions
+    #!  Note: Calling a macro with @ will convert all arguments to strings
+    @:dnad_hdual_type(hdual_uvw, dp, num_deriv, sequence)
+
+    #! Inject interfaces
+    #!  Note: Calling a macro with $ will send in python variables as arguments
+    $:dnad_interfaces(selected_interfaces, has_hyper_dual=True)
+    
+contains
+
+    subroutine example_hdual()
+
+        ! Number of function evaluations to perform:
+        integer, parameter :: nval = 2
+
+        integer :: i
+        real(dp) :: r
+
+        type(hdual_uvw), dimension(nval) :: uhd, vhd, whd, fhd
+
+        real(dp), dimension(num_deriv, num_deriv) :: hessian1, hessian2 
+
+        ! Initialize dual inputs:
+        do i = 1, nval
+
+            call random_number(r)
+            uhd(i) = initialize_hdual(r, 1)
+
+            call random_number(r)
+            vhd(i) = initialize_hdual(r, 2)
+
+            call random_number(r)
+            whd(i) = initialize_hdual(r, 3)
+
+        end do
+
+        ! Function to compute value, gradient and Hessian for:
+        fhd = test_function_hdual(uhd, vhd, whd)
+
+        ! Extract full hessian from lower triangular:
+        hessian1 = hessian(fhd(1))
+        hessian2 = hessian(fhd(2))
+
+
+        print *, "Function value 1:"
+        print *, fhd(1)%x
+        print *, "Function value 2:"
+        print *, fhd(2)%x
+        print *, "Gradient 1:"
+        print *, fhd(1)%dx
+        print *, "Gradient 2:"
+        print *, fhd(2)%dx
+        print *, "Hessian 1:"
+        do i = 1, num_deriv
+            print *, hessian1(i, :)
+        end do
+        print *, "Hessian 2:"
+        do i = 1, num_deriv
+            print *, hessian2(i, :)
+        end do
+
+      
+    end subroutine
+
+    elemental function test_function_hdual(u, v, w) result(f)
+        type(hdual_uvw), intent(in) :: u, v, w
+        type(hdual_uvw) :: f
+        f = sqrt(u)*log(v) + u**w
+    end function
+
+    #! Inject overloaded function implementations
+    $:dnad_implementations("dp", "num_deriv", hdual_type="hdual_uvw", selected_interfaces=selected_interfaces, &
+            set_undefined=set_undefined)
+    
+  #:if set_undefined
+    ! Workaround to make pure functions produce NaN's deliberately:
+    elemental function set_NaN() result(res)
+        real(dp) :: res
+        res = sqrt(negative_one)
+    end function set_NaN
+  #:endif
+    
+end module

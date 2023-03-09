@@ -1,27 +1,46 @@
-#:def sqrt_d(dual_type, real_kind)
+
+#:def sqrt_d(dual_type, real_kind, number_of_derivatives, is_pure, test_coverage)
+    #:if is_pure and not test_coverage
+        #:set elemental_purity = "elemental"
+    #:else
+        #:set elemental_purity = "impure elemental"
+    #:endif
     ${elemental_purity}$ function sqrt_d(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
-        res%x = sqrt(u%x)
-        res%dx = 0.5_${real_kind}$*u%dx/sqrt(u%x)
-      #:if test_coverage == True
+        real(${real_kind}$) :: t0
+        
+        t0 = sqrt(u%x)
+        res%x = t0
+        res%dx = 0.5_${real_kind}$*u%dx/t0
+      #:if test_coverage
         sqrt_d_counter = sqrt_d_counter + 1
       #:endif
     end function
 #:enddef
-#:def sqrt_hd(dual_type, real_kind)
+
+#:def sqrt_hd(dual_type, real_kind, number_of_derivatives, is_pure, test_coverage)
+    #:if is_pure and not test_coverage
+        #:set elemental_purity = "elemental"
+    #:else
+        #:set elemental_purity = "impure elemental"
+    #:endif
     ${elemental_purity}$ function sqrt_hd(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
         integer :: j
-        res%x = sqrt(u%x)
-        res%dx = 0.5_${real_kind}$*u%dx/sqrt(u%x)
+        real(${real_kind}$) :: t0,t1
+        
+        t0 = sqrt(u%x)
+        t1 = 1.0_${real_kind}$/t0
+        res%x = t0
+        res%dx = 0.5_${real_kind}$*t1*u%dx
         do j = 1, ${number_of_derivatives}$
-            res%ddx(:, j) = 0.5_${real_kind}$*u%ddx(:, j)/sqrt(u%x) - 0.25_${real_kind}$*u%dx*u%dx(j)/ &
-      u%x**1.5_${real_kind}$
+            res%ddx(:, j) = (0.25_${real_kind}$)*t1*(2*u%ddx(:, j) - u%dx*u%dx(j)/u%x)
         end do
-      #:if test_coverage == True
+      #:if test_coverage
         sqrt_hd_counter = sqrt_hd_counter + 1
       #:endif
     end function
 #:enddef
+

@@ -1,0 +1,26 @@
+#:def initialize_d(dual_type, real_kind)
+    pure function initialize_dual(val, idiff) result(d)
+        real(${real_kind}$), intent(in) :: val
+        integer, intent(in) :: idiff
+        type(${dual_type}$) :: d
+        
+        d%x = val
+        d%dx = 0
+        d%dx(idiff) = 1
+
+    end function
+#:enddef
+
+#:def initialize_hd(dual_type, real_kind)
+    pure function initialize_hdual(val, idiff) result(d)
+        real(${real_kind}$), intent(in) :: val
+        integer, intent(in) :: idiff
+        type(${dual_type}$) :: d
+        
+        d%x = val
+        d%dx = 0
+        d%ddx = 0
+        d%dx(idiff) = 1
+
+    end function
+#:enddef

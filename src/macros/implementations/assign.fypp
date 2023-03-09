@@ -1,91 +1,99 @@
-#:def assign_d(dual_type, real_kind, is_pure=True, test_coverage=False)
-    #!set purity = dnad.purity(is_pure, test_coverage)
-    ${purity}$ subroutine assign_d_i(u, i)
+#:def assign_d(dual_type, real_kind, is_pure, test_coverage)
+    #:if is_pure and not test_coverage
+        #:set purity = "pure "
+    #:else
+        #:set purity = ""
+    #:endif
+    ${purity}$subroutine assign_d_i(u, i)
         type(${dual_type}$), intent(out) :: u
         integer, intent(in) :: i
 
         u%x = real(i, ${real_kind}$)  ! This is faster than direct assignment
         u%dx = 0.0_${real_kind}$
-      #:if test_coverage == True
+      #:if test_coverage
         assign_d_i_counter = assign_d_i_counter + 1
       #:endif
 
     end subroutine
-    ${purity}$ subroutine assign_d_r(u, r)
+    ${purity}$subroutine assign_d_r(u, r)
         type(${dual_type}$), intent(out) :: u
         real(${real_kind}$), intent(in) :: r
 
         u%x = r
         u%dx = 0.0_${real_kind}$
-      #:if test_coverage == True
+      #:if test_coverage
         assign_d_r_counter = assign_d_r_counter + 1
       #:endif
 
     end subroutine
-    ${purity}$ subroutine assign_i_d(i, v)
+    ${purity}$subroutine assign_i_d(i, v)
         type(${dual_type}$), intent(in) :: v
         integer, intent(out) :: i
 
         i = int(v%x)
-      #:if test_coverage == True
+      #:if test_coverage
         assign_i_d_counter = assign_i_d_counter + 1
       #:endif
 
     end subroutine
-    ${purity}$ subroutine assign_r_d(r, v)
+    ${purity}$subroutine assign_r_d(r, v)
         type(${dual_type}$), intent(in) :: v
         real(${real_kind}$), intent(out) :: r
 
         r = v%x
-      #:if test_coverage == True
+      #:if test_coverage
         assign_r_d_counter = assign_r_d_counter + 1
       #:endif
 
     end subroutine
 #:enddef
 
-#:def assign_hd(dual_type, real_kind, is_pure=True, test_coverage=False)
-    #!set purity = dnad.purity(is_pure, test_coverage)
-    ${purity}$ subroutine assign_hd_i(u, i)
+#:def assign_hd(dual_type, real_kind, is_pure, test_coverage)
+    #:if is_pure and not test_coverage
+        #:set purity = "pure "
+    #:else
+        #:set purity = ""
+    #:endif
+    ${purity}$subroutine assign_hd_i(u, i)
         type(${dual_type}$), intent(out) :: u
         integer, intent(in) :: i
 
         u%x = real(i, ${real_kind}$)  ! This is faster than direct assignment
         u%dx = 0.0_${real_kind}$
         u%ddx = 0.0_${real_kind}$
-      #:if test_coverage == True
+      #:if test_coverage
         assign_hd_i_counter = assign_hd_i_counter + 1
       #:endif
 
     end subroutine
-    ${purity}$ subroutine assign_hd_r(u, r)
+    ${purity}$subroutine assign_hd_r(u, r)
         type(${dual_type}$), intent(out) :: u
         real(${real_kind}$), intent(in) :: r
 
         u%x = r
         u%dx = 0.0_${real_kind}$
         u%ddx = 0.0_${real_kind}$
-      #:if test_coverage == True
+      #:if test_coverage
         assign_hd_r_counter = assign_hd_r_counter + 1
       #:endif
 
     end subroutine
-    ${purity}$ subroutine assign_i_hd(i, v)
+    ${purity}$subroutine assign_i_hd(i, v)
         type(${dual_type}$), intent(in) :: v
         integer, intent(out) :: i
 
         i = int(v%x)
-      #:if test_coverage == True
+      #:if test_coverage
         assign_i_hd_counter = assign_i_hd_counter + 1
       #:endif
 
     end subroutine
-    ${purity}$ subroutine assign_r_hd(r, v)
+    ${purity}$subroutine assign_r_hd(r, v)
         type(${dual_type}$), intent(in) :: v
         real(${real_kind}$), intent(out) :: r
 
         r = v%x
-      #:if test_coverage == True
+      #:if test_coverage
         assign_r_hd_counter = assign_r_hd_counter + 1
       #:endif
 

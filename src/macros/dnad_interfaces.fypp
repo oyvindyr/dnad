@@ -1,8 +1,15 @@
 #:def dnad_interfaces(selected_interfaces, has_dual=False, has_hyper_dual=False) 
-  #:if has_dual == False and has_hyper_dual == False
-    #:stop "has_dual and has_hyper_dual cannot both be False"
+    #!
+    #:assert has_dual or has_hyper_dual
+    #!
+    #:set interface_list = dnad.select_interfaces(selected_interfaces)
+    #!
+  #:if has_hyper_dual
+    interface hessian ! Extract Hessian from a hyper-dual number
+        module procedure hessian_matrix
+    end interface
   #:endif
-  #:set interface_list = dnad.select_interfaces(selected_interfaces)
+
   #:if "=" in interface_list 
     interface assignment (=)
       #:if has_dual
