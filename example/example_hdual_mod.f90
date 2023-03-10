@@ -13,7 +13,7 @@ module example_hdual_mod
         sequence
         real(dp) :: x = 0  ! functional value
         real(dp) :: dx(num_deriv) = 0  ! derivatives
-        real(dp) :: ddx(num_deriv, num_deriv) = 0  ! Hessian
+        real(dp) :: ddx(num_deriv*(num_deriv + 1)/2) = 0  ! Lower triangular of Hessian
     end type
 
     interface hessian ! Extract Hessian from a hyper-dual number
@@ -132,17 +132,17 @@ contains
         
         integer i, j, k
 
-        ! k = 0
-        ! do j = 1, num_deriv
-        !     k = k + 1
-        !     m(j, j) = d%ddx(k)
-        !     do i = j+1, num_deriv
-        !         k = k + 1
-        !         m(i, j) = d%ddx(k)
-        !         m(j, i) = d%ddx(k)
-        !     end do
-        ! end do
-        m = d%ddx
+        k = 0
+        do j = 1, num_deriv
+            k = k + 1
+            m(j, j) = d%ddx(k)
+            do i = j+1, num_deriv
+                k = k + 1
+                m(i, j) = d%ddx(k)
+                m(j, i) = d%ddx(k)
+            end do
+        end do
+        ! m = d%ddx
 
     end function
     pure subroutine assign_hd_i(u, i)
@@ -180,139 +180,113 @@ contains
     elemental function unary_add_hd(u) result(res)
         type(hdual_uvw), intent(in) :: u
         type(hdual_uvw) :: res
-        integer :: j
         
         res%x = u%x
         res%dx = u%dx
-        do j = 1, num_deriv
-            res%ddx(:, j) = u%ddx(:, j)
-        end do
+        res%ddx = u%ddx
     end function
     elemental function add_hd_hd(u, v) result(res)
         type(hdual_uvw), intent(in) :: u
         type(hdual_uvw), intent(in) :: v
         type(hdual_uvw) :: res
-        integer :: j
         
         res%x = u%x + v%x
         res%dx = u%dx + v%dx
-        do j = 1, num_deriv
-            res%ddx(:, j) = u%ddx(:, j) + v%ddx(:, j)
-        end do
+        res%ddx = u%ddx + v%ddx
     end function
     elemental function add_hd_r(u, v) result(res)
         type(hdual_uvw), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual_uvw) :: res
-        integer :: j
         
         res%x = u%x + v
         res%dx = u%dx
-        do j = 1, num_deriv
-            res%ddx(:, j) = u%ddx(:, j)
-        end do
+        res%ddx = u%ddx
     end function
     elemental function add_r_hd(u, v) result(res)
         real(dp), intent(in) :: u
         type(hdual_uvw), intent(in) :: v
         type(hdual_uvw) :: res
-        integer :: j
         
         res%x = u + v%x
         res%dx = v%dx
-        do j = 1, num_deriv
-            res%ddx(:, j) = v%ddx(:, j)
-        end do
+        res%ddx = v%ddx
     end function
     elemental function add_hd_i(u, v) result(res)
         type(hdual_uvw), intent(in) :: u
         integer, intent(in) :: v
         type(hdual_uvw) :: res
-        integer :: j
         
         res%x = u%x + v
         res%dx = u%dx
-        do j = 1, num_deriv
-            res%ddx(:, j) = u%ddx(:, j)
-        end do
+        res%ddx = u%ddx
     end function
     elemental function add_i_hd(u, v) result(res)
         integer, intent(in) :: u
         type(hdual_uvw), intent(in) :: v
         type(hdual_uvw) :: res
-        integer :: j
         
         res%x = u + v%x
         res%dx = v%dx
-        do j = 1, num_deriv
-            res%ddx(:, j) = v%ddx(:, j)
-        end do
+        res%ddx = v%ddx
     end function
     elemental function mult_hd_hd(u, v) result(res)
         type(hdual_uvw), intent(in) :: u
         type(hdual_uvw), intent(in) :: v
         type(hdual_uvw) :: res
-        integer :: j
+        integer :: i, j, k
         
         res%x = u%x*v%x
         res%dx = u%dx*v%x + u%x*v%dx
+        k = 0
         do j = 1, num_deriv
-            res%ddx(:, j) = u%ddx(:, j)*v%x + u%dx*v%dx(j) + u%dx(j)*v%dx + u%x*v%ddx(:, j)
+            do i = j, num_deriv
+                k = k + 1
+                res%ddx(k) = u%ddx(k)*v%x + u%dx(i)*v%dx(j) + u%dx(j)*v%dx(i) + u%x*v%ddx(k)
+            end do
         end do
     end function
     elemental function mult_hd_r(u, v) result(res)
         type(hdual_uvw), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual_uvw) :: res
-        integer :: j
         
         res%x = u%x*v
         res%dx = u%dx*v
-        do j = 1, num_deriv
-            res%ddx(:, j) = u%ddx(:, j)*v
-        end do
+        res%ddx = u%ddx*v
     end function
     elemental function mult_r_hd(u, v) result(res)
         real(dp), intent(in) :: u
         type(hdual_uvw), intent(in) :: v
         type(hdual_uvw) :: res
-        integer :: j
         
         res%x = u*v%x
         res%dx = u*v%dx
-        do j = 1, num_deriv
-            res%ddx(:, j) = u*v%ddx(:, j)
-        end do
+        res%ddx = u*v%ddx
     end function
     elemental function mult_hd_i(u, v) result(res)
         type(hdual_uvw), intent(in) :: u
         integer, intent(in) :: v
         type(hdual_uvw) :: res
-        integer :: j
         
         res%x = u%x*v
         res%dx = u%dx*v
-        do j = 1, num_deriv
-            res%ddx(:, j) = u%ddx(:, j)*v
-        end do
+        res%ddx = u%ddx*v
     end function
     elemental function mult_i_hd(u, v) result(res)
         integer, intent(in) :: u
         type(hdual_uvw), intent(in) :: v
         type(hdual_uvw) :: res
-        integer :: j
         
         res%x = u*v%x
         res%dx = u*v%dx
-        do j = 1, num_deriv
-            res%ddx(:, j) = u*v%ddx(:, j)
-        end do
+        res%ddx = u*v%ddx
     end function
     elemental function pow_hd_i(u, v) result(res)
         type(hdual_uvw), intent(in) :: u
         integer, intent(in) :: v
         type(hdual_uvw) :: res
-        integer :: j
+        integer :: i, j, k
         real(dp) :: t0,t1,t2
         
         t0 = u%x**v
@@ -320,15 +294,19 @@ contains
         t2 = t0*v
         res%x = t0
         res%dx = t1*t2*u%dx
+        k = 0
         do j = 1, num_deriv
-            res%ddx(:, j) = t1*t2*(t1*u%dx*u%dx(j)*(v - 1) + u%ddx(:, j))
+            do i = j, num_deriv
+                k = k + 1
+                res%ddx(k) = t1*t2*(t1*u%dx(i)*u%dx(j)*(v - 1) + u%ddx(k))
+            end do
         end do
     end function
     elemental function pow_hd_r(u, v) result(res)
         type(hdual_uvw), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual_uvw) :: res
-        integer :: j
+        integer :: i, j, k
         real(dp) :: t0,t1,t2
         
         t0 = u%x**v
@@ -336,15 +314,19 @@ contains
         t2 = t0*v
         res%x = t0
         res%dx = t1*t2*u%dx
+        k = 0
         do j = 1, num_deriv
-            res%ddx(:, j) = t1*t2*(t1*u%dx*u%dx(j)*(v - 1) + u%ddx(:, j))
+            do i = j, num_deriv
+                k = k + 1
+                res%ddx(k) = t1*t2*(t1*u%dx(i)*u%dx(j)*(v - 1) + u%ddx(k))
+            end do
         end do
     end function
     elemental function pow_hd_hd(u, v) result(res)
         type(hdual_uvw), intent(in) :: u
         type(hdual_uvw), intent(in) :: v
         type(hdual_uvw) :: res
-        integer :: j
+        integer :: i, j, k
         real(dp) :: t0,t1,t2,t3
         
         t0 = u%x**v%x
@@ -353,36 +335,48 @@ contains
         t3 = t1*v%x + 1
         res%x = t0
         res%dx = t0*(t1*v%dx + t2*u%dx*v%x)
+        k = 0
         do j = 1, num_deriv
-            res%ddx(:, j) = t0*(t1*v%ddx(:, j) + t2*u%ddx(:, j)*v%x + t2*u%dx(j)*(t2*u%dx*v%x*( &
-      v%x - 1) + t3*v%dx) + v%dx(j)*(t1**2*v%dx + t2*t3*u%dx))
+            do i = j, num_deriv
+                k = k + 1
+                res%ddx(k) = t0*(t1*v%ddx(k) + t2*u%ddx(k)*v%x + t2*u%dx(j)*(t2*u%dx(i)*v%x*(v%x - &
+      1) + t3*v%dx(i)) + v%dx(j)*(t1**2*v%dx(i) + t2*t3*u%dx(i)))
+            end do
         end do
     end function
     elemental function log_hd(u) result(res)
         type(hdual_uvw), intent(in) :: u
         type(hdual_uvw) :: res
-        integer :: j
+        integer :: i, j, k
         real(dp) :: t0
         
         t0 = 1.0_dp/u%x
         res%x = log(u%x)
         res%dx = t0*u%dx
+        k = 0
         do j = 1, num_deriv
-            res%ddx(:, j) = t0*(-t0*u%dx*u%dx(j) + u%ddx(:, j))
+            do i = j, num_deriv
+                k = k + 1
+                res%ddx(k) = t0*(-t0*u%dx(i)*u%dx(j) + u%ddx(k))
+            end do
         end do
     end function
     elemental function sqrt_hd(u) result(res)
         type(hdual_uvw), intent(in) :: u
         type(hdual_uvw) :: res
-        integer :: j
+        integer :: i, j, k
         real(dp) :: t0,t1
         
         t0 = sqrt(u%x)
         t1 = 1.0_dp/t0
         res%x = t0
         res%dx = 0.5_dp*t1*u%dx
+        k = 0
         do j = 1, num_deriv
-            res%ddx(:, j) = (0.25_dp)*t1*(2*u%ddx(:, j) - u%dx*u%dx(j)/u%x)
+            do i = j, num_deriv
+                k = k + 1
+                res%ddx(k) = (0.25_dp)*t1*(2*u%ddx(k) - u%dx(i)*u%dx(j)/u%x)
+            end do
         end do
     end function
     

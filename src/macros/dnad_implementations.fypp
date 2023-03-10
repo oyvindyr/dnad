@@ -14,7 +14,7 @@
 
 #!
 #!
-#:def dnad_implementations(real_kind, number_of_derivatives, dual_type=None, hdual_type=None, &
+#:def dnad_implementations(real_kind, size_dx, dual_type=None, hdual_type=None, &
         selected_interfaces="--all", set_undefined=True, is_pure=True, test_coverage=False) 
 #! 
 #:set interface_list = dnad.select_interfaces(selected_interfaces)
@@ -36,7 +36,7 @@
 #:endif
 #!
 #:if hdual_type is not None 
-    $:hessian(hdual_type, real_kind, number_of_derivatives)
+    $:hessian(hdual_type, real_kind, size_dx)
 #:endif
 #!
 #!
@@ -53,50 +53,50 @@
 #!
 #:if "+" in interface_list
   #:if dual_type is not None
-    $:add_d( dual_type, real_kind, number_of_derivatives, is_pure, test_coverage)
+    $:add_d( dual_type, real_kind, size_dx, is_pure, test_coverage)
   #:endif
   #:if hdual_type is not None 
-    $:add_hd(hdual_type, real_kind, number_of_derivatives, is_pure, test_coverage)
+    $:add_hd(hdual_type, real_kind, size_dx, is_pure, test_coverage)
   #:endif 
 #:endif
 #!
 #! 
 #:if "-" in interface_list 
   #:if dual_type is not None
-    $:minus_d( dual_type, real_kind, number_of_derivatives, is_pure, test_coverage)
+    $:minus_d( dual_type, real_kind, size_dx, is_pure, test_coverage)
   #:endif
   #:if hdual_type is not None
-    $:minus_hd(hdual_type, real_kind, number_of_derivatives, is_pure, test_coverage)
+    $:minus_hd(hdual_type, real_kind, size_dx, is_pure, test_coverage)
   #:endif 
 #:endif 
 #!
 #! 
 #:if "*" in interface_list 
   #:if dual_type is not None
-    $:mult_d(dual_type, real_kind, number_of_derivatives, is_pure, test_coverage)
+    $:mult_d(dual_type, real_kind, size_dx, is_pure, test_coverage)
   #:endif
   #:if hdual_type is not None
-    $:mult_hd(hdual_type, real_kind, number_of_derivatives, is_pure, test_coverage)
+    $:mult_hd(hdual_type, real_kind, size_dx, is_pure, test_coverage)
   #:endif 
 #:endif 
 #!
 #! 
 #:if "/" in interface_list 
   #:if dual_type is not None
-    $:div_d(dual_type, real_kind, number_of_derivatives, is_pure, test_coverage)
+    $:div_d(dual_type, real_kind, size_dx, is_pure, test_coverage)
   #:endif
   #:if hdual_type is not None
-    $:div_hd(hdual_type, real_kind, number_of_derivatives, is_pure, test_coverage)
+    $:div_hd(hdual_type, real_kind, size_dx, is_pure, test_coverage)
   #:endif 
 #:endif 
 #!
 #! 
 #:if "**" in interface_list 
   #:if dual_type is not None
-    $:pow_d(dual_type, real_kind, number_of_derivatives, is_pure, test_coverage)
+    $:pow_d(dual_type, real_kind, size_dx, is_pure, test_coverage)
   #:endif
   #:if hdual_type is not None
-    $:pow_hd(hdual_type, real_kind, number_of_derivatives, is_pure, test_coverage)
+    $:pow_hd(hdual_type, real_kind, size_dx, is_pure, test_coverage)
   #:endif 
 #:endif 
 #!
@@ -356,7 +356,7 @@
       #:if set_undefined == True
         if (u%x == 0) then
             res%x = 0.0_${real_kind}$
-            do i = 1, ${number_of_derivatives}$
+            do i = 1, ${size_dx}$
                 if (u%dx(i) .eq. 0.0_${real_kind}$) then
                     res%dx(i) = 0.0_${real_kind}$
                 else
@@ -453,7 +453,7 @@
         integer :: i
 
         res%x = dot_product(u%x, v%x)
-        do i = 1, ${number_of_derivatives}$
+        do i = 1, ${size_dx}$
             res%dx(i) = dot_product(u%x, v%dx(i)) + dot_product(v%x, u%dx(i))
         end do
 
@@ -483,10 +483,10 @@
 #:endif 
 #:if "log" in interface_list
   #:if dual_type is not None
-    $:log_d(dual_type, real_kind, number_of_derivatives, is_pure, test_coverage)
+    $:log_d(dual_type, real_kind, size_dx, is_pure, test_coverage)
   #:endif
   #:if hdual_type is not None
-    $:log_hd(hdual_type, real_kind, number_of_derivatives, is_pure, test_coverage)
+    $:log_hd(hdual_type, real_kind, size_dx, is_pure, test_coverage)
   #:endif
 #:endif 
 #:if "log10" in interface_list 
@@ -510,7 +510,7 @@
         integer :: i
 
         res%x = matmul(u%x, v%x)
-        do i = 1, ${number_of_derivatives}$
+        do i = 1, ${size_dx}$
             res%dx(i) = matmul(u%dx(i), v%x) + matmul(u%x, v%dx(i))
         end do
 
@@ -521,7 +521,7 @@
         integer :: i
 
         res%x = matmul(u%x, v%x)
-        do i = 1, ${number_of_derivatives}$
+        do i = 1, ${size_dx}$
             res%dx(i) = matmul(u%dx(i), v%x) + matmul(u%x, v%dx(i))
         end do
 
@@ -532,7 +532,7 @@
         integer::i
 
         res%x = matmul(u%x, v%x)
-        do i = 1, ${number_of_derivatives}$
+        do i = 1, ${size_dx}$
             res%dx(i) = matmul(u%dx(i), v%x) + matmul(u%x, v%dx(i))
         end do
 
@@ -736,10 +736,10 @@
     #:stop 'set_undefined = True has not been implemented for sqrt()!'
   #:endif
   #:if dual_type is not None
-    $:sqrt_d(dual_type, real_kind, number_of_derivatives, is_pure, test_coverage)
+    $:sqrt_d(dual_type, real_kind, size_dx, is_pure, test_coverage)
   #:endif
   #:if hdual_type is not None
-    $:sqrt_hd(hdual_type, real_kind, number_of_derivatives, is_pure, test_coverage)
+    $:sqrt_hd(hdual_type, real_kind, size_dx, is_pure, test_coverage)
   #:endif
 #:endif 
 #:if "sum" in interface_list 
@@ -749,7 +749,7 @@
         integer :: i
 
         res%x = sum(u%x)
-        do i = 1, ${number_of_derivatives}$
+        do i = 1, ${size_dx}$
             res%dx(i) = sum(u%dx(i))
         end do
 

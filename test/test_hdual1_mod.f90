@@ -138,7 +138,7 @@ module test_hdual1_mod
         sequence
         real(dp) :: x = 0  ! functional value
         real(dp) :: dx(num_deriv) = 0  ! derivatives
-        real(dp) :: ddx(num_deriv, num_deriv) = 0  ! Hessian
+        real(dp) :: ddx(num_deriv*(num_deriv + 1)/2) = 0  ! Lower triangular of Hessian
     end type
 
     interface hessian ! Extract Hessian from a hyper-dual number
@@ -620,17 +620,17 @@ contains
         
         integer i, j, k
 
-        ! k = 0
-        ! do j = 1, num_deriv
-        !     k = k + 1
-        !     m(j, j) = d%ddx(k)
-        !     do i = j+1, num_deriv
-        !         k = k + 1
-        !         m(i, j) = d%ddx(k)
-        !         m(j, i) = d%ddx(k)
-        !     end do
-        ! end do
-        m = d%ddx
+        k = 0
+        do j = 1, num_deriv
+            k = k + 1
+            m(j, j) = d%ddx(k)
+            do i = j+1, num_deriv
+                k = k + 1
+                m(i, j) = d%ddx(k)
+                m(j, i) = d%ddx(k)
+            end do
+        end do
+        ! m = d%ddx
 
     end function
     subroutine assign_d_i(u, i)
@@ -759,78 +759,60 @@ contains
     impure elemental function unary_add_hd(u) result(res)
         type(hdual_xy), intent(in) :: u
         type(hdual_xy) :: res
-        integer :: j
         
         res%x = u%x
         res%dx = u%dx
-        do j = 1, num_deriv
-            res%ddx(:, j) = u%ddx(:, j)
-        end do
+        res%ddx = u%ddx
         unary_add_hd_counter = unary_add_hd_counter + 1
     end function
     impure elemental function add_hd_hd(u, v) result(res)
         type(hdual_xy), intent(in) :: u
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
-        integer :: j
         
         res%x = u%x + v%x
         res%dx = u%dx + v%dx
-        do j = 1, num_deriv
-            res%ddx(:, j) = u%ddx(:, j) + v%ddx(:, j)
-        end do
+        res%ddx = u%ddx + v%ddx
         add_hd_hd_counter = add_hd_hd_counter + 1
     end function
     impure elemental function add_hd_r(u, v) result(res)
         type(hdual_xy), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual_xy) :: res
-        integer :: j
         
         res%x = u%x + v
         res%dx = u%dx
-        do j = 1, num_deriv
-            res%ddx(:, j) = u%ddx(:, j)
-        end do
+        res%ddx = u%ddx
         add_hd_r_counter = add_hd_r_counter + 1
     end function
     impure elemental function add_r_hd(u, v) result(res)
         real(dp), intent(in) :: u
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
-        integer :: j
         
         res%x = u + v%x
         res%dx = v%dx
-        do j = 1, num_deriv
-            res%ddx(:, j) = v%ddx(:, j)
-        end do
+        res%ddx = v%ddx
         add_r_hd_counter = add_r_hd_counter + 1
     end function
     impure elemental function add_hd_i(u, v) result(res)
         type(hdual_xy), intent(in) :: u
         integer, intent(in) :: v
         type(hdual_xy) :: res
-        integer :: j
         
         res%x = u%x + v
         res%dx = u%dx
-        do j = 1, num_deriv
-            res%ddx(:, j) = u%ddx(:, j)
-        end do
+        res%ddx = u%ddx
         add_hd_i_counter = add_hd_i_counter + 1
     end function
     impure elemental function add_i_hd(u, v) result(res)
         integer, intent(in) :: u
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
-        integer :: j
         
         res%x = u + v%x
         res%dx = v%dx
-        do j = 1, num_deriv
-            res%ddx(:, j) = v%ddx(:, j)
-        end do
+        res%ddx = v%ddx
         add_i_hd_counter = add_i_hd_counter + 1
     end function
     impure elemental function unary_minus_d(u) result(res)
@@ -889,78 +871,60 @@ contains
     impure elemental function unary_minus_hd(u) result(res)
         type(hdual_xy), intent(in) :: u
         type(hdual_xy) :: res
-        integer :: j
         
         res%x = -u%x
         res%dx = -u%dx
-        do j = 1, num_deriv
-            res%ddx(:, j) = -u%ddx(:, j)
-        end do
+        res%ddx = -u%ddx
         unary_minus_hd_counter = unary_minus_hd_counter + 1
     end function
     impure elemental function minus_hd_hd(u, v) result(res)
         type(hdual_xy), intent(in) :: u
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
-        integer :: j
         
         res%x = u%x - v%x
         res%dx = u%dx - v%dx
-        do j = 1, num_deriv
-            res%ddx(:, j) = u%ddx(:, j) - v%ddx(:, j)
-        end do
+        res%ddx = u%ddx - v%ddx
         minus_hd_hd_counter = minus_hd_hd_counter + 1
     end function
     impure elemental function minus_hd_r(u, v) result(res)
         type(hdual_xy), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual_xy) :: res
-        integer :: j
         
         res%x = u%x - v
         res%dx = u%dx
-        do j = 1, num_deriv
-            res%ddx(:, j) = u%ddx(:, j)
-        end do
+        res%ddx = u%ddx
         minus_hd_r_counter = minus_hd_r_counter + 1
     end function
     impure elemental function minus_r_hd(u, v) result(res)
         real(dp), intent(in) :: u
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
-        integer :: j
         
         res%x = u - v%x
         res%dx = -v%dx
-        do j = 1, num_deriv
-            res%ddx(:, j) = -v%ddx(:, j)
-        end do
+        res%ddx = -v%ddx
         minus_r_hd_counter = minus_r_hd_counter + 1
     end function
     impure elemental function minus_hd_i(u, v) result(res)
         type(hdual_xy), intent(in) :: u
         integer, intent(in) :: v
         type(hdual_xy) :: res
-        integer :: j
         
         res%x = u%x - v
         res%dx = u%dx
-        do j = 1, num_deriv
-            res%ddx(:, j) = u%ddx(:, j)
-        end do
+        res%ddx = u%ddx
         minus_hd_i_counter = minus_hd_i_counter + 1
     end function
     impure elemental function minus_i_hd(u, v) result(res)
         integer, intent(in) :: u
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
-        integer :: j
         
         res%x = u - v%x
         res%dx = -v%dx
-        do j = 1, num_deriv
-            res%ddx(:, j) = -v%ddx(:, j)
-        end do
+        res%ddx = -v%ddx
         minus_i_hd_counter = minus_i_hd_counter + 1
     end function
     impure elemental function mult_d_d(u, v) result(res)
@@ -1012,12 +976,16 @@ contains
         type(hdual_xy), intent(in) :: u
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
-        integer :: j
+        integer :: i, j, k
         
         res%x = u%x*v%x
         res%dx = u%dx*v%x + u%x*v%dx
+        k = 0
         do j = 1, num_deriv
-            res%ddx(:, j) = u%ddx(:, j)*v%x + u%dx*v%dx(j) + u%dx(j)*v%dx + u%x*v%ddx(:, j)
+            do i = j, num_deriv
+                k = k + 1
+                res%ddx(k) = u%ddx(k)*v%x + u%dx(i)*v%dx(j) + u%dx(j)*v%dx(i) + u%x*v%ddx(k)
+            end do
         end do
         mult_hd_hd_counter = mult_hd_hd_counter + 1
     end function
@@ -1025,52 +993,40 @@ contains
         type(hdual_xy), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual_xy) :: res
-        integer :: j
         
         res%x = u%x*v
         res%dx = u%dx*v
-        do j = 1, num_deriv
-            res%ddx(:, j) = u%ddx(:, j)*v
-        end do
+        res%ddx = u%ddx*v
         mult_hd_r_counter = mult_hd_r_counter + 1
     end function
     impure elemental function mult_r_hd(u, v) result(res)
         real(dp), intent(in) :: u
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
-        integer :: j
         
         res%x = u*v%x
         res%dx = u*v%dx
-        do j = 1, num_deriv
-            res%ddx(:, j) = u*v%ddx(:, j)
-        end do
+        res%ddx = u*v%ddx
         mult_r_hd_counter = mult_r_hd_counter + 1
     end function
     impure elemental function mult_hd_i(u, v) result(res)
         type(hdual_xy), intent(in) :: u
         integer, intent(in) :: v
         type(hdual_xy) :: res
-        integer :: j
         
         res%x = u%x*v
         res%dx = u%dx*v
-        do j = 1, num_deriv
-            res%ddx(:, j) = u%ddx(:, j)*v
-        end do
+        res%ddx = u%ddx*v
         mult_hd_i_counter = mult_hd_i_counter + 1
     end function
     impure elemental function mult_i_hd(u, v) result(res)
         integer, intent(in) :: u
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
-        integer :: j
         
         res%x = u*v%x
         res%dx = u*v%dx
-        do j = 1, num_deriv
-            res%ddx(:, j) = u*v%ddx(:, j)
-        end do
+        res%ddx = u*v%ddx
         mult_i_hd_counter = mult_i_hd_counter + 1
     end function
     impure elemental function div_d_d(u, v) result(res)
@@ -1129,16 +1085,20 @@ contains
         type(hdual_xy), intent(in) :: u
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
-        integer :: j
+        integer :: i, j, k
         real(dp) :: t0,t1
         
         t0 = 1.0_dp/v%x
         t1 = t0*u%x
         res%x = t1
         res%dx = t0*(-t1*v%dx + u%dx)
+        k = 0
         do j = 1, num_deriv
-            res%ddx(:, j) = t0*(-t0*u%dx(j)*v%dx - t0*v%dx(j)*(-2*t1*v%dx + u%dx) - &
-      t1*v%ddx(:, j) + u%ddx(:, j))
+            do i = j, num_deriv
+                k = k + 1
+                res%ddx(k) = t0*(-t0*u%dx(j)*v%dx(i) - t0*v%dx(j)*(-2*t1*v%dx(i) + u%dx(i)) - t1* &
+      v%ddx(k) + u%ddx(k))
+            end do
         end do
         div_hd_hd_counter = div_hd_hd_counter + 1
     end function
@@ -1146,30 +1106,31 @@ contains
         type(hdual_xy), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual_xy) :: res
-        integer :: j
         real(dp) :: t0
         
         t0 = 1.0_dp/v
         res%x = t0*u%x
         res%dx = t0*u%dx
-        do j = 1, num_deriv
-            res%ddx(:, j) = t0*u%ddx(:, j)
-        end do
+        res%ddx = t0*u%ddx
         div_hd_r_counter = div_hd_r_counter + 1
     end function
     impure elemental function div_r_hd(u, v) result(res)
         real(dp), intent(in) :: u
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
-        integer :: j
+        integer :: i, j, k
         real(dp) :: t0,t1
         
         t0 = 1.0_dp/v%x
         t1 = u/v%x**2
         res%x = t0*u
         res%dx = -t1*v%dx
+        k = 0
         do j = 1, num_deriv
-            res%ddx(:, j) = t1*(2*t0*v%dx*v%dx(j) - v%ddx(:, j))
+            do i = j, num_deriv
+                k = k + 1
+                res%ddx(k) = t1*(2*t0*v%dx(i)*v%dx(j) - v%ddx(k))
+            end do
         end do
         div_r_hd_counter = div_r_hd_counter + 1
     end function
@@ -1177,30 +1138,31 @@ contains
         type(hdual_xy), intent(in) :: u
         integer, intent(in) :: v
         type(hdual_xy) :: res
-        integer :: j
         real(dp) :: t0
         
         t0 = 1.0_dp/v
         res%x = t0*u%x
         res%dx = t0*u%dx
-        do j = 1, num_deriv
-            res%ddx(:, j) = t0*u%ddx(:, j)
-        end do
+        res%ddx = t0*u%ddx
         div_hd_i_counter = div_hd_i_counter + 1
     end function
     impure elemental function div_i_hd(u, v) result(res)
         integer, intent(in) :: u
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
-        integer :: j
+        integer :: i, j, k
         real(dp) :: t0,t1
         
         t0 = 1.0_dp/v%x
         t1 = u/v%x**2
         res%x = t0*u
         res%dx = -t1*v%dx
+        k = 0
         do j = 1, num_deriv
-            res%ddx(:, j) = t1*(2*t0*v%dx*v%dx(j) - v%ddx(:, j))
+            do i = j, num_deriv
+                k = k + 1
+                res%ddx(k) = t1*(2*t0*v%dx(i)*v%dx(j) - v%ddx(k))
+            end do
         end do
         div_i_hd_counter = div_i_hd_counter + 1
     end function
@@ -1241,7 +1203,7 @@ contains
         type(hdual_xy), intent(in) :: u
         integer, intent(in) :: v
         type(hdual_xy) :: res
-        integer :: j
+        integer :: i, j, k
         real(dp) :: t0,t1,t2
         
         t0 = u%x**v
@@ -1249,8 +1211,12 @@ contains
         t2 = t0*v
         res%x = t0
         res%dx = t1*t2*u%dx
+        k = 0
         do j = 1, num_deriv
-            res%ddx(:, j) = t1*t2*(t1*u%dx*u%dx(j)*(v - 1) + u%ddx(:, j))
+            do i = j, num_deriv
+                k = k + 1
+                res%ddx(k) = t1*t2*(t1*u%dx(i)*u%dx(j)*(v - 1) + u%ddx(k))
+            end do
         end do
         pow_hd_i_counter = pow_hd_i_counter + 1
     end function
@@ -1258,7 +1224,7 @@ contains
         type(hdual_xy), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual_xy) :: res
-        integer :: j
+        integer :: i, j, k
         real(dp) :: t0,t1,t2
         
         t0 = u%x**v
@@ -1266,8 +1232,12 @@ contains
         t2 = t0*v
         res%x = t0
         res%dx = t1*t2*u%dx
+        k = 0
         do j = 1, num_deriv
-            res%ddx(:, j) = t1*t2*(t1*u%dx*u%dx(j)*(v - 1) + u%ddx(:, j))
+            do i = j, num_deriv
+                k = k + 1
+                res%ddx(k) = t1*t2*(t1*u%dx(i)*u%dx(j)*(v - 1) + u%ddx(k))
+            end do
         end do
         pow_hd_r_counter = pow_hd_r_counter + 1
     end function
@@ -1275,7 +1245,7 @@ contains
         type(hdual_xy), intent(in) :: u
         type(hdual_xy), intent(in) :: v
         type(hdual_xy) :: res
-        integer :: j
+        integer :: i, j, k
         real(dp) :: t0,t1,t2,t3
         
         t0 = u%x**v%x
@@ -1284,9 +1254,13 @@ contains
         t3 = t1*v%x + 1
         res%x = t0
         res%dx = t0*(t1*v%dx + t2*u%dx*v%x)
+        k = 0
         do j = 1, num_deriv
-            res%ddx(:, j) = t0*(t1*v%ddx(:, j) + t2*u%ddx(:, j)*v%x + t2*u%dx(j)*(t2*u%dx*v%x*( &
-      v%x - 1) + t3*v%dx) + v%dx(j)*(t1**2*v%dx + t2*t3*u%dx))
+            do i = j, num_deriv
+                k = k + 1
+                res%ddx(k) = t0*(t1*v%ddx(k) + t2*u%ddx(k)*v%x + t2*u%dx(j)*(t2*u%dx(i)*v%x*(v%x - &
+      1) + t3*v%dx(i)) + v%dx(j)*(t1**2*v%dx(i) + t2*t3*u%dx(i)))
+            end do
         end do
         pow_hd_hd_counter = pow_hd_hd_counter + 1
     end function
@@ -1619,14 +1593,18 @@ contains
     impure elemental function log_hd(u) result(res)
         type(hdual_xy), intent(in) :: u
         type(hdual_xy) :: res
-        integer :: j
+        integer :: i, j, k
         real(dp) :: t0
         
         t0 = 1.0_dp/u%x
         res%x = log(u%x)
         res%dx = t0*u%dx
+        k = 0
         do j = 1, num_deriv
-            res%ddx(:, j) = t0*(-t0*u%dx*u%dx(j) + u%ddx(:, j))
+            do i = j, num_deriv
+                k = k + 1
+                res%ddx(k) = t0*(-t0*u%dx(i)*u%dx(j) + u%ddx(k))
+            end do
         end do
         log_hd_counter = log_hd_counter + 1
     end function
@@ -1861,15 +1839,19 @@ contains
     impure elemental function sqrt_hd(u) result(res)
         type(hdual_xy), intent(in) :: u
         type(hdual_xy) :: res
-        integer :: j
+        integer :: i, j, k
         real(dp) :: t0,t1
         
         t0 = sqrt(u%x)
         t1 = 1.0_dp/t0
         res%x = t0
         res%dx = 0.5_dp*t1*u%dx
+        k = 0
         do j = 1, num_deriv
-            res%ddx(:, j) = (0.25_dp)*t1*(2*u%ddx(:, j) - u%dx*u%dx(j)/u%x)
+            do i = j, num_deriv
+                k = k + 1
+                res%ddx(k) = (0.25_dp)*t1*(2*u%ddx(k) - u%dx(i)*u%dx(j)/u%x)
+            end do
         end do
         sqrt_hd_counter = sqrt_hd_counter + 1
     end function

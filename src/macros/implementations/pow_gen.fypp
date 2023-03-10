@@ -1,5 +1,5 @@
 
-#:def pow_d(dual_type, real_kind, number_of_derivatives, is_pure, test_coverage)
+#:def pow_d(dual_type, real_kind, size_dx, is_pure, test_coverage)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
@@ -46,7 +46,7 @@
     end function
 #:enddef
 
-#:def pow_hd(dual_type, real_kind, number_of_derivatives, is_pure, test_coverage)
+#:def pow_hd(dual_type, real_kind, size_dx, is_pure, test_coverage)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
@@ -56,7 +56,7 @@
         type(${dual_type}$), intent(in) :: u
         integer, intent(in) :: v
         type(${dual_type}$) :: res
-        integer :: j
+        integer :: i, j, k
         real(${real_kind}$) :: t0,t1,t2
         
         t0 = u%x**v
@@ -64,8 +64,12 @@
         t2 = t0*v
         res%x = t0
         res%dx = t1*t2*u%dx
-        do j = 1, ${number_of_derivatives}$
-            res%ddx(:, j) = t1*t2*(t1*u%dx*u%dx(j)*(v - 1) + u%ddx(:, j))
+        k = 0
+        do j = 1, ${size_dx}$
+            do i = j, ${size_dx}$
+                k = k + 1
+                res%ddx(k) = t1*t2*(t1*u%dx(i)*u%dx(j)*(v - 1) + u%ddx(k))
+            end do
         end do
       #:if test_coverage
         pow_hd_i_counter = pow_hd_i_counter + 1
@@ -75,7 +79,7 @@
         type(${dual_type}$), intent(in) :: u
         real(${real_kind}$), intent(in) :: v
         type(${dual_type}$) :: res
-        integer :: j
+        integer :: i, j, k
         real(${real_kind}$) :: t0,t1,t2
         
         t0 = u%x**v
@@ -83,8 +87,12 @@
         t2 = t0*v
         res%x = t0
         res%dx = t1*t2*u%dx
-        do j = 1, ${number_of_derivatives}$
-            res%ddx(:, j) = t1*t2*(t1*u%dx*u%dx(j)*(v - 1) + u%ddx(:, j))
+        k = 0
+        do j = 1, ${size_dx}$
+            do i = j, ${size_dx}$
+                k = k + 1
+                res%ddx(k) = t1*t2*(t1*u%dx(i)*u%dx(j)*(v - 1) + u%ddx(k))
+            end do
         end do
       #:if test_coverage
         pow_hd_r_counter = pow_hd_r_counter + 1
@@ -94,7 +102,7 @@
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
-        integer :: j
+        integer :: i, j, k
         real(${real_kind}$) :: t0,t1,t2,t3
         
         t0 = u%x**v%x
@@ -103,9 +111,13 @@
         t3 = t1*v%x + 1
         res%x = t0
         res%dx = t0*(t1*v%dx + t2*u%dx*v%x)
-        do j = 1, ${number_of_derivatives}$
-            res%ddx(:, j) = t0*(t1*v%ddx(:, j) + t2*u%ddx(:, j)*v%x + t2*u%dx(j)*(t2*u%dx*v%x*( &
-      v%x - 1) + t3*v%dx) + v%dx(j)*(t1**2*v%dx + t2*t3*u%dx))
+        k = 0
+        do j = 1, ${size_dx}$
+            do i = j, ${size_dx}$
+                k = k + 1
+                res%ddx(k) = t0*(t1*v%ddx(k) + t2*u%ddx(k)*v%x + t2*u%dx(j)*(t2*u%dx(i)*v%x*(v%x - &
+      1) + t3*v%dx(i)) + v%dx(j)*(t1**2*v%dx(i) + t2*t3*u%dx(i)))
+            end do
         end do
       #:if test_coverage
         pow_hd_hd_counter = pow_hd_hd_counter + 1

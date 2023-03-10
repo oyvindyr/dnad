@@ -1,22 +1,22 @@
-#:def dnad_dual_type(dual_type, real_kind, number_of_derivatives, statement)
+#:def dnad_dual_type(dual_type, real_kind, size_dx, statement)
     type :: ${dual_type}$
         !! dual number type
         #! statement can for instance be 'sequence' or nothing
         #!   the original dnad code had 'sequence' here, but I dont know what it is good for...
         ${statement}$
         real(${real_kind}$) :: x = 0  ! functional value
-        real(${real_kind}$) :: dx(${number_of_derivatives}$) = 0  ! derivatives
+        real(${real_kind}$) :: dx(${size_dx}$) = 0  ! derivatives
     end type
 #:enddef
 
-#:def dnad_hdual_type(dual_type, real_kind, number_of_derivatives, statement)
+#:def dnad_hdual_type(dual_type, real_kind, size_dx, statement)
     type :: ${dual_type}$
         !! hyper-dual number type
         #! statement can for instance be 'sequence' or nothing
         #!   the original dnad code had 'sequence' here, but I dont know what it is good for...
         ${statement}$
         real(${real_kind}$) :: x = 0  ! functional value
-        real(${real_kind}$) :: dx(${number_of_derivatives}$) = 0  ! derivatives
-        real(${real_kind}$) :: ddx(${number_of_derivatives}$, ${number_of_derivatives}$) = 0  ! Hessian
+        real(${real_kind}$) :: dx(${size_dx}$) = 0  ! derivatives
+        real(${real_kind}$) :: ddx(${size_dx}$*(${size_dx}$ + 1)/2) = 0  ! Lower triangular of Hessian
     end type
 #:enddef

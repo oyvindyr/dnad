@@ -1,5 +1,5 @@
 
-#:def div_d(dual_type, real_kind, number_of_derivatives, is_pure, test_coverage)
+#:def div_d(dual_type, real_kind, size_dx, is_pure, test_coverage)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
@@ -69,7 +69,7 @@
     end function
 #:enddef
 
-#:def div_hd(dual_type, real_kind, number_of_derivatives, is_pure, test_coverage)
+#:def div_hd(dual_type, real_kind, size_dx, is_pure, test_coverage)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
@@ -79,16 +79,20 @@
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
-        integer :: j
+        integer :: i, j, k
         real(${real_kind}$) :: t0,t1
         
         t0 = 1.0_${real_kind}$/v%x
         t1 = t0*u%x
         res%x = t1
         res%dx = t0*(-t1*v%dx + u%dx)
-        do j = 1, ${number_of_derivatives}$
-            res%ddx(:, j) = t0*(-t0*u%dx(j)*v%dx - t0*v%dx(j)*(-2*t1*v%dx + u%dx) - &
-      t1*v%ddx(:, j) + u%ddx(:, j))
+        k = 0
+        do j = 1, ${size_dx}$
+            do i = j, ${size_dx}$
+                k = k + 1
+                res%ddx(k) = t0*(-t0*u%dx(j)*v%dx(i) - t0*v%dx(j)*(-2*t1*v%dx(i) + u%dx(i)) - t1* &
+      v%ddx(k) + u%ddx(k))
+            end do
         end do
       #:if test_coverage
         div_hd_hd_counter = div_hd_hd_counter + 1
@@ -98,15 +102,12 @@
         type(${dual_type}$), intent(in) :: u
         real(${real_kind}$), intent(in) :: v
         type(${dual_type}$) :: res
-        integer :: j
         real(${real_kind}$) :: t0
         
         t0 = 1.0_${real_kind}$/v
         res%x = t0*u%x
         res%dx = t0*u%dx
-        do j = 1, ${number_of_derivatives}$
-            res%ddx(:, j) = t0*u%ddx(:, j)
-        end do
+        res%ddx = t0*u%ddx
       #:if test_coverage
         div_hd_r_counter = div_hd_r_counter + 1
       #:endif
@@ -115,15 +116,19 @@
         real(${real_kind}$), intent(in) :: u
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
-        integer :: j
+        integer :: i, j, k
         real(${real_kind}$) :: t0,t1
         
         t0 = 1.0_${real_kind}$/v%x
         t1 = u/v%x**2
         res%x = t0*u
         res%dx = -t1*v%dx
-        do j = 1, ${number_of_derivatives}$
-            res%ddx(:, j) = t1*(2*t0*v%dx*v%dx(j) - v%ddx(:, j))
+        k = 0
+        do j = 1, ${size_dx}$
+            do i = j, ${size_dx}$
+                k = k + 1
+                res%ddx(k) = t1*(2*t0*v%dx(i)*v%dx(j) - v%ddx(k))
+            end do
         end do
       #:if test_coverage
         div_r_hd_counter = div_r_hd_counter + 1
@@ -133,15 +138,12 @@
         type(${dual_type}$), intent(in) :: u
         integer, intent(in) :: v
         type(${dual_type}$) :: res
-        integer :: j
         real(${real_kind}$) :: t0
         
         t0 = 1.0_${real_kind}$/v
         res%x = t0*u%x
         res%dx = t0*u%dx
-        do j = 1, ${number_of_derivatives}$
-            res%ddx(:, j) = t0*u%ddx(:, j)
-        end do
+        res%ddx = t0*u%ddx
       #:if test_coverage
         div_hd_i_counter = div_hd_i_counter + 1
       #:endif
@@ -150,15 +152,19 @@
         integer, intent(in) :: u
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
-        integer :: j
+        integer :: i, j, k
         real(${real_kind}$) :: t0,t1
         
         t0 = 1.0_${real_kind}$/v%x
         t1 = u/v%x**2
         res%x = t0*u
         res%dx = -t1*v%dx
-        do j = 1, ${number_of_derivatives}$
-            res%ddx(:, j) = t1*(2*t0*v%dx*v%dx(j) - v%ddx(:, j))
+        k = 0
+        do j = 1, ${size_dx}$
+            do i = j, ${size_dx}$
+                k = k + 1
+                res%ddx(k) = t1*(2*t0*v%dx(i)*v%dx(j) - v%ddx(k))
+            end do
         end do
       #:if test_coverage
         div_i_hd_counter = div_i_hd_counter + 1

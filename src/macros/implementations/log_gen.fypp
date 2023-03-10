@@ -1,5 +1,5 @@
 
-#:def log_d(dual_type, real_kind, number_of_derivatives, is_pure, test_coverage)
+#:def log_d(dual_type, real_kind, size_dx, is_pure, test_coverage)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
@@ -17,7 +17,7 @@
     end function
 #:enddef
 
-#:def log_hd(dual_type, real_kind, number_of_derivatives, is_pure, test_coverage)
+#:def log_hd(dual_type, real_kind, size_dx, is_pure, test_coverage)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
@@ -26,14 +26,18 @@
     ${elemental_purity}$ function log_hd(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
-        integer :: j
+        integer :: i, j, k
         real(${real_kind}$) :: t0
         
         t0 = 1.0_${real_kind}$/u%x
         res%x = log(u%x)
         res%dx = t0*u%dx
-        do j = 1, ${number_of_derivatives}$
-            res%ddx(:, j) = t0*(-t0*u%dx*u%dx(j) + u%ddx(:, j))
+        k = 0
+        do j = 1, ${size_dx}$
+            do i = j, ${size_dx}$
+                k = k + 1
+                res%ddx(k) = t0*(-t0*u%dx(i)*u%dx(j) + u%ddx(k))
+            end do
         end do
       #:if test_coverage
         log_hd_counter = log_hd_counter + 1

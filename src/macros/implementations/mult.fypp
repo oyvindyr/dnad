@@ -1,4 +1,4 @@
-#:def mult(dual_type, real_kind, dual_id, number_of_derivatives)
+#:def mult(dual_type, real_kind, dual_id, size_dx)
     elemental function mult_${dual_id}$_${dual_id}$(u, v) result(res)
         type(${dual_type}$), intent(in) :: u, v
         type(${dual_type}$) :: res
@@ -6,7 +6,7 @@
         res%dx = u%dx*v%x + u%x*v%dx
       #:if dual_id == "hd"
         res%dx2 = u%dx2*v%x + u%x*v%dx2
-        do i = 1, ${number_of_derivatives}$
+        do i = 1, ${size_dx}$
             res%ddx(:,i) = u%ddx(:,i)*v%x + u%dx*v%dx2(i) + u%dx2(i)*v%dx + u%x*v%ddx(:,i)
         end do
       #:endif

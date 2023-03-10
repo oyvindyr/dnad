@@ -1,21 +1,21 @@
-#:def hessian(dual_type, real_kind, number_of_derivatives)
+#:def hessian(dual_type, real_kind, size_dx)
     pure function hessian_matrix(d) result(m)
         type(${dual_type}$), intent(in) :: d
-        real(${real_kind}$) :: m(${number_of_derivatives}$, ${number_of_derivatives}$)
+        real(${real_kind}$) :: m(${size_dx}$, ${size_dx}$)
         
         integer i, j, k
 
-        ! k = 0
-        ! do j = 1, ${number_of_derivatives}$
-        !     k = k + 1
-        !     m(j, j) = d%ddx(k)
-        !     do i = j+1, ${number_of_derivatives}$
-        !         k = k + 1
-        !         m(i, j) = d%ddx(k)
-        !         m(j, i) = d%ddx(k)
-        !     end do
-        ! end do
-        m = d%ddx
+        k = 0
+        do j = 1, ${size_dx}$
+            k = k + 1
+            m(j, j) = d%ddx(k)
+            do i = j+1, ${size_dx}$
+                k = k + 1
+                m(i, j) = d%ddx(k)
+                m(j, i) = d%ddx(k)
+            end do
+        end do
+        ! m = d%ddx
 
     end function
 #:enddef

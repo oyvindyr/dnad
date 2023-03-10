@@ -47,16 +47,3 @@ def select_interfaces(selected_interfaces):
     else:
         # Convert comma-separated string to list
         return selected_interfaces.replace(" ","").split(",")
-    
-# def purity(is_pure, test_coverage):
-#     if is_pure and not test_coverage:
-#         return "pure"
-#     else:
-#         return ""
-    
-# def elemental_purity(is_pure, test_coverage):
-#     if is_pure and not test_coverage:
-#         return "elemental"
-#     else:
-#         return "impure elemental"
-

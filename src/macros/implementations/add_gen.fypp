@@ -1,5 +1,5 @@
 
-#:def add_d(dual_type, real_kind, number_of_derivatives, is_pure, test_coverage)
+#:def add_d(dual_type, real_kind, size_dx, is_pure, test_coverage)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
@@ -72,7 +72,7 @@
     end function
 #:enddef
 
-#:def add_hd(dual_type, real_kind, number_of_derivatives, is_pure, test_coverage)
+#:def add_hd(dual_type, real_kind, size_dx, is_pure, test_coverage)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
@@ -81,13 +81,10 @@
     ${elemental_purity}$ function unary_add_hd(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
-        integer :: j
         
         res%x = u%x
         res%dx = u%dx
-        do j = 1, ${number_of_derivatives}$
-            res%ddx(:, j) = u%ddx(:, j)
-        end do
+        res%ddx = u%ddx
       #:if test_coverage
         unary_add_hd_counter = unary_add_hd_counter + 1
       #:endif
@@ -96,13 +93,10 @@
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
-        integer :: j
         
         res%x = u%x + v%x
         res%dx = u%dx + v%dx
-        do j = 1, ${number_of_derivatives}$
-            res%ddx(:, j) = u%ddx(:, j) + v%ddx(:, j)
-        end do
+        res%ddx = u%ddx + v%ddx
       #:if test_coverage
         add_hd_hd_counter = add_hd_hd_counter + 1
       #:endif
@@ -111,13 +105,10 @@
         type(${dual_type}$), intent(in) :: u
         real(${real_kind}$), intent(in) :: v
         type(${dual_type}$) :: res
-        integer :: j
         
         res%x = u%x + v
         res%dx = u%dx
-        do j = 1, ${number_of_derivatives}$
-            res%ddx(:, j) = u%ddx(:, j)
-        end do
+        res%ddx = u%ddx
       #:if test_coverage
         add_hd_r_counter = add_hd_r_counter + 1
       #:endif
@@ -126,13 +117,10 @@
         real(${real_kind}$), intent(in) :: u
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
-        integer :: j
         
         res%x = u + v%x
         res%dx = v%dx
-        do j = 1, ${number_of_derivatives}$
-            res%ddx(:, j) = v%ddx(:, j)
-        end do
+        res%ddx = v%ddx
       #:if test_coverage
         add_r_hd_counter = add_r_hd_counter + 1
       #:endif
@@ -141,13 +129,10 @@
         type(${dual_type}$), intent(in) :: u
         integer, intent(in) :: v
         type(${dual_type}$) :: res
-        integer :: j
         
         res%x = u%x + v
         res%dx = u%dx
-        do j = 1, ${number_of_derivatives}$
-            res%ddx(:, j) = u%ddx(:, j)
-        end do
+        res%ddx = u%ddx
       #:if test_coverage
         add_hd_i_counter = add_hd_i_counter + 1
       #:endif
@@ -156,13 +141,10 @@
         integer, intent(in) :: u
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
-        integer :: j
         
         res%x = u + v%x
         res%dx = v%dx
-        do j = 1, ${number_of_derivatives}$
-            res%ddx(:, j) = v%ddx(:, j)
-        end do
+        res%ddx = v%ddx
       #:if test_coverage
         add_i_hd_counter = add_i_hd_counter + 1
       #:endif
