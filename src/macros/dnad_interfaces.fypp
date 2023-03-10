@@ -118,56 +118,110 @@
   #:endif 
   #:if "==" in interface_list 
     interface operator (==)
-        module procedure eq_dd ! compare two dual numbers, elemental
-        module procedure eq_di ! compare a dual and an integer, elemental
-        module procedure eq_dr ! compare a dual and a real, elemental
-        module procedure eq_id ! compare integer with a dual number, elemental
-        module procedure eq_rd ! compare a real with a dual number, elemental
+      #:if has_dual
+        module procedure eq_d_d ! compare two dual numbers, elemental
+        module procedure eq_d_i ! compare a dual and an integer, elemental
+        module procedure eq_d_r ! compare a dual and a real, elemental
+        module procedure eq_i_d ! compare integer with a dual number, elemental
+        module procedure eq_r_d ! compare a real with a dual number, elemental
+      #:endif
+      #:if has_hyper_dual
+        module procedure eq_hd_hd ! compare two hdual numbers, elemental
+        module procedure eq_hd_i ! compare a hdual and an integer, elemental
+        module procedure eq_hd_r ! compare a hdual and a real, elemental
+        module procedure eq_i_hd ! compare integer with a hdual number, elemental
+        module procedure eq_r_hd ! compare a real with a hdual number, elemental
+      #:endif
     end interface
   #:endif 
   #:if "<=" in interface_list 
     interface operator (<=)
-        module procedure le_dd  ! compare two dual numbers, elemental
-        module procedure le_di  ! compare a dual and an integer, elemental
-        module procedure le_dr  ! compare a dual and a real,elemental
-        module procedure le_id ! compare integer with a dual number, elemental
-        module procedure le_rd ! compare a real with a dual number, elemental
+      #:if has_dual
+        module procedure le_d_d ! compare two dual numbers, elemental
+        module procedure le_d_i ! compare a dual and an integer, elemental
+        module procedure le_d_r ! compare a dual and a real, elemental
+        module procedure le_i_d ! compare integer with a dual number, elemental
+        module procedure le_r_d ! compare a real with a dual number, elemental
+      #:endif
+      #:if has_hyper_dual
+        module procedure le_hd_hd ! compare two hdual numbers, elemental
+        module procedure le_hd_i ! compare a hdual and an integer, elemental
+        module procedure le_hd_r ! compare a hdual and a real, elemental
+        module procedure le_i_hd ! compare integer with a hdual number, elemental
+        module procedure le_r_hd ! compare a real with a hdual number, elemental
+      #:endif
     end interface
   #:endif 
   #:if "<" in interface_list 
     interface operator (<)
-        module procedure lt_dd  !compare two dual numbers, elemental
-        module procedure lt_di  !compare a dual and an integer, elemental
-        module procedure lt_dr  !compare dual with a real, elemental
-        module procedure lt_id ! compare integer with a dual number, elemental
-        module procedure lt_rd ! compare a real with a dual number, elemental
+      #:if has_dual
+        module procedure lt_d_d ! compare two dual numbers, elemental
+        module procedure lt_d_i ! compare a dual and an integer, elemental
+        module procedure lt_d_r ! compare a dual and a real, elemental
+        module procedure lt_i_d ! compare integer with a dual number, elemental
+        module procedure lt_r_d ! compare a real with a dual number, elemental
+      #:endif
+      #:if has_hyper_dual
+        module procedure lt_hd_hd ! compare two hdual numbers, elemental
+        module procedure lt_hd_i ! compare a hdual and an integer, elemental
+        module procedure lt_hd_r ! compare a hdual and a real, elemental
+        module procedure lt_i_hd ! compare integer with a hdual number, elemental
+        module procedure lt_r_hd ! compare a real with a hdual number, elemental
+      #:endif
     end interface
   #:endif 
   #:if ">=" in interface_list 
     interface operator (>=)
-        module procedure ge_dd ! compare two dual numbers, elemental
-        module procedure ge_di ! compare dual with integer, elemental
-        module procedure ge_dr ! compare dual with a real number, elemental
-        module procedure ge_id ! compare integer with a dual number, elemental
-        module procedure ge_rd ! compare a real with a dual number, elemental
+      #:if has_dual
+        module procedure ge_d_d ! compare two dual numbers, elemental
+        module procedure ge_d_i ! compare a dual and an integer, elemental
+        module procedure ge_d_r ! compare a dual and a real, elemental
+        module procedure ge_i_d ! compare integer with a dual number, elemental
+        module procedure ge_r_d ! compare a real with a dual number, elemental
+      #:endif
+      #:if has_hyper_dual
+        module procedure ge_hd_hd ! compare two hdual numbers, elemental
+        module procedure ge_hd_i ! compare a hdual and an integer, elemental
+        module procedure ge_hd_r ! compare a hdual and a real, elemental
+        module procedure ge_i_hd ! compare integer with a hdual number, elemental
+        module procedure ge_r_hd ! compare a real with a hdual number, elemental
+      #:endif
     end interface
   #:endif 
   #:if ">" in interface_list 
     interface operator (>)
-        module procedure gt_dd  !compare two dual numbers, elemental
-        module procedure gt_di  !compare a dual and an integer, elemental
-        module procedure gt_dr  !compare dual with a real, elemental
-        module procedure gt_id ! compare integer with a dual number, elemental
-        module procedure gt_rd ! compare a real with a dual number, elemental
+      #:if has_dual
+        module procedure gt_d_d ! compare two dual numbers, elemental
+        module procedure gt_d_i ! compare a dual and an integer, elemental
+        module procedure gt_d_r ! compare a dual and a real, elemental
+        module procedure gt_i_d ! compare integer with a dual number, elemental
+        module procedure gt_r_d ! compare a real with a dual number, elemental
+      #:endif
+      #:if has_hyper_dual
+        module procedure gt_hd_hd ! compare two hdual numbers, elemental
+        module procedure gt_hd_i ! compare a hdual and an integer, elemental
+        module procedure gt_hd_r ! compare a hdual and a real, elemental
+        module procedure gt_i_hd ! compare integer with a hdual number, elemental
+        module procedure gt_r_hd ! compare a real with a hdual number, elemental
+      #:endif
     end interface
   #:endif 
   #:if "/=" in interface_list 
     interface operator (/=)
-        module procedure ne_dd  !compare two dual numbers, elemental
-        module procedure ne_di  !compare a dual and an integer, elemental
-        module procedure ne_dr  !compare dual with a real, elemental
-        module procedure ne_id ! compare integer with a dual number, elemental
-        module procedure ne_rd ! compare a real with a dual number, elemental
+      #:if has_dual
+        module procedure ne_d_d ! compare two dual numbers, elemental
+        module procedure ne_d_i ! compare a dual and an integer, elemental
+        module procedure ne_d_r ! compare a dual and a real, elemental
+        module procedure ne_i_d ! compare integer with a dual number, elemental
+        module procedure ne_r_d ! compare a real with a dual number, elemental
+      #:endif
+      #:if has_hyper_dual
+        module procedure ne_hd_hd ! compare two hdual numbers, elemental
+        module procedure ne_hd_i ! compare a hdual and an integer, elemental
+        module procedure ne_hd_r ! compare a hdual and a real, elemental
+        module procedure ne_i_hd ! compare integer with a hdual number, elemental
+        module procedure ne_r_hd ! compare a real with a hdual number, elemental
+      #:endif
     end interface
   #:endif 
   #:if "abs" in interface_list 

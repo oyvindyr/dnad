@@ -163,8 +163,9 @@ contains
         ddf(1, 2) = ddf(2, 1)              ! d**2f/dydx
     end subroutine
 
-    $:dnad_implementations("dp", "num_deriv", selected_interfaces=selected_interfaces, set_undefined=set_undefined, &
-            dual_type="dual_xy", hdual_type="hdual_xy", test_coverage=test_coverage)
+    $:dnad_implementations("dp", "num_deriv", dual_type="dual_xy", hdual_type="hdual_xy", &
+            selected_interfaces=selected_interfaces, set_undefined=set_undefined, &
+            test_coverage=test_coverage)
     
   #:if set_undefined
     ! Workaround to make pure functions produce NaN's deliberately:

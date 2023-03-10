@@ -216,46 +216,76 @@ module test_hdual2_mod
         module procedure pow_hd_hd ! hdual number to a hdual power, elemental
     end interface
     interface operator (==)
-        module procedure eq_dd ! compare two dual numbers, elemental
-        module procedure eq_di ! compare a dual and an integer, elemental
-        module procedure eq_dr ! compare a dual and a real, elemental
-        module procedure eq_id ! compare integer with a dual number, elemental
-        module procedure eq_rd ! compare a real with a dual number, elemental
+        module procedure eq_d_d ! compare two dual numbers, elemental
+        module procedure eq_d_i ! compare a dual and an integer, elemental
+        module procedure eq_d_r ! compare a dual and a real, elemental
+        module procedure eq_i_d ! compare integer with a dual number, elemental
+        module procedure eq_r_d ! compare a real with a dual number, elemental
+        module procedure eq_hd_hd ! compare two hdual numbers, elemental
+        module procedure eq_hd_i ! compare a hdual and an integer, elemental
+        module procedure eq_hd_r ! compare a hdual and a real, elemental
+        module procedure eq_i_hd ! compare integer with a hdual number, elemental
+        module procedure eq_r_hd ! compare a real with a hdual number, elemental
     end interface
     interface operator (<=)
-        module procedure le_dd  ! compare two dual numbers, elemental
-        module procedure le_di  ! compare a dual and an integer, elemental
-        module procedure le_dr  ! compare a dual and a real,elemental
-        module procedure le_id ! compare integer with a dual number, elemental
-        module procedure le_rd ! compare a real with a dual number, elemental
+        module procedure le_d_d ! compare two dual numbers, elemental
+        module procedure le_d_i ! compare a dual and an integer, elemental
+        module procedure le_d_r ! compare a dual and a real, elemental
+        module procedure le_i_d ! compare integer with a dual number, elemental
+        module procedure le_r_d ! compare a real with a dual number, elemental
+        module procedure le_hd_hd ! compare two hdual numbers, elemental
+        module procedure le_hd_i ! compare a hdual and an integer, elemental
+        module procedure le_hd_r ! compare a hdual and a real, elemental
+        module procedure le_i_hd ! compare integer with a hdual number, elemental
+        module procedure le_r_hd ! compare a real with a hdual number, elemental
     end interface
     interface operator (<)
-        module procedure lt_dd  !compare two dual numbers, elemental
-        module procedure lt_di  !compare a dual and an integer, elemental
-        module procedure lt_dr  !compare dual with a real, elemental
-        module procedure lt_id ! compare integer with a dual number, elemental
-        module procedure lt_rd ! compare a real with a dual number, elemental
+        module procedure lt_d_d ! compare two dual numbers, elemental
+        module procedure lt_d_i ! compare a dual and an integer, elemental
+        module procedure lt_d_r ! compare a dual and a real, elemental
+        module procedure lt_i_d ! compare integer with a dual number, elemental
+        module procedure lt_r_d ! compare a real with a dual number, elemental
+        module procedure lt_hd_hd ! compare two hdual numbers, elemental
+        module procedure lt_hd_i ! compare a hdual and an integer, elemental
+        module procedure lt_hd_r ! compare a hdual and a real, elemental
+        module procedure lt_i_hd ! compare integer with a hdual number, elemental
+        module procedure lt_r_hd ! compare a real with a hdual number, elemental
     end interface
     interface operator (>=)
-        module procedure ge_dd ! compare two dual numbers, elemental
-        module procedure ge_di ! compare dual with integer, elemental
-        module procedure ge_dr ! compare dual with a real number, elemental
-        module procedure ge_id ! compare integer with a dual number, elemental
-        module procedure ge_rd ! compare a real with a dual number, elemental
+        module procedure ge_d_d ! compare two dual numbers, elemental
+        module procedure ge_d_i ! compare a dual and an integer, elemental
+        module procedure ge_d_r ! compare a dual and a real, elemental
+        module procedure ge_i_d ! compare integer with a dual number, elemental
+        module procedure ge_r_d ! compare a real with a dual number, elemental
+        module procedure ge_hd_hd ! compare two hdual numbers, elemental
+        module procedure ge_hd_i ! compare a hdual and an integer, elemental
+        module procedure ge_hd_r ! compare a hdual and a real, elemental
+        module procedure ge_i_hd ! compare integer with a hdual number, elemental
+        module procedure ge_r_hd ! compare a real with a hdual number, elemental
     end interface
     interface operator (>)
-        module procedure gt_dd  !compare two dual numbers, elemental
-        module procedure gt_di  !compare a dual and an integer, elemental
-        module procedure gt_dr  !compare dual with a real, elemental
-        module procedure gt_id ! compare integer with a dual number, elemental
-        module procedure gt_rd ! compare a real with a dual number, elemental
+        module procedure gt_d_d ! compare two dual numbers, elemental
+        module procedure gt_d_i ! compare a dual and an integer, elemental
+        module procedure gt_d_r ! compare a dual and a real, elemental
+        module procedure gt_i_d ! compare integer with a dual number, elemental
+        module procedure gt_r_d ! compare a real with a dual number, elemental
+        module procedure gt_hd_hd ! compare two hdual numbers, elemental
+        module procedure gt_hd_i ! compare a hdual and an integer, elemental
+        module procedure gt_hd_r ! compare a hdual and a real, elemental
+        module procedure gt_i_hd ! compare integer with a hdual number, elemental
+        module procedure gt_r_hd ! compare a real with a hdual number, elemental
     end interface
     interface operator (/=)
-        module procedure ne_dd  !compare two dual numbers, elemental
-        module procedure ne_di  !compare a dual and an integer, elemental
-        module procedure ne_dr  !compare dual with a real, elemental
-        module procedure ne_id ! compare integer with a dual number, elemental
-        module procedure ne_rd ! compare a real with a dual number, elemental
+        module procedure ne_d_d ! compare two dual numbers, elemental
+        module procedure ne_d_i ! compare a dual and an integer, elemental
+        module procedure ne_d_r ! compare a dual and a real, elemental
+        module procedure ne_i_d ! compare integer with a dual number, elemental
+        module procedure ne_r_d ! compare a real with a dual number, elemental
+        module procedure ne_hd_hd ! compare two hdual numbers, elemental
+        module procedure ne_hd_i ! compare a hdual and an integer, elemental
+        module procedure ne_hd_r ! compare a hdual and a real, elemental
+        module procedure ne_i_hd ! compare integer with a hdual number, elemental
+        module procedure ne_r_hd ! compare a real with a hdual number, elemental
     end interface
     interface abs
         module procedure abs_d  ! absolute value of a dual number, elemental
@@ -1303,245 +1333,480 @@ contains
         end do
         pow_hd_hd_counter = pow_hd_hd_counter + 1
     end function
-    impure elemental  function eq_dd(lhs, rhs) result(res)
+    impure elemental  function eq_d_d(lhs, rhs) result(res)
          type(dual_uvw), intent(in) :: lhs, rhs
          logical :: res
 
          res = (lhs%x == rhs%x)
 
-    end function eq_dd
-    impure elemental  function eq_di(lhs, rhs) result(res)
+    end function
+    impure elemental  function eq_d_i(lhs, rhs) result(res)
          type(dual_uvw), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
 
-         res = (lhs%x == real(rhs, dp))
+         res = (lhs%x == rhs)
 
-    end function eq_di
-    impure elemental  function eq_dr(lhs, rhs) result(res)
-        type(dual_uvw), intent(in) :: lhs
-        real(dp), intent(in) :: rhs
-        logical::res
+    end function
+    impure elemental  function eq_d_r(lhs, rhs) result(res)
+         type(dual_uvw), intent(in) :: lhs
+         real(dp), intent(in) :: rhs
+         logical :: res
 
-        res = (lhs%x == rhs)
+         res = (lhs%x == rhs)
 
-    end function eq_dr
-    impure elemental  function eq_id(lhs, rhs) result(res)
+    end function
+    impure elemental  function eq_i_d(lhs, rhs) result(res)
          integer, intent(in) :: lhs
          type(dual_uvw), intent(in) :: rhs
          logical :: res
 
          res = (lhs == rhs%x)
 
-    end function eq_id
-    impure elemental  function eq_rd(lhs, rhs) result(res)
+    end function
+    impure elemental  function eq_r_d(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
          type(dual_uvw), intent(in) :: rhs
          logical :: res
 
          res = (lhs == rhs%x)
 
-    end function eq_rd
-    impure elemental  function le_dd(lhs, rhs) result(res)
+    end function
+    impure elemental  function eq_hd_hd(lhs, rhs) result(res)
+         type(hdual_uvw), intent(in) :: lhs, rhs
+         logical :: res
+
+         res = (lhs%x == rhs%x)
+
+    end function
+    impure elemental  function eq_hd_i(lhs, rhs) result(res)
+         type(hdual_uvw), intent(in) :: lhs
+         integer, intent(in) :: rhs
+         logical :: res
+
+         res = (lhs%x == rhs)
+
+    end function
+    impure elemental  function eq_hd_r(lhs, rhs) result(res)
+         type(hdual_uvw), intent(in) :: lhs
+         real(dp), intent(in) :: rhs
+         logical :: res
+
+         res = (lhs%x == rhs)
+
+    end function
+    impure elemental  function eq_i_hd(lhs, rhs) result(res)
+         integer, intent(in) :: lhs
+         type(hdual_uvw), intent(in) :: rhs
+         logical :: res
+
+         res = (lhs == rhs%x)
+
+    end function
+    impure elemental  function eq_r_hd(lhs, rhs) result(res)
+         real(dp), intent(in) :: lhs
+         type(hdual_uvw), intent(in) :: rhs
+         logical :: res
+
+         res = (lhs == rhs%x)
+
+    end function
+    impure elemental  function le_d_d(lhs, rhs) result(res)
          type(dual_uvw), intent(in) :: lhs, rhs
          logical :: res
 
          res = (lhs%x <= rhs%x)
 
-    end function le_dd
-    impure elemental  function le_di(lhs, rhs) result(res)
+    end function
+    impure elemental  function le_d_i(lhs, rhs) result(res)
          type(dual_uvw), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
 
          res = (lhs%x <= rhs)
 
-    end function le_di
-    impure elemental  function le_dr(lhs, rhs) result(res)
+    end function
+    impure elemental  function le_d_r(lhs, rhs) result(res)
          type(dual_uvw), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
 
          res = (lhs%x <= rhs)
 
-    end function le_dr
-    impure elemental  function le_id(i, rhs) result(res)
-         integer, intent(in) :: i
+    end function
+    impure elemental  function le_i_d(lhs, rhs) result(res)
+         integer, intent(in) :: lhs
          type(dual_uvw), intent(in) :: rhs
          logical :: res
 
-         res = (i <= rhs%x)
+         res = (lhs <= rhs%x)
 
-    end function le_id
-    impure elemental  function le_rd(lhs, rhs) result(res)
+    end function
+    impure elemental  function le_r_d(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
          type(dual_uvw), intent(in) :: rhs
          logical :: res
 
          res = (lhs <= rhs%x)
 
-    end function le_rd
-    impure elemental  function lt_dd(lhs, rhs) result(res)
-        type(dual_uvw), intent(in) :: lhs, rhs
-        logical :: res
+    end function
+    impure elemental  function le_hd_hd(lhs, rhs) result(res)
+         type(hdual_uvw), intent(in) :: lhs, rhs
+         logical :: res
 
-        res = (lhs%x < rhs%x)
+         res = (lhs%x <= rhs%x)
 
-    end function lt_dd
-    impure elemental  function lt_di(lhs, rhs) result(res)
-        type(dual_uvw), intent(in) :: lhs
-        integer, intent(in) :: rhs
-        logical :: res
+    end function
+    impure elemental  function le_hd_i(lhs, rhs) result(res)
+         type(hdual_uvw), intent(in) :: lhs
+         integer, intent(in) :: rhs
+         logical :: res
 
-        res = (lhs%x < rhs)
+         res = (lhs%x <= rhs)
 
-    end function lt_di
-    impure elemental  function lt_dr(lhs, rhs) result(res)
-        type(dual_uvw), intent(in) :: lhs
-        real(dp), intent(in) :: rhs
-        logical :: res
+    end function
+    impure elemental  function le_hd_r(lhs, rhs) result(res)
+         type(hdual_uvw), intent(in) :: lhs
+         real(dp), intent(in) :: rhs
+         logical :: res
 
-        res = (lhs%x < rhs)
+         res = (lhs%x <= rhs)
 
-    end function lt_dr
-    impure elemental  function lt_id(i, rhs) result(res)
-         integer, intent(in) :: i
+    end function
+    impure elemental  function le_i_hd(lhs, rhs) result(res)
+         integer, intent(in) :: lhs
+         type(hdual_uvw), intent(in) :: rhs
+         logical :: res
+
+         res = (lhs <= rhs%x)
+
+    end function
+    impure elemental  function le_r_hd(lhs, rhs) result(res)
+         real(dp), intent(in) :: lhs
+         type(hdual_uvw), intent(in) :: rhs
+         logical :: res
+
+         res = (lhs <= rhs%x)
+
+    end function
+    impure elemental  function lt_d_d(lhs, rhs) result(res)
+         type(dual_uvw), intent(in) :: lhs, rhs
+         logical :: res
+
+         res = (lhs%x < rhs%x)
+
+    end function
+    impure elemental  function lt_d_i(lhs, rhs) result(res)
+         type(dual_uvw), intent(in) :: lhs
+         integer, intent(in) :: rhs
+         logical :: res
+
+         res = (lhs%x < rhs)
+
+    end function
+    impure elemental  function lt_d_r(lhs, rhs) result(res)
+         type(dual_uvw), intent(in) :: lhs
+         real(dp), intent(in) :: rhs
+         logical :: res
+
+         res = (lhs%x < rhs)
+
+    end function
+    impure elemental  function lt_i_d(lhs, rhs) result(res)
+         integer, intent(in) :: lhs
          type(dual_uvw), intent(in) :: rhs
          logical :: res
 
-         res = (i < rhs%x)
+         res = (lhs < rhs%x)
 
-    end function lt_id
-    impure elemental  function lt_rd(lhs, rhs) result(res)
+    end function
+    impure elemental  function lt_r_d(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
          type(dual_uvw), intent(in) :: rhs
          logical :: res
 
          res = (lhs < rhs%x)
 
-    end function lt_rd
-    impure elemental  function ge_dd(lhs, rhs) result(res)
-        type(dual_uvw), intent(in) :: lhs, rhs
-        logical :: res
+    end function
+    impure elemental  function lt_hd_hd(lhs, rhs) result(res)
+         type(hdual_uvw), intent(in) :: lhs, rhs
+         logical :: res
 
-        res = (lhs%x >= rhs%x)
+         res = (lhs%x < rhs%x)
 
-    end function ge_dd
-    impure elemental  function ge_di(lhs, rhs) result(res)
-        type(dual_uvw), intent(in) :: lhs
-        integer, intent(in) :: rhs
-        logical :: res
+    end function
+    impure elemental  function lt_hd_i(lhs, rhs) result(res)
+         type(hdual_uvw), intent(in) :: lhs
+         integer, intent(in) :: rhs
+         logical :: res
 
-        res = (lhs%x >= rhs)
+         res = (lhs%x < rhs)
 
-    end function ge_di
-    impure elemental  function ge_dr(lhs, rhs) result(res)
-        type(dual_uvw), intent(in) :: lhs
-        real(dp), intent(in) :: rhs
-        logical :: res
+    end function
+    impure elemental  function lt_hd_r(lhs, rhs) result(res)
+         type(hdual_uvw), intent(in) :: lhs
+         real(dp), intent(in) :: rhs
+         logical :: res
 
-        res = (lhs%x >= rhs)
+         res = (lhs%x < rhs)
 
-    end function ge_dr
-    impure elemental  function ge_id(i, rhs) result(res)
-        integer, intent(in) :: i
-        type(dual_uvw), intent(in) :: rhs
-        logical :: res
+    end function
+    impure elemental  function lt_i_hd(lhs, rhs) result(res)
+         integer, intent(in) :: lhs
+         type(hdual_uvw), intent(in) :: rhs
+         logical :: res
 
-        res = (i >= rhs%x)
+         res = (lhs < rhs%x)
 
-    end function ge_id
-    impure elemental  function ge_rd(lhs, rhs) result(res)
+    end function
+    impure elemental  function lt_r_hd(lhs, rhs) result(res)
+         real(dp), intent(in) :: lhs
+         type(hdual_uvw), intent(in) :: rhs
+         logical :: res
+
+         res = (lhs < rhs%x)
+
+    end function
+    impure elemental  function ge_d_d(lhs, rhs) result(res)
+         type(dual_uvw), intent(in) :: lhs, rhs
+         logical :: res
+
+         res = (lhs%x >= rhs%x)
+
+    end function
+    impure elemental  function ge_d_i(lhs, rhs) result(res)
+         type(dual_uvw), intent(in) :: lhs
+         integer, intent(in) :: rhs
+         logical :: res
+
+         res = (lhs%x >= rhs)
+
+    end function
+    impure elemental  function ge_d_r(lhs, rhs) result(res)
+         type(dual_uvw), intent(in) :: lhs
+         real(dp), intent(in) :: rhs
+         logical :: res
+
+         res = (lhs%x >= rhs)
+
+    end function
+    impure elemental  function ge_i_d(lhs, rhs) result(res)
+         integer, intent(in) :: lhs
+         type(dual_uvw), intent(in) :: rhs
+         logical :: res
+
+         res = (lhs >= rhs%x)
+
+    end function
+    impure elemental  function ge_r_d(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
          type(dual_uvw), intent(in) :: rhs
          logical :: res
 
          res = (lhs >= rhs%x)
 
-    end function ge_rd
-    impure elemental  function gt_dd(lhs, rhs) result(res)
-        type(dual_uvw), intent(in) :: lhs, rhs
-        logical :: res
+    end function
+    impure elemental  function ge_hd_hd(lhs, rhs) result(res)
+         type(hdual_uvw), intent(in) :: lhs, rhs
+         logical :: res
 
-        res = (lhs%x > rhs%x)
+         res = (lhs%x >= rhs%x)
 
-    end function gt_dd
-    impure elemental  function gt_di(lhs, rhs) result(res)
-        type(dual_uvw), intent(in) :: lhs
-        integer, intent(in) :: rhs
-        logical :: res
+    end function
+    impure elemental  function ge_hd_i(lhs, rhs) result(res)
+         type(hdual_uvw), intent(in) :: lhs
+         integer, intent(in) :: rhs
+         logical :: res
 
-        res = (lhs%x > rhs)
+         res = (lhs%x >= rhs)
 
-    end function gt_di
-    impure elemental  function gt_dr(lhs, rhs) result(res)
-        type(dual_uvw), intent(in) :: lhs
-        real(dp), intent(in) :: rhs
-        logical :: res
+    end function
+    impure elemental  function ge_hd_r(lhs, rhs) result(res)
+         type(hdual_uvw), intent(in) :: lhs
+         real(dp), intent(in) :: rhs
+         logical :: res
 
-        res = (lhs%x > rhs)
+         res = (lhs%x >= rhs)
 
-    end function gt_dr
-    impure elemental  function gt_id(i, rhs) result(res)
-        integer, intent(in) :: i
-        type(dual_uvw), intent(in) :: rhs
-        logical :: res
+    end function
+    impure elemental  function ge_i_hd(lhs, rhs) result(res)
+         integer, intent(in) :: lhs
+         type(hdual_uvw), intent(in) :: rhs
+         logical :: res
 
-        res = (i > rhs%x)
+         res = (lhs >= rhs%x)
 
-    end function gt_id
-    impure elemental  function gt_rd(lhs, rhs) result(res)
+    end function
+    impure elemental  function ge_r_hd(lhs, rhs) result(res)
+         real(dp), intent(in) :: lhs
+         type(hdual_uvw), intent(in) :: rhs
+         logical :: res
+
+         res = (lhs >= rhs%x)
+
+    end function
+    impure elemental  function gt_d_d(lhs, rhs) result(res)
+         type(dual_uvw), intent(in) :: lhs, rhs
+         logical :: res
+
+         res = (lhs%x > rhs%x)
+
+    end function
+    impure elemental  function gt_d_i(lhs, rhs) result(res)
+         type(dual_uvw), intent(in) :: lhs
+         integer, intent(in) :: rhs
+         logical :: res
+
+         res = (lhs%x > rhs)
+
+    end function
+    impure elemental  function gt_d_r(lhs, rhs) result(res)
+         type(dual_uvw), intent(in) :: lhs
+         real(dp), intent(in) :: rhs
+         logical :: res
+
+         res = (lhs%x > rhs)
+
+    end function
+    impure elemental  function gt_i_d(lhs, rhs) result(res)
+         integer, intent(in) :: lhs
+         type(dual_uvw), intent(in) :: rhs
+         logical :: res
+
+         res = (lhs > rhs%x)
+
+    end function
+    impure elemental  function gt_r_d(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
          type(dual_uvw), intent(in) :: rhs
          logical :: res
 
          res = (lhs > rhs%x)
 
-    end function gt_rd
-    impure elemental  function ne_dd(lhs, rhs) result(res)
-        type(dual_uvw), intent(in) :: lhs, rhs
-        logical :: res
+    end function
+    impure elemental  function gt_hd_hd(lhs, rhs) result(res)
+         type(hdual_uvw), intent(in) :: lhs, rhs
+         logical :: res
 
-        res = (lhs%x /= rhs%x)
+         res = (lhs%x > rhs%x)
 
-    end function ne_dd
-    impure elemental  function ne_di(lhs, rhs) result(res)
-        type(dual_uvw), intent(in) :: lhs
-        integer, intent(in) :: rhs
-        logical :: res
+    end function
+    impure elemental  function gt_hd_i(lhs, rhs) result(res)
+         type(hdual_uvw), intent(in) :: lhs
+         integer, intent(in) :: rhs
+         logical :: res
 
-        res = (lhs%x /= rhs)
+         res = (lhs%x > rhs)
 
-    end function ne_di
-    impure elemental  function ne_dr(lhs, rhs) result(res)
-        type(dual_uvw), intent(in) :: lhs
-        real(dp), intent(in) :: rhs
-        logical :: res
+    end function
+    impure elemental  function gt_hd_r(lhs, rhs) result(res)
+         type(hdual_uvw), intent(in) :: lhs
+         real(dp), intent(in) :: rhs
+         logical :: res
 
-        res = (lhs%x /= rhs)
+         res = (lhs%x > rhs)
 
-    end function ne_dr
-    impure elemental  function ne_id(i, rhs) result(res)
-        integer, intent(in) :: i
-        type(dual_uvw), intent(in) :: rhs
-        logical :: res
+    end function
+    impure elemental  function gt_i_hd(lhs, rhs) result(res)
+         integer, intent(in) :: lhs
+         type(hdual_uvw), intent(in) :: rhs
+         logical :: res
 
-        res = (i /= rhs%x)
+         res = (lhs > rhs%x)
 
-    end function ne_id
-    impure elemental  function ne_rd(lhs, rhs) result(res)
-        real(dp), intent(in) :: lhs
-        type(dual_uvw), intent(in) :: rhs
-        logical :: res
+    end function
+    impure elemental  function gt_r_hd(lhs, rhs) result(res)
+         real(dp), intent(in) :: lhs
+         type(hdual_uvw), intent(in) :: rhs
+         logical :: res
 
-        res = (lhs /= rhs%x)
+         res = (lhs > rhs%x)
 
-    end function ne_rd
+    end function
+    impure elemental  function ne_d_d(lhs, rhs) result(res)
+         type(dual_uvw), intent(in) :: lhs, rhs
+         logical :: res
+
+         res = (lhs%x /= rhs%x)
+
+    end function
+    impure elemental  function ne_d_i(lhs, rhs) result(res)
+         type(dual_uvw), intent(in) :: lhs
+         integer, intent(in) :: rhs
+         logical :: res
+
+         res = (lhs%x /= rhs)
+
+    end function
+    impure elemental  function ne_d_r(lhs, rhs) result(res)
+         type(dual_uvw), intent(in) :: lhs
+         real(dp), intent(in) :: rhs
+         logical :: res
+
+         res = (lhs%x /= rhs)
+
+    end function
+    impure elemental  function ne_i_d(lhs, rhs) result(res)
+         integer, intent(in) :: lhs
+         type(dual_uvw), intent(in) :: rhs
+         logical :: res
+
+         res = (lhs /= rhs%x)
+
+    end function
+    impure elemental  function ne_r_d(lhs, rhs) result(res)
+         real(dp), intent(in) :: lhs
+         type(dual_uvw), intent(in) :: rhs
+         logical :: res
+
+         res = (lhs /= rhs%x)
+
+    end function
+    impure elemental  function ne_hd_hd(lhs, rhs) result(res)
+         type(hdual_uvw), intent(in) :: lhs, rhs
+         logical :: res
+
+         res = (lhs%x /= rhs%x)
+
+    end function
+    impure elemental  function ne_hd_i(lhs, rhs) result(res)
+         type(hdual_uvw), intent(in) :: lhs
+         integer, intent(in) :: rhs
+         logical :: res
+
+         res = (lhs%x /= rhs)
+
+    end function
+    impure elemental  function ne_hd_r(lhs, rhs) result(res)
+         type(hdual_uvw), intent(in) :: lhs
+         real(dp), intent(in) :: rhs
+         logical :: res
+
+         res = (lhs%x /= rhs)
+
+    end function
+    impure elemental  function ne_i_hd(lhs, rhs) result(res)
+         integer, intent(in) :: lhs
+         type(hdual_uvw), intent(in) :: rhs
+         logical :: res
+
+         res = (lhs /= rhs%x)
+
+    end function
+    impure elemental  function ne_r_hd(lhs, rhs) result(res)
+         real(dp), intent(in) :: lhs
+         type(hdual_uvw), intent(in) :: rhs
+         logical :: res
+
+         res = (lhs /= rhs%x)
+
+    end function
     impure elemental  function abs_d(u) result(res)
         type(dual_uvw), intent(in) :: u
         type(dual_uvw) :: res
         integer :: i
 
+        ! We need this!
         res%x = abs(u%x)
         res%dx = abs(u%dx)
 

@@ -9,6 +9,13 @@
 #:include 'mult_gen.fypp'
 #:include 'div_gen.fypp'
 #:include 'pow_gen.fypp'
+#:include 'eq.fypp'
+#:include 'le.fypp'
+#:include 'lt.fypp'
+#:include 'ge.fypp'
+#:include 'gt.fypp'
+#:include 'ne.fypp'
+
 #:include 'log_gen.fypp'
 #:include 'sqrt_gen.fypp'
 
@@ -102,250 +109,52 @@
 #!
 #! 
 #:if "==" in interface_list 
-    ${elemental_purity}$  function eq_dd(lhs, rhs) result(res)
-         type(${dual_type}$), intent(in) :: lhs, rhs
-         logical :: res
-
-         res = (lhs%x == rhs%x)
-
-    end function eq_dd
-    ${elemental_purity}$  function eq_di(lhs, rhs) result(res)
-         type(${dual_type}$), intent(in) :: lhs
-         integer, intent(in) :: rhs
-         logical :: res
-
-         res = (lhs%x == real(rhs, ${real_kind}$))
-
-    end function eq_di
-    ${elemental_purity}$  function eq_dr(lhs, rhs) result(res)
-        type(${dual_type}$), intent(in) :: lhs
-        real(${real_kind}$), intent(in) :: rhs
-        logical::res
-
-        res = (lhs%x == rhs)
-
-    end function eq_dr
-    ${elemental_purity}$  function eq_id(lhs, rhs) result(res)
-         integer, intent(in) :: lhs
-         type(${dual_type}$), intent(in) :: rhs
-         logical :: res
-
-         res = (lhs == rhs%x)
-
-    end function eq_id
-    ${elemental_purity}$  function eq_rd(lhs, rhs) result(res)
-         real(${real_kind}$), intent(in) :: lhs
-         type(${dual_type}$), intent(in) :: rhs
-         logical :: res
-
-         res = (lhs == rhs%x)
-
-    end function eq_rd
+  #:if dual_type is not None
+    $:eq(dual_type, real_kind, is_pure, test_coverage, "d")
+  #:endif
+  #:if hdual_type is not None
+    $:eq(hdual_type, real_kind, is_pure, test_coverage, "hd")
+  #:endif 
 #:endif 
 #:if "<=" in interface_list 
-    ${elemental_purity}$  function le_dd(lhs, rhs) result(res)
-         type(${dual_type}$), intent(in) :: lhs, rhs
-         logical :: res
-
-         res = (lhs%x <= rhs%x)
-
-    end function le_dd
-    ${elemental_purity}$  function le_di(lhs, rhs) result(res)
-         type(${dual_type}$), intent(in) :: lhs
-         integer, intent(in) :: rhs
-         logical :: res
-
-         res = (lhs%x <= rhs)
-
-    end function le_di
-    ${elemental_purity}$  function le_dr(lhs, rhs) result(res)
-         type(${dual_type}$), intent(in) :: lhs
-         real(${real_kind}$), intent(in) :: rhs
-         logical :: res
-
-         res = (lhs%x <= rhs)
-
-    end function le_dr
-    ${elemental_purity}$  function le_id(i, rhs) result(res)
-         integer, intent(in) :: i
-         type(${dual_type}$), intent(in) :: rhs
-         logical :: res
-
-         res = (i <= rhs%x)
-
-    end function le_id
-    ${elemental_purity}$  function le_rd(lhs, rhs) result(res)
-         real(${real_kind}$), intent(in) :: lhs
-         type(${dual_type}$), intent(in) :: rhs
-         logical :: res
-
-         res = (lhs <= rhs%x)
-
-    end function le_rd
+  #:if dual_type is not None
+    $:le(dual_type, real_kind, is_pure, test_coverage, "d")
+  #:endif
+  #:if hdual_type is not None
+    $:le(hdual_type, real_kind, is_pure, test_coverage, "hd")
+  #:endif 
 #:endif 
 #:if "<" in interface_list 
-    ${elemental_purity}$  function lt_dd(lhs, rhs) result(res)
-        type(${dual_type}$), intent(in) :: lhs, rhs
-        logical :: res
-
-        res = (lhs%x < rhs%x)
-
-    end function lt_dd
-    ${elemental_purity}$  function lt_di(lhs, rhs) result(res)
-        type(${dual_type}$), intent(in) :: lhs
-        integer, intent(in) :: rhs
-        logical :: res
-
-        res = (lhs%x < rhs)
-
-    end function lt_di
-    ${elemental_purity}$  function lt_dr(lhs, rhs) result(res)
-        type(${dual_type}$), intent(in) :: lhs
-        real(${real_kind}$), intent(in) :: rhs
-        logical :: res
-
-        res = (lhs%x < rhs)
-
-    end function lt_dr
-    ${elemental_purity}$  function lt_id(i, rhs) result(res)
-         integer, intent(in) :: i
-         type(${dual_type}$), intent(in) :: rhs
-         logical :: res
-
-         res = (i < rhs%x)
-
-    end function lt_id
-    ${elemental_purity}$  function lt_rd(lhs, rhs) result(res)
-         real(${real_kind}$), intent(in) :: lhs
-         type(${dual_type}$), intent(in) :: rhs
-         logical :: res
-
-         res = (lhs < rhs%x)
-
-    end function lt_rd
+  #:if dual_type is not None
+    $:lt(dual_type, real_kind, is_pure, test_coverage, "d")
+  #:endif
+  #:if hdual_type is not None
+    $:lt(hdual_type, real_kind, is_pure, test_coverage, "hd")
+  #:endif 
 #:endif 
 #:if ">=" in interface_list 
-    ${elemental_purity}$  function ge_dd(lhs, rhs) result(res)
-        type(${dual_type}$), intent(in) :: lhs, rhs
-        logical :: res
-
-        res = (lhs%x >= rhs%x)
-
-    end function ge_dd
-    ${elemental_purity}$  function ge_di(lhs, rhs) result(res)
-        type(${dual_type}$), intent(in) :: lhs
-        integer, intent(in) :: rhs
-        logical :: res
-
-        res = (lhs%x >= rhs)
-
-    end function ge_di
-    ${elemental_purity}$  function ge_dr(lhs, rhs) result(res)
-        type(${dual_type}$), intent(in) :: lhs
-        real(${real_kind}$), intent(in) :: rhs
-        logical :: res
-
-        res = (lhs%x >= rhs)
-
-    end function ge_dr
-    ${elemental_purity}$  function ge_id(i, rhs) result(res)
-        integer, intent(in) :: i
-        type(${dual_type}$), intent(in) :: rhs
-        logical :: res
-
-        res = (i >= rhs%x)
-
-    end function ge_id
-    ${elemental_purity}$  function ge_rd(lhs, rhs) result(res)
-         real(${real_kind}$), intent(in) :: lhs
-         type(${dual_type}$), intent(in) :: rhs
-         logical :: res
-
-         res = (lhs >= rhs%x)
-
-    end function ge_rd
+  #:if dual_type is not None
+    $:ge(dual_type, real_kind, is_pure, test_coverage, "d")
+  #:endif
+  #:if hdual_type is not None
+    $:ge(hdual_type, real_kind, is_pure, test_coverage, "hd")
+  #:endif 
 #:endif 
 #:if ">" in interface_list 
-    ${elemental_purity}$  function gt_dd(lhs, rhs) result(res)
-        type(${dual_type}$), intent(in) :: lhs, rhs
-        logical :: res
-
-        res = (lhs%x > rhs%x)
-
-    end function gt_dd
-    ${elemental_purity}$  function gt_di(lhs, rhs) result(res)
-        type(${dual_type}$), intent(in) :: lhs
-        integer, intent(in) :: rhs
-        logical :: res
-
-        res = (lhs%x > rhs)
-
-    end function gt_di
-    ${elemental_purity}$  function gt_dr(lhs, rhs) result(res)
-        type(${dual_type}$), intent(in) :: lhs
-        real(${real_kind}$), intent(in) :: rhs
-        logical :: res
-
-        res = (lhs%x > rhs)
-
-    end function gt_dr
-    ${elemental_purity}$  function gt_id(i, rhs) result(res)
-        integer, intent(in) :: i
-        type(${dual_type}$), intent(in) :: rhs
-        logical :: res
-
-        res = (i > rhs%x)
-
-    end function gt_id
-    ${elemental_purity}$  function gt_rd(lhs, rhs) result(res)
-         real(${real_kind}$), intent(in) :: lhs
-         type(${dual_type}$), intent(in) :: rhs
-         logical :: res
-
-         res = (lhs > rhs%x)
-
-    end function gt_rd
+  #:if dual_type is not None
+    $:gt(dual_type, real_kind, is_pure, test_coverage, "d")
+  #:endif
+  #:if hdual_type is not None
+    $:gt(hdual_type, real_kind, is_pure, test_coverage, "hd")
+  #:endif 
 #:endif 
 #:if "/=" in interface_list 
-    ${elemental_purity}$  function ne_dd(lhs, rhs) result(res)
-        type(${dual_type}$), intent(in) :: lhs, rhs
-        logical :: res
-
-        res = (lhs%x /= rhs%x)
-
-    end function ne_dd
-    ${elemental_purity}$  function ne_di(lhs, rhs) result(res)
-        type(${dual_type}$), intent(in) :: lhs
-        integer, intent(in) :: rhs
-        logical :: res
-
-        res = (lhs%x /= rhs)
-
-    end function ne_di
-    ${elemental_purity}$  function ne_dr(lhs, rhs) result(res)
-        type(${dual_type}$), intent(in) :: lhs
-        real(${real_kind}$), intent(in) :: rhs
-        logical :: res
-
-        res = (lhs%x /= rhs)
-
-    end function ne_dr
-    ${elemental_purity}$  function ne_id(i, rhs) result(res)
-        integer, intent(in) :: i
-        type(${dual_type}$), intent(in) :: rhs
-        logical :: res
-
-        res = (i /= rhs%x)
-
-    end function ne_id
-    ${elemental_purity}$  function ne_rd(lhs, rhs) result(res)
-        real(${real_kind}$), intent(in) :: lhs
-        type(${dual_type}$), intent(in) :: rhs
-        logical :: res
-
-        res = (lhs /= rhs%x)
-
-    end function ne_rd
+  #:if dual_type is not None
+    $:ne(dual_type, real_kind, is_pure, test_coverage, "d")
+  #:endif
+  #:if hdual_type is not None
+    $:ne(hdual_type, real_kind, is_pure, test_coverage, "hd")
+  #:endif 
 #:endif 
 #:if "abs" in interface_list or "dabs" in interface_list
     ${elemental_purity}$  function abs_d(u) result(res)
@@ -353,6 +162,7 @@
         type(${dual_type}$) :: res
         integer :: i
 
+        ! We need this!
       #:if set_undefined == True
         if (u%x == 0) then
             res%x = 0.0_${real_kind}$
