@@ -99,22 +99,19 @@
 
 #! variable 'number_of_derivatives' must be defined in call to fypp
 
-#:include 'macros/dnad_dual_type.fypp'
+#:include 'macros/dnad_dual_types.fypp'
 #:include 'macros/dnad_public_interface_statements.fypp'
 #:include 'macros/dnad_interfaces.fypp'
 #:include 'macros/dnad_implementations.fypp'
 
-#! When set_undefined = False, the dnad functions assume that the derivative exists. It is does not exist (for instance for abs(0.0))
-#! the result will be undefined. When set_undefined = True (or not defined) some logic is included in the mathematical functions to
-#! determine if the derivative exists of not, and call a function set_NaN() when it does not exist. Using set_undefined = False is 
+#! When stringent = False, the dnad functions assume that the derivative exists. It is does not exist (for instance for abs(0.0))
+#! the result will be undefined. When stringent = True (or not defined) some logic is included in the mathematical functions to
+#! determine if the derivative exists of not, and call a function set_NaN() when it does not exist. Using stringent = False is 
 #! believed to be faster.
-#:set set_undefined = True
+#:set stringent = True
 
 #! Dual number type:
 #:set dual_type = "dual" + str(number_of_derivatives)
-#! Double dual number type:
-#:set has_double_dual = True
-#:set ddual_type = "ddual" + str(number_of_derivatives)
 
 #! selected_interfaces is a comma separated list or "--all"
 #:set selected_interfaces = "--all"
@@ -125,12 +122,12 @@ module dnad${number_of_derivatives}$_mod
 
     integer, parameter :: num_deriv = ${number_of_derivatives}$
 
-  #:if set_undefined
+  #:if stringent
     ! Workaround to make pure functions produce NaN's deliberately:
     real(dp) :: negative_one = -1.0_dp
   #:endif
 
-    @:dnad_public_interface_statements(${selected_interfaces}$)
+    $:dnad_public_interface_statements(selected_interfaces)
     
     @:dnad_dual_type(${dual_type}$, dp, num_deriv, sequence, ${ddual_type}$)
 
@@ -138,9 +135,9 @@ module dnad${number_of_derivatives}$_mod
 
 contains
 
-    @:dnad_implementations(${dual_type}$, dp, num_deriv, ${selected_interfaces}$, ${set_undefined}$, ${ddual_type}$)
+    @:dnad_implementations(${dual_type}$, dp, num_deriv, ${selected_interfaces}$, ${stringent}$, ${ddual_type}$)
 
-  #:if set_undefined
+  #:if stringent
     ! Workaround to make pure functions produce NaN's deliberately:
     elemental function set_NaN() result(res)
         real(dp) :: res

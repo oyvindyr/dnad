@@ -1,0 +1,116 @@
+
+#:def pow_d(dual_type, real_kind, size_dx, is_pure, test_coverage)
+    #:if is_pure and not test_coverage
+        #:set elemental_purity = "elemental"
+    #:else
+        #:set elemental_purity = "impure elemental"
+    #:endif
+    ${elemental_purity}$ function pow_d_i(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        integer, intent(in) :: v
+        type(${dual_type}$) :: res
+        
+        res%x = u%x**v
+        res%dx = u%x**(v - 1)*u%dx*v
+      #:if test_coverage
+        pow_d_i_counter = pow_d_i_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function pow_d_r(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        real(${real_kind}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        
+        res%x = u%x**v
+        res%dx = u%x**(v - 1)*u%dx*v
+      #:if test_coverage
+        pow_d_r_counter = pow_d_r_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function pow_d_d(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        real(${real_kind}$) :: t0
+        
+        t0 = u%x**v%x
+        res%x = t0
+        res%dx = t0*(u%dx*v%x/u%x + v%dx*log(u%x))
+
+      #:if test_coverage
+        pow_d_d_counter = pow_d_d_counter + 1
+      #:endif
+    end function
+#:enddef
+
+#:def pow_hd(dual_type, real_kind, size_dx, is_pure, test_coverage)
+    #:if is_pure and not test_coverage
+        #:set elemental_purity = "elemental"
+    #:else
+        #:set elemental_purity = "impure elemental"
+    #:endif
+    ${elemental_purity}$ function pow_hd_i(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        integer, intent(in) :: v
+        type(${dual_type}$) :: res
+        integer :: i, j, k
+        
+        res%x = u%x**v
+        res%dx = u%x**(v - 1)*v*u%dx
+        k = 0
+        do j = 1, ${size_dx}$
+            do i = j, ${size_dx}$
+                k = k + 1
+                res%ddx(k) = v*(u%dx(i)*u%dx(j)*(v - 1)*u%x**(v-2) + u%ddx(k)*u%x**(v-1))
+            end do
+        end do
+      #:if test_coverage
+        pow_hd_i_counter = pow_hd_i_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function pow_hd_r(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        real(${real_kind}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        integer :: i, j, k
+        
+        res%x = u%x**v
+        res%dx = u%x**(v - 1)*v*u%dx
+        k = 0
+        do j = 1, ${size_dx}$
+            do i = j, ${size_dx}$
+                k = k + 1
+                res%ddx(k) = v*(u%dx(i)*u%dx(j)*(v - 1)*u%x**(v-2) + u%ddx(k)*u%x**(v-1))
+            end do
+        end do
+      #:if test_coverage
+        pow_hd_r_counter = pow_hd_r_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function pow_hd_hd(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        integer :: i, j, k
+        real(${real_kind}$) :: t0,t1,t2,t3
+        
+        t0 = u%x**v%x
+        t1 = log(u%x)
+        t2 = 1.0_${real_kind}$/u%x
+        t3 = t1*v%x + 1
+        res%x = t0
+        res%dx = t0*(t1*v%dx + t2*u%dx*v%x)
+        k = 0
+        do j = 1, ${size_dx}$
+            do i = j, ${size_dx}$
+                k = k + 1
+                res%ddx(k) = t0*(t1*v%ddx(k) + t2*u%ddx(k)*v%x + t2*u%dx(j)*(t2*u%dx(i)*v%x*(v%x - &
+      1) + t3*v%dx(i)) + v%dx(j)*(t1**2*v%dx(i) + t2*t3*u%dx(i)))
+            end do
+        end do
+      #:if test_coverage
+        pow_hd_hd_counter = pow_hd_hd_counter + 1
+      #:endif
+    end function
+#:enddef
+

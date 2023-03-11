@@ -8,7 +8,7 @@
 #:include 'minus_gen.fypp'
 #:include 'mult_gen.fypp'
 #:include 'div_gen.fypp'
-#:include 'pow_gen.fypp'
+#:include 'pow.fypp'
 #:include 'eq.fypp'
 #:include 'le.fypp'
 #:include 'lt.fypp'
@@ -22,7 +22,7 @@
 #!
 #!
 #:def dnad_implementations(real_kind, size_dx, dual_type=None, hdual_type=None, &
-        selected_interfaces="--all", set_undefined=True, is_pure=True, test_coverage=False) 
+        selected_interfaces="--all", stringent=True, is_pure=True, test_coverage=False) 
 #! 
 #:set interface_list = dnad.select_interfaces(selected_interfaces)
 #!
@@ -163,7 +163,7 @@
         integer :: i
 
         ! We need this!
-      #:if set_undefined == True
+      #:if stringent == True
         if (u%x == 0) then
             res%x = 0.0_${real_kind}$
             do i = 1, ${size_dx}$
@@ -191,7 +191,7 @@
 
         res%x = acos(u%x)
     
-      #:if set_undefined == True
+      #:if stringent == True
         if (u%x == 1.0_${real_kind}$ .or. u%x == -1.0_${real_kind}$) then
             res%dx = set_Nan()  ! Undefined derivative
         else
@@ -209,7 +209,7 @@
         type(${dual_type}$) :: res
 
         res%x = asin(u%x)
-      #:if set_undefined == True
+      #:if stringent == True
         if (u%x == 1.0_${real_kind}$ .or. u%x == -1.0_${real_kind}$) then
             res%dx = set_NaN()  ! Undefined derivative
         else
@@ -542,8 +542,8 @@
     end function tan_d
 #:endif 
 #:if "sqrt" in interface_list
-  #:if set_undefined == True
-    #:stop 'set_undefined = True has not been implemented for sqrt()!'
+  #:if stringent == True
+    #:stop 'stringent = True has not been implemented for sqrt()!'
   #:endif
   #:if dual_type is not None
     $:sqrt_d(dual_type, real_kind, size_dx, is_pure, test_coverage)

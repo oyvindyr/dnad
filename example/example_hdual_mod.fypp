@@ -4,11 +4,11 @@
 #:include '../src/macros/dnad_interfaces.fypp'
 #:include '../src/macros/dnad_implementations.fypp'
 
-#! When set_undefined = False, the dnad functions assume that the derivative exists. It is does not exist (for instance for abs(0.0))
-#! the result will be undefined. When set_undefined = True (or not defined) some logic is included in the mathematical functions to
-#! determine if the derivative exists of not, and call a function set_NaN() when it does not exist. Using set_undefined = False is 
+#! When stringent = False, the dnad functions assume that the derivative exists. It is does not exist (for instance for abs(0.0))
+#! the result will be undefined. When stringent = True (or not defined) some logic is included in the mathematical functions to
+#! determine if the derivative exists of not, and call a function set_NaN() when it does not exist. Using stringent = False is 
 #! believed to be faster.
-#:set set_undefined = False
+#:set stringent = False
 
 #! selected_interfaces is a comma separated list or "--all"
 #:set selected_interfaces = "=,+,*,**,log,sqrt"
@@ -23,7 +23,7 @@ module example_hdual_mod
 
     integer, parameter :: num_deriv = 3 ! Number of derivatives
 
-  #:if set_undefined
+  #:if stringent
     ! Workaround to make pure functions produce NaN's deliberately:
     real(dp) :: negative_one = -1.0_dp
   #:endif
@@ -100,9 +100,9 @@ contains
 
     #! Inject overloaded function implementations
     $:dnad_implementations("dp", "num_deriv", hdual_type="hdual_uvw", selected_interfaces=selected_interfaces, &
-            set_undefined=set_undefined)
+            stringent=stringent)
     
-  #:if set_undefined
+  #:if stringent
     ! Workaround to make pure functions produce NaN's deliberately:
     elemental function set_NaN() result(res)
         real(dp) :: res

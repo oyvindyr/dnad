@@ -381,45 +381,55 @@ def binary_overload(fun, is_hyper_dual=True, arg_class=('dual','dual')):
     u_type, usn, v_type, vsn = uv_types(arg_class, is_hyper_dual)
     res_type = 'type(${dual_type}$)'
 
+    if u_class == "integer":
+        u_assumption = {'integer':True}
+    else:
+        u_assumption = {'real':True}
 
-    u = Symbol('u_x')
-    v = Symbol('v_x')
+    if v_class == "integer":
+        v_assumption = {'integer':True}
+    else:
+        v_assumption = {'real':True}
+
+
+    u = Symbol('u_x', **u_assumption)
+    v = Symbol('v_x', **v_assumption)
 
     f = fun(u, v)
 
     ignore = []
     if u_class == 'dual':
-        du1 = Symbol('u_dx1')
+        du1 = Symbol('u_dx1', **u_assumption)
         ignore.append(du1)
     else:
         du1 = 0
     
     if v_class == 'dual':
-        dv1 = Symbol('v_dx1')
+        dv1 = Symbol('v_dx1', **v_assumption)
         ignore.append(dv1)
     else:
         dv1 = 0
 
     if is_hyper_dual:
         if u_class == 'dual':
-            du2 = Symbol('u_dx2')
+            du2 = Symbol('u_dx2', **u_assumption)
             ignore.append(du2)
         else:
             du2 = 0
 
         if v_class == 'dual':
-            dv2 = Symbol('v_dx2')
+            dv2 = Symbol('v_dx2', **v_assumption)
             ignore.append(dv2)
         else:
             dv2 = 0
 
         if u_class == 'dual':
-            ddu = Symbol('u_ddx')
+            ddu = Symbol('u_ddx', **u_assumption)
             ignore.append(ddu)
         else:
             ddu = 0
         if v_class == 'dual':
-            ddv = Symbol('v_ddx')
+            ddv = Symbol('v_ddx', **v_assumption)
             ignore.append(ddv)
         else:
             ddv = 0
@@ -527,6 +537,11 @@ def unary_overload(fun, is_hyper_dual=True, u_class='dual'):
             The generated Fortran code
     """
 
+    if u_class == "integer":
+        u_assumption = {'integer':True}
+    else:
+        u_assumption = {'real':True}
+
     # Create type string and type suffix for the u argument
     if u_class == 'dual':
         u_type = "type(${dual_type}$)" 
@@ -543,26 +558,26 @@ def unary_overload(fun, is_hyper_dual=True, u_class='dual'):
 
     res_type = 'type(${dual_type}$)'
 
-    u = Symbol('u_x')
+    u = Symbol('u_x', **u_assumption)
 
     f = fun(u)
 
     ignore = []
     if u_class == 'dual':
-        du1 = Symbol('u_dx1')
+        du1 = Symbol('u_dx1', **u_assumption)
         ignore.append(du1)
     else:
         du1 = 0
 
     if is_hyper_dual:
         if u_class == 'dual':
-            du2 = Symbol('u_dx2')
+            du2 = Symbol('u_dx2', **u_assumption)
             ignore.append(du2)
         else:
             du2 = 0
 
         if u_class == 'dual':
-            ddu = Symbol('u_ddx')
+            ddu = Symbol('u_ddx', **u_assumption)
             ignore.append(ddu)
         else:
             ddu = 0
