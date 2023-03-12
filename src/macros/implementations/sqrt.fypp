@@ -1,0 +1,90 @@
+
+#:def sqrt_d(dual_type, real_kind, size_dx, is_pure, test_coverage, stringent)
+    #:if is_pure and not test_coverage
+        #:set elemental_purity = "elemental"
+    #:else
+        #:set elemental_purity = "impure elemental"
+    #:endif
+    ${elemental_purity}$ function sqrt_d(u) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$) :: res
+        real(${real_kind}$) :: t0
+      #:if stringent
+        integer :: i
+      #:endif
+        
+        t0 = sqrt(u%x)
+        res%x = t0
+      #:if stringent
+        if (res%x /= 0) then
+            res%dx = 0.5_${real_kind}$*u%dx/t0
+        else
+            do i = 1, ${size_dx}$
+                if (u%dx(i) == 0) then
+                    res%dx(i) = 0
+                else
+                    res%dx(i) = set_NaN()
+                end if
+            end do
+        end if
+      #:else
+        res%dx = 0.5_${real_kind}$*u%dx/t0
+      #:endif
+      #:if test_coverage
+        sqrt_d_counter = sqrt_d_counter + 1
+      #:endif
+    end function
+
+#:enddef
+
+#:def sqrt_hd(dual_type, real_kind, size_dx, is_pure, test_coverage, stringent)
+    #:if is_pure and not test_coverage
+        #:set elemental_purity = "elemental"
+    #:else
+        #:set elemental_purity = "impure elemental"
+    #:endif
+    ${elemental_purity}$ function sqrt_hd(u) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$) :: res
+        integer :: i, j, k
+        real(${real_kind}$) :: t0,t1
+        
+        t0 = sqrt(u%x)
+        t1 = 1.0_${real_kind}$/t0
+        res%x = t0
+      #:if stringent
+        if (res%x /= 0) then
+            res%dx = 0.5_${real_kind}$*t1*u%dx
+            k = 0
+            do j = 1, ${size_dx}$
+                do i = j, ${size_dx}$
+                    k = k + 1
+                    res%ddx(k) = (0.25_${real_kind}$)*t1*(2*u%ddx(k) - u%dx(i)*u%dx(j)/u%x)
+                end do
+            end do
+        else
+            do i = 1, ${size_dx}$
+                if (u%dx(i) == 0) then
+                    res%dx(i) = 0
+                else
+                    res%dx(i) = set_NaN()
+                end if
+            end do
+            res%ddx = set_NaN() ! Not sure if this is correct..
+        end if
+      #:else
+        res%dx = 0.5_${real_kind}$*t1*u%dx
+        k = 0
+        do j = 1, ${size_dx}$
+            do i = j, ${size_dx}$
+                k = k + 1
+                res%ddx(k) = (0.25_${real_kind}$)*t1*(2*u%ddx(k) - u%dx(i)*u%dx(j)/u%x)
+            end do
+        end do
+      #:endif
+      #:if test_coverage
+        sqrt_hd_counter = sqrt_hd_counter + 1
+      #:endif
+    end function
+#:enddef
+

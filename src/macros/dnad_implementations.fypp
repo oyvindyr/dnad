@@ -17,7 +17,7 @@
 #:include 'ne.fypp'
 
 #:include 'log_gen.fypp'
-#:include 'sqrt_gen.fypp'
+#:include 'sqrt.fypp'
 
 #!
 #!
@@ -542,14 +542,11 @@
     end function tan_d
 #:endif 
 #:if "sqrt" in interface_list
-  #:if stringent == True
-    #:stop 'stringent = True has not been implemented for sqrt()!'
-  #:endif
   #:if dual_type is not None
-    $:sqrt_d(dual_type, real_kind, size_dx, is_pure, test_coverage)
+    $:sqrt_d(dual_type, real_kind, size_dx, is_pure, test_coverage, stringent)
   #:endif
   #:if hdual_type is not None
-    $:sqrt_hd(hdual_type, real_kind, size_dx, is_pure, test_coverage)
+    $:sqrt_hd(hdual_type, real_kind, size_dx, is_pure, test_coverage, stringent)
   #:endif
 #:endif 
 #:if "sum" in interface_list 
