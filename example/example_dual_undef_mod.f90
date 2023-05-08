@@ -18,6 +18,10 @@ module example_dual_undef_mod
     end type
 
 
+    interface initialize ! Initialize a dual or hyper dual number
+        module procedure initialize_dual
+    end interface
+  
     interface assignment (=)
         module procedure assign_d_i  ! dual=integer, elemental
         module procedure assign_d_r  ! dual=real, elemental
@@ -42,9 +46,9 @@ contains
 
         type(dual_uvw) :: uhd, vhd, whd, fhd
 
-        uhd = initialize_dual(1.0_dp, 1)
-        vhd = initialize_dual(1.0_dp, 2)
-        whd = initialize_dual(1.0_dp, 3)
+        call initialize(uhd, 1.0_dp, 1)
+        call initialize(vhd, 1.0_dp, 2)
+        call initialize(whd, 1.0_dp, 3)
 
         ! Function to compute value, gradient and Hessian for:
         fhd = test_function(uhd, vhd, whd)
@@ -64,17 +68,17 @@ contains
         f = acos(u)
     end function
 
-    pure function initialize_dual(val, idiff) result(d)
+    pure subroutine initialize_dual(dual, val, idiff)
+        type(dual_uvw), intent(out) :: dual
         real(dp), intent(in) :: val
         integer, intent(in) :: idiff
-        type(dual_uvw) :: d
         
-        d%x = val
-        d%dx = 0
-        d%dx(idiff) = 1
+        dual%x = val
+        dual%dx = 0
+        dual%dx(idiff) = 1
 
-    end function
-    pure subroutine assign_d_i(u, i)
+    end subroutine
+    elemental subroutine assign_d_i(u, i)
         type(dual_uvw), intent(out) :: u
         integer, intent(in) :: i
 
@@ -82,7 +86,7 @@ contains
         u%dx = 0.0_dp
 
     end subroutine
-    pure subroutine assign_d_r(u, r)
+    elemental subroutine assign_d_r(u, r)
         type(dual_uvw), intent(out) :: u
         real(dp), intent(in) :: r
 
@@ -90,14 +94,14 @@ contains
         u%dx = 0.0_dp
 
     end subroutine
-    pure subroutine assign_i_d(i, v)
+    elemental subroutine assign_i_d(i, v)
         type(dual_uvw), intent(in) :: v
         integer, intent(out) :: i
 
         i = int(v%x)
 
     end subroutine
-    pure subroutine assign_r_d(r, v)
+    elemental subroutine assign_r_d(r, v)
         type(dual_uvw), intent(in) :: v
         real(dp), intent(out) :: r
 

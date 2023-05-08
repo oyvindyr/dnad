@@ -54,13 +54,13 @@ contains
         do i = 1, nval
 
             call random_number(r)
-            uhd(i) = initialize_hdual(r, 1)
+            call initialize(uhd(i), r, 1)
 
             call random_number(r)
-            vhd(i) = initialize_hdual(r, 2)
+            call initialize(vhd(i), r, 2)
 
             call random_number(r)
-            whd(i) = initialize_hdual(r, 3)
+            call initialize(whd(i), r, 3)
 
         end do
 

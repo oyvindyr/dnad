@@ -10,6 +10,15 @@
     end interface
   #:endif
 
+    interface initialize ! Initialize a dual or hyper dual number
+      #:if has_dual
+        module procedure initialize_dual
+      #:endif
+      #:if has_hyper_dual
+        module procedure initialize_hdual
+      #:endif
+    end interface
+  
   #:if "=" in interface_list 
     interface assignment (=)
       #:if has_dual

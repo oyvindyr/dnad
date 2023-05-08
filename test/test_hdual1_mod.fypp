@@ -67,11 +67,11 @@ contains
         ! Initialize dual inputs:
         do i = 1, nval
 
-            xd(i) = initialize_dual(x(i), 1)
-            yd(i) = initialize_dual(y(i), 2)
+            call initialize(xd(i), x(i), 1)
+            call initialize(yd(i), y(i), 2)
             
-            xhd(i) = initialize_hdual(x(i), 1)
-            yhd(i) = initialize_hdual(y(i), 2)
+            call initialize(xhd(i), x(i), 1)
+            call initialize(yhd(i), y(i), 2)
 
         end do
 

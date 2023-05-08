@@ -42,9 +42,9 @@ contains
 
         type(dual_uvw) :: uhd, vhd, whd, fhd
 
-        uhd = initialize_dual(1.0_dp, 1)
-        vhd = initialize_dual(1.0_dp, 2)
-        whd = initialize_dual(1.0_dp, 3)
+        call initialize(uhd, 1.0_dp, 1)
+        call initialize(vhd, 1.0_dp, 2)
+        call initialize(whd, 1.0_dp, 3)
 
         ! Function to compute value, gradient and Hessian for:
         fhd = test_function(uhd, vhd, whd)

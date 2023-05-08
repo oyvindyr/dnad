@@ -1,26 +1,26 @@
 #:def initialize_d(dual_type, real_kind)
-    pure function initialize_dual(val, idiff) result(d)
+    pure subroutine initialize_dual(dual, val, idiff)
+        type(${dual_type}$), intent(out) :: dual
         real(${real_kind}$), intent(in) :: val
         integer, intent(in) :: idiff
-        type(${dual_type}$) :: d
         
-        d%x = val
-        d%dx = 0
-        d%dx(idiff) = 1
+        dual%x = val
+        dual%dx = 0
+        dual%dx(idiff) = 1
 
-    end function
+    end subroutine
 #:enddef
 
 #:def initialize_hd(dual_type, real_kind)
-    pure function initialize_hdual(val, idiff) result(d)
+    pure subroutine initialize_hdual(hdual, val, idiff)
+        type(${dual_type}$), intent(out) :: hdual
         real(${real_kind}$), intent(in) :: val
         integer, intent(in) :: idiff
-        type(${dual_type}$) :: d
         
-        d%x = val
-        d%dx = 0
-        d%ddx = 0
-        d%dx(idiff) = 1
+        hdual%x = val
+        hdual%dx = 0
+        hdual%ddx = 0
+        hdual%dx(idiff) = 1
 
-    end function
+    end subroutine
 #:enddef

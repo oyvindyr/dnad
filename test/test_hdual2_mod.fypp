@@ -80,13 +80,13 @@ contains
         ! Initialize dual inputs:
         do i = 1, nval
 
-            ud(i) = initialize_dual(u(i), 1)
-            vd(i) = initialize_dual(v(i), 2)
-            wd(i) = initialize_dual(w(i), 3)
+            call initialize(ud(i), u(i), 1)
+            call initialize(vd(i), v(i), 2)
+            call initialize(wd(i), w(i), 3)
 
-            uhd(i) = initialize_hdual(u(i), 1)
-            vhd(i) = initialize_hdual(v(i), 2)
-            whd(i) = initialize_hdual(w(i), 3)
+            call initialize(uhd(i), u(i), 1)
+            call initialize(vhd(i), v(i), 2)
+            call initialize(whd(i), w(i), 3)
 
         end do
 

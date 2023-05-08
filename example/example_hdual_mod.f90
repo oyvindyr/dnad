@@ -20,6 +20,10 @@ module example_hdual_mod
         module procedure hessian_matrix
     end interface
 
+    interface initialize ! Initialize a dual or hyper dual number
+        module procedure initialize_hdual
+    end interface
+  
     interface assignment (=)
         module procedure assign_hd_i  ! dual=integer, elemental
         module procedure assign_hd_r  ! dual=real, elemental
@@ -71,13 +75,13 @@ contains
         do i = 1, nval
 
             call random_number(r)
-            uhd(i) = initialize_hdual(r, 1)
+            call initialize(uhd(i), r, 1)
 
             call random_number(r)
-            vhd(i) = initialize_hdual(r, 2)
+            call initialize(vhd(i), r, 2)
 
             call random_number(r)
-            whd(i) = initialize_hdual(r, 3)
+            call initialize(whd(i), r, 3)
 
         end do
 
@@ -115,17 +119,17 @@ contains
         f = sqrt(u)*log(v) + u**w
     end function
 
-    pure function initialize_hdual(val, idiff) result(d)
+    pure subroutine initialize_hdual(hdual, val, idiff)
+        type(hdual_uvw), intent(out) :: hdual
         real(dp), intent(in) :: val
         integer, intent(in) :: idiff
-        type(hdual_uvw) :: d
         
-        d%x = val
-        d%dx = 0
-        d%ddx = 0
-        d%dx(idiff) = 1
+        hdual%x = val
+        hdual%dx = 0
+        hdual%ddx = 0
+        hdual%dx(idiff) = 1
 
-    end function
+    end subroutine
     pure function hessian_matrix(d) result(m)
         type(hdual_uvw), intent(in) :: d
         real(dp) :: m(num_deriv, num_deriv)
@@ -145,7 +149,7 @@ contains
         ! m = d%ddx
 
     end function
-    pure subroutine assign_hd_i(u, i)
+    elemental subroutine assign_hd_i(u, i)
         type(hdual_uvw), intent(out) :: u
         integer, intent(in) :: i
 
@@ -154,7 +158,7 @@ contains
         u%ddx = 0.0_dp
 
     end subroutine
-    pure subroutine assign_hd_r(u, r)
+    elemental subroutine assign_hd_r(u, r)
         type(hdual_uvw), intent(out) :: u
         real(dp), intent(in) :: r
 
@@ -163,14 +167,14 @@ contains
         u%ddx = 0.0_dp
 
     end subroutine
-    pure subroutine assign_i_hd(i, v)
+    elemental subroutine assign_i_hd(i, v)
         type(hdual_uvw), intent(in) :: v
         integer, intent(out) :: i
 
         i = int(v%x)
 
     end subroutine
-    pure subroutine assign_r_hd(r, v)
+    elemental subroutine assign_r_hd(r, v)
         type(hdual_uvw), intent(in) :: v
         real(dp), intent(out) :: r
 
@@ -287,18 +291,14 @@ contains
         integer, intent(in) :: v
         type(hdual_uvw) :: res
         integer :: i, j, k
-        real(dp) :: t0,t1,t2
         
-        t0 = u%x**v
-        t1 = 1.0_dp/u%x
-        t2 = t0*v
-        res%x = t0
-        res%dx = t1*t2*u%dx
+        res%x = u%x**v
+        res%dx = u%x**(v - 1)*v*u%dx
         k = 0
         do j = 1, num_deriv
             do i = j, num_deriv
                 k = k + 1
-                res%ddx(k) = t1*t2*(t1*u%dx(i)*u%dx(j)*(v - 1) + u%ddx(k))
+                res%ddx(k) = v*(u%dx(i)*u%dx(j)*(v - 1)*u%x**(v-2) + u%ddx(k)*u%x**(v-1))
             end do
         end do
     end function
@@ -307,18 +307,14 @@ contains
         real(dp), intent(in) :: v
         type(hdual_uvw) :: res
         integer :: i, j, k
-        real(dp) :: t0,t1,t2
         
-        t0 = u%x**v
-        t1 = 1.0_dp/u%x
-        t2 = t0*v
-        res%x = t0
-        res%dx = t1*t2*u%dx
+        res%x = u%x**v
+        res%dx = u%x**(v - 1)*v*u%dx
         k = 0
         do j = 1, num_deriv
             do i = j, num_deriv
                 k = k + 1
-                res%ddx(k) = t1*t2*(t1*u%dx(i)*u%dx(j)*(v - 1) + u%ddx(k))
+                res%ddx(k) = v*(u%dx(i)*u%dx(j)*(v - 1)*u%x**(v-2) + u%ddx(k)*u%x**(v-1))
             end do
         end do
     end function
