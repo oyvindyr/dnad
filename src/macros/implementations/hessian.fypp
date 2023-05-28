@@ -1,5 +1,5 @@
-#:def hessian(dual_type, real_kind, size_dx)
-    pure function hessian_matrix(d) result(m)
+#:def hessian(dual_type, dual_sn, real_kind, size_dx)
+    pure function hessian_${dual_sn}$(d) result(m)
         type(${dual_type}$), intent(in) :: d
         real(${real_kind}$) :: m(${size_dx}$, ${size_dx}$)
         

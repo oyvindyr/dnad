@@ -16,7 +16,7 @@ _literal_replacements = {
 
 # Jinja2 template for a fypp macro
 _macro_template = '''
-#:def {{interface_name}}_{{sn}}(dual_type, real_kind, size_dx, is_pure, test_coverage)
+#:def {{interface_name}}_{{sn}}(dual_type, dual_sn, real_kind, size_dx, is_pure, test_coverage)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
@@ -330,10 +330,7 @@ def replacements_ddx_no_loop(c, u_type, v_type):
 def uv_types(num_types, is_hyper_dual):
     if num_types[0] == 'dual':
         ut = "type(${dual_type}$)" 
-        if is_hyper_dual:
-            uts = 'hd'
-        else:
-            uts = 'd'
+        uts = "${dual_sn}$"
     elif num_types[0] == 'real':
         ut = "real(${real_kind}$)"
         uts = 'r'
@@ -343,10 +340,7 @@ def uv_types(num_types, is_hyper_dual):
 
     if num_types[1] == 'dual':
         vt = "type(${dual_type}$)" 
-        if is_hyper_dual:
-            vts = 'hd'
-        else:
-            vts = 'd'
+        vts = "${dual_sn}$"
     elif num_types[1] == 'real':
         vt = "real(${real_kind}$)"
         vts = 'r'
@@ -545,10 +539,7 @@ def unary_overload(fun, is_hyper_dual=True, u_class='dual'):
     # Create type string and type suffix for the u argument
     if u_class == 'dual':
         u_type = "type(${dual_type}$)" 
-        if is_hyper_dual:
-            usn = 'hd'
-        else:
-            usn = 'd'
+        usn = "${dual_sn}$"
     elif u_class == 'real':
         u_type = "real(${real_kind}$)"
         usn = 'r'

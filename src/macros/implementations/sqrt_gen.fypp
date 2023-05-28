@@ -1,11 +1,11 @@
 
-#:def sqrt_d(dual_type, real_kind, size_dx, is_pure, test_coverage)
+#:def sqrt_d(dual_type, dual_sn, real_kind, size_dx, is_pure, test_coverage)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"
     #:endif
-    ${elemental_purity}$ function sqrt_d(u) result(res)
+    ${elemental_purity}$ function sqrt_${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
         real(${real_kind}$) :: t0
@@ -14,18 +14,18 @@
         res%x = t0
         res%dx = 0.5_${real_kind}$*u%dx/t0
       #:if test_coverage
-        sqrt_d_counter = sqrt_d_counter + 1
+        sqrt_${dual_sn}$_counter = sqrt_${dual_sn}$_counter + 1
       #:endif
     end function
 #:enddef
 
-#:def sqrt_hd(dual_type, real_kind, size_dx, is_pure, test_coverage)
+#:def sqrt_hd(dual_type, dual_sn, real_kind, size_dx, is_pure, test_coverage)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"
     #:endif
-    ${elemental_purity}$ function sqrt_hd(u) result(res)
+    ${elemental_purity}$ function sqrt_${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
         integer :: i, j, k
@@ -43,7 +43,7 @@
             end do
         end do
       #:if test_coverage
-        sqrt_hd_counter = sqrt_hd_counter + 1
+        sqrt_${dual_sn}$_counter = sqrt_${dual_sn}$_counter + 1
       #:endif
     end function
 #:enddef

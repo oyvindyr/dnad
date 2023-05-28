@@ -1,29 +1,29 @@
 
-#:def log_d(dual_type, real_kind, size_dx, is_pure, test_coverage)
+#:def log_d(dual_type, dual_sn, real_kind, size_dx, is_pure, test_coverage)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"
     #:endif
-    ${elemental_purity}$ function log_d(u) result(res)
+    ${elemental_purity}$ function log_${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
         
         res%x = log(u%x)
         res%dx = u%dx/u%x
       #:if test_coverage
-        log_d_counter = log_d_counter + 1
+        log_${dual_sn}$_counter = log_${dual_sn}$_counter + 1
       #:endif
     end function
 #:enddef
 
-#:def log_hd(dual_type, real_kind, size_dx, is_pure, test_coverage)
+#:def log_hd(dual_type, dual_sn, real_kind, size_dx, is_pure, test_coverage)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"
     #:endif
-    ${elemental_purity}$ function log_hd(u) result(res)
+    ${elemental_purity}$ function log_${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
         integer :: i, j, k
@@ -40,7 +40,7 @@
             end do
         end do
       #:if test_coverage
-        log_hd_counter = log_hd_counter + 1
+        log_${dual_sn}$_counter = log_${dual_sn}$_counter + 1
       #:endif
     end function
 #:enddef

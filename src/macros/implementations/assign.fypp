@@ -1,10 +1,10 @@
-#:def assign_d(dual_type, real_kind, is_pure, test_coverage)
+#:def assign_d(dual_type, dual_sn, real_kind, is_pure, test_coverage)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"
     #:endif
-    ${elemental_purity}$ subroutine assign_d_i(u, i)
+    ${elemental_purity}$ subroutine assign_${dual_sn}$_i(u, i)
         type(${dual_type}$), intent(out) :: u
         integer, intent(in) :: i
 
@@ -15,7 +15,7 @@
       #:endif
 
     end subroutine
-    ${elemental_purity}$ subroutine assign_d_r(u, r)
+    ${elemental_purity}$ subroutine assign_${dual_sn}$_r(u, r)
         type(${dual_type}$), intent(out) :: u
         real(${real_kind}$), intent(in) :: r
 
@@ -26,7 +26,7 @@
       #:endif
 
     end subroutine
-    ${elemental_purity}$ subroutine assign_i_d(i, v)
+    ${elemental_purity}$ subroutine assign_i_${dual_sn}$(i, v)
         type(${dual_type}$), intent(in) :: v
         integer, intent(out) :: i
 
@@ -36,7 +36,7 @@
       #:endif
 
     end subroutine
-    ${elemental_purity}$ subroutine assign_r_d(r, v)
+    ${elemental_purity}$ subroutine assign_r_${dual_sn}$(r, v)
         type(${dual_type}$), intent(in) :: v
         real(${real_kind}$), intent(out) :: r
 
@@ -48,13 +48,13 @@
     end subroutine
 #:enddef
 
-#:def assign_hd(dual_type, real_kind, is_pure, test_coverage)
+#:def assign_hd(dual_type, dual_sn, real_kind, is_pure, test_coverage)
     #:if is_pure and not test_coverage
-    #:set elemental_purity = "elemental"
+        #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"
     #:endif
-    ${elemental_purity}$ subroutine assign_hd_i(u, i)
+    ${elemental_purity}$ subroutine assign_${dual_sn}$_i(u, i)
         type(${dual_type}$), intent(out) :: u
         integer, intent(in) :: i
 
@@ -66,7 +66,7 @@
       #:endif
 
     end subroutine
-    ${elemental_purity}$ subroutine assign_hd_r(u, r)
+    ${elemental_purity}$ subroutine assign_${dual_sn}$_r(u, r)
         type(${dual_type}$), intent(out) :: u
         real(${real_kind}$), intent(in) :: r
 
@@ -78,7 +78,7 @@
       #:endif
 
     end subroutine
-    ${elemental_purity}$ subroutine assign_i_hd(i, v)
+    ${elemental_purity}$ subroutine assign_i_${dual_sn}$(i, v)
         type(${dual_type}$), intent(in) :: v
         integer, intent(out) :: i
 
@@ -88,7 +88,7 @@
       #:endif
 
     end subroutine
-    ${elemental_purity}$ subroutine assign_r_hd(r, v)
+    ${elemental_purity}$ subroutine assign_r_${dual_sn}$(r, v)
         type(${dual_type}$), intent(in) :: v
         real(${real_kind}$), intent(out) :: r
 

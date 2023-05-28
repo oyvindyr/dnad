@@ -1,5 +1,5 @@
-#:def initialize_d(dual_type, real_kind)
-    pure subroutine initialize_dual(dual, val, idiff)
+#:def initialize_d(dual_type, dual_sn, real_kind)
+    pure subroutine initialize_${dual_sn}$(dual, val, idiff)
         type(${dual_type}$), intent(out) :: dual
         real(${real_kind}$), intent(in) :: val
         integer, intent(in) :: idiff
@@ -11,8 +11,8 @@
     end subroutine
 #:enddef
 
-#:def initialize_hd(dual_type, real_kind)
-    pure subroutine initialize_hdual(hdual, val, idiff)
+#:def initialize_hd(dual_type, dual_sn, real_kind)
+    pure subroutine initialize_${dual_sn}$(hdual, val, idiff)
         type(${dual_type}$), intent(out) :: hdual
         real(${real_kind}$), intent(in) :: val
         integer, intent(in) :: idiff

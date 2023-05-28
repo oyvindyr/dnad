@@ -6,7 +6,7 @@ program check
     logical :: is_ok(2)
 
     is_ok(1) = test_hdual1()
-    is_ok(2) = .true.!test_hdual2()
+    is_ok(2) = test_hdual2()
 
     if (all(is_ok)) then
         print *, "dual/hdual tests: ok"

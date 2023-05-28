@@ -1,0 +1,163 @@
+#:mute
+
+#:include '../src/macros/dnad_dual_types.fypp'
+#:include '../src/macros/dnad_interfaces.fypp'
+#:include '../src/macros/dnad_implementations.fypp'
+
+#! Include call counters to check test coverage:
+#: set test_coverage = True
+
+#! When stringent = False, the dnad functions assume that the derivative exists. It is does not exist (for instance for abs(0.0))
+#! the result will be undefined. When stringent = True (or not defined) some logic is included in the mathematical functions to
+#! determine if the derivative exists of not, and call a function set_NaN() when it does not exist. Using stringent = False is 
+#! believed to be faster.
+#:set stringent = False
+
+#! selected_interfaces is a comma separated list or "--all"
+#!set selected_interfaces = "=,*,log,sqrt"
+#:set selected_interfaces = "--all"
+
+#:endmute
+module test_hdual1_mod
+    use, intrinsic :: iso_fortran_env, only: dp => real64
+    implicit none
+
+    integer, parameter :: ny = 2
+    integer, parameter :: nx = 3
+
+
+    ! Implementation call counters to show test coverage:
+  #:for impl in dnad.all_implementations
+    integer :: ${impl+"_counter"}$ = 0
+  #:endfor
+
+  #:if stringent
+    ! Workaround to make pure functions produce NaN's deliberately:
+    real(dp) :: negative_one = -1.0_dp
+  #:endif
+    
+    @:dnad_dual_type(dual_y, dp, ny, sequence)
+    @:dnad_dual_type(dual_x, dp, nx, sequence)
+    @:dnad_hdual_type(hdual_y, dp, ny, sequence)
+    @:dnad_hdual_type(hdual_x, dp, nx, sequence)
+
+    $:dnad_interfaces(selected_interfaces, has_dual=True, has_hyper_dual=True)
+    
+contains
+
+    function test_hdual1() result(is_ok)
+        logical :: is_ok
+           
+        real(dp), parameter :: abs_tol = 1.0e-14_dp
+
+        integer, parameter :: nval = 5
+
+        integer :: i
+
+        real(dp), dimension(nval) :: x, y
+        real(dp), dimension(nval) :: fvd, fvh, fv_fasit
+        real(dp), dimension(2, nval) :: dfd, dfh, df_fasit
+        real(dp), dimension(2, 2, nval) :: ddfh, ddf_fasit
+
+        type(dual_y), dimension(nval) :: xd, yd, fd
+        type(hdual_y), dimension(nval) :: xhd, yhd, fhd
+
+        call random_number(x)
+        x = 5*x + 0.1_dp
+        call random_number(y)
+        y = 5*y + 0.1_dp
+
+
+        ! Initialize dual inputs:
+        do i = 1, nval
+
+            call initialize(xd(i), x(i), 1)
+            call initialize(yd(i), y(i), 2)
+            
+            call initialize(xhd(i), x(i), 1)
+            call initialize(yhd(i), y(i), 2)
+
+        end do
+
+        fd = test_function_dual(xd, yd)
+        fhd = test_function_hdual(xhd, yhd)
+
+        ! Extract function value, gradient and hessian for all values:
+        do i = 1, nval
+
+            fvd(i) = fd(i)
+            dfd(:, i) = fd(i)%dx
+
+            fvh(i) = fhd(i)
+            dfh(:, i) = fhd(i)%dx
+            ddfh(:, :, i) = hessian(fhd(i))
+
+        end do
+
+        ! Fasit:
+        do i = 1, nval
+            call test_function_analytic(x(i), y(i), fv_fasit(i), df_fasit(:, i), ddf_fasit(:, :, i))
+        end do
+
+        if ((maxval(abs(fvd - fv_fasit)) < abs_tol) .and. &
+                (maxval(abs(fvh - fv_fasit)) < abs_tol) .and. &
+                (maxval(abs(dfd - df_fasit)) < abs_tol) .and. &
+                (maxval(abs(dfh - df_fasit)) < abs_tol) .and. &
+                (maxval(abs(ddfh - ddf_fasit)) < abs_tol)) then
+            is_ok = .true.
+        else
+            is_ok = .false.
+            print*,"f_diff:"
+            print*, fvh - fv_fasit
+            print*,"df_diff:"
+            print*, dfh - df_fasit
+            print*,"ddf_diff:"
+            print*, ddfh - ddf_fasit
+        end if
+
+        #:if test_coverage == True
+        #:for impl in dnad.all_implementations
+        print*, ${'"'+impl+'_counter: ", ' + impl+'_counter'}$
+        #:endfor
+        #:endif
+
+        if (is_ok) then
+            print *, "test_hdual: ok"
+        else
+            print *, "test_hdual: failed"
+        end if
+
+        ! print*, "f:"
+        ! print*, f
+        ! print*, "f_fasit:"
+        ! print*, f_fasit
+        ! print*, "df:"
+        ! print*, df
+        ! print*, "df_fasit:"
+        ! print*, df_fasit
+        ! print*, "ddf:"
+        ! print*, ddf
+        ! print*, "ddf_fasit:"
+        ! print*, ddf_fasit
+      
+    end function
+
+    impure elemental function f_of_y(y) result(f)
+        type(hdual_y), intent(in) :: y
+        type(hdual_y) :: f
+        f = sqrt(x)*log(y)
+    end function
+
+    $:dnad_implementations("dp", "ny", dual_type="dual_y", hdual_type="hdual_y", &
+            selected_interfaces=selected_interfaces, stringent=stringent, &
+            test_coverage=test_coverage)
+    
+  #:if stringent
+    ! Workaround to make pure functions produce NaN's deliberately:
+    elemental function set_NaN() result(res)
+        real(dp) :: res
+        res = sqrt(negative_one)
+    end function set_NaN
+  #:endif
+    
+end module
