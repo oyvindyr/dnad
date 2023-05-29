@@ -143,17 +143,6 @@ Gradient:
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula 
-\begin{equation}
-\pdfrac{\hat{f}}{x_{i}}=\sum_{k}\pdfrac{\bar{f}}{y_{k}}\pdfrac{y_{k}}{x_{i}}
-\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 Hessian:
 \begin_inset Formula 
 \begin{align}

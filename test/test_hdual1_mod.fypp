@@ -34,10 +34,10 @@ module test_hdual1_mod
     real(dp) :: negative_one = -1.0_dp
   #:endif
     
-    @:dnad_dual_type(dual_xy, dp, num_deriv, sequence)
-    @:dnad_hdual_type(hdual_xy, dp, num_deriv, sequence)
+    @:dnad_dual_type(dual_xy_t, dp, num_deriv, sequence)
+    @:dnad_hdual_type(hdual_xy_t, dp, num_deriv, sequence)
 
-    $:dnad_interfaces(selected_interfaces, has_dual=True, has_hyper_dual=True)
+    $:dnad_interfaces(selected_interfaces, dual_shortnames = ['d'], hdual_shortnames=['hd'])
     
 contains
 
@@ -55,8 +55,8 @@ contains
         real(dp), dimension(2, nval) :: dfd, dfh, df_fasit
         real(dp), dimension(2, 2, nval) :: ddfh, ddf_fasit
 
-        type(dual_xy), dimension(nval) :: xd, yd, fd
-        type(hdual_xy), dimension(nval) :: xhd, yhd, fhd
+        type(dual_xy_t), dimension(nval) :: xd, yd, fd
+        type(hdual_xy_t), dimension(nval) :: xhd, yhd, fhd
 
         call random_number(x)
         x = 5*x + 0.1_dp
@@ -139,13 +139,13 @@ contains
     end function
 
     impure elemental function test_function_dual(x, y) result(f)
-        type(dual_xy), intent(in) :: x, y
-        type(dual_xy) :: f
+        type(dual_xy_t), intent(in) :: x, y
+        type(dual_xy_t) :: f
         f = sqrt(x)*log(y)
     end function
     impure elemental function test_function_hdual(x, y) result(f)
-        type(hdual_xy), intent(in) :: x, y
-        type(hdual_xy) :: f
+        type(hdual_xy_t), intent(in) :: x, y
+        type(hdual_xy_t) :: f
         f = sqrt(x)*log(y)
     end function
 
@@ -163,7 +163,9 @@ contains
         ddf(1, 2) = ddf(2, 1)              ! d**2f/dydx
     end subroutine
 
-    $:dnad_implementations("dp", "num_deriv", dual_type="dual_xy", hdual_type="hdual_xy", &
+    $:dnad_implementations("dp", &
+             dual_types = ['dual_xy_t'],   dual_shortnames =  ['d'],  dual_sizes = ['num_deriv'], &
+            hdual_types = ['hdual_xy_t'], hdual_shortnames = ['hd'], hdual_sizes = ['num_deriv'], &
             selected_interfaces=selected_interfaces, stringent=stringent, &
             test_coverage=test_coverage)
     

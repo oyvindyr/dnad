@@ -127,13 +127,13 @@ module test_hdual1_mod
     integer :: maxloc_d_counter = 0
 
     
-    type :: dual_xy
+    type :: dual_xy_t
         !! dual number type
         sequence
         real(dp) :: x = 0  ! functional value
         real(dp) :: dx(num_deriv) = 0  ! derivatives
     end type
-    type :: hdual_xy
+    type :: hdual_xy_t
         !! hyper-dual number type
         sequence
         real(dp) :: x = 0  ! functional value
@@ -142,12 +142,12 @@ module test_hdual1_mod
     end type
 
     interface hessian ! Extract Hessian from a hyper-dual number
-        module procedure hessian_matrix
+        module procedure hessian_hd
     end interface
 
     interface initialize ! Initialize a dual or hyper dual number
-        module procedure initialize_dual
-        module procedure initialize_hdual
+        module procedure initialize_d
+        module procedure initialize_hd
     end interface
   
     interface assignment (=)
@@ -317,7 +317,7 @@ module test_hdual1_mod
         module procedure cos_d ! cosine of a dual number, elemental
     end interface
     interface dot_product
-        module procedure dot_product_dd ! dot product two dual number vectors
+        module procedure dot_product_d_d ! dot product two dual number vectors
     end interface
     interface exp
         module procedure exp_d ! exponential of a dual number, elemental
@@ -333,28 +333,28 @@ module test_hdual1_mod
         module procedure log10_d ! log of a dual number, elemental
     end interface
     interface matmul
-        module procedure matmul_dd ! multiply two dual matrices
-        module procedure matmul_dv ! multiply a dual matrix with a dual vector
-        module procedure matmul_vd ! multiply a dual vector with a dual matrix
+        module procedure matmul_d_d ! multiply two dual matrices
+        module procedure matmul_d_v ! multiply a dual matrix with a dual vector
+        module procedure matmul_v_d ! multiply a dual vector with a dual matrix
     end interface
     interface max
-        module procedure max_dd ! max of two dual numbers, elemental
-        module procedure max_di ! max of a dual number and an integer, elemental
-        module procedure max_dr ! max of a dual number and a real, elemental
-        module procedure max_rd ! max of a real,and a dual number,  elemental
+        module procedure max_d_d ! max of two dual numbers, elemental
+        module procedure max_d_i ! max of a dual number and an integer, elemental
+        module procedure max_d_r ! max of a dual number and a real, elemental
+        module procedure max_r_d ! max of a real,and a dual number,  elemental
     end interface
     interface dmax1
-        module procedure dmax1_dd ! max of from two to four dual numbers, elemental
+        module procedure dmax1_d_d ! max of from two to four dual numbers, elemental
     end interface
     interface maxval
         module procedure maxval_d ! maxval of a dual number vector
     end interface
     interface min
-        module procedure min_dd ! min of from two to four dual numbers, elemental
-        module procedure min_dr ! min of a dual and a real, elemental
+        module procedure min_d_d ! min of from two to four dual numbers, elemental
+        module procedure min_d_r ! min of a dual and a real, elemental
     end interface
     interface dmin1
-        module procedure dmin1_dd ! min of from two to four dual numbers, elemental
+        module procedure dmin1_d_d ! min of from two to four dual numbers, elemental
     end interface
     interface minval
         module procedure minval_d ! obtain the maxval  of a dual number vectgor
@@ -363,8 +363,8 @@ module test_hdual1_mod
         module procedure nint_d ! nearest integer to the argument, elemental
     end interface
     interface  sign
-      module procedure  sign_dd ! sign(a,b) with two dual numbers, elemental
-      module procedure  sign_rd ! sign(a,b) with a real and a dual, elemental
+        module procedure  sign_d_d ! sign(a,b) with two dual numbers, elemental
+        module procedure  sign_r_d ! sign(a,b) with a real and a dual, elemental
     end interface
     interface sin
         module procedure sin_d ! obtain sine of a dual number, elemental
@@ -405,8 +405,8 @@ contains
         real(dp), dimension(2, nval) :: dfd, dfh, df_fasit
         real(dp), dimension(2, 2, nval) :: ddfh, ddf_fasit
 
-        type(dual_xy), dimension(nval) :: xd, yd, fd
-        type(hdual_xy), dimension(nval) :: xhd, yhd, fhd
+        type(dual_xy_t), dimension(nval) :: xd, yd, fd
+        type(hdual_xy_t), dimension(nval) :: xhd, yhd, fhd
 
         call random_number(x)
         x = 5*x + 0.1_dp
@@ -604,13 +604,13 @@ contains
     end function
 
     impure elemental function test_function_dual(x, y) result(f)
-        type(dual_xy), intent(in) :: x, y
-        type(dual_xy) :: f
+        type(dual_xy_t), intent(in) :: x, y
+        type(dual_xy_t) :: f
         f = sqrt(x)*log(y)
     end function
     impure elemental function test_function_hdual(x, y) result(f)
-        type(hdual_xy), intent(in) :: x, y
-        type(hdual_xy) :: f
+        type(hdual_xy_t), intent(in) :: x, y
+        type(hdual_xy_t) :: f
         f = sqrt(x)*log(y)
     end function
 
@@ -628,8 +628,8 @@ contains
         ddf(1, 2) = ddf(2, 1)              ! d**2f/dydx
     end subroutine
 
-    pure subroutine initialize_dual(dual, val, idiff)
-        type(dual_xy), intent(out) :: dual
+    pure subroutine initialize_d(dual, val, idiff)
+        type(dual_xy_t), intent(out) :: dual
         real(dp), intent(in) :: val
         integer, intent(in) :: idiff
         
@@ -638,8 +638,8 @@ contains
         dual%dx(idiff) = 1
 
     end subroutine
-    pure subroutine initialize_hdual(hdual, val, idiff)
-        type(hdual_xy), intent(out) :: hdual
+    pure subroutine initialize_hd(hdual, val, idiff)
+        type(hdual_xy_t), intent(out) :: hdual
         real(dp), intent(in) :: val
         integer, intent(in) :: idiff
         
@@ -649,8 +649,8 @@ contains
         hdual%dx(idiff) = 1
 
     end subroutine
-    pure function hessian_matrix(d) result(m)
-        type(hdual_xy), intent(in) :: d
+    pure function hessian_hd(d) result(m)
+        type(hdual_xy_t), intent(in) :: d
         real(dp) :: m(num_deriv, num_deriv)
         
         integer i, j, k
@@ -669,7 +669,7 @@ contains
 
     end function
     impure elemental subroutine assign_d_i(u, i)
-        type(dual_xy), intent(out) :: u
+        type(dual_xy_t), intent(out) :: u
         integer, intent(in) :: i
 
         u%x = real(i, dp)  ! This is faster than direct assignment
@@ -678,7 +678,7 @@ contains
 
     end subroutine
     impure elemental subroutine assign_d_r(u, r)
-        type(dual_xy), intent(out) :: u
+        type(dual_xy_t), intent(out) :: u
         real(dp), intent(in) :: r
 
         u%x = r
@@ -687,7 +687,7 @@ contains
 
     end subroutine
     impure elemental subroutine assign_i_d(i, v)
-        type(dual_xy), intent(in) :: v
+        type(dual_xy_t), intent(in) :: v
         integer, intent(out) :: i
 
         i = int(v%x)
@@ -695,7 +695,7 @@ contains
 
     end subroutine
     impure elemental subroutine assign_r_d(r, v)
-        type(dual_xy), intent(in) :: v
+        type(dual_xy_t), intent(in) :: v
         real(dp), intent(out) :: r
 
         r = v%x
@@ -703,7 +703,7 @@ contains
 
     end subroutine
     impure elemental subroutine assign_hd_i(u, i)
-        type(hdual_xy), intent(out) :: u
+        type(hdual_xy_t), intent(out) :: u
         integer, intent(in) :: i
 
         u%x = real(i, dp)  ! This is faster than direct assignment
@@ -713,7 +713,7 @@ contains
 
     end subroutine
     impure elemental subroutine assign_hd_r(u, r)
-        type(hdual_xy), intent(out) :: u
+        type(hdual_xy_t), intent(out) :: u
         real(dp), intent(in) :: r
 
         u%x = r
@@ -723,7 +723,7 @@ contains
 
     end subroutine
     impure elemental subroutine assign_i_hd(i, v)
-        type(hdual_xy), intent(in) :: v
+        type(hdual_xy_t), intent(in) :: v
         integer, intent(out) :: i
 
         i = int(v%x)
@@ -731,7 +731,7 @@ contains
 
     end subroutine
     impure elemental subroutine assign_r_hd(r, v)
-        type(hdual_xy), intent(in) :: v
+        type(hdual_xy_t), intent(in) :: v
         real(dp), intent(out) :: r
 
         r = v%x
@@ -739,26 +739,26 @@ contains
 
     end subroutine
     impure elemental function unary_add_d(u) result(res)
-        type(dual_xy), intent(in) :: u
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: u
+        type(dual_xy_t) :: res
         
         res%x = u%x
         res%dx = u%dx
         unary_add_d_counter = unary_add_d_counter + 1
     end function
     impure elemental function add_d_d(u, v) result(res)
-        type(dual_xy), intent(in) :: u
-        type(dual_xy), intent(in) :: v
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: u
+        type(dual_xy_t), intent(in) :: v
+        type(dual_xy_t) :: res
         
         res%x = u%x + v%x
         res%dx = u%dx + v%dx
         add_d_d_counter = add_d_d_counter + 1
     end function
     impure elemental function add_d_r(u, v) result(res)
-        type(dual_xy), intent(in) :: u
+        type(dual_xy_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(dual_xy) :: res
+        type(dual_xy_t) :: res
         
         res%x = u%x + v
         res%dx = u%dx
@@ -766,17 +766,17 @@ contains
     end function
     impure elemental function add_r_d(u, v) result(res)
         real(dp), intent(in) :: u
-        type(dual_xy), intent(in) :: v
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: v
+        type(dual_xy_t) :: res
         
         res%x = u + v%x
         res%dx = v%dx
         add_r_d_counter = add_r_d_counter + 1
     end function
     impure elemental function add_d_i(u, v) result(res)
-        type(dual_xy), intent(in) :: u
+        type(dual_xy_t), intent(in) :: u
         integer, intent(in) :: v
-        type(dual_xy) :: res
+        type(dual_xy_t) :: res
         
         res%x = u%x + v
         res%dx = u%dx
@@ -784,16 +784,16 @@ contains
     end function
     impure elemental function add_i_d(u, v) result(res)
         integer, intent(in) :: u
-        type(dual_xy), intent(in) :: v
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: v
+        type(dual_xy_t) :: res
         
         res%x = u + v%x
         res%dx = v%dx
         add_i_d_counter = add_i_d_counter + 1
     end function
     impure elemental function unary_add_hd(u) result(res)
-        type(hdual_xy), intent(in) :: u
-        type(hdual_xy) :: res
+        type(hdual_xy_t), intent(in) :: u
+        type(hdual_xy_t) :: res
         
         res%x = u%x
         res%dx = u%dx
@@ -801,9 +801,9 @@ contains
         unary_add_hd_counter = unary_add_hd_counter + 1
     end function
     impure elemental function add_hd_hd(u, v) result(res)
-        type(hdual_xy), intent(in) :: u
-        type(hdual_xy), intent(in) :: v
-        type(hdual_xy) :: res
+        type(hdual_xy_t), intent(in) :: u
+        type(hdual_xy_t), intent(in) :: v
+        type(hdual_xy_t) :: res
         
         res%x = u%x + v%x
         res%dx = u%dx + v%dx
@@ -811,9 +811,9 @@ contains
         add_hd_hd_counter = add_hd_hd_counter + 1
     end function
     impure elemental function add_hd_r(u, v) result(res)
-        type(hdual_xy), intent(in) :: u
+        type(hdual_xy_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(hdual_xy) :: res
+        type(hdual_xy_t) :: res
         
         res%x = u%x + v
         res%dx = u%dx
@@ -822,8 +822,8 @@ contains
     end function
     impure elemental function add_r_hd(u, v) result(res)
         real(dp), intent(in) :: u
-        type(hdual_xy), intent(in) :: v
-        type(hdual_xy) :: res
+        type(hdual_xy_t), intent(in) :: v
+        type(hdual_xy_t) :: res
         
         res%x = u + v%x
         res%dx = v%dx
@@ -831,9 +831,9 @@ contains
         add_r_hd_counter = add_r_hd_counter + 1
     end function
     impure elemental function add_hd_i(u, v) result(res)
-        type(hdual_xy), intent(in) :: u
+        type(hdual_xy_t), intent(in) :: u
         integer, intent(in) :: v
-        type(hdual_xy) :: res
+        type(hdual_xy_t) :: res
         
         res%x = u%x + v
         res%dx = u%dx
@@ -842,8 +842,8 @@ contains
     end function
     impure elemental function add_i_hd(u, v) result(res)
         integer, intent(in) :: u
-        type(hdual_xy), intent(in) :: v
-        type(hdual_xy) :: res
+        type(hdual_xy_t), intent(in) :: v
+        type(hdual_xy_t) :: res
         
         res%x = u + v%x
         res%dx = v%dx
@@ -851,26 +851,26 @@ contains
         add_i_hd_counter = add_i_hd_counter + 1
     end function
     impure elemental function unary_minus_d(u) result(res)
-        type(dual_xy), intent(in) :: u
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: u
+        type(dual_xy_t) :: res
         
         res%x = -u%x
         res%dx = -u%dx
         unary_minus_d_counter = unary_minus_d_counter + 1
     end function
     impure elemental function minus_d_d(u, v) result(res)
-        type(dual_xy), intent(in) :: u
-        type(dual_xy), intent(in) :: v
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: u
+        type(dual_xy_t), intent(in) :: v
+        type(dual_xy_t) :: res
         
         res%x = u%x - v%x
         res%dx = u%dx - v%dx
         minus_d_d_counter = minus_d_d_counter + 1
     end function
     impure elemental function minus_d_r(u, v) result(res)
-        type(dual_xy), intent(in) :: u
+        type(dual_xy_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(dual_xy) :: res
+        type(dual_xy_t) :: res
         
         res%x = u%x - v
         res%dx = u%dx
@@ -878,17 +878,17 @@ contains
     end function
     impure elemental function minus_r_d(u, v) result(res)
         real(dp), intent(in) :: u
-        type(dual_xy), intent(in) :: v
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: v
+        type(dual_xy_t) :: res
         
         res%x = u - v%x
         res%dx = -v%dx
         minus_r_d_counter = minus_r_d_counter + 1
     end function
     impure elemental function minus_d_i(u, v) result(res)
-        type(dual_xy), intent(in) :: u
+        type(dual_xy_t), intent(in) :: u
         integer, intent(in) :: v
-        type(dual_xy) :: res
+        type(dual_xy_t) :: res
         
         res%x = u%x - v
         res%dx = u%dx
@@ -896,16 +896,16 @@ contains
     end function
     impure elemental function minus_i_d(u, v) result(res)
         integer, intent(in) :: u
-        type(dual_xy), intent(in) :: v
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: v
+        type(dual_xy_t) :: res
         
         res%x = u - v%x
         res%dx = -v%dx
         minus_i_d_counter = minus_i_d_counter + 1
     end function
     impure elemental function unary_minus_hd(u) result(res)
-        type(hdual_xy), intent(in) :: u
-        type(hdual_xy) :: res
+        type(hdual_xy_t), intent(in) :: u
+        type(hdual_xy_t) :: res
         
         res%x = -u%x
         res%dx = -u%dx
@@ -913,9 +913,9 @@ contains
         unary_minus_hd_counter = unary_minus_hd_counter + 1
     end function
     impure elemental function minus_hd_hd(u, v) result(res)
-        type(hdual_xy), intent(in) :: u
-        type(hdual_xy), intent(in) :: v
-        type(hdual_xy) :: res
+        type(hdual_xy_t), intent(in) :: u
+        type(hdual_xy_t), intent(in) :: v
+        type(hdual_xy_t) :: res
         
         res%x = u%x - v%x
         res%dx = u%dx - v%dx
@@ -923,9 +923,9 @@ contains
         minus_hd_hd_counter = minus_hd_hd_counter + 1
     end function
     impure elemental function minus_hd_r(u, v) result(res)
-        type(hdual_xy), intent(in) :: u
+        type(hdual_xy_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(hdual_xy) :: res
+        type(hdual_xy_t) :: res
         
         res%x = u%x - v
         res%dx = u%dx
@@ -934,8 +934,8 @@ contains
     end function
     impure elemental function minus_r_hd(u, v) result(res)
         real(dp), intent(in) :: u
-        type(hdual_xy), intent(in) :: v
-        type(hdual_xy) :: res
+        type(hdual_xy_t), intent(in) :: v
+        type(hdual_xy_t) :: res
         
         res%x = u - v%x
         res%dx = -v%dx
@@ -943,9 +943,9 @@ contains
         minus_r_hd_counter = minus_r_hd_counter + 1
     end function
     impure elemental function minus_hd_i(u, v) result(res)
-        type(hdual_xy), intent(in) :: u
+        type(hdual_xy_t), intent(in) :: u
         integer, intent(in) :: v
-        type(hdual_xy) :: res
+        type(hdual_xy_t) :: res
         
         res%x = u%x - v
         res%dx = u%dx
@@ -954,8 +954,8 @@ contains
     end function
     impure elemental function minus_i_hd(u, v) result(res)
         integer, intent(in) :: u
-        type(hdual_xy), intent(in) :: v
-        type(hdual_xy) :: res
+        type(hdual_xy_t), intent(in) :: v
+        type(hdual_xy_t) :: res
         
         res%x = u - v%x
         res%dx = -v%dx
@@ -963,18 +963,18 @@ contains
         minus_i_hd_counter = minus_i_hd_counter + 1
     end function
     impure elemental function mult_d_d(u, v) result(res)
-        type(dual_xy), intent(in) :: u
-        type(dual_xy), intent(in) :: v
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: u
+        type(dual_xy_t), intent(in) :: v
+        type(dual_xy_t) :: res
         
         res%x = u%x*v%x
         res%dx = u%dx*v%x + u%x*v%dx
         mult_d_d_counter = mult_d_d_counter + 1
     end function
     impure elemental function mult_d_r(u, v) result(res)
-        type(dual_xy), intent(in) :: u
+        type(dual_xy_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(dual_xy) :: res
+        type(dual_xy_t) :: res
         
         res%x = u%x*v
         res%dx = u%dx*v
@@ -982,17 +982,17 @@ contains
     end function
     impure elemental function mult_r_d(u, v) result(res)
         real(dp), intent(in) :: u
-        type(dual_xy), intent(in) :: v
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: v
+        type(dual_xy_t) :: res
         
         res%x = u*v%x
         res%dx = u*v%dx
         mult_r_d_counter = mult_r_d_counter + 1
     end function
     impure elemental function mult_d_i(u, v) result(res)
-        type(dual_xy), intent(in) :: u
+        type(dual_xy_t), intent(in) :: u
         integer, intent(in) :: v
-        type(dual_xy) :: res
+        type(dual_xy_t) :: res
         
         res%x = u%x*v
         res%dx = u%dx*v
@@ -1000,17 +1000,17 @@ contains
     end function
     impure elemental function mult_i_d(u, v) result(res)
         integer, intent(in) :: u
-        type(dual_xy), intent(in) :: v
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: v
+        type(dual_xy_t) :: res
         
         res%x = u*v%x
         res%dx = u*v%dx
         mult_i_d_counter = mult_i_d_counter + 1
     end function
     impure elemental function mult_hd_hd(u, v) result(res)
-        type(hdual_xy), intent(in) :: u
-        type(hdual_xy), intent(in) :: v
-        type(hdual_xy) :: res
+        type(hdual_xy_t), intent(in) :: u
+        type(hdual_xy_t), intent(in) :: v
+        type(hdual_xy_t) :: res
         integer :: i, j, k
         
         res%x = u%x*v%x
@@ -1025,9 +1025,9 @@ contains
         mult_hd_hd_counter = mult_hd_hd_counter + 1
     end function
     impure elemental function mult_hd_r(u, v) result(res)
-        type(hdual_xy), intent(in) :: u
+        type(hdual_xy_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(hdual_xy) :: res
+        type(hdual_xy_t) :: res
         
         res%x = u%x*v
         res%dx = u%dx*v
@@ -1036,8 +1036,8 @@ contains
     end function
     impure elemental function mult_r_hd(u, v) result(res)
         real(dp), intent(in) :: u
-        type(hdual_xy), intent(in) :: v
-        type(hdual_xy) :: res
+        type(hdual_xy_t), intent(in) :: v
+        type(hdual_xy_t) :: res
         
         res%x = u*v%x
         res%dx = u*v%dx
@@ -1045,9 +1045,9 @@ contains
         mult_r_hd_counter = mult_r_hd_counter + 1
     end function
     impure elemental function mult_hd_i(u, v) result(res)
-        type(hdual_xy), intent(in) :: u
+        type(hdual_xy_t), intent(in) :: u
         integer, intent(in) :: v
-        type(hdual_xy) :: res
+        type(hdual_xy_t) :: res
         
         res%x = u%x*v
         res%dx = u%dx*v
@@ -1056,8 +1056,8 @@ contains
     end function
     impure elemental function mult_i_hd(u, v) result(res)
         integer, intent(in) :: u
-        type(hdual_xy), intent(in) :: v
-        type(hdual_xy) :: res
+        type(hdual_xy_t), intent(in) :: v
+        type(hdual_xy_t) :: res
         
         res%x = u*v%x
         res%dx = u*v%dx
@@ -1065,9 +1065,9 @@ contains
         mult_i_hd_counter = mult_i_hd_counter + 1
     end function
     impure elemental function div_d_d(u, v) result(res)
-        type(dual_xy), intent(in) :: u
-        type(dual_xy), intent(in) :: v
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: u
+        type(dual_xy_t), intent(in) :: v
+        type(dual_xy_t) :: res
         real(dp) :: t0,t1
         
         t0 = 1.0_dp/v%x
@@ -1077,9 +1077,9 @@ contains
         div_d_d_counter = div_d_d_counter + 1
     end function
     impure elemental function div_d_r(u, v) result(res)
-        type(dual_xy), intent(in) :: u
+        type(dual_xy_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(dual_xy) :: res
+        type(dual_xy_t) :: res
         real(dp) :: t0
         
         t0 = 1.0_dp/v
@@ -1089,17 +1089,17 @@ contains
     end function
     impure elemental function div_r_d(u, v) result(res)
         real(dp), intent(in) :: u
-        type(dual_xy), intent(in) :: v
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: v
+        type(dual_xy_t) :: res
         
         res%x = u/v%x
         res%dx = -u*v%dx/v%x**2
         div_r_d_counter = div_r_d_counter + 1
     end function
     impure elemental function div_d_i(u, v) result(res)
-        type(dual_xy), intent(in) :: u
+        type(dual_xy_t), intent(in) :: u
         integer, intent(in) :: v
-        type(dual_xy) :: res
+        type(dual_xy_t) :: res
         real(dp) :: t0
         
         t0 = 1.0_dp/v
@@ -1109,17 +1109,17 @@ contains
     end function
     impure elemental function div_i_d(u, v) result(res)
         integer, intent(in) :: u
-        type(dual_xy), intent(in) :: v
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: v
+        type(dual_xy_t) :: res
         
         res%x = u/v%x
         res%dx = -u*v%dx/v%x**2
         div_i_d_counter = div_i_d_counter + 1
     end function
     impure elemental function div_hd_hd(u, v) result(res)
-        type(hdual_xy), intent(in) :: u
-        type(hdual_xy), intent(in) :: v
-        type(hdual_xy) :: res
+        type(hdual_xy_t), intent(in) :: u
+        type(hdual_xy_t), intent(in) :: v
+        type(hdual_xy_t) :: res
         integer :: i, j, k
         real(dp) :: t0,t1
         
@@ -1138,9 +1138,9 @@ contains
         div_hd_hd_counter = div_hd_hd_counter + 1
     end function
     impure elemental function div_hd_r(u, v) result(res)
-        type(hdual_xy), intent(in) :: u
+        type(hdual_xy_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(hdual_xy) :: res
+        type(hdual_xy_t) :: res
         real(dp) :: t0
         
         t0 = 1.0_dp/v
@@ -1151,8 +1151,8 @@ contains
     end function
     impure elemental function div_r_hd(u, v) result(res)
         real(dp), intent(in) :: u
-        type(hdual_xy), intent(in) :: v
-        type(hdual_xy) :: res
+        type(hdual_xy_t), intent(in) :: v
+        type(hdual_xy_t) :: res
         integer :: i, j, k
         real(dp) :: t0,t1
         
@@ -1170,9 +1170,9 @@ contains
         div_r_hd_counter = div_r_hd_counter + 1
     end function
     impure elemental function div_hd_i(u, v) result(res)
-        type(hdual_xy), intent(in) :: u
+        type(hdual_xy_t), intent(in) :: u
         integer, intent(in) :: v
-        type(hdual_xy) :: res
+        type(hdual_xy_t) :: res
         real(dp) :: t0
         
         t0 = 1.0_dp/v
@@ -1183,8 +1183,8 @@ contains
     end function
     impure elemental function div_i_hd(u, v) result(res)
         integer, intent(in) :: u
-        type(hdual_xy), intent(in) :: v
-        type(hdual_xy) :: res
+        type(hdual_xy_t), intent(in) :: v
+        type(hdual_xy_t) :: res
         integer :: i, j, k
         real(dp) :: t0,t1
         
@@ -1202,27 +1202,27 @@ contains
         div_i_hd_counter = div_i_hd_counter + 1
     end function
     impure elemental function pow_d_i(u, v) result(res)
-        type(dual_xy), intent(in) :: u
+        type(dual_xy_t), intent(in) :: u
         integer, intent(in) :: v
-        type(dual_xy) :: res
+        type(dual_xy_t) :: res
         
         res%x = u%x**v
         res%dx = u%x**(v - 1)*u%dx*v
         pow_d_i_counter = pow_d_i_counter + 1
     end function
     impure elemental function pow_d_r(u, v) result(res)
-        type(dual_xy), intent(in) :: u
+        type(dual_xy_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(dual_xy) :: res
+        type(dual_xy_t) :: res
         
         res%x = u%x**v
         res%dx = u%x**(v - 1)*u%dx*v
         pow_d_r_counter = pow_d_r_counter + 1
     end function
     impure elemental function pow_d_d(u, v) result(res)
-        type(dual_xy), intent(in) :: u
-        type(dual_xy), intent(in) :: v
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: u
+        type(dual_xy_t), intent(in) :: v
+        type(dual_xy_t) :: res
         real(dp) :: t0
         
         t0 = u%x**v%x
@@ -1232,9 +1232,9 @@ contains
         pow_d_d_counter = pow_d_d_counter + 1
     end function
     impure elemental function pow_hd_i(u, v) result(res)
-        type(hdual_xy), intent(in) :: u
+        type(hdual_xy_t), intent(in) :: u
         integer, intent(in) :: v
-        type(hdual_xy) :: res
+        type(hdual_xy_t) :: res
         integer :: i, j, k
         
         res%x = u%x**v
@@ -1249,9 +1249,9 @@ contains
         pow_hd_i_counter = pow_hd_i_counter + 1
     end function
     impure elemental function pow_hd_r(u, v) result(res)
-        type(hdual_xy), intent(in) :: u
+        type(hdual_xy_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(hdual_xy) :: res
+        type(hdual_xy_t) :: res
         integer :: i, j, k
         
         res%x = u%x**v
@@ -1266,9 +1266,9 @@ contains
         pow_hd_r_counter = pow_hd_r_counter + 1
     end function
     impure elemental function pow_hd_hd(u, v) result(res)
-        type(hdual_xy), intent(in) :: u
-        type(hdual_xy), intent(in) :: v
-        type(hdual_xy) :: res
+        type(hdual_xy_t), intent(in) :: u
+        type(hdual_xy_t), intent(in) :: v
+        type(hdual_xy_t) :: res
         integer :: i, j, k
         real(dp) :: t0,t1,t2,t3
         
@@ -1289,14 +1289,14 @@ contains
         pow_hd_hd_counter = pow_hd_hd_counter + 1
     end function
     impure elemental  function eq_d_d(lhs, rhs) result(res)
-         type(dual_xy), intent(in) :: lhs, rhs
+         type(dual_xy_t), intent(in) :: lhs, rhs
          logical :: res
 
          res = (lhs%x == rhs%x)
 
     end function
     impure elemental  function eq_d_i(lhs, rhs) result(res)
-         type(dual_xy), intent(in) :: lhs
+         type(dual_xy_t), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
 
@@ -1304,7 +1304,7 @@ contains
 
     end function
     impure elemental  function eq_d_r(lhs, rhs) result(res)
-         type(dual_xy), intent(in) :: lhs
+         type(dual_xy_t), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
 
@@ -1313,7 +1313,7 @@ contains
     end function
     impure elemental  function eq_i_d(lhs, rhs) result(res)
          integer, intent(in) :: lhs
-         type(dual_xy), intent(in) :: rhs
+         type(dual_xy_t), intent(in) :: rhs
          logical :: res
 
          res = (lhs == rhs%x)
@@ -1321,21 +1321,21 @@ contains
     end function
     impure elemental  function eq_r_d(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
-         type(dual_xy), intent(in) :: rhs
+         type(dual_xy_t), intent(in) :: rhs
          logical :: res
 
          res = (lhs == rhs%x)
 
     end function
     impure elemental  function eq_hd_hd(lhs, rhs) result(res)
-         type(hdual_xy), intent(in) :: lhs, rhs
+         type(hdual_xy_t), intent(in) :: lhs, rhs
          logical :: res
 
          res = (lhs%x == rhs%x)
 
     end function
     impure elemental  function eq_hd_i(lhs, rhs) result(res)
-         type(hdual_xy), intent(in) :: lhs
+         type(hdual_xy_t), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
 
@@ -1343,7 +1343,7 @@ contains
 
     end function
     impure elemental  function eq_hd_r(lhs, rhs) result(res)
-         type(hdual_xy), intent(in) :: lhs
+         type(hdual_xy_t), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
 
@@ -1352,7 +1352,7 @@ contains
     end function
     impure elemental  function eq_i_hd(lhs, rhs) result(res)
          integer, intent(in) :: lhs
-         type(hdual_xy), intent(in) :: rhs
+         type(hdual_xy_t), intent(in) :: rhs
          logical :: res
 
          res = (lhs == rhs%x)
@@ -1360,21 +1360,21 @@ contains
     end function
     impure elemental  function eq_r_hd(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
-         type(hdual_xy), intent(in) :: rhs
+         type(hdual_xy_t), intent(in) :: rhs
          logical :: res
 
          res = (lhs == rhs%x)
 
     end function
     impure elemental  function le_d_d(lhs, rhs) result(res)
-         type(dual_xy), intent(in) :: lhs, rhs
+         type(dual_xy_t), intent(in) :: lhs, rhs
          logical :: res
 
          res = (lhs%x <= rhs%x)
 
     end function
     impure elemental  function le_d_i(lhs, rhs) result(res)
-         type(dual_xy), intent(in) :: lhs
+         type(dual_xy_t), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
 
@@ -1382,7 +1382,7 @@ contains
 
     end function
     impure elemental  function le_d_r(lhs, rhs) result(res)
-         type(dual_xy), intent(in) :: lhs
+         type(dual_xy_t), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
 
@@ -1391,7 +1391,7 @@ contains
     end function
     impure elemental  function le_i_d(lhs, rhs) result(res)
          integer, intent(in) :: lhs
-         type(dual_xy), intent(in) :: rhs
+         type(dual_xy_t), intent(in) :: rhs
          logical :: res
 
          res = (lhs <= rhs%x)
@@ -1399,21 +1399,21 @@ contains
     end function
     impure elemental  function le_r_d(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
-         type(dual_xy), intent(in) :: rhs
+         type(dual_xy_t), intent(in) :: rhs
          logical :: res
 
          res = (lhs <= rhs%x)
 
     end function
     impure elemental  function le_hd_hd(lhs, rhs) result(res)
-         type(hdual_xy), intent(in) :: lhs, rhs
+         type(hdual_xy_t), intent(in) :: lhs, rhs
          logical :: res
 
          res = (lhs%x <= rhs%x)
 
     end function
     impure elemental  function le_hd_i(lhs, rhs) result(res)
-         type(hdual_xy), intent(in) :: lhs
+         type(hdual_xy_t), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
 
@@ -1421,7 +1421,7 @@ contains
 
     end function
     impure elemental  function le_hd_r(lhs, rhs) result(res)
-         type(hdual_xy), intent(in) :: lhs
+         type(hdual_xy_t), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
 
@@ -1430,7 +1430,7 @@ contains
     end function
     impure elemental  function le_i_hd(lhs, rhs) result(res)
          integer, intent(in) :: lhs
-         type(hdual_xy), intent(in) :: rhs
+         type(hdual_xy_t), intent(in) :: rhs
          logical :: res
 
          res = (lhs <= rhs%x)
@@ -1438,21 +1438,21 @@ contains
     end function
     impure elemental  function le_r_hd(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
-         type(hdual_xy), intent(in) :: rhs
+         type(hdual_xy_t), intent(in) :: rhs
          logical :: res
 
          res = (lhs <= rhs%x)
 
     end function
     impure elemental  function lt_d_d(lhs, rhs) result(res)
-         type(dual_xy), intent(in) :: lhs, rhs
+         type(dual_xy_t), intent(in) :: lhs, rhs
          logical :: res
 
          res = (lhs%x < rhs%x)
 
     end function
     impure elemental  function lt_d_i(lhs, rhs) result(res)
-         type(dual_xy), intent(in) :: lhs
+         type(dual_xy_t), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
 
@@ -1460,7 +1460,7 @@ contains
 
     end function
     impure elemental  function lt_d_r(lhs, rhs) result(res)
-         type(dual_xy), intent(in) :: lhs
+         type(dual_xy_t), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
 
@@ -1469,7 +1469,7 @@ contains
     end function
     impure elemental  function lt_i_d(lhs, rhs) result(res)
          integer, intent(in) :: lhs
-         type(dual_xy), intent(in) :: rhs
+         type(dual_xy_t), intent(in) :: rhs
          logical :: res
 
          res = (lhs < rhs%x)
@@ -1477,21 +1477,21 @@ contains
     end function
     impure elemental  function lt_r_d(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
-         type(dual_xy), intent(in) :: rhs
+         type(dual_xy_t), intent(in) :: rhs
          logical :: res
 
          res = (lhs < rhs%x)
 
     end function
     impure elemental  function lt_hd_hd(lhs, rhs) result(res)
-         type(hdual_xy), intent(in) :: lhs, rhs
+         type(hdual_xy_t), intent(in) :: lhs, rhs
          logical :: res
 
          res = (lhs%x < rhs%x)
 
     end function
     impure elemental  function lt_hd_i(lhs, rhs) result(res)
-         type(hdual_xy), intent(in) :: lhs
+         type(hdual_xy_t), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
 
@@ -1499,7 +1499,7 @@ contains
 
     end function
     impure elemental  function lt_hd_r(lhs, rhs) result(res)
-         type(hdual_xy), intent(in) :: lhs
+         type(hdual_xy_t), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
 
@@ -1508,7 +1508,7 @@ contains
     end function
     impure elemental  function lt_i_hd(lhs, rhs) result(res)
          integer, intent(in) :: lhs
-         type(hdual_xy), intent(in) :: rhs
+         type(hdual_xy_t), intent(in) :: rhs
          logical :: res
 
          res = (lhs < rhs%x)
@@ -1516,21 +1516,21 @@ contains
     end function
     impure elemental  function lt_r_hd(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
-         type(hdual_xy), intent(in) :: rhs
+         type(hdual_xy_t), intent(in) :: rhs
          logical :: res
 
          res = (lhs < rhs%x)
 
     end function
     impure elemental  function ge_d_d(lhs, rhs) result(res)
-         type(dual_xy), intent(in) :: lhs, rhs
+         type(dual_xy_t), intent(in) :: lhs, rhs
          logical :: res
 
          res = (lhs%x >= rhs%x)
 
     end function
     impure elemental  function ge_d_i(lhs, rhs) result(res)
-         type(dual_xy), intent(in) :: lhs
+         type(dual_xy_t), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
 
@@ -1538,7 +1538,7 @@ contains
 
     end function
     impure elemental  function ge_d_r(lhs, rhs) result(res)
-         type(dual_xy), intent(in) :: lhs
+         type(dual_xy_t), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
 
@@ -1547,7 +1547,7 @@ contains
     end function
     impure elemental  function ge_i_d(lhs, rhs) result(res)
          integer, intent(in) :: lhs
-         type(dual_xy), intent(in) :: rhs
+         type(dual_xy_t), intent(in) :: rhs
          logical :: res
 
          res = (lhs >= rhs%x)
@@ -1555,21 +1555,21 @@ contains
     end function
     impure elemental  function ge_r_d(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
-         type(dual_xy), intent(in) :: rhs
+         type(dual_xy_t), intent(in) :: rhs
          logical :: res
 
          res = (lhs >= rhs%x)
 
     end function
     impure elemental  function ge_hd_hd(lhs, rhs) result(res)
-         type(hdual_xy), intent(in) :: lhs, rhs
+         type(hdual_xy_t), intent(in) :: lhs, rhs
          logical :: res
 
          res = (lhs%x >= rhs%x)
 
     end function
     impure elemental  function ge_hd_i(lhs, rhs) result(res)
-         type(hdual_xy), intent(in) :: lhs
+         type(hdual_xy_t), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
 
@@ -1577,7 +1577,7 @@ contains
 
     end function
     impure elemental  function ge_hd_r(lhs, rhs) result(res)
-         type(hdual_xy), intent(in) :: lhs
+         type(hdual_xy_t), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
 
@@ -1586,7 +1586,7 @@ contains
     end function
     impure elemental  function ge_i_hd(lhs, rhs) result(res)
          integer, intent(in) :: lhs
-         type(hdual_xy), intent(in) :: rhs
+         type(hdual_xy_t), intent(in) :: rhs
          logical :: res
 
          res = (lhs >= rhs%x)
@@ -1594,21 +1594,21 @@ contains
     end function
     impure elemental  function ge_r_hd(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
-         type(hdual_xy), intent(in) :: rhs
+         type(hdual_xy_t), intent(in) :: rhs
          logical :: res
 
          res = (lhs >= rhs%x)
 
     end function
     impure elemental  function gt_d_d(lhs, rhs) result(res)
-         type(dual_xy), intent(in) :: lhs, rhs
+         type(dual_xy_t), intent(in) :: lhs, rhs
          logical :: res
 
          res = (lhs%x > rhs%x)
 
     end function
     impure elemental  function gt_d_i(lhs, rhs) result(res)
-         type(dual_xy), intent(in) :: lhs
+         type(dual_xy_t), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
 
@@ -1616,7 +1616,7 @@ contains
 
     end function
     impure elemental  function gt_d_r(lhs, rhs) result(res)
-         type(dual_xy), intent(in) :: lhs
+         type(dual_xy_t), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
 
@@ -1625,7 +1625,7 @@ contains
     end function
     impure elemental  function gt_i_d(lhs, rhs) result(res)
          integer, intent(in) :: lhs
-         type(dual_xy), intent(in) :: rhs
+         type(dual_xy_t), intent(in) :: rhs
          logical :: res
 
          res = (lhs > rhs%x)
@@ -1633,21 +1633,21 @@ contains
     end function
     impure elemental  function gt_r_d(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
-         type(dual_xy), intent(in) :: rhs
+         type(dual_xy_t), intent(in) :: rhs
          logical :: res
 
          res = (lhs > rhs%x)
 
     end function
     impure elemental  function gt_hd_hd(lhs, rhs) result(res)
-         type(hdual_xy), intent(in) :: lhs, rhs
+         type(hdual_xy_t), intent(in) :: lhs, rhs
          logical :: res
 
          res = (lhs%x > rhs%x)
 
     end function
     impure elemental  function gt_hd_i(lhs, rhs) result(res)
-         type(hdual_xy), intent(in) :: lhs
+         type(hdual_xy_t), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
 
@@ -1655,7 +1655,7 @@ contains
 
     end function
     impure elemental  function gt_hd_r(lhs, rhs) result(res)
-         type(hdual_xy), intent(in) :: lhs
+         type(hdual_xy_t), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
 
@@ -1664,7 +1664,7 @@ contains
     end function
     impure elemental  function gt_i_hd(lhs, rhs) result(res)
          integer, intent(in) :: lhs
-         type(hdual_xy), intent(in) :: rhs
+         type(hdual_xy_t), intent(in) :: rhs
          logical :: res
 
          res = (lhs > rhs%x)
@@ -1672,21 +1672,21 @@ contains
     end function
     impure elemental  function gt_r_hd(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
-         type(hdual_xy), intent(in) :: rhs
+         type(hdual_xy_t), intent(in) :: rhs
          logical :: res
 
          res = (lhs > rhs%x)
 
     end function
     impure elemental  function ne_d_d(lhs, rhs) result(res)
-         type(dual_xy), intent(in) :: lhs, rhs
+         type(dual_xy_t), intent(in) :: lhs, rhs
          logical :: res
 
          res = (lhs%x /= rhs%x)
 
     end function
     impure elemental  function ne_d_i(lhs, rhs) result(res)
-         type(dual_xy), intent(in) :: lhs
+         type(dual_xy_t), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
 
@@ -1694,7 +1694,7 @@ contains
 
     end function
     impure elemental  function ne_d_r(lhs, rhs) result(res)
-         type(dual_xy), intent(in) :: lhs
+         type(dual_xy_t), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
 
@@ -1703,7 +1703,7 @@ contains
     end function
     impure elemental  function ne_i_d(lhs, rhs) result(res)
          integer, intent(in) :: lhs
-         type(dual_xy), intent(in) :: rhs
+         type(dual_xy_t), intent(in) :: rhs
          logical :: res
 
          res = (lhs /= rhs%x)
@@ -1711,21 +1711,21 @@ contains
     end function
     impure elemental  function ne_r_d(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
-         type(dual_xy), intent(in) :: rhs
+         type(dual_xy_t), intent(in) :: rhs
          logical :: res
 
          res = (lhs /= rhs%x)
 
     end function
     impure elemental  function ne_hd_hd(lhs, rhs) result(res)
-         type(hdual_xy), intent(in) :: lhs, rhs
+         type(hdual_xy_t), intent(in) :: lhs, rhs
          logical :: res
 
          res = (lhs%x /= rhs%x)
 
     end function
     impure elemental  function ne_hd_i(lhs, rhs) result(res)
-         type(hdual_xy), intent(in) :: lhs
+         type(hdual_xy_t), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
 
@@ -1733,7 +1733,7 @@ contains
 
     end function
     impure elemental  function ne_hd_r(lhs, rhs) result(res)
-         type(hdual_xy), intent(in) :: lhs
+         type(hdual_xy_t), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
 
@@ -1742,7 +1742,7 @@ contains
     end function
     impure elemental  function ne_i_hd(lhs, rhs) result(res)
          integer, intent(in) :: lhs
-         type(hdual_xy), intent(in) :: rhs
+         type(hdual_xy_t), intent(in) :: rhs
          logical :: res
 
          res = (lhs /= rhs%x)
@@ -1750,50 +1750,50 @@ contains
     end function
     impure elemental  function ne_r_hd(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
-         type(hdual_xy), intent(in) :: rhs
+         type(hdual_xy_t), intent(in) :: rhs
          logical :: res
 
          res = (lhs /= rhs%x)
 
     end function
     impure elemental  function abs_d(u) result(res)
-        type(dual_xy), intent(in) :: u
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: u
+        type(dual_xy_t) :: res
         integer :: i
 
         ! We need this!
         res%x = abs(u%x)
         res%dx = abs(u%dx)
 
-    end function abs_d
+    end function
     impure elemental  function acos_d(u) result(res)
-        type(dual_xy), intent(in) :: u
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: u
+        type(dual_xy_t) :: res
 
         res%x = acos(u%x)
     
         res%dx = -u%dx / sqrt(1.0_dp - u%x**2)
 
-    end function acos_d
+    end function
     impure elemental  function asin_d(u) result(res)
-        type(dual_xy), intent(in) :: u
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: u
+        type(dual_xy_t) :: res
 
         res%x = asin(u%x)
         res%dx = u%dx / sqrt(1.0_dp - u%x**2)
 
-    end function asin_d
+    end function
     impure elemental  function atan_d(u) result(res)
-        type(dual_xy), intent(in) :: u
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: u
+        type(dual_xy_t) :: res
 
         res%x = atan(u%x)
         res%dx = u%dx / (1.0_dp + u%x**2)
 
-    end function atan_d
+    end function
     impure elemental  function atan2_d(u, v) result(res)
-        type(dual_xy), intent(in) :: u, v
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: u, v
+        type(dual_xy_t) :: res
 
         real(dp) :: usq_plus_vsq
 
@@ -1802,18 +1802,18 @@ contains
         usq_plus_vsq = u%x**2 + v%x**2
         res%dx = v%x / usq_plus_vsq * u%dx - u%x / usq_plus_vsq * v%dx
 
-    end function atan2_d
+    end function
     impure elemental  function cos_d(u) result(res)
-        type(dual_xy), intent(in) :: u
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: u
+        type(dual_xy_t) :: res
 
         res%x = cos(u%x)
         res%dx = -sin(u%x) * u%dx
 
-    end function cos_d
-      function dot_product_dd(u, v) result(res)
-        type(dual_xy), intent(in) :: u(:), v(:)
-        type(dual_xy) :: res
+    end function
+      function dot_product_d_d(u, v) result(res)
+        type(dual_xy_t), intent(in) :: u(:), v(:)
+        type(dual_xy_t) :: res
 
         integer :: i
 
@@ -1822,10 +1822,10 @@ contains
             res%dx(i) = dot_product(u%x, v%dx(i)) + dot_product(v%x, u%dx(i))
         end do
 
-    end function dot_product_dd
+    end function
     impure elemental  function exp_d(u) result(res)
-        type(dual_xy), intent(in) :: u
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: u
+        type(dual_xy_t) :: res
 
         real(dp) :: exp_x
 
@@ -1833,25 +1833,25 @@ contains
         res%x = exp_x
         res%dx = u%dx * exp_x
 
-    end function exp_d
+    end function
     impure elemental  function int_d(u) result(res)
-         type(dual_xy), intent(in) :: u
+         type(dual_xy_t), intent(in) :: u
          integer :: res
 
          res = int(u%x)
 
-    end function int_d
+    end function
     impure elemental function log_d(u) result(res)
-        type(dual_xy), intent(in) :: u
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: u
+        type(dual_xy_t) :: res
         
         res%x = log(u%x)
         res%dx = u%dx/u%x
         log_d_counter = log_d_counter + 1
     end function
     impure elemental function log_hd(u) result(res)
-        type(hdual_xy), intent(in) :: u
-        type(hdual_xy) :: res
+        type(hdual_xy_t), intent(in) :: u
+        type(hdual_xy_t) :: res
         integer :: i, j, k
         real(dp) :: t0
         
@@ -1868,8 +1868,8 @@ contains
         log_hd_counter = log_hd_counter + 1
     end function
     impure elemental  function log10_d(u) result(res)
-        type(dual_xy), intent(in) :: u
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: u
+        type(dual_xy_t) :: res
 
         real(dp) :: inv
 
@@ -1877,10 +1877,10 @@ contains
         res%x = log10(u%x)
         res%dx = u%dx * inv
 
-    end function log10_d
-      function matmul_dd(u,v) result(res)
-        type(dual_xy), intent(in) :: u(:,:), v(:,:)
-        type(dual_xy) :: res(size(u,1), size(v,2))
+    end function
+      function matmul_d_d(u,v) result(res)
+        type(dual_xy_t), intent(in) :: u(:,:), v(:,:)
+        type(dual_xy_t) :: res(size(u,1), size(v,2))
 
         integer :: i
 
@@ -1889,10 +1889,10 @@ contains
             res%dx(i) = matmul(u%dx(i), v%x) + matmul(u%x, v%dx(i))
         end do
 
-    end function matmul_dd
-      function matmul_dv(u, v) result(res)
-        type(dual_xy), intent(in) :: u(:,:), v(:)
-        type(dual_xy) :: res(size(u,1))
+    end function
+      function matmul_d_v(u, v) result(res)
+        type(dual_xy_t), intent(in) :: u(:,:), v(:)
+        type(dual_xy_t) :: res(size(u,1))
         integer :: i
 
         res%x = matmul(u%x, v%x)
@@ -1900,10 +1900,10 @@ contains
             res%dx(i) = matmul(u%dx(i), v%x) + matmul(u%x, v%dx(i))
         end do
 
-    end function matmul_dv
-      function matmul_vd(u, v) result(res)
-        type(dual_xy), intent(in) :: u(:), v(:,:)
-        type(dual_xy) :: res(size(v, 2))
+    end function
+      function matmul_v_d(u, v) result(res)
+        type(dual_xy_t), intent(in) :: u(:), v(:,:)
+        type(dual_xy_t) :: res(size(v, 2))
         integer::i
 
         res%x = matmul(u%x, v%x)
@@ -1911,10 +1911,10 @@ contains
             res%dx(i) = matmul(u%dx(i), v%x) + matmul(u%x, v%dx(i))
         end do
 
-    end function matmul_vd
-    impure elemental  function max_dd(val1, val2) result(res)
-        type(dual_xy), intent(in) :: val1, val2
-        type(dual_xy) :: res
+    end function
+    impure elemental  function max_d_d(val1, val2) result(res)
+        type(dual_xy_t), intent(in) :: val1, val2
+        type(dual_xy_t) :: res
 
         if (val1%x > val2%x) then
             res = val1
@@ -1922,11 +1922,11 @@ contains
             res = val2
         endif
 
-    end function max_dd
-    impure elemental  function max_di(u, i) result(res)
-        type(dual_xy), intent(in) :: u
+    end function
+    impure elemental  function max_d_i(u, i) result(res)
+        type(dual_xy_t), intent(in) :: u
         integer, intent(in) :: i
-        type(dual_xy) :: res
+        type(dual_xy_t) :: res
 
         if (u%x > i) then
             res = u
@@ -1934,11 +1934,11 @@ contains
             res = i
         endif
 
-    end function max_di
-    impure elemental  function max_dr(u, r) result(res)
-        type(dual_xy), intent(in) :: u
+    end function
+    impure elemental  function max_d_r(u, r) result(res)
+        type(dual_xy_t), intent(in) :: u
         real(dp), intent(in) :: r
-        type(dual_xy) :: res
+        type(dual_xy_t) :: res
 
         if (u%x > r) then
             res = u
@@ -1946,11 +1946,11 @@ contains
             res = r
         endif
 
-    end function max_dr
-     impure elemental  function max_rd(n, u) result(res)
+    end function
+     impure elemental  function max_r_d(n, u) result(res)
         real(dp), intent(in) :: n
-        type(dual_xy), intent(in) :: u
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: u
+        type(dual_xy_t) :: res
 
         if (u%x > n) then
             res = u
@@ -1958,11 +1958,11 @@ contains
             res = n
         endif
 
-    end function max_rd
-    impure elemental  function dmax1_dd(val1, val2, val3, val4,val5) result(res)
-        type(dual_xy), intent(in) :: val1, val2
-        type(dual_xy), intent(in), optional :: val3, val4,val5
-        type(dual_xy) :: res
+    end function
+    impure elemental  function dmax1_d_d(val1, val2, val3, val4,val5) result(res)
+        type(dual_xy_t), intent(in) :: val1, val2
+        type(dual_xy_t), intent(in), optional :: val3, val4,val5
+        type(dual_xy_t) :: res
 
         if (val1%x > val2%x) then
             res = val1
@@ -1979,19 +1979,19 @@ contains
            if(res%x < val5%x) res = val5
         endif
 
-    end function dmax1_dd
+    end function
       function maxval_d(u) result(res)
-        type(dual_xy), intent(in) :: u(:)
+        type(dual_xy_t), intent(in) :: u(:)
         integer :: iloc(1)
-        type(dual_xy) :: res
+        type(dual_xy_t) :: res
 
         iloc=maxloc(u%x)
         res=u(iloc(1))
 
-    end function maxval_d
-    impure elemental  function min_dd(val1, val2) result(res)
-        type(dual_xy), intent(in) :: val1, val2
-        type(dual_xy) :: res
+    end function
+    impure elemental  function min_d_d(val1, val2) result(res)
+        type(dual_xy_t), intent(in) :: val1, val2
+        type(dual_xy_t) :: res
 
         if (val1%x < val2%x) then
             res = val1
@@ -1999,11 +1999,11 @@ contains
             res = val2
         endif
 
-    end function min_dd
-    impure elemental  function min_dr(u, r) result(res)
-        type(dual_xy), intent(in) :: u
+    end function
+    impure elemental  function min_d_r(u, r) result(res)
+        type(dual_xy_t), intent(in) :: u
         real(dp), intent(in) :: r
-        type(dual_xy) :: res
+        type(dual_xy_t) :: res
 
         if (u%x < r) then
             res = u
@@ -2011,11 +2011,11 @@ contains
             res = r
         endif
 
-    end function min_dr
-    impure elemental  function dmin1_dd(val1, val2, val3, val4) result(res)
-        type(dual_xy), intent(in) :: val1, val2
-        type(dual_xy), intent(in), optional :: val3, val4
-        type(dual_xy) :: res
+    end function
+    impure elemental  function dmin1_d_d(val1, val2, val3, val4) result(res)
+        type(dual_xy_t), intent(in) :: val1, val2
+        type(dual_xy_t), intent(in), optional :: val3, val4
+        type(dual_xy_t) :: res
 
         if (val1%x < val2%x) then
             res = val1
@@ -2029,26 +2029,26 @@ contains
            if(res%x > val4%x) res = val4
         endif
 
-    end function dmin1_dd
+    end function
       function minval_d(u) result(res)
-        type(dual_xy), intent(in) :: u(:)
+        type(dual_xy_t), intent(in) :: u(:)
         integer :: iloc(1)
-        type(dual_xy) :: res
+        type(dual_xy_t) :: res
 
         iloc=minloc(u%x)
         res=u(iloc(1))
 
-    end function minval_d
+    end function
     impure elemental  function nint_d(u) result(res)
-        type(dual_xy), intent(in) :: u
+        type(dual_xy_t), intent(in) :: u
         integer :: res
 
         res=nint(u%x)
 
-    end function nint_d
-    impure elemental  function sign_dd(val1, val2) result(res)
-        type(dual_xy), intent(in) :: val1, val2
-        type(dual_xy) :: res
+    end function
+    impure elemental  function sign_d_d(val1, val2) result(res)
+        type(dual_xy_t), intent(in) :: val1, val2
+        type(dual_xy_t) :: res
 
         if (val2%x < 0.0_dp) then
             res = -abs(val1)
@@ -2056,11 +2056,11 @@ contains
             res =  abs(val1)
         endif
 
-     end function sign_dd
-    impure elemental  function sign_rd(val1, val2) result(res)
+     end function
+    impure elemental  function sign_r_d(val1, val2) result(res)
         real(dp), intent(in) :: val1
-        type(dual_xy), intent(in) :: val2
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: val2
+        type(dual_xy_t) :: res
 
         if (val2%x < 0.0_dp) then
             res = -abs(val1)
@@ -2068,26 +2068,26 @@ contains
             res = abs(val1)
         endif
 
-     end function sign_rd
+     end function
     impure elemental  function sin_d(u) result(res)
-        type(dual_xy), intent(in) :: u
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: u
+        type(dual_xy_t) :: res
 
         res%x = sin(u%x)
         res%dx = cos(u%x) * u%dx
 
-    end function sin_d
+    end function
     impure elemental  function tan_d(u) result(res)
-        type(dual_xy), intent(in) :: u
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: u
+        type(dual_xy_t) :: res
 
         res%x = tan(u%x)
         res%dx = u%dx / cos(u%x)**2
 
-    end function tan_d
+    end function
     impure elemental function sqrt_d(u) result(res)
-        type(dual_xy), intent(in) :: u
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: u
+        type(dual_xy_t) :: res
         real(dp) :: t0
         
         t0 = sqrt(u%x)
@@ -2097,8 +2097,8 @@ contains
     end function
 
     impure elemental function sqrt_hd(u) result(res)
-        type(hdual_xy), intent(in) :: u
-        type(hdual_xy) :: res
+        type(hdual_xy_t), intent(in) :: u
+        type(hdual_xy_t) :: res
         integer :: i, j, k
         real(dp) :: t0,t1
         
@@ -2116,8 +2116,8 @@ contains
         sqrt_hd_counter = sqrt_hd_counter + 1
     end function
       function sum_d(u) result(res)
-        type(dual_xy), intent(in) :: u(:)
-        type(dual_xy) :: res
+        type(dual_xy_t), intent(in) :: u(:)
+        type(dual_xy_t) :: res
         integer :: i
 
         res%x = sum(u%x)
@@ -2125,14 +2125,14 @@ contains
             res%dx(i) = sum(u%dx(i))
         end do
 
-    end function sum_d
+    end function
       function maxloc_d(array) result(ind)
-        type(dual_xy), intent(in) :: array(:)
+        type(dual_xy_t), intent(in) :: array(:)
         integer :: ind(1)
 
         ind = maxloc(array%x)
 
-    end function maxloc_d
+    end function
     
     
 end module

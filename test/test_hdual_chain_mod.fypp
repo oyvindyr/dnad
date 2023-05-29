@@ -36,119 +36,114 @@ module test_hdual1_mod
     real(dp) :: negative_one = -1.0_dp
   #:endif
     
-    @:dnad_dual_type(dual_y, dp, ny, sequence)
-    @:dnad_dual_type(dual_x, dp, nx, sequence)
-    @:dnad_hdual_type(hdual_y, dp, ny, sequence)
-    @:dnad_hdual_type(hdual_x, dp, nx, sequence)
+    @:dnad_dual_type(dual_y_t, dp, ny, sequence)
+    @:dnad_dual_type(dual_x_t, dp, nx, sequence)
+    @:dnad_hdual_type(hdual_y_t, dp, ny, sequence)
+    @:dnad_hdual_type(hdual_x_t, dp, nx, sequence)
 
-    $:dnad_interfaces(selected_interfaces, has_dual=True, has_hyper_dual=True)
+    $:dnad_interfaces(selected_interfaces, &
+            dual_shortnames = ['dualx', 'dualy'], hdual_shortnames=['hdualx', 'hdualy'])
     
 contains
 
-    function test_hdual1() result(is_ok)
+    function test_hdual_chain() result(is_ok)
         logical :: is_ok
            
         real(dp), parameter :: abs_tol = 1.0e-14_dp
 
-        integer, parameter :: nval = 5
-
         integer :: i
 
-        real(dp), dimension(nval) :: x, y
-        real(dp), dimension(nval) :: fvd, fvh, fv_fasit
-        real(dp), dimension(2, nval) :: dfd, dfh, df_fasit
-        real(dp), dimension(2, 2, nval) :: ddfh, ddf_fasit
+        real(dp) :: r
+        real(dp) :: x(nx)
+        real(dp) :: y(ny)
 
-        type(dual_y), dimension(nval) :: xd, yd, fd
-        type(hdual_y), dimension(nval) :: xhd, yhd, fhd
+        type(dual_y_t) :: fy
+        type(dual_y_t) :: yy(ny)
 
-        call random_number(x)
-        x = 5*x + 0.1_dp
-        call random_number(y)
-        y = 5*y + 0.1_dp
+        type(dual_x_t) :: fx
+        type(dual_x_t) :: yx(ny)
+        type(dual_x_t) :: xx(nx)
 
+        type(dual_x_t) :: fx_chain
 
-        ! Initialize dual inputs:
-        do i = 1, nval
+        do i = 1, ny
+            call random_number(y(i))
+            y(i) = 5*y(i) + 0.1_dp
+        enddo
+        do i = 1, nx
+            call random_number(x(i))
+            x(i) = 5*x(i) + 0.1_dp
+        enddo
+        
+        do i = 1, ny
+            call initialize(yy(i), y(i), i)
+        enddo
+        do i = 1, nx
+            call initialize(xx(i), x(i), i)
+        enddo
 
-            call initialize(xd(i), x(i), 1)
-            call initialize(yd(i), y(i), 2)
-            
-            call initialize(xhd(i), x(i), 1)
-            call initialize(yhd(i), y(i), 2)
+        fy = f_of_y__y(yy)
+        yx = y_of_x(xx)
+        fx_chain = chain_duals(fy, yx)
 
+        fx = f_of_x(xx)
+
+        print*, "fun: ", fx%x, fx_chain%x
+        do i = 1, nx
+            print*, "der: ", fx%dx(i), fx_chain%dx(i)
         end do
+        ! do i = 1, size(fx%ddx)
+        !     print*, "hess: ", fx%ddx(i), fx_chain%ddx(i)
+        ! end do
 
-        fd = test_function_dual(xd, yd)
-        fhd = test_function_hdual(xhd, yhd)
 
-        ! Extract function value, gradient and hessian for all values:
-        do i = 1, nval
-
-            fvd(i) = fd(i)
-            dfd(:, i) = fd(i)%dx
-
-            fvh(i) = fhd(i)
-            dfh(:, i) = fhd(i)%dx
-            ddfh(:, :, i) = hessian(fhd(i))
-
-        end do
-
-        ! Fasit:
-        do i = 1, nval
-            call test_function_analytic(x(i), y(i), fv_fasit(i), df_fasit(:, i), ddf_fasit(:, :, i))
-        end do
-
-        if ((maxval(abs(fvd - fv_fasit)) < abs_tol) .and. &
-                (maxval(abs(fvh - fv_fasit)) < abs_tol) .and. &
-                (maxval(abs(dfd - df_fasit)) < abs_tol) .and. &
-                (maxval(abs(dfh - df_fasit)) < abs_tol) .and. &
-                (maxval(abs(ddfh - ddf_fasit)) < abs_tol)) then
-            is_ok = .true.
-        else
-            is_ok = .false.
-            print*,"f_diff:"
-            print*, fvh - fv_fasit
-            print*,"df_diff:"
-            print*, dfh - df_fasit
-            print*,"ddf_diff:"
-            print*, ddfh - ddf_fasit
-        end if
-
-        #:if test_coverage == True
-        #:for impl in dnad.all_implementations
-        print*, ${'"'+impl+'_counter: ", ' + impl+'_counter'}$
-        #:endfor
-        #:endif
-
-        if (is_ok) then
-            print *, "test_hdual: ok"
-        else
-            print *, "test_hdual: failed"
-        end if
-
-        ! print*, "f:"
-        ! print*, f
-        ! print*, "f_fasit:"
-        ! print*, f_fasit
-        ! print*, "df:"
-        ! print*, df
-        ! print*, "df_fasit:"
-        ! print*, df_fasit
-        ! print*, "ddf:"
-        ! print*, ddf
-        ! print*, "ddf_fasit:"
-        ! print*, ddf_fasit
-      
     end function
 
-    impure elemental function f_of_y(y) result(f)
-        type(hdual_y), intent(in) :: y
-        type(hdual_y) :: f
-        f = sqrt(x)*log(y)
+    function chain_duals(fy, yx) result(fx)
+        type(dual_y_t), intent(in) :: fy
+        type(dual_x_t), intent(in) :: yx(size(fy%dx))
+        type(dual_x_t) :: fx
+        
+        integer :: ix, iy
+
+        fx%x = fy%x
+        fx%dx = 0
+        do ix = 1, size(fx%dx)
+            do iy = 1, size(fy%dx)
+                fx%dx(ix) = fx%dx(ix) + fy%dx(iy)*yx(iy)%dx(ix)
+            end do
+        end do
+
+
     end function
 
-    $:dnad_implementations("dp", "ny", dual_type="dual_y", hdual_type="hdual_y", &
+    function f_of_y__y(y) result(f)
+        type(dual_y_t), intent(in) :: y(2)
+        type(dual_y_t) :: f
+        f = sqrt(y(1))*log(y(2))
+    end function
+    function f_of_y__x(y) result(f)
+        type(dual_x_t), intent(in) :: y(2)
+        type(dual_x_t) :: f
+        f = sqrt(y(1))*log(y(2))
+    end function
+
+    function y_of_x(x) result(y)
+        type(dual_x_t), intent(in) :: x(3)
+        type(dual_x_t) :: y(2)
+        y(1) = sqrt(x(1)**2 + x(2)**2)
+        y(2) = x(3)
+    end function
+
+    function f_of_x(x) result(f)
+        type(dual_x_t), intent(in) :: x(3)
+        type(dual_x_t) :: f
+        f = f_of_y__x(y_of_x(x))
+    end function
+
+    $:dnad_implementations("dp", &
+            dual_types = ['dual_x_t', 'dual_y_t'], dual_shortnames = ['dualx', 'dualy'], dual_sizes = ['nx', 'ny'], &
+            hdual_types = ['hdual_x_t', 'hdual_y_t'], hdual_shortnames = ['hdualx', 'hdualy'], hdual_sizes = ['nx', 'ny'], &
             selected_interfaces=selected_interfaces, stringent=stringent, &
             test_coverage=test_coverage)
     

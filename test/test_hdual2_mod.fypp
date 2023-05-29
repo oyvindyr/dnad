@@ -34,10 +34,10 @@ module test_hdual2_mod
     real(dp) :: negative_one = -1.0_dp
   #:endif
     
-    @:dnad_dual_type(dual_uvw, dp, num_deriv, sequence)
-    @:dnad_hdual_type(hdual_uvw, dp, num_deriv, sequence)
+    @:dnad_dual_type(dual_uvw_t, dp, num_deriv, sequence)
+    @:dnad_hdual_type(hdual_uvw_t, dp, num_deriv, sequence)
 
-    $:dnad_interfaces(selected_interfaces, has_dual=True, has_hyper_dual=True)
+    $:dnad_interfaces(selected_interfaces, dual_shortnames = ['d'], hdual_shortnames = ['hd'])
     
 contains
 
@@ -57,8 +57,8 @@ contains
         real(dp), dimension(num_deriv, nval) :: dfd, dfh, df_fasit
         real(dp), dimension(num_deriv, num_deriv, nval) :: ddfh, ddf_fasit
 
-        type(dual_uvw), dimension(nval) :: ud, vd, wd, fd
-        type(hdual_uvw), dimension(nval) :: uhd, vhd, whd, fhd
+        type(dual_uvw_t), dimension(nval) :: ud, vd, wd, fd
+        type(hdual_uvw_t), dimension(nval) :: uhd, vhd, whd, fhd
 
         call random_number(u)
         u = 5*u + 0.1_dp
@@ -146,8 +146,8 @@ contains
       
     end function
 
-  #:for dual_name, dual_type in zip(['dual', 'hdual'], ['dual_uvw', 'hdual_uvw'])
-    impure elemental function test_function_${dual_name}$(u, v, w, r1, r2, r3, i1, i2, i3) result(f)
+  #:for dual_sn, dual_type in zip(['dual', 'hdual'], ['dual_uvw_t', 'hdual_uvw_t'])
+    impure elemental function test_function_${dual_sn}$(u, v, w, r1, r2, r3, i1, i2, i3) result(f)
         !! Test function for dual numbers. It is "impure" only because we use global counter variables to
         !! check test coverage. In "normal" use, it would be pure.
         type(${dual_type}$), intent(in) :: u, v, w
@@ -193,7 +193,10 @@ contains
         ddf(3, 3) = 2*r2**2 - 8*u/(2*w + 1)**3
     end subroutine
 
-    $:dnad_implementations("dp", "num_deriv", dual_type="dual_uvw", hdual_type="hdual_uvw", selected_interfaces=selected_interfaces, &
+    $:dnad_implementations("dp", &
+             dual_types = ['dual_uvw_t'],   dual_shortnames =  ['d'],  dual_sizes = ['num_deriv'], &
+            hdual_types = ['hdual_uvw_t'], hdual_shortnames = ['hd'], hdual_sizes = ['num_deriv'], &
+            selected_interfaces=selected_interfaces, &
             stringent=stringent, test_coverage=test_coverage)
     
   #:if stringent

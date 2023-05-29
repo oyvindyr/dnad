@@ -103,7 +103,7 @@
         module procedure div_r_${dual_sn}$    ! real/dual, elemental
         module procedure div_${dual_sn}$_i    ! dual/integer, elemental
         module procedure div_i_${dual_sn}$    ! integer/dual, elemental
-      #:endfo
+      #:endfor
       #:for hdual_sn in hdual_shortnames
         module procedure div_${hdual_sn}$_${hdual_sn}$  ! hdual/hdual, elemental
         module procedure div_${hdual_sn}$_r   ! hdual/real, elemental
@@ -244,52 +244,72 @@
   #:endif 
   #:if "dabs" in interface_list 
     interface dabs
-        module procedure abs_d ! same as abs, used for some old fortran commands
+      #:for dual_sn in dual_shortnames
+        module procedure abs_${dual_sn}$ ! same as abs, used for some old fortran commands
+      #:endfor
     end interface
   #:endif 
   #:if "acos" in interface_list 
     interface acos
-        module procedure acos_d ! arccosine of a dual number, elemental
+      #:for dual_sn in dual_shortnames
+        module procedure acos_${dual_sn}$ ! arccosine of a dual number, elemental
+      #:endfor
     end interface
   #:endif 
   #:if "asin" in interface_list 
     interface asin
-        module procedure asin_d ! arcsine of a dual number, elemental
+      #:for dual_sn in dual_shortnames
+        module procedure asin_${dual_sn}$ ! arcsine of a dual number, elemental
+      #:endfor
     end interface
   #:endif 
   #:if "atan" in interface_list 
     interface atan
-        module procedure atan_d ! arctan of a dual number, elemental
+      #:for dual_sn in dual_shortnames
+        module procedure atan_${dual_sn}$ ! arctan of a dual number, elemental
+      #:endfor
     end interface
   #:endif 
   #:if "atan2" in interface_list 
     interface atan2
-        module procedure atan2_d ! arctan of a dual number, elemental
+      #:for dual_sn in dual_shortnames
+        module procedure atan2_${dual_sn}$ ! arctan of a dual number, elemental
+      #:endfor
     end interface
   #:endif 
   #:if "cos" in interface_list 
     interface cos
-        module procedure cos_d ! cosine of a dual number, elemental
+      #:for dual_sn in dual_shortnames
+        module procedure cos_${dual_sn}$ ! cosine of a dual number, elemental
+      #:endfor
     end interface
   #:endif 
   #:if "dcos" in interface_list 
     interface dcos
-        module procedure cos_d ! cosine of a dual number, elemental
+      #:for dual_sn in dual_shortnames
+        module procedure cos_${dual_sn}$ ! cosine of a dual number, elemental
+      #:endfor
     end interface
   #:endif 
   #:if "dot_product" in interface_list 
     interface dot_product
-        module procedure dot_product_dd ! dot product two dual number vectors
+      #:for dual_sn in dual_shortnames
+        module procedure dot_product_${dual_sn}$_${dual_sn}$ ! dot product two dual number vectors
+      #:endfor
     end interface
   #:endif 
   #:if "exp" in interface_list 
     interface exp
-        module procedure exp_d ! exponential of a dual number, elemental
+      #:for dual_sn in dual_shortnames
+        module procedure exp_${dual_sn}$ ! exponential of a dual number, elemental
+      #:endfor
     end interface
   #:endif 
   #:if "int" in interface_list 
     interface int
-        module procedure int_d ! integer part of a dual number, elemental
+      #:for dual_sn in dual_shortnames
+        module procedure int_${dual_sn}$ ! integer part of a dual number, elemental
+      #:endfor
     end interface
   #:endif 
   #:if "log" in interface_list 
@@ -304,79 +324,107 @@
   #:endif 
   #:if "log10" in interface_list 
     interface log10
-        module procedure log10_d ! log of a dual number, elemental
+      #:for dual_sn in dual_shortnames
+        module procedure log10_${dual_sn}$ ! log of a dual number, elemental
+      #:endfor
     end interface
   #:endif 
   #:if "matmul" in interface_list 
     interface matmul
-        module procedure matmul_dd ! multiply two dual matrices
-        module procedure matmul_dv ! multiply a dual matrix with a dual vector
-        module procedure matmul_vd ! multiply a dual vector with a dual matrix
+      #:for dual_sn in dual_shortnames
+        module procedure matmul_${dual_sn}$_${dual_sn}$ ! multiply two dual matrices
+        module procedure matmul_${dual_sn}$_v ! multiply a dual matrix with a dual vector
+        module procedure matmul_v_${dual_sn}$ ! multiply a dual vector with a dual matrix
+      #:endfor
     end interface
   #:endif 
   #:if "max" in interface_list 
     interface max
-        module procedure max_dd ! max of two dual numbers, elemental
-        module procedure max_di ! max of a dual number and an integer, elemental
-        module procedure max_dr ! max of a dual number and a real, elemental
-        module procedure max_rd ! max of a real,and a dual number,  elemental
+      #:for dual_sn in dual_shortnames
+        module procedure max_${dual_sn}$_${dual_sn}$ ! max of two dual numbers, elemental
+        module procedure max_${dual_sn}$_i ! max of a dual number and an integer, elemental
+        module procedure max_${dual_sn}$_r ! max of a dual number and a real, elemental
+        module procedure max_r_${dual_sn}$ ! max of a real,and a dual number,  elemental
+      #:endfor
     end interface
   #:endif 
   #:if "dmax1" in interface_list 
     interface dmax1
-        module procedure dmax1_dd ! max of from two to four dual numbers, elemental
+      #:for dual_sn in dual_shortnames
+        module procedure dmax1_${dual_sn}$_${dual_sn}$ ! max of from two to four dual numbers, elemental
+      #:endfor
     end interface
   #:endif 
   #:if "maxval" in interface_list 
     interface maxval
-        module procedure maxval_d ! maxval of a dual number vector
+      #:for dual_sn in dual_shortnames
+        module procedure maxval_${dual_sn}$ ! maxval of a dual number vector
+      #:endfor
     end interface
   #:endif 
   #:if "min" in interface_list 
     interface min
-        module procedure min_dd ! min of from two to four dual numbers, elemental
-        module procedure min_dr ! min of a dual and a real, elemental
+      #:for dual_sn in dual_shortnames
+        module procedure min_${dual_sn}$_${dual_sn}$ ! min of from two to four dual numbers, elemental
+        module procedure min_${dual_sn}$_r ! min of a dual and a real, elemental
+      #:endfor
     end interface
   #:endif 
   #:if "dmin1" in interface_list 
     interface dmin1
-        module procedure dmin1_dd ! min of from two to four dual numbers, elemental
+      #:for dual_sn in dual_shortnames
+        module procedure dmin1_${dual_sn}$_${dual_sn}$ ! min of from two to four dual numbers, elemental
+      #:endfor
     end interface
   #:endif 
   #:if "minval" in interface_list 
     interface minval
-        module procedure minval_d ! obtain the maxval  of a dual number vectgor
+      #:for dual_sn in dual_shortnames
+        module procedure minval_${dual_sn}$ ! obtain the maxval  of a dual number vectgor
+      #:endfor
     end interface
   #:endif 
   #:if "nint" in interface_list 
     interface nint
-        module procedure nint_d ! nearest integer to the argument, elemental
+      #:for dual_sn in dual_shortnames
+        module procedure nint_${dual_sn}$ ! nearest integer to the argument, elemental
+      #:endfor
     end interface
   #:endif 
   #:if "sign" in interface_list 
     interface  sign
-      module procedure  sign_dd ! sign(a,b) with two dual numbers, elemental
-      module procedure  sign_rd ! sign(a,b) with a real and a dual, elemental
+      #:for dual_sn in dual_shortnames
+        module procedure  sign_${dual_sn}$_${dual_sn}$ ! sign(a,b) with two dual numbers, elemental
+        module procedure  sign_r_${dual_sn}$ ! sign(a,b) with a real and a dual, elemental
+      #:endfor
     end interface
   #:endif 
   #:if "sin" in interface_list 
     interface sin
-        module procedure sin_d ! obtain sine of a dual number, elemental
+      #:for dual_sn in dual_shortnames
+        module procedure sin_${dual_sn}$ ! obtain sine of a dual number, elemental
+      #:endfor
     end interface
   #:endif 
   #:if "dsin" in interface_list 
     interface dsin
-        module procedure sin_d ! obtain sine of a dual number, elemental
+      #:for dual_sn in dual_shortnames
+        module procedure sin_${dual_sn}$ ! obtain sine of a dual number, elemental
+      #:endfor
     end interface
   #:endif 
   #:if "tan" in interface_list 
     interface tan
-        module procedure tan_d ! obtain sine of a dual number, elemental
+      #:for dual_sn in dual_shortnames
+        module procedure tan_${dual_sn}$ ! obtain sine of a dual number, elemental
+      #:endfor
     end interface
   #:endif 
   #:if "dtan" in interface_list 
     interface dtan
-        module procedure tan_d ! obtain sine of a dual number, elemental
+      #:for dual_sn in dual_shortnames
+        module procedure tan_${dual_sn}$ ! obtain sine of a dual number, elemental
+      #:endfor
     end interface
   #:endif 
   #:if "sqrt" in interface_list 
@@ -391,12 +439,16 @@
   #:endif 
   #:if "sum" in interface_list 
     interface sum
-        module procedure sum_d ! sum a dual array
+      #:for dual_sn in dual_shortnames
+        module procedure sum_${dual_sn}$ ! sum a dual array
+      #:endfor
     end interface
   #:endif 
   #:if "maxloc" in interface_list 
     interface maxloc
-        module procedure maxloc_d ! location of max in a dual array
+      #:for dual_sn in dual_shortnames
+        module procedure maxloc_${dual_sn}$ ! location of max in a dual array
+      #:endfor
     end interface
   #:endif 
 #:enddef 

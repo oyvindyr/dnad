@@ -10,7 +10,7 @@ module example_dual_undef_mod
     ! Workaround to make pure functions produce NaN's deliberately:
     real(dp) :: negative_one = -1.0_dp
     
-    type :: dual_uvw
+    type :: dual_uvw_t
         !! dual number type
         sequence
         real(dp) :: x = 0  ! functional value
@@ -19,7 +19,7 @@ module example_dual_undef_mod
 
 
     interface initialize ! Initialize a dual or hyper dual number
-        module procedure initialize_dual
+        module procedure initialize_d
     end interface
   
     interface assignment (=)
@@ -44,7 +44,7 @@ contains
 
     subroutine example_dual_undef()
 
-        type(dual_uvw) :: uhd, vhd, whd, fhd
+        type(dual_uvw_t) :: uhd, vhd, whd, fhd
 
         call initialize(uhd, 1.0_dp, 1)
         call initialize(vhd, 1.0_dp, 2)
@@ -63,13 +63,13 @@ contains
     end subroutine
 
     elemental function test_function(u, v, w) result(f)
-        type(dual_uvw), intent(in) :: u, v, w
-        type(dual_uvw) :: f
+        type(dual_uvw_t), intent(in) :: u, v, w
+        type(dual_uvw_t) :: f
         f = acos(u)
     end function
 
-    pure subroutine initialize_dual(dual, val, idiff)
-        type(dual_uvw), intent(out) :: dual
+    pure subroutine initialize_d(dual, val, idiff)
+        type(dual_uvw_t), intent(out) :: dual
         real(dp), intent(in) :: val
         integer, intent(in) :: idiff
         
@@ -79,7 +79,7 @@ contains
 
     end subroutine
     elemental subroutine assign_d_i(u, i)
-        type(dual_uvw), intent(out) :: u
+        type(dual_uvw_t), intent(out) :: u
         integer, intent(in) :: i
 
         u%x = real(i, dp)  ! This is faster than direct assignment
@@ -87,7 +87,7 @@ contains
 
     end subroutine
     elemental subroutine assign_d_r(u, r)
-        type(dual_uvw), intent(out) :: u
+        type(dual_uvw_t), intent(out) :: u
         real(dp), intent(in) :: r
 
         u%x = r
@@ -95,69 +95,69 @@ contains
 
     end subroutine
     elemental subroutine assign_i_d(i, v)
-        type(dual_uvw), intent(in) :: v
+        type(dual_uvw_t), intent(in) :: v
         integer, intent(out) :: i
 
         i = int(v%x)
 
     end subroutine
     elemental subroutine assign_r_d(r, v)
-        type(dual_uvw), intent(in) :: v
+        type(dual_uvw_t), intent(in) :: v
         real(dp), intent(out) :: r
 
         r = v%x
 
     end subroutine
     elemental function unary_add_d(u) result(res)
-        type(dual_uvw), intent(in) :: u
-        type(dual_uvw) :: res
+        type(dual_uvw_t), intent(in) :: u
+        type(dual_uvw_t) :: res
         
         res%x = u%x
         res%dx = u%dx
     end function
     elemental function add_d_d(u, v) result(res)
-        type(dual_uvw), intent(in) :: u
-        type(dual_uvw), intent(in) :: v
-        type(dual_uvw) :: res
+        type(dual_uvw_t), intent(in) :: u
+        type(dual_uvw_t), intent(in) :: v
+        type(dual_uvw_t) :: res
         
         res%x = u%x + v%x
         res%dx = u%dx + v%dx
     end function
     elemental function add_d_r(u, v) result(res)
-        type(dual_uvw), intent(in) :: u
+        type(dual_uvw_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(dual_uvw) :: res
+        type(dual_uvw_t) :: res
         
         res%x = u%x + v
         res%dx = u%dx
     end function
     elemental function add_r_d(u, v) result(res)
         real(dp), intent(in) :: u
-        type(dual_uvw), intent(in) :: v
-        type(dual_uvw) :: res
+        type(dual_uvw_t), intent(in) :: v
+        type(dual_uvw_t) :: res
         
         res%x = u + v%x
         res%dx = v%dx
     end function
     elemental function add_d_i(u, v) result(res)
-        type(dual_uvw), intent(in) :: u
+        type(dual_uvw_t), intent(in) :: u
         integer, intent(in) :: v
-        type(dual_uvw) :: res
+        type(dual_uvw_t) :: res
         
         res%x = u%x + v
         res%dx = u%dx
     end function
     elemental function add_i_d(u, v) result(res)
         integer, intent(in) :: u
-        type(dual_uvw), intent(in) :: v
-        type(dual_uvw) :: res
+        type(dual_uvw_t), intent(in) :: v
+        type(dual_uvw_t) :: res
         
         res%x = u + v%x
         res%dx = v%dx
     end function
     elemental  function acos_d(u) result(res)
-        type(dual_uvw), intent(in) :: u
-        type(dual_uvw) :: res
+        type(dual_uvw_t), intent(in) :: u
+        type(dual_uvw_t) :: res
 
         res%x = acos(u%x)
     
@@ -167,7 +167,7 @@ contains
             res%dx = -u%dx / sqrt(1.0_dp - u%x**2)
         end if
 
-    end function acos_d
+    end function
     
     ! Workaround to make pure functions produce NaN's deliberately:
     elemental function set_NaN() result(res)

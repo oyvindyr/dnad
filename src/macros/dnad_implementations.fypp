@@ -21,14 +21,16 @@
 
 #!
 #!
-#:def dnad_implementations(real_kind, size_dx, &
-        dual_types=[], dual_shortnames=[], &
-        hdual_types=[], hdual_shortnames=[], &
+#:def dnad_implementations(real_kind, &
+        dual_types = [], dual_shortnames = [], dual_sizes = [], &
+        hdual_types = [], hdual_shortnames = [], hdual_sizes = [], &
         selected_interfaces="--all", stringent=True, is_pure=True, test_coverage=False) 
 #!
 #:assert len(dual_types) > 0 or len(hdual_types) > 0
-#:assert len(dual_types) = len(dual_shortnames)
-#:assert len(hdual_types) = len(hdual_shortnames)
+#:assert len(dual_types) == len(dual_shortnames)
+#:assert len(dual_types) == len(dual_sizes)
+#:assert len(hdual_types) == len(hdual_shortnames)
+#:assert len(hdual_types) == len(hdual_sizes)
 #! 
 #:set interface_list = dnad.select_interfaces(selected_interfaces)
 #!
@@ -48,8 +50,8 @@
     $:initialize_hd(hdual_type, hdual_sn, real_kind)
 #:endfor
 #!
-#:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
-    $:hessian(hdual_type, hdual_sn, real_kind, size_dx)
+#:for hdual_type, hdual_sn, hdual_size in zip(hdual_types, hdual_shortnames, hdual_sizes)
+    $:hessian(hdual_type, hdual_sn, real_kind, hdual_size)
 #:endfor
 #!
 #!
@@ -65,51 +67,51 @@
 #!
 #!
 #:if "+" in interface_list
-  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    $:add_d( dual_type, dual_sn, real_kind, size_dx, is_pure, test_coverage)
+  #:for dual_type, dual_sn, dual_size in zip(dual_types, dual_shortnames, dual_sizes)
+    $:add_d( dual_type, dual_sn, real_kind, dual_size, is_pure, test_coverage)
   #:endfor
-  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
-    $:add_hd(hdual_type, hdual_sn, real_kind, size_dx, is_pure, test_coverage)
+  #:for hdual_type, hdual_sn, hdual_size in zip(hdual_types, hdual_shortnames, hdual_sizes)
+    $:add_hd(hdual_type, hdual_sn, real_kind, hdual_size, is_pure, test_coverage)
   #:endfor
 #:endif
 #!
 #! 
 #:if "-" in interface_list 
-  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    $:minus_d( dual_type, dual_sn, real_kind, size_dx, is_pure, test_coverage)
+  #:for dual_type, dual_sn, dual_size in zip(dual_types, dual_shortnames, dual_sizes)
+    $:minus_d( dual_type, dual_sn, real_kind, dual_size, is_pure, test_coverage)
   #:endfor
-  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
-    $:minus_hd(hdual_type, hdual_sn, real_kind, size_dx, is_pure, test_coverage)
+  #:for hdual_type, hdual_sn, hdual_size in zip(hdual_types, hdual_shortnames, hdual_sizes)
+    $:minus_hd(hdual_type, hdual_sn, real_kind, hdual_size, is_pure, test_coverage)
   #:endfor
 #:endif 
 #!
 #! 
 #:if "*" in interface_list 
-  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    $:mult_d(dual_type, dual_sn, real_kind, size_dx, is_pure, test_coverage)
+  #:for dual_type, dual_sn, dual_size in zip(dual_types, dual_shortnames, dual_sizes)
+    $:mult_d(dual_type, dual_sn, real_kind, dual_size, is_pure, test_coverage)
   #:endfor
-  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
-    $:mult_hd(hdual_type, hdual_sn, real_kind, size_dx, is_pure, test_coverage)
+  #:for hdual_type, hdual_sn, hdual_size in zip(hdual_types, hdual_shortnames, hdual_sizes)
+    $:mult_hd(hdual_type, hdual_sn, real_kind, hdual_size, is_pure, test_coverage)
   #:endfor
 #:endif 
 #!
 #! 
 #:if "/" in interface_list 
-  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    $:div_d(dual_type, dual_sn, real_kind, size_dx, is_pure, test_coverage)
+  #:for dual_type, dual_sn, dual_size in zip(dual_types, dual_shortnames, dual_sizes)
+    $:div_d(dual_type, dual_sn, real_kind, dual_size, is_pure, test_coverage)
   #:endfor
-  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
-    $:div_hd(hdual_type, hdual_sn, real_kind, size_dx, is_pure, test_coverage)
+  #:for hdual_type, hdual_sn, hdual_size in zip(hdual_types, hdual_shortnames, hdual_sizes)
+    $:div_hd(hdual_type, hdual_sn, real_kind, hdual_size, is_pure, test_coverage)
   #:endfor
 #:endif 
 #!
 #! 
 #:if "**" in interface_list 
-  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    $:pow_d(dual_type, dual_sn, real_kind, size_dx, is_pure, test_coverage)
+  #:for dual_type, dual_sn, dual_size in zip(dual_types, dual_shortnames, dual_sizes)
+    $:pow_d(dual_type, dual_sn, real_kind, dual_size, is_pure, test_coverage)
   #:endfor
-  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
-    $:pow_hd(hdual_type, hdual_sn, real_kind, size_dx, is_pure, test_coverage)
+  #:for hdual_type, hdual_sn, hdual_size in zip(hdual_types, hdual_shortnames, hdual_sizes)
+    $:pow_hd(hdual_type, hdual_sn, real_kind, hdual_size, is_pure, test_coverage)
   #:endfor
 #:endif 
 #!
@@ -163,7 +165,7 @@
   #:endfor
 #:endif 
 #:if "abs" in interface_list or "dabs" in interface_list
-  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
+  #:for dual_type, dual_sn, dual_size in zip(dual_types, dual_shortnames, dual_sizes)
     ${elemental_purity}$  function abs_${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
@@ -173,7 +175,7 @@
       #:if stringent == True
         if (u%x == 0) then
             res%x = 0.0_${real_kind}$
-            do i = 1, ${size_dx}$
+            do i = 1, ${dual_size}$
                 if (u%dx(i) .eq. 0.0_${real_kind}$) then
                     res%dx(i) = 0.0_${real_kind}$
                 else
@@ -274,7 +276,7 @@
   #:endfor
 #:endif 
 #:if "dot_product" in interface_list 
-  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
+  #:for dual_type, dual_sn, dual_size in zip(dual_types, dual_shortnames, dual_sizes)
     ${purity}$  function dot_product_${dual_sn}$_${dual_sn}$(u, v) result(res)
         type(${dual_type}$), intent(in) :: u(:), v(:)
         type(${dual_type}$) :: res
@@ -282,7 +284,7 @@
         integer :: i
 
         res%x = dot_product(u%x, v%x)
-        do i = 1, ${size_dx}$
+        do i = 1, ${dual_size}$
             res%dx(i) = dot_product(u%x, v%dx(i)) + dot_product(v%x, u%dx(i))
         end do
 
@@ -316,12 +318,12 @@
   #:endfor
 #:endif 
 #:if "log" in interface_list
-  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    $:log_d(dual_type, dual_sn, real_kind, size_dx, is_pure, test_coverage)
-  #:endif
-  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
-    $:log_hd(hdual_type, hdual_sn, real_kind, size_dx, is_pure, test_coverage)
-  #:endif
+  #:for dual_type, dual_sn, dual_size in zip(dual_types, dual_shortnames, dual_sizes)
+    $:log_d(dual_type, dual_sn, real_kind, dual_size, is_pure, test_coverage)
+  #:endfor
+  #:for hdual_type, hdual_sn, hdual_size in zip(hdual_types, hdual_shortnames, hdual_sizes)
+    $:log_hd(hdual_type, hdual_sn, real_kind, hdual_size, is_pure, test_coverage)
+  #:endfor
 #:endif 
 #:if "log10" in interface_list
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
@@ -339,7 +341,7 @@
   #:endfor
 #:endif 
 #:if "matmul" in interface_list 
-  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
+  #:for dual_type, dual_sn, dual_size in zip(dual_types, dual_shortnames, dual_sizes)
     ${purity}$  function matmul_${dual_sn}$_${dual_sn}$(u,v) result(res)
         type(${dual_type}$), intent(in) :: u(:,:), v(:,:)
         type(${dual_type}$) :: res(size(u,1), size(v,2))
@@ -347,7 +349,7 @@
         integer :: i
 
         res%x = matmul(u%x, v%x)
-        do i = 1, ${size_dx}$
+        do i = 1, ${dual_size}$
             res%dx(i) = matmul(u%dx(i), v%x) + matmul(u%x, v%dx(i))
         end do
 
@@ -358,7 +360,7 @@
         integer :: i
 
         res%x = matmul(u%x, v%x)
-        do i = 1, ${size_dx}$
+        do i = 1, ${dual_size}$
             res%dx(i) = matmul(u%dx(i), v%x) + matmul(u%x, v%dx(i))
         end do
 
@@ -369,7 +371,7 @@
         integer::i
 
         res%x = matmul(u%x, v%x)
-        do i = 1, ${size_dx}$
+        do i = 1, ${dual_size}$
             res%dx(i) = matmul(u%dx(i), v%x) + matmul(u%x, v%dx(i))
         end do
 
@@ -590,22 +592,22 @@
   #:endfor
 #:endif 
 #:if "sqrt" in interface_list
-  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    $:sqrt_d(dual_type, dual_sn, real_kind, size_dx, is_pure, test_coverage, stringent)
-  #:endif
-  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
-    $:sqrt_hd(hdual_type, hdual_sn, real_kind, size_dx, is_pure, test_coverage, stringent)
-  #:endif
+  #:for dual_type, dual_sn, dual_size in zip(dual_types, dual_shortnames, dual_sizes)
+    $:sqrt_d(dual_type, dual_sn, real_kind, dual_size, is_pure, test_coverage, stringent)
+  #:endfor
+  #:for hdual_type, hdual_sn, hdual_size in zip(hdual_types, hdual_shortnames, hdual_sizes)
+    $:sqrt_hd(hdual_type, hdual_sn, real_kind, hdual_size, is_pure, test_coverage, stringent)
+  #:endfor
 #:endif 
 #:if "sum" in interface_list 
-  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
+  #:for dual_type, dual_sn, dual_size in zip(dual_types, dual_shortnames, dual_sizes)
     ${purity}$  function sum_${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u(:)
         type(${dual_type}$) :: res
         integer :: i
 
         res%x = sum(u%x)
-        do i = 1, ${size_dx}$
+        do i = 1, ${dual_size}$
             res%dx(i) = sum(u%dx(i))
         end do
 
