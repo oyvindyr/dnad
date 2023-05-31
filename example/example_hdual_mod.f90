@@ -21,7 +21,8 @@ module example_hdual_mod
     end interface
 
     interface initialize ! Initialize a dual or hyper dual number
-        module procedure initialize_hd
+        module procedure initialize_hd_scalar
+        module procedure initialize_hd_vector
     end interface
   
     interface assignment (=)
@@ -119,7 +120,8 @@ contains
         f = sqrt(u)*log(v) + u**w
     end function
 
-    pure subroutine initialize_hd(hdual, val, idiff)
+    pure subroutine initialize_hd_scalar(hdual, val, idiff)
+        !! Initialize a single hyper-dual number, whose derivative with respect to design variable 'idiff' is 1
         type(hdual_uvw_t), intent(out) :: hdual
         real(dp), intent(in) :: val
         integer, intent(in) :: idiff
@@ -128,6 +130,22 @@ contains
         hdual%dx = 0
         hdual%ddx = 0
         hdual%dx(idiff) = 1
+
+    end subroutine
+    pure subroutine initialize_hd_vector(hdual, val)
+        !! Initialize a vector of hyper-dual numbers, where the derivative of 
+        !! number i with respect to design variable i is 1
+        type(hdual_uvw_t), intent(out) :: hdual(:)
+        real(dp), intent(in) :: val(:)
+
+        integer :: i
+        
+        do i = 1, size(hdual)
+            hdual(i)%x = val(i)
+            hdual(i)%dx = 0
+            hdual(i)%ddx = 0
+            hdual(i)%dx(i) = 1
+        end do
 
     end subroutine
     pure function hessian_hd(d) result(m)

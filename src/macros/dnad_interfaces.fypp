@@ -14,10 +14,12 @@
 
     interface initialize ! Initialize a dual or hyper dual number
       #:for dual_sn in dual_shortnames
-        module procedure initialize_${dual_sn}$
+        module procedure initialize_${dual_sn}$_scalar
+        module procedure initialize_${dual_sn}$_vector
       #:endfor
       #:for hdual_sn in hdual_shortnames
-        module procedure initialize_${hdual_sn}$
+        module procedure initialize_${hdual_sn}$_scalar
+        module procedure initialize_${hdual_sn}$_vector
       #:endfor
     end interface
   

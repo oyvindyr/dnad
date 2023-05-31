@@ -1,6 +1,9 @@
-module test_hdual1_mod
+module test_hdual_chain_mod
     use, intrinsic :: iso_fortran_env, only: dp => real64
     implicit none
+
+    private
+    public :: test_hdual_chain
 
     integer, parameter :: ny = 2
     integer, parameter :: nx = 3
@@ -156,16 +159,31 @@ module test_hdual1_mod
         real(dp) :: ddx(nx*(nx + 1)/2) = 0  ! Lower triangular of Hessian
     end type
 
+    interface  f_of_y
+        module procedure f_of_y__x ! Function of y, with derivatives wrt x
+        module procedure f_of_y__y ! Function of y, with derivatives wrt y
+    end interface
+
+    interface chain_duals
+        !! Generic function for converting a function value from one dual-type to another by applying the chain rule of derivation
+        module procedure chain_duals__dualy_dualx
+        module procedure chain_duals__hdualy_hdualx
+    end interface
+
     interface hessian ! Extract Hessian from a hyper-dual number
         module procedure hessian_hdualx
         module procedure hessian_hdualy
     end interface
 
     interface initialize ! Initialize a dual or hyper dual number
-        module procedure initialize_dualx
-        module procedure initialize_dualy
-        module procedure initialize_hdualx
-        module procedure initialize_hdualy
+        module procedure initialize_dualx_scalar
+        module procedure initialize_dualx_vector
+        module procedure initialize_dualy_scalar
+        module procedure initialize_dualy_vector
+        module procedure initialize_hdualx_scalar
+        module procedure initialize_hdualx_vector
+        module procedure initialize_hdualy_scalar
+        module procedure initialize_hdualy_vector
     end interface
   
     interface assignment (=)
@@ -572,95 +590,136 @@ contains
 
         integer :: i
 
-        real(dp) :: r
         real(dp) :: x(nx)
-        real(dp) :: y(ny)
 
-        type(dual_y_t) :: fy
-        type(dual_y_t) :: yy(ny)
+        type(hdual_y_t) :: fy
+        type(hdual_y_t) :: yy(ny)
 
-        type(dual_x_t) :: fx
-        type(dual_x_t) :: yx(ny)
-        type(dual_x_t) :: xx(nx)
+        type(hdual_x_t) :: fx
+        type(hdual_x_t) :: yx(ny)
+        type(hdual_x_t) :: xx(nx)
 
-        type(dual_x_t) :: fx_chain
+        type(hdual_x_t) :: fx_chain
 
-        do i = 1, ny
-            call random_number(y(i))
-            y(i) = 5*y(i) + 0.1_dp
-        enddo
-        do i = 1, nx
-            call random_number(x(i))
-            x(i) = 5*x(i) + 0.1_dp
-        enddo
+        ! random x
+        call random_number(x)
+        x = 5*x + 0.1_dp
+        call initialize(xx, x)
         
-        do i = 1, ny
-            call initialize(yy(i), y(i), i)
-        enddo
-        do i = 1, nx
-            call initialize(xx(i), x(i), i)
-        enddo
-
-        fy = f_of_y__y(yy)
+        ! y as a function of x, with derivatives wrt x
         yx = y_of_x(xx)
+
+        ! y as a function of y, with derivatives wrt y
+        call initialize(yy, yx(:)%x)
+
+        ! f as a function of y, with derivatives wrt y
+        fy = f_of_y(yy)
+
+        ! f as a function of x, with derivatives wrt x
         fx_chain = chain_duals(fy, yx)
 
+        ! Same as fx_chain, but computed directly
         fx = f_of_x(xx)
 
-        print*, "fun: ", fx%x, fx_chain%x
+        print*, "fun: ", fx%x, fx_chain%x, fx%x - fx_chain%x
         do i = 1, nx
-            print*, "der: ", fx%dx(i), fx_chain%dx(i)
+            print*, "der: ", fx%dx(i), fx_chain%dx(i), fx%dx(i) - fx_chain%dx(i)
         end do
-        ! do i = 1, size(fx%ddx)
-        !     print*, "hess: ", fx%ddx(i), fx_chain%ddx(i)
-        ! end do
+        do i = 1, size(fx%ddx)
+            print*, "hess: ", fx%ddx(i), fx_chain%ddx(i), fx%ddx(i) - fx_chain%ddx(i)
+        end do
+
+        is_ok = .true.
 
 
     end function
 
-    function chain_duals(fy, yx) result(fx)
+    function chain_duals__dualy_dualx(fy, yx) result(fx)
+
         type(dual_y_t), intent(in) :: fy
         type(dual_x_t), intent(in) :: yx(size(fy%dx))
         type(dual_x_t) :: fx
         
-        integer :: ix, iy
+        integer :: p, j
 
         fx%x = fy%x
         fx%dx = 0
-        do ix = 1, size(fx%dx)
-            do iy = 1, size(fy%dx)
-                fx%dx(ix) = fx%dx(ix) + fy%dx(iy)*yx(iy)%dx(ix)
+        do p = 1, size(fy%dx)
+            do j = 1, size(fx%dx)
+                fx%dx(j) = fx%dx(j) + fy%dx(p)*yx(p)%dx(j)
             end do
         end do
 
 
     end function
+    function chain_duals__hdualy_hdualx(fy, yx) result(fx)
 
-    function f_of_y__y(y) result(f)
-        type(dual_y_t), intent(in) :: y(2)
-        type(dual_y_t) :: f
+        type(hdual_y_t), intent(in) :: fy
+        type(hdual_x_t), intent(in) :: yx(size(fy%dx))
+        type(hdual_x_t) :: fx
+        
+        integer :: p, j
+        integer :: i, q, k, nk
+        real(dp) :: hfy(size(fy%dx), size(fy%dx))
+        real(dp) :: tmp
+
+        fx%x = fy%x
+        fx%dx = 0
+        do p = 1, size(fy%dx)
+            do j = 1, size(fx%dx)
+                fx%dx(j) = fx%dx(j) + fy%dx(p)*yx(p)%dx(j)
+            end do
+        end do
+
+        nk = size(fx%dx)*(size(fx%dx)+1)/2
+        fx%ddx = 0
+        do p = 1, size(fy%dx)
+            do k = 1, nk
+                fx%ddx(k) = fx%ddx(k) + fy%dx(p)*yx(p)%ddx(k)
+            end do
+        end do
+        hfy = hessian(fy)
+        do q = 1, size(fy%dx)
+            do p = 1, size(fy%dx)
+                k = 0
+                do j = 1, size(fx%dx)
+                    tmp = hfy(p,q)*yx(q)%dx(j)
+                    do i = j, size(fx%dx)
+                        k = k + 1
+                        fx%ddx(k) = fx%ddx(k) + tmp*yx(p)%dx(i)
+                    end do
+                end do
+            end do
+        end do
+
+    end function
+
+    function f_of_y__x(y) result(f)
+        type(hdual_x_t), intent(in) :: y(ny)
+        type(hdual_x_t) :: f
         f = sqrt(y(1))*log(y(2))
     end function
-    function f_of_y__x(y) result(f)
-        type(dual_x_t), intent(in) :: y(2)
-        type(dual_x_t) :: f
+    function f_of_y__y(y) result(f)
+        type(hdual_y_t), intent(in) :: y(ny)
+        type(hdual_y_t) :: f
         f = sqrt(y(1))*log(y(2))
     end function
 
     function y_of_x(x) result(y)
-        type(dual_x_t), intent(in) :: x(3)
-        type(dual_x_t) :: y(2)
+        type(hdual_x_t), intent(in) :: x(nx)
+        type(hdual_x_t) :: y(ny)
         y(1) = sqrt(x(1)**2 + x(2)**2)
         y(2) = x(3)
     end function
 
     function f_of_x(x) result(f)
-        type(dual_x_t), intent(in) :: x(3)
-        type(dual_x_t) :: f
-        f = f_of_y__x(y_of_x(x))
+        type(hdual_x_t), intent(in) :: x(nx)
+        type(hdual_x_t) :: f
+        f = f_of_y(y_of_x(x))
     end function
 
-    pure subroutine initialize_dualx(dual, val, idiff)
+    pure subroutine initialize_dualx_scalar(dual, val, idiff)
+        !! Initialize a single dual number, whose derivative with respect to design variable 'idiff' is 1
         type(dual_x_t), intent(out) :: dual
         real(dp), intent(in) :: val
         integer, intent(in) :: idiff
@@ -670,7 +729,23 @@ contains
         dual%dx(idiff) = 1
 
     end subroutine
-    pure subroutine initialize_dualy(dual, val, idiff)
+    pure subroutine initialize_dualx_vector(dual, val)
+        !! Initialize a vector of dual numbers, where the derivative of 
+        !! number i with respect to design variable i is 1
+        type(dual_x_t), intent(out) :: dual(:)
+        real(dp), intent(in) :: val(:)
+
+        integer :: i
+
+        do i = 1, size(dual)
+            dual(i)%x = val(i)
+            dual(i)%dx = 0
+            dual(i)%dx(i) = 1
+        end do
+
+    end subroutine
+    pure subroutine initialize_dualy_scalar(dual, val, idiff)
+        !! Initialize a single dual number, whose derivative with respect to design variable 'idiff' is 1
         type(dual_y_t), intent(out) :: dual
         real(dp), intent(in) :: val
         integer, intent(in) :: idiff
@@ -680,7 +755,23 @@ contains
         dual%dx(idiff) = 1
 
     end subroutine
-    pure subroutine initialize_hdualx(hdual, val, idiff)
+    pure subroutine initialize_dualy_vector(dual, val)
+        !! Initialize a vector of dual numbers, where the derivative of 
+        !! number i with respect to design variable i is 1
+        type(dual_y_t), intent(out) :: dual(:)
+        real(dp), intent(in) :: val(:)
+
+        integer :: i
+
+        do i = 1, size(dual)
+            dual(i)%x = val(i)
+            dual(i)%dx = 0
+            dual(i)%dx(i) = 1
+        end do
+
+    end subroutine
+    pure subroutine initialize_hdualx_scalar(hdual, val, idiff)
+        !! Initialize a single hyper-dual number, whose derivative with respect to design variable 'idiff' is 1
         type(hdual_x_t), intent(out) :: hdual
         real(dp), intent(in) :: val
         integer, intent(in) :: idiff
@@ -691,7 +782,24 @@ contains
         hdual%dx(idiff) = 1
 
     end subroutine
-    pure subroutine initialize_hdualy(hdual, val, idiff)
+    pure subroutine initialize_hdualx_vector(hdual, val)
+        !! Initialize a vector of hyper-dual numbers, where the derivative of 
+        !! number i with respect to design variable i is 1
+        type(hdual_x_t), intent(out) :: hdual(:)
+        real(dp), intent(in) :: val(:)
+
+        integer :: i
+        
+        do i = 1, size(hdual)
+            hdual(i)%x = val(i)
+            hdual(i)%dx = 0
+            hdual(i)%ddx = 0
+            hdual(i)%dx(i) = 1
+        end do
+
+    end subroutine
+    pure subroutine initialize_hdualy_scalar(hdual, val, idiff)
+        !! Initialize a single hyper-dual number, whose derivative with respect to design variable 'idiff' is 1
         type(hdual_y_t), intent(out) :: hdual
         real(dp), intent(in) :: val
         integer, intent(in) :: idiff
@@ -700,6 +808,22 @@ contains
         hdual%dx = 0
         hdual%ddx = 0
         hdual%dx(idiff) = 1
+
+    end subroutine
+    pure subroutine initialize_hdualy_vector(hdual, val)
+        !! Initialize a vector of hyper-dual numbers, where the derivative of 
+        !! number i with respect to design variable i is 1
+        type(hdual_y_t), intent(out) :: hdual(:)
+        real(dp), intent(in) :: val(:)
+
+        integer :: i
+        
+        do i = 1, size(hdual)
+            hdual(i)%x = val(i)
+            hdual(i)%dx = 0
+            hdual(i)%ddx = 0
+            hdual(i)%dx(i) = 1
+        end do
 
     end subroutine
     pure function hessian_hdualx(d) result(m)
@@ -886,7 +1010,7 @@ contains
         
         res%x = u%x
         res%dx = u%dx
-        unary_add_dualx_counter = unary_add_dualx_counter + 1
+        unary_add_d_counter = unary_add_d_counter + 1
     end function
     impure elemental function add_dualx_dualx(u, v) result(res)
         type(dual_x_t), intent(in) :: u
@@ -895,7 +1019,7 @@ contains
         
         res%x = u%x + v%x
         res%dx = u%dx + v%dx
-        add_dualx_dualx_counter = add_dualx_dualx_counter + 1
+        add_d_d_counter = add_d_d_counter + 1
     end function
     impure elemental function add_dualx_r(u, v) result(res)
         type(dual_x_t), intent(in) :: u
@@ -904,7 +1028,7 @@ contains
         
         res%x = u%x + v
         res%dx = u%dx
-        add_dualx_r_counter = add_dualx_r_counter + 1
+        add_d_r_counter = add_d_r_counter + 1
     end function
     impure elemental function add_r_dualx(u, v) result(res)
         real(dp), intent(in) :: u
@@ -913,7 +1037,7 @@ contains
         
         res%x = u + v%x
         res%dx = v%dx
-        add_r_dualx_counter = add_r_dualx_counter + 1
+        add_r_d_counter = add_r_d_counter + 1
     end function
     impure elemental function add_dualx_i(u, v) result(res)
         type(dual_x_t), intent(in) :: u
@@ -922,7 +1046,7 @@ contains
         
         res%x = u%x + v
         res%dx = u%dx
-        add_dualx_i_counter = add_dualx_i_counter + 1
+        add_d_i_counter = add_d_i_counter + 1
     end function
     impure elemental function add_i_dualx(u, v) result(res)
         integer, intent(in) :: u
@@ -931,7 +1055,7 @@ contains
         
         res%x = u + v%x
         res%dx = v%dx
-        add_i_dualx_counter = add_i_dualx_counter + 1
+        add_i_d_counter = add_i_d_counter + 1
     end function
     impure elemental function unary_add_dualy(u) result(res)
         type(dual_y_t), intent(in) :: u
@@ -939,7 +1063,7 @@ contains
         
         res%x = u%x
         res%dx = u%dx
-        unary_add_dualy_counter = unary_add_dualy_counter + 1
+        unary_add_d_counter = unary_add_d_counter + 1
     end function
     impure elemental function add_dualy_dualy(u, v) result(res)
         type(dual_y_t), intent(in) :: u
@@ -948,7 +1072,7 @@ contains
         
         res%x = u%x + v%x
         res%dx = u%dx + v%dx
-        add_dualy_dualy_counter = add_dualy_dualy_counter + 1
+        add_d_d_counter = add_d_d_counter + 1
     end function
     impure elemental function add_dualy_r(u, v) result(res)
         type(dual_y_t), intent(in) :: u
@@ -957,7 +1081,7 @@ contains
         
         res%x = u%x + v
         res%dx = u%dx
-        add_dualy_r_counter = add_dualy_r_counter + 1
+        add_d_r_counter = add_d_r_counter + 1
     end function
     impure elemental function add_r_dualy(u, v) result(res)
         real(dp), intent(in) :: u
@@ -966,7 +1090,7 @@ contains
         
         res%x = u + v%x
         res%dx = v%dx
-        add_r_dualy_counter = add_r_dualy_counter + 1
+        add_r_d_counter = add_r_d_counter + 1
     end function
     impure elemental function add_dualy_i(u, v) result(res)
         type(dual_y_t), intent(in) :: u
@@ -975,7 +1099,7 @@ contains
         
         res%x = u%x + v
         res%dx = u%dx
-        add_dualy_i_counter = add_dualy_i_counter + 1
+        add_d_i_counter = add_d_i_counter + 1
     end function
     impure elemental function add_i_dualy(u, v) result(res)
         integer, intent(in) :: u
@@ -984,7 +1108,7 @@ contains
         
         res%x = u + v%x
         res%dx = v%dx
-        add_i_dualy_counter = add_i_dualy_counter + 1
+        add_i_d_counter = add_i_d_counter + 1
     end function
     impure elemental function unary_add_hdualx(u) result(res)
         type(hdual_x_t), intent(in) :: u
@@ -993,7 +1117,7 @@ contains
         res%x = u%x
         res%dx = u%dx
         res%ddx = u%ddx
-        unary_add_hdualx_counter = unary_add_hdualx_counter + 1
+        unary_add_hd_counter = unary_add_hd_counter + 1
     end function
     impure elemental function add_hdualx_hdualx(u, v) result(res)
         type(hdual_x_t), intent(in) :: u
@@ -1003,7 +1127,7 @@ contains
         res%x = u%x + v%x
         res%dx = u%dx + v%dx
         res%ddx = u%ddx + v%ddx
-        add_hdualx_hdualx_counter = add_hdualx_hdualx_counter + 1
+        add_hd_hd_counter = add_hd_hd_counter + 1
     end function
     impure elemental function add_hdualx_r(u, v) result(res)
         type(hdual_x_t), intent(in) :: u
@@ -1013,7 +1137,7 @@ contains
         res%x = u%x + v
         res%dx = u%dx
         res%ddx = u%ddx
-        add_hdualx_r_counter = add_hdualx_r_counter + 1
+        add_hd_r_counter = add_hd_r_counter + 1
     end function
     impure elemental function add_r_hdualx(u, v) result(res)
         real(dp), intent(in) :: u
@@ -1023,7 +1147,7 @@ contains
         res%x = u + v%x
         res%dx = v%dx
         res%ddx = v%ddx
-        add_r_hdualx_counter = add_r_hdualx_counter + 1
+        add_r_hd_counter = add_r_hd_counter + 1
     end function
     impure elemental function add_hdualx_i(u, v) result(res)
         type(hdual_x_t), intent(in) :: u
@@ -1033,7 +1157,7 @@ contains
         res%x = u%x + v
         res%dx = u%dx
         res%ddx = u%ddx
-        add_hdualx_i_counter = add_hdualx_i_counter + 1
+        add_hd_i_counter = add_hd_i_counter + 1
     end function
     impure elemental function add_i_hdualx(u, v) result(res)
         integer, intent(in) :: u
@@ -1043,7 +1167,7 @@ contains
         res%x = u + v%x
         res%dx = v%dx
         res%ddx = v%ddx
-        add_i_hdualx_counter = add_i_hdualx_counter + 1
+        add_i_hd_counter = add_i_hd_counter + 1
     end function
     impure elemental function unary_add_hdualy(u) result(res)
         type(hdual_y_t), intent(in) :: u
@@ -1052,7 +1176,7 @@ contains
         res%x = u%x
         res%dx = u%dx
         res%ddx = u%ddx
-        unary_add_hdualy_counter = unary_add_hdualy_counter + 1
+        unary_add_hd_counter = unary_add_hd_counter + 1
     end function
     impure elemental function add_hdualy_hdualy(u, v) result(res)
         type(hdual_y_t), intent(in) :: u
@@ -1062,7 +1186,7 @@ contains
         res%x = u%x + v%x
         res%dx = u%dx + v%dx
         res%ddx = u%ddx + v%ddx
-        add_hdualy_hdualy_counter = add_hdualy_hdualy_counter + 1
+        add_hd_hd_counter = add_hd_hd_counter + 1
     end function
     impure elemental function add_hdualy_r(u, v) result(res)
         type(hdual_y_t), intent(in) :: u
@@ -1072,7 +1196,7 @@ contains
         res%x = u%x + v
         res%dx = u%dx
         res%ddx = u%ddx
-        add_hdualy_r_counter = add_hdualy_r_counter + 1
+        add_hd_r_counter = add_hd_r_counter + 1
     end function
     impure elemental function add_r_hdualy(u, v) result(res)
         real(dp), intent(in) :: u
@@ -1082,7 +1206,7 @@ contains
         res%x = u + v%x
         res%dx = v%dx
         res%ddx = v%ddx
-        add_r_hdualy_counter = add_r_hdualy_counter + 1
+        add_r_hd_counter = add_r_hd_counter + 1
     end function
     impure elemental function add_hdualy_i(u, v) result(res)
         type(hdual_y_t), intent(in) :: u
@@ -1092,7 +1216,7 @@ contains
         res%x = u%x + v
         res%dx = u%dx
         res%ddx = u%ddx
-        add_hdualy_i_counter = add_hdualy_i_counter + 1
+        add_hd_i_counter = add_hd_i_counter + 1
     end function
     impure elemental function add_i_hdualy(u, v) result(res)
         integer, intent(in) :: u
@@ -1102,7 +1226,7 @@ contains
         res%x = u + v%x
         res%dx = v%dx
         res%ddx = v%ddx
-        add_i_hdualy_counter = add_i_hdualy_counter + 1
+        add_i_hd_counter = add_i_hd_counter + 1
     end function
     impure elemental function unary_minus_dualx(u) result(res)
         type(dual_x_t), intent(in) :: u
@@ -1110,7 +1234,7 @@ contains
         
         res%x = -u%x
         res%dx = -u%dx
-        unary_minus_dualx_counter = unary_minus_dualx_counter + 1
+        unary_minus_d_counter = unary_minus_d_counter + 1
     end function
     impure elemental function minus_dualx_dualx(u, v) result(res)
         type(dual_x_t), intent(in) :: u
@@ -1119,7 +1243,7 @@ contains
         
         res%x = u%x - v%x
         res%dx = u%dx - v%dx
-        minus_dualx_dualx_counter = minus_dualx_dualx_counter + 1
+        minus_d_d_counter = minus_d_d_counter + 1
     end function
     impure elemental function minus_dualx_r(u, v) result(res)
         type(dual_x_t), intent(in) :: u
@@ -1128,7 +1252,7 @@ contains
         
         res%x = u%x - v
         res%dx = u%dx
-        minus_dualx_r_counter = minus_dualx_r_counter + 1
+        minus_d_r_counter = minus_d_r_counter + 1
     end function
     impure elemental function minus_r_dualx(u, v) result(res)
         real(dp), intent(in) :: u
@@ -1137,7 +1261,7 @@ contains
         
         res%x = u - v%x
         res%dx = -v%dx
-        minus_r_dualx_counter = minus_r_dualx_counter + 1
+        minus_r_d_counter = minus_r_d_counter + 1
     end function
     impure elemental function minus_dualx_i(u, v) result(res)
         type(dual_x_t), intent(in) :: u
@@ -1146,7 +1270,7 @@ contains
         
         res%x = u%x - v
         res%dx = u%dx
-        minus_dualx_i_counter = minus_dualx_i_counter + 1
+        minus_d_i_counter = minus_d_i_counter + 1
     end function
     impure elemental function minus_i_dualx(u, v) result(res)
         integer, intent(in) :: u
@@ -1155,7 +1279,7 @@ contains
         
         res%x = u - v%x
         res%dx = -v%dx
-        minus_i_dualx_counter = minus_i_dualx_counter + 1
+        minus_i_d_counter = minus_i_d_counter + 1
     end function
     impure elemental function unary_minus_dualy(u) result(res)
         type(dual_y_t), intent(in) :: u
@@ -1163,7 +1287,7 @@ contains
         
         res%x = -u%x
         res%dx = -u%dx
-        unary_minus_dualy_counter = unary_minus_dualy_counter + 1
+        unary_minus_d_counter = unary_minus_d_counter + 1
     end function
     impure elemental function minus_dualy_dualy(u, v) result(res)
         type(dual_y_t), intent(in) :: u
@@ -1172,7 +1296,7 @@ contains
         
         res%x = u%x - v%x
         res%dx = u%dx - v%dx
-        minus_dualy_dualy_counter = minus_dualy_dualy_counter + 1
+        minus_d_d_counter = minus_d_d_counter + 1
     end function
     impure elemental function minus_dualy_r(u, v) result(res)
         type(dual_y_t), intent(in) :: u
@@ -1181,7 +1305,7 @@ contains
         
         res%x = u%x - v
         res%dx = u%dx
-        minus_dualy_r_counter = minus_dualy_r_counter + 1
+        minus_d_r_counter = minus_d_r_counter + 1
     end function
     impure elemental function minus_r_dualy(u, v) result(res)
         real(dp), intent(in) :: u
@@ -1190,7 +1314,7 @@ contains
         
         res%x = u - v%x
         res%dx = -v%dx
-        minus_r_dualy_counter = minus_r_dualy_counter + 1
+        minus_r_d_counter = minus_r_d_counter + 1
     end function
     impure elemental function minus_dualy_i(u, v) result(res)
         type(dual_y_t), intent(in) :: u
@@ -1199,7 +1323,7 @@ contains
         
         res%x = u%x - v
         res%dx = u%dx
-        minus_dualy_i_counter = minus_dualy_i_counter + 1
+        minus_d_i_counter = minus_d_i_counter + 1
     end function
     impure elemental function minus_i_dualy(u, v) result(res)
         integer, intent(in) :: u
@@ -1208,7 +1332,7 @@ contains
         
         res%x = u - v%x
         res%dx = -v%dx
-        minus_i_dualy_counter = minus_i_dualy_counter + 1
+        minus_i_d_counter = minus_i_d_counter + 1
     end function
     impure elemental function unary_minus_hdualx(u) result(res)
         type(hdual_x_t), intent(in) :: u
@@ -1217,7 +1341,7 @@ contains
         res%x = -u%x
         res%dx = -u%dx
         res%ddx = -u%ddx
-        unary_minus_hdualx_counter = unary_minus_hdualx_counter + 1
+        unary_minus_hd_counter = unary_minus_hd_counter + 1
     end function
     impure elemental function minus_hdualx_hdualx(u, v) result(res)
         type(hdual_x_t), intent(in) :: u
@@ -1227,7 +1351,7 @@ contains
         res%x = u%x - v%x
         res%dx = u%dx - v%dx
         res%ddx = u%ddx - v%ddx
-        minus_hdualx_hdualx_counter = minus_hdualx_hdualx_counter + 1
+        minus_hd_hd_counter = minus_hd_hd_counter + 1
     end function
     impure elemental function minus_hdualx_r(u, v) result(res)
         type(hdual_x_t), intent(in) :: u
@@ -1237,7 +1361,7 @@ contains
         res%x = u%x - v
         res%dx = u%dx
         res%ddx = u%ddx
-        minus_hdualx_r_counter = minus_hdualx_r_counter + 1
+        minus_hd_r_counter = minus_hd_r_counter + 1
     end function
     impure elemental function minus_r_hdualx(u, v) result(res)
         real(dp), intent(in) :: u
@@ -1247,7 +1371,7 @@ contains
         res%x = u - v%x
         res%dx = -v%dx
         res%ddx = -v%ddx
-        minus_r_hdualx_counter = minus_r_hdualx_counter + 1
+        minus_r_hd_counter = minus_r_hd_counter + 1
     end function
     impure elemental function minus_hdualx_i(u, v) result(res)
         type(hdual_x_t), intent(in) :: u
@@ -1257,7 +1381,7 @@ contains
         res%x = u%x - v
         res%dx = u%dx
         res%ddx = u%ddx
-        minus_hdualx_i_counter = minus_hdualx_i_counter + 1
+        minus_hd_i_counter = minus_hd_i_counter + 1
     end function
     impure elemental function minus_i_hdualx(u, v) result(res)
         integer, intent(in) :: u
@@ -1267,7 +1391,7 @@ contains
         res%x = u - v%x
         res%dx = -v%dx
         res%ddx = -v%ddx
-        minus_i_hdualx_counter = minus_i_hdualx_counter + 1
+        minus_i_hd_counter = minus_i_hd_counter + 1
     end function
     impure elemental function unary_minus_hdualy(u) result(res)
         type(hdual_y_t), intent(in) :: u
@@ -1276,7 +1400,7 @@ contains
         res%x = -u%x
         res%dx = -u%dx
         res%ddx = -u%ddx
-        unary_minus_hdualy_counter = unary_minus_hdualy_counter + 1
+        unary_minus_hd_counter = unary_minus_hd_counter + 1
     end function
     impure elemental function minus_hdualy_hdualy(u, v) result(res)
         type(hdual_y_t), intent(in) :: u
@@ -1286,7 +1410,7 @@ contains
         res%x = u%x - v%x
         res%dx = u%dx - v%dx
         res%ddx = u%ddx - v%ddx
-        minus_hdualy_hdualy_counter = minus_hdualy_hdualy_counter + 1
+        minus_hd_hd_counter = minus_hd_hd_counter + 1
     end function
     impure elemental function minus_hdualy_r(u, v) result(res)
         type(hdual_y_t), intent(in) :: u
@@ -1296,7 +1420,7 @@ contains
         res%x = u%x - v
         res%dx = u%dx
         res%ddx = u%ddx
-        minus_hdualy_r_counter = minus_hdualy_r_counter + 1
+        minus_hd_r_counter = minus_hd_r_counter + 1
     end function
     impure elemental function minus_r_hdualy(u, v) result(res)
         real(dp), intent(in) :: u
@@ -1306,7 +1430,7 @@ contains
         res%x = u - v%x
         res%dx = -v%dx
         res%ddx = -v%ddx
-        minus_r_hdualy_counter = minus_r_hdualy_counter + 1
+        minus_r_hd_counter = minus_r_hd_counter + 1
     end function
     impure elemental function minus_hdualy_i(u, v) result(res)
         type(hdual_y_t), intent(in) :: u
@@ -1316,7 +1440,7 @@ contains
         res%x = u%x - v
         res%dx = u%dx
         res%ddx = u%ddx
-        minus_hdualy_i_counter = minus_hdualy_i_counter + 1
+        minus_hd_i_counter = minus_hd_i_counter + 1
     end function
     impure elemental function minus_i_hdualy(u, v) result(res)
         integer, intent(in) :: u
@@ -1326,7 +1450,7 @@ contains
         res%x = u - v%x
         res%dx = -v%dx
         res%ddx = -v%ddx
-        minus_i_hdualy_counter = minus_i_hdualy_counter + 1
+        minus_i_hd_counter = minus_i_hd_counter + 1
     end function
     impure elemental function mult_dualx_dualx(u, v) result(res)
         type(dual_x_t), intent(in) :: u
@@ -1335,7 +1459,7 @@ contains
         
         res%x = u%x*v%x
         res%dx = u%dx*v%x + u%x*v%dx
-        mult_dualx_dualx_counter = mult_dualx_dualx_counter + 1
+        mult_d_d_counter = mult_d_d_counter + 1
     end function
     impure elemental function mult_dualx_r(u, v) result(res)
         type(dual_x_t), intent(in) :: u
@@ -1344,7 +1468,7 @@ contains
         
         res%x = u%x*v
         res%dx = u%dx*v
-        mult_dualx_r_counter = mult_dualx_r_counter + 1
+        mult_d_r_counter = mult_d_r_counter + 1
     end function
     impure elemental function mult_r_dualx(u, v) result(res)
         real(dp), intent(in) :: u
@@ -1353,7 +1477,7 @@ contains
         
         res%x = u*v%x
         res%dx = u*v%dx
-        mult_r_dualx_counter = mult_r_dualx_counter + 1
+        mult_r_d_counter = mult_r_d_counter + 1
     end function
     impure elemental function mult_dualx_i(u, v) result(res)
         type(dual_x_t), intent(in) :: u
@@ -1362,7 +1486,7 @@ contains
         
         res%x = u%x*v
         res%dx = u%dx*v
-        mult_dualx_i_counter = mult_dualx_i_counter + 1
+        mult_d_i_counter = mult_d_i_counter + 1
     end function
     impure elemental function mult_i_dualx(u, v) result(res)
         integer, intent(in) :: u
@@ -1371,7 +1495,7 @@ contains
         
         res%x = u*v%x
         res%dx = u*v%dx
-        mult_i_dualx_counter = mult_i_dualx_counter + 1
+        mult_i_d_counter = mult_i_d_counter + 1
     end function
     impure elemental function mult_dualy_dualy(u, v) result(res)
         type(dual_y_t), intent(in) :: u
@@ -1380,7 +1504,7 @@ contains
         
         res%x = u%x*v%x
         res%dx = u%dx*v%x + u%x*v%dx
-        mult_dualy_dualy_counter = mult_dualy_dualy_counter + 1
+        mult_d_d_counter = mult_d_d_counter + 1
     end function
     impure elemental function mult_dualy_r(u, v) result(res)
         type(dual_y_t), intent(in) :: u
@@ -1389,7 +1513,7 @@ contains
         
         res%x = u%x*v
         res%dx = u%dx*v
-        mult_dualy_r_counter = mult_dualy_r_counter + 1
+        mult_d_r_counter = mult_d_r_counter + 1
     end function
     impure elemental function mult_r_dualy(u, v) result(res)
         real(dp), intent(in) :: u
@@ -1398,7 +1522,7 @@ contains
         
         res%x = u*v%x
         res%dx = u*v%dx
-        mult_r_dualy_counter = mult_r_dualy_counter + 1
+        mult_r_d_counter = mult_r_d_counter + 1
     end function
     impure elemental function mult_dualy_i(u, v) result(res)
         type(dual_y_t), intent(in) :: u
@@ -1407,7 +1531,7 @@ contains
         
         res%x = u%x*v
         res%dx = u%dx*v
-        mult_dualy_i_counter = mult_dualy_i_counter + 1
+        mult_d_i_counter = mult_d_i_counter + 1
     end function
     impure elemental function mult_i_dualy(u, v) result(res)
         integer, intent(in) :: u
@@ -1416,7 +1540,7 @@ contains
         
         res%x = u*v%x
         res%dx = u*v%dx
-        mult_i_dualy_counter = mult_i_dualy_counter + 1
+        mult_i_d_counter = mult_i_d_counter + 1
     end function
     impure elemental function mult_hdualx_hdualx(u, v) result(res)
         type(hdual_x_t), intent(in) :: u
@@ -1433,7 +1557,7 @@ contains
                 res%ddx(k) = u%ddx(k)*v%x + u%dx(i)*v%dx(j) + u%dx(j)*v%dx(i) + u%x*v%ddx(k)
             end do
         end do
-        mult_hdualx_hdualx_counter = mult_hdualx_hdualx_counter + 1
+        mult_hd_hd_counter = mult_hd_hd_counter + 1
     end function
     impure elemental function mult_hdualx_r(u, v) result(res)
         type(hdual_x_t), intent(in) :: u
@@ -1443,7 +1567,7 @@ contains
         res%x = u%x*v
         res%dx = u%dx*v
         res%ddx = u%ddx*v
-        mult_hdualx_r_counter = mult_hdualx_r_counter + 1
+        mult_hd_r_counter = mult_hd_r_counter + 1
     end function
     impure elemental function mult_r_hdualx(u, v) result(res)
         real(dp), intent(in) :: u
@@ -1453,7 +1577,7 @@ contains
         res%x = u*v%x
         res%dx = u*v%dx
         res%ddx = u*v%ddx
-        mult_r_hdualx_counter = mult_r_hdualx_counter + 1
+        mult_r_hd_counter = mult_r_hd_counter + 1
     end function
     impure elemental function mult_hdualx_i(u, v) result(res)
         type(hdual_x_t), intent(in) :: u
@@ -1463,7 +1587,7 @@ contains
         res%x = u%x*v
         res%dx = u%dx*v
         res%ddx = u%ddx*v
-        mult_hdualx_i_counter = mult_hdualx_i_counter + 1
+        mult_hd_i_counter = mult_hd_i_counter + 1
     end function
     impure elemental function mult_i_hdualx(u, v) result(res)
         integer, intent(in) :: u
@@ -1473,7 +1597,7 @@ contains
         res%x = u*v%x
         res%dx = u*v%dx
         res%ddx = u*v%ddx
-        mult_i_hdualx_counter = mult_i_hdualx_counter + 1
+        mult_i_hd_counter = mult_i_hd_counter + 1
     end function
     impure elemental function mult_hdualy_hdualy(u, v) result(res)
         type(hdual_y_t), intent(in) :: u
@@ -1490,7 +1614,7 @@ contains
                 res%ddx(k) = u%ddx(k)*v%x + u%dx(i)*v%dx(j) + u%dx(j)*v%dx(i) + u%x*v%ddx(k)
             end do
         end do
-        mult_hdualy_hdualy_counter = mult_hdualy_hdualy_counter + 1
+        mult_hd_hd_counter = mult_hd_hd_counter + 1
     end function
     impure elemental function mult_hdualy_r(u, v) result(res)
         type(hdual_y_t), intent(in) :: u
@@ -1500,7 +1624,7 @@ contains
         res%x = u%x*v
         res%dx = u%dx*v
         res%ddx = u%ddx*v
-        mult_hdualy_r_counter = mult_hdualy_r_counter + 1
+        mult_hd_r_counter = mult_hd_r_counter + 1
     end function
     impure elemental function mult_r_hdualy(u, v) result(res)
         real(dp), intent(in) :: u
@@ -1510,7 +1634,7 @@ contains
         res%x = u*v%x
         res%dx = u*v%dx
         res%ddx = u*v%ddx
-        mult_r_hdualy_counter = mult_r_hdualy_counter + 1
+        mult_r_hd_counter = mult_r_hd_counter + 1
     end function
     impure elemental function mult_hdualy_i(u, v) result(res)
         type(hdual_y_t), intent(in) :: u
@@ -1520,7 +1644,7 @@ contains
         res%x = u%x*v
         res%dx = u%dx*v
         res%ddx = u%ddx*v
-        mult_hdualy_i_counter = mult_hdualy_i_counter + 1
+        mult_hd_i_counter = mult_hd_i_counter + 1
     end function
     impure elemental function mult_i_hdualy(u, v) result(res)
         integer, intent(in) :: u
@@ -1530,7 +1654,7 @@ contains
         res%x = u*v%x
         res%dx = u*v%dx
         res%ddx = u*v%ddx
-        mult_i_hdualy_counter = mult_i_hdualy_counter + 1
+        mult_i_hd_counter = mult_i_hd_counter + 1
     end function
     impure elemental function div_dualx_dualx(u, v) result(res)
         type(dual_x_t), intent(in) :: u
@@ -1542,7 +1666,7 @@ contains
         t1 = t0*u%x
         res%x = t1
         res%dx = t0*(-t1*v%dx + u%dx)
-        div_dualx_dualx_counter = div_dualx_dualx_counter + 1
+        div_d_d_counter = div_d_d_counter + 1
     end function
     impure elemental function div_dualx_r(u, v) result(res)
         type(dual_x_t), intent(in) :: u
@@ -1553,7 +1677,7 @@ contains
         t0 = 1.0_dp/v
         res%x = t0*u%x
         res%dx = t0*u%dx
-        div_dualx_r_counter = div_dualx_r_counter + 1
+        div_d_r_counter = div_d_r_counter + 1
     end function
     impure elemental function div_r_dualx(u, v) result(res)
         real(dp), intent(in) :: u
@@ -1562,7 +1686,7 @@ contains
         
         res%x = u/v%x
         res%dx = -u*v%dx/v%x**2
-        div_r_dualx_counter = div_r_dualx_counter + 1
+        div_r_d_counter = div_r_d_counter + 1
     end function
     impure elemental function div_dualx_i(u, v) result(res)
         type(dual_x_t), intent(in) :: u
@@ -1573,7 +1697,7 @@ contains
         t0 = 1.0_dp/v
         res%x = t0*u%x
         res%dx = t0*u%dx
-        div_dualx_i_counter = div_dualx_i_counter + 1
+        div_d_i_counter = div_d_i_counter + 1
     end function
     impure elemental function div_i_dualx(u, v) result(res)
         integer, intent(in) :: u
@@ -1582,7 +1706,7 @@ contains
         
         res%x = u/v%x
         res%dx = -u*v%dx/v%x**2
-        div_i_dualx_counter = div_i_dualx_counter + 1
+        div_i_d_counter = div_i_d_counter + 1
     end function
     impure elemental function div_dualy_dualy(u, v) result(res)
         type(dual_y_t), intent(in) :: u
@@ -1594,7 +1718,7 @@ contains
         t1 = t0*u%x
         res%x = t1
         res%dx = t0*(-t1*v%dx + u%dx)
-        div_dualy_dualy_counter = div_dualy_dualy_counter + 1
+        div_d_d_counter = div_d_d_counter + 1
     end function
     impure elemental function div_dualy_r(u, v) result(res)
         type(dual_y_t), intent(in) :: u
@@ -1605,7 +1729,7 @@ contains
         t0 = 1.0_dp/v
         res%x = t0*u%x
         res%dx = t0*u%dx
-        div_dualy_r_counter = div_dualy_r_counter + 1
+        div_d_r_counter = div_d_r_counter + 1
     end function
     impure elemental function div_r_dualy(u, v) result(res)
         real(dp), intent(in) :: u
@@ -1614,7 +1738,7 @@ contains
         
         res%x = u/v%x
         res%dx = -u*v%dx/v%x**2
-        div_r_dualy_counter = div_r_dualy_counter + 1
+        div_r_d_counter = div_r_d_counter + 1
     end function
     impure elemental function div_dualy_i(u, v) result(res)
         type(dual_y_t), intent(in) :: u
@@ -1625,7 +1749,7 @@ contains
         t0 = 1.0_dp/v
         res%x = t0*u%x
         res%dx = t0*u%dx
-        div_dualy_i_counter = div_dualy_i_counter + 1
+        div_d_i_counter = div_d_i_counter + 1
     end function
     impure elemental function div_i_dualy(u, v) result(res)
         integer, intent(in) :: u
@@ -1634,7 +1758,7 @@ contains
         
         res%x = u/v%x
         res%dx = -u*v%dx/v%x**2
-        div_i_dualy_counter = div_i_dualy_counter + 1
+        div_i_d_counter = div_i_d_counter + 1
     end function
     impure elemental function div_hdualx_hdualx(u, v) result(res)
         type(hdual_x_t), intent(in) :: u
@@ -1655,7 +1779,7 @@ contains
       v%ddx(k) + u%ddx(k))
             end do
         end do
-        div_hdualx_hdualx_counter = div_hdualx_hdualx_counter + 1
+        div_hd_hd_counter = div_hd_hd_counter + 1
     end function
     impure elemental function div_hdualx_r(u, v) result(res)
         type(hdual_x_t), intent(in) :: u
@@ -1667,7 +1791,7 @@ contains
         res%x = t0*u%x
         res%dx = t0*u%dx
         res%ddx = t0*u%ddx
-        div_hdualx_r_counter = div_hdualx_r_counter + 1
+        div_hd_r_counter = div_hd_r_counter + 1
     end function
     impure elemental function div_r_hdualx(u, v) result(res)
         real(dp), intent(in) :: u
@@ -1687,7 +1811,7 @@ contains
                 res%ddx(k) = t1*(2*t0*v%dx(i)*v%dx(j) - v%ddx(k))
             end do
         end do
-        div_r_hdualx_counter = div_r_hdualx_counter + 1
+        div_r_hd_counter = div_r_hd_counter + 1
     end function
     impure elemental function div_hdualx_i(u, v) result(res)
         type(hdual_x_t), intent(in) :: u
@@ -1699,7 +1823,7 @@ contains
         res%x = t0*u%x
         res%dx = t0*u%dx
         res%ddx = t0*u%ddx
-        div_hdualx_i_counter = div_hdualx_i_counter + 1
+        div_hd_i_counter = div_hd_i_counter + 1
     end function
     impure elemental function div_i_hdualx(u, v) result(res)
         integer, intent(in) :: u
@@ -1719,7 +1843,7 @@ contains
                 res%ddx(k) = t1*(2*t0*v%dx(i)*v%dx(j) - v%ddx(k))
             end do
         end do
-        div_i_hdualx_counter = div_i_hdualx_counter + 1
+        div_i_hd_counter = div_i_hd_counter + 1
     end function
     impure elemental function div_hdualy_hdualy(u, v) result(res)
         type(hdual_y_t), intent(in) :: u
@@ -1740,7 +1864,7 @@ contains
       v%ddx(k) + u%ddx(k))
             end do
         end do
-        div_hdualy_hdualy_counter = div_hdualy_hdualy_counter + 1
+        div_hd_hd_counter = div_hd_hd_counter + 1
     end function
     impure elemental function div_hdualy_r(u, v) result(res)
         type(hdual_y_t), intent(in) :: u
@@ -1752,7 +1876,7 @@ contains
         res%x = t0*u%x
         res%dx = t0*u%dx
         res%ddx = t0*u%ddx
-        div_hdualy_r_counter = div_hdualy_r_counter + 1
+        div_hd_r_counter = div_hd_r_counter + 1
     end function
     impure elemental function div_r_hdualy(u, v) result(res)
         real(dp), intent(in) :: u
@@ -1772,7 +1896,7 @@ contains
                 res%ddx(k) = t1*(2*t0*v%dx(i)*v%dx(j) - v%ddx(k))
             end do
         end do
-        div_r_hdualy_counter = div_r_hdualy_counter + 1
+        div_r_hd_counter = div_r_hd_counter + 1
     end function
     impure elemental function div_hdualy_i(u, v) result(res)
         type(hdual_y_t), intent(in) :: u
@@ -1784,7 +1908,7 @@ contains
         res%x = t0*u%x
         res%dx = t0*u%dx
         res%ddx = t0*u%ddx
-        div_hdualy_i_counter = div_hdualy_i_counter + 1
+        div_hd_i_counter = div_hd_i_counter + 1
     end function
     impure elemental function div_i_hdualy(u, v) result(res)
         integer, intent(in) :: u
@@ -1804,7 +1928,7 @@ contains
                 res%ddx(k) = t1*(2*t0*v%dx(i)*v%dx(j) - v%ddx(k))
             end do
         end do
-        div_i_hdualy_counter = div_i_hdualy_counter + 1
+        div_i_hd_counter = div_i_hd_counter + 1
     end function
     impure elemental function pow_dualx_i(u, v) result(res)
         type(dual_x_t), intent(in) :: u
@@ -3092,7 +3216,7 @@ contains
         
         res%x = log(u%x)
         res%dx = u%dx/u%x
-        log_dualx_counter = log_dualx_counter + 1
+        log_d_counter = log_d_counter + 1
     end function
     impure elemental function log_dualy(u) result(res)
         type(dual_y_t), intent(in) :: u
@@ -3100,7 +3224,7 @@ contains
         
         res%x = log(u%x)
         res%dx = u%dx/u%x
-        log_dualy_counter = log_dualy_counter + 1
+        log_d_counter = log_d_counter + 1
     end function
     impure elemental function log_hdualx(u) result(res)
         type(hdual_x_t), intent(in) :: u
@@ -3118,7 +3242,7 @@ contains
                 res%ddx(k) = t0*(-t0*u%dx(i)*u%dx(j) + u%ddx(k))
             end do
         end do
-        log_hdualx_counter = log_hdualx_counter + 1
+        log_hd_counter = log_hd_counter + 1
     end function
     impure elemental function log_hdualy(u) result(res)
         type(hdual_y_t), intent(in) :: u
@@ -3136,7 +3260,7 @@ contains
                 res%ddx(k) = t0*(-t0*u%dx(i)*u%dx(j) + u%ddx(k))
             end do
         end do
-        log_hdualy_counter = log_hdualy_counter + 1
+        log_hd_counter = log_hd_counter + 1
     end function
     impure elemental  function log10_dualx(u) result(res)
         type(dual_x_t), intent(in) :: u

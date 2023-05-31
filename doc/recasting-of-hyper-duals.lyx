@@ -145,7 +145,7 @@ Gradient:
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\pdfrac{\hat{f}}{x_{i}}=\sum_{k}\pdfrac{\bar{f}}{y_{k}}\pdfrac{y_{k}}{x_{i}}
+\pdfrac{\hat{f}}{x_{i}}=\sum_{p}\pdfrac{\bar{f}}{y_{p}}\pdfrac{y_{p}}{x_{i}}
 \end{equation}
 
 \end_inset
@@ -157,7 +157,7 @@ Gradient:
 Hessian:
 \begin_inset Formula 
 \begin{align}
-\pdfracd{\hat{f}}{x_{i}}{x_{j}} & =\pdfracop{x_{j}}\sum_{k}\pdfrac{\bar{f}}{y_{k}}\pdfrac{y_{k}}{x_{i}}
+\pdfracd{\hat{f}}{x_{i}}{x_{j}} & =\pdfracop{x_{j}}\sum_{p}\pdfrac{\bar{f}}{y_{p}}\pdfrac{y_{p}}{x_{i}}
 \end{align}
 
 \end_inset
@@ -169,7 +169,7 @@ Hessian:
 Define
 \begin_inset Formula 
 \begin{equation}
-\bar{g}_{k}\left(\mathbf{y}\right)=\pdfrac{\bar{f}}{y_{k}}
+\bar{g}_{p}\left(\mathbf{y}\right)=\pdfrac{\bar{f}}{y_{p}}
 \end{equation}
 
 \end_inset
@@ -177,7 +177,7 @@ Define
 
 \begin_inset Formula 
 \begin{equation}
-\pdfrac{\bar{g}}{y_{p}}=\pdfracd{\bar{f}}{y_{k}}{y_{p}}
+\pdfrac{\bar{g}}{y_{q}}=\pdfracd{\bar{f}}{y_{p}}{y_{q}}
 \end{equation}
 
 \end_inset
@@ -228,10 +228,10 @@ The function
 
 \begin_inset Formula 
 \begin{align}
-\pdfracd{\hat{f}}{x_{i}}{x_{j}} & =\pdfracop{x_{j}}\sum_{k}\hat{g}_{k}\pdfrac{y_{k}}{x_{i}}\\
- & =\sum_{k}\pdfrac{\hat{g}_{k}}{x_{j}}\pdfrac{y_{k}}{x_{i}}+\hat{g}_{k}\pdfracd{y_{k}}{x_{i}}{x_{j}}\\
- & =\sum_{k}\sum_{p}\pdfrac{\bar{g}_{k}}{y_{p}}\pdfrac{y_{p}}{x_{j}}\pdfrac{y_{k}}{x_{i}}+\hat{g}_{k}\pdfracd{y_{k}}{x_{i}}{x_{j}}\\
- & =\sum_{k}\sum_{p}\pdfracd{\bar{f}}{y_{k}}{y_{p}}\pdfrac{y_{p}}{x_{j}}\pdfrac{y_{k}}{x_{i}}+\pdfrac{\bar{f}}{y_{k}}\pdfracd{y_{k}}{x_{i}}{x_{j}}
+\pdfracd{\hat{f}}{x_{i}}{x_{j}} & =\pdfracop{x_{j}}\sum_{p}\hat{g}_{p}\pdfrac{y_{p}}{x_{i}}\\
+ & =\sum_{p}\pdfrac{\hat{g}_{p}}{x_{j}}\pdfrac{y_{p}}{x_{i}}+\hat{g}_{p}\pdfracd{y_{p}}{x_{i}}{x_{j}}\\
+ & =\sum_{p}\sum_{q}\pdfrac{\bar{g}_{p}}{y_{q}}\pdfrac{y_{q}}{x_{j}}\pdfrac{y_{p}}{x_{i}}+\hat{g}_{p}\pdfracd{y_{p}}{x_{i}}{x_{j}}\\
+ & =\sum_{p}\sum_{q}\pdfracd{\bar{f}}{y_{p}}{y_{q}}\pdfrac{y_{q}}{x_{j}}\pdfrac{y_{p}}{x_{i}}+\pdfrac{\bar{f}}{y_{p}}\pdfracd{y_{p}}{x_{i}}{x_{j}}
 \end{align}
 
 \end_inset

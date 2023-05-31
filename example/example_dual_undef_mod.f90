@@ -19,7 +19,8 @@ module example_dual_undef_mod
 
 
     interface initialize ! Initialize a dual or hyper dual number
-        module procedure initialize_d
+        module procedure initialize_d_scalar
+        module procedure initialize_d_vector
     end interface
   
     interface assignment (=)
@@ -68,7 +69,8 @@ contains
         f = acos(u)
     end function
 
-    pure subroutine initialize_d(dual, val, idiff)
+    pure subroutine initialize_d_scalar(dual, val, idiff)
+        !! Initialize a single dual number, whose derivative with respect to design variable 'idiff' is 1
         type(dual_uvw_t), intent(out) :: dual
         real(dp), intent(in) :: val
         integer, intent(in) :: idiff
@@ -76,6 +78,21 @@ contains
         dual%x = val
         dual%dx = 0
         dual%dx(idiff) = 1
+
+    end subroutine
+    pure subroutine initialize_d_vector(dual, val)
+        !! Initialize a vector of dual numbers, where the derivative of 
+        !! number i with respect to design variable i is 1
+        type(dual_uvw_t), intent(out) :: dual(:)
+        real(dp), intent(in) :: val(:)
+
+        integer :: i
+
+        do i = 1, size(dual)
+            dual(i)%x = val(i)
+            dual(i)%dx = 0
+            dual(i)%dx(i) = 1
+        end do
 
     end subroutine
     elemental subroutine assign_d_i(u, i)

@@ -16,7 +16,7 @@
         res%x = t1
         res%dx = t0*(-t1*v%dx + u%dx)
       #:if test_coverage
-        div_${dual_sn}$_${dual_sn}$_counter = div_${dual_sn}$_${dual_sn}$_counter + 1
+        div_d_d_counter = div_d_d_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function div_${dual_sn}$_r(u, v) result(res)
@@ -29,7 +29,7 @@
         res%x = t0*u%x
         res%dx = t0*u%dx
       #:if test_coverage
-        div_${dual_sn}$_r_counter = div_${dual_sn}$_r_counter + 1
+        div_d_r_counter = div_d_r_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function div_r_${dual_sn}$(u, v) result(res)
@@ -40,7 +40,7 @@
         res%x = u/v%x
         res%dx = -u*v%dx/v%x**2
       #:if test_coverage
-        div_r_${dual_sn}$_counter = div_r_${dual_sn}$_counter + 1
+        div_r_d_counter = div_r_d_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function div_${dual_sn}$_i(u, v) result(res)
@@ -53,7 +53,7 @@
         res%x = t0*u%x
         res%dx = t0*u%dx
       #:if test_coverage
-        div_${dual_sn}$_i_counter = div_${dual_sn}$_i_counter + 1
+        div_d_i_counter = div_d_i_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function div_i_${dual_sn}$(u, v) result(res)
@@ -64,7 +64,7 @@
         res%x = u/v%x
         res%dx = -u*v%dx/v%x**2
       #:if test_coverage
-        div_i_${dual_sn}$_counter = div_i_${dual_sn}$_counter + 1
+        div_i_d_counter = div_i_d_counter + 1
       #:endif
     end function
 #:enddef
@@ -95,7 +95,7 @@
             end do
         end do
       #:if test_coverage
-        div_${dual_sn}$_${dual_sn}$_counter = div_${dual_sn}$_${dual_sn}$_counter + 1
+        div_hd_hd_counter = div_hd_hd_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function div_${dual_sn}$_r(u, v) result(res)
@@ -109,7 +109,7 @@
         res%dx = t0*u%dx
         res%ddx = t0*u%ddx
       #:if test_coverage
-        div_${dual_sn}$_r_counter = div_${dual_sn}$_r_counter + 1
+        div_hd_r_counter = div_hd_r_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function div_r_${dual_sn}$(u, v) result(res)
@@ -131,7 +131,7 @@
             end do
         end do
       #:if test_coverage
-        div_r_${dual_sn}$_counter = div_r_${dual_sn}$_counter + 1
+        div_r_hd_counter = div_r_hd_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function div_${dual_sn}$_i(u, v) result(res)
@@ -145,7 +145,7 @@
         res%dx = t0*u%dx
         res%ddx = t0*u%ddx
       #:if test_coverage
-        div_${dual_sn}$_i_counter = div_${dual_sn}$_i_counter + 1
+        div_hd_i_counter = div_hd_i_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function div_i_${dual_sn}$(u, v) result(res)
@@ -167,7 +167,7 @@
             end do
         end do
       #:if test_coverage
-        div_i_${dual_sn}$_counter = div_i_${dual_sn}$_counter + 1
+        div_i_hd_counter = div_i_hd_counter + 1
       #:endif
     end function
 #:enddef

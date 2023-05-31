@@ -146,8 +146,10 @@ module test_hdual2_mod
     end interface
 
     interface initialize ! Initialize a dual or hyper dual number
-        module procedure initialize_d
-        module procedure initialize_hd
+        module procedure initialize_d_scalar
+        module procedure initialize_d_vector
+        module procedure initialize_hd_scalar
+        module procedure initialize_hd_vector
     end interface
   
     interface assignment (=)
@@ -667,7 +669,8 @@ contains
         ddf(3, 3) = 2*r2**2 - 8*u/(2*w + 1)**3
     end subroutine
 
-    pure subroutine initialize_d(dual, val, idiff)
+    pure subroutine initialize_d_scalar(dual, val, idiff)
+        !! Initialize a single dual number, whose derivative with respect to design variable 'idiff' is 1
         type(dual_uvw_t), intent(out) :: dual
         real(dp), intent(in) :: val
         integer, intent(in) :: idiff
@@ -677,7 +680,23 @@ contains
         dual%dx(idiff) = 1
 
     end subroutine
-    pure subroutine initialize_hd(hdual, val, idiff)
+    pure subroutine initialize_d_vector(dual, val)
+        !! Initialize a vector of dual numbers, where the derivative of 
+        !! number i with respect to design variable i is 1
+        type(dual_uvw_t), intent(out) :: dual(:)
+        real(dp), intent(in) :: val(:)
+
+        integer :: i
+
+        do i = 1, size(dual)
+            dual(i)%x = val(i)
+            dual(i)%dx = 0
+            dual(i)%dx(i) = 1
+        end do
+
+    end subroutine
+    pure subroutine initialize_hd_scalar(hdual, val, idiff)
+        !! Initialize a single hyper-dual number, whose derivative with respect to design variable 'idiff' is 1
         type(hdual_uvw_t), intent(out) :: hdual
         real(dp), intent(in) :: val
         integer, intent(in) :: idiff
@@ -686,6 +705,22 @@ contains
         hdual%dx = 0
         hdual%ddx = 0
         hdual%dx(idiff) = 1
+
+    end subroutine
+    pure subroutine initialize_hd_vector(hdual, val)
+        !! Initialize a vector of hyper-dual numbers, where the derivative of 
+        !! number i with respect to design variable i is 1
+        type(hdual_uvw_t), intent(out) :: hdual(:)
+        real(dp), intent(in) :: val(:)
+
+        integer :: i
+        
+        do i = 1, size(hdual)
+            hdual(i)%x = val(i)
+            hdual(i)%dx = 0
+            hdual(i)%ddx = 0
+            hdual(i)%dx(i) = 1
+        end do
 
     end subroutine
     pure function hessian_hd(d) result(m)

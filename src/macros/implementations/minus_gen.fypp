@@ -12,7 +12,7 @@
         res%x = -u%x
         res%dx = -u%dx
       #:if test_coverage
-        unary_minus_${dual_sn}$_counter = unary_minus_${dual_sn}$_counter + 1
+        unary_minus_d_counter = unary_minus_d_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function minus_${dual_sn}$_${dual_sn}$(u, v) result(res)
@@ -23,7 +23,7 @@
         res%x = u%x - v%x
         res%dx = u%dx - v%dx
       #:if test_coverage
-        minus_${dual_sn}$_${dual_sn}$_counter = minus_${dual_sn}$_${dual_sn}$_counter + 1
+        minus_d_d_counter = minus_d_d_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function minus_${dual_sn}$_r(u, v) result(res)
@@ -34,7 +34,7 @@
         res%x = u%x - v
         res%dx = u%dx
       #:if test_coverage
-        minus_${dual_sn}$_r_counter = minus_${dual_sn}$_r_counter + 1
+        minus_d_r_counter = minus_d_r_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function minus_r_${dual_sn}$(u, v) result(res)
@@ -45,7 +45,7 @@
         res%x = u - v%x
         res%dx = -v%dx
       #:if test_coverage
-        minus_r_${dual_sn}$_counter = minus_r_${dual_sn}$_counter + 1
+        minus_r_d_counter = minus_r_d_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function minus_${dual_sn}$_i(u, v) result(res)
@@ -56,7 +56,7 @@
         res%x = u%x - v
         res%dx = u%dx
       #:if test_coverage
-        minus_${dual_sn}$_i_counter = minus_${dual_sn}$_i_counter + 1
+        minus_d_i_counter = minus_d_i_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function minus_i_${dual_sn}$(u, v) result(res)
@@ -67,7 +67,7 @@
         res%x = u - v%x
         res%dx = -v%dx
       #:if test_coverage
-        minus_i_${dual_sn}$_counter = minus_i_${dual_sn}$_counter + 1
+        minus_i_d_counter = minus_i_d_counter + 1
       #:endif
     end function
 #:enddef
@@ -86,7 +86,7 @@
         res%dx = -u%dx
         res%ddx = -u%ddx
       #:if test_coverage
-        unary_minus_${dual_sn}$_counter = unary_minus_${dual_sn}$_counter + 1
+        unary_minus_hd_counter = unary_minus_hd_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function minus_${dual_sn}$_${dual_sn}$(u, v) result(res)
@@ -98,7 +98,7 @@
         res%dx = u%dx - v%dx
         res%ddx = u%ddx - v%ddx
       #:if test_coverage
-        minus_${dual_sn}$_${dual_sn}$_counter = minus_${dual_sn}$_${dual_sn}$_counter + 1
+        minus_hd_hd_counter = minus_hd_hd_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function minus_${dual_sn}$_r(u, v) result(res)
@@ -110,7 +110,7 @@
         res%dx = u%dx
         res%ddx = u%ddx
       #:if test_coverage
-        minus_${dual_sn}$_r_counter = minus_${dual_sn}$_r_counter + 1
+        minus_hd_r_counter = minus_hd_r_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function minus_r_${dual_sn}$(u, v) result(res)
@@ -122,7 +122,7 @@
         res%dx = -v%dx
         res%ddx = -v%ddx
       #:if test_coverage
-        minus_r_${dual_sn}$_counter = minus_r_${dual_sn}$_counter + 1
+        minus_r_hd_counter = minus_r_hd_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function minus_${dual_sn}$_i(u, v) result(res)
@@ -134,7 +134,7 @@
         res%dx = u%dx
         res%ddx = u%ddx
       #:if test_coverage
-        minus_${dual_sn}$_i_counter = minus_${dual_sn}$_i_counter + 1
+        minus_hd_i_counter = minus_hd_i_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function minus_i_${dual_sn}$(u, v) result(res)
@@ -146,7 +146,7 @@
         res%dx = -v%dx
         res%ddx = -v%ddx
       #:if test_coverage
-        minus_i_${dual_sn}$_counter = minus_i_${dual_sn}$_counter + 1
+        minus_i_hd_counter = minus_i_hd_counter + 1
       #:endif
     end function
 #:enddef

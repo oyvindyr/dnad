@@ -1,5 +1,6 @@
 #:def initialize_d(dual_type, dual_sn, real_kind)
-    pure subroutine initialize_${dual_sn}$(dual, val, idiff)
+    pure subroutine initialize_${dual_sn}$_scalar(dual, val, idiff)
+        !! Initialize a single dual number, whose derivative with respect to design variable 'idiff' is 1
         type(${dual_type}$), intent(out) :: dual
         real(${real_kind}$), intent(in) :: val
         integer, intent(in) :: idiff
@@ -9,10 +10,26 @@
         dual%dx(idiff) = 1
 
     end subroutine
+    pure subroutine initialize_${dual_sn}$_vector(dual, val)
+        !! Initialize a vector of dual numbers, where the derivative of 
+        !! number i with respect to design variable i is 1
+        type(${dual_type}$), intent(out) :: dual(:)
+        real(${real_kind}$), intent(in) :: val(:)
+
+        integer :: i
+
+        do i = 1, size(dual)
+            dual(i)%x = val(i)
+            dual(i)%dx = 0
+            dual(i)%dx(i) = 1
+        end do
+
+    end subroutine
 #:enddef
 
 #:def initialize_hd(dual_type, dual_sn, real_kind)
-    pure subroutine initialize_${dual_sn}$(hdual, val, idiff)
+    pure subroutine initialize_${dual_sn}$_scalar(hdual, val, idiff)
+        !! Initialize a single hyper-dual number, whose derivative with respect to design variable 'idiff' is 1
         type(${dual_type}$), intent(out) :: hdual
         real(${real_kind}$), intent(in) :: val
         integer, intent(in) :: idiff
@@ -21,6 +38,22 @@
         hdual%dx = 0
         hdual%ddx = 0
         hdual%dx(idiff) = 1
+
+    end subroutine
+    pure subroutine initialize_${dual_sn}$_vector(hdual, val)
+        !! Initialize a vector of hyper-dual numbers, where the derivative of 
+        !! number i with respect to design variable i is 1
+        type(${dual_type}$), intent(out) :: hdual(:)
+        real(${real_kind}$), intent(in) :: val(:)
+
+        integer :: i
+        
+        do i = 1, size(hdual)
+            hdual(i)%x = val(i)
+            hdual(i)%dx = 0
+            hdual(i)%ddx = 0
+            hdual(i)%dx(i) = 1
+        end do
 
     end subroutine
 #:enddef

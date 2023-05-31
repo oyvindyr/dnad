@@ -12,7 +12,7 @@
         res%x = log(u%x)
         res%dx = u%dx/u%x
       #:if test_coverage
-        log_${dual_sn}$_counter = log_${dual_sn}$_counter + 1
+        log_d_counter = log_d_counter + 1
       #:endif
     end function
 #:enddef
@@ -40,7 +40,7 @@
             end do
         end do
       #:if test_coverage
-        log_${dual_sn}$_counter = log_${dual_sn}$_counter + 1
+        log_hd_counter = log_hd_counter + 1
       #:endif
     end function
 #:enddef

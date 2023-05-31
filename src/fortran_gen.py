@@ -42,7 +42,7 @@ _binary_fun_d_template = '''
         {{x_assign}}
         {{dx_assign}}
       #:if test_coverage
-        {{interface_name}}_{{usn}}_{{vsn}}_counter = {{interface_name}}_{{usn}}_{{vsn}}_counter + 1
+        {{interface_name}}_{{usnc}}_{{vsnc}}_counter = {{interface_name}}_{{usnc}}_{{vsnc}}_counter + 1
       #:endif
     end function'''
 
@@ -60,7 +60,7 @@ _unary_fun_d_template = '''
         {{x_assign}}
         {{dx_assign}}
       #:if test_coverage
-        {{interface_name}}_{{usn}}_counter = {{interface_name}}_{{usn}}_counter + 1
+        {{interface_name}}_{{usnc}}_counter = {{interface_name}}_{{usnc}}_counter + 1
       #:endif
     end function'''
 
@@ -87,7 +87,7 @@ _binary_fun_hd_template = '''
             end do
         end do
       #:if test_coverage
-        {{interface_name}}_{{usn}}_{{vsn}}_counter = {{interface_name}}_{{usn}}_{{vsn}}_counter + 1
+        {{interface_name}}_{{usnc}}_{{vsnc}}_counter = {{interface_name}}_{{usnc}}_{{vsnc}}_counter + 1
       #:endif
     end function'''
 
@@ -113,7 +113,7 @@ _unary_fun_hd_template = '''
             end do
         end do
       #:if test_coverage
-        {{interface_name}}_{{usn}}_counter = {{interface_name}}_{{usn}}_counter + 1
+        {{interface_name}}_{{usnc}}_counter = {{interface_name}}_{{usnc}}_counter + 1
       #:endif
     end function'''
 
@@ -134,7 +134,7 @@ _binary_fun_hd_noloop_template = '''
         {{dx_assign}}
         {{ddx_assign}}
       #:if test_coverage
-        {{interface_name}}_{{usn}}_{{vsn}}_counter = {{interface_name}}_{{usn}}_{{vsn}}_counter + 1
+        {{interface_name}}_{{usnc}}_{{vsnc}}_counter = {{interface_name}}_{{usnc}}_{{vsnc}}_counter + 1
       #:endif
     end function'''
 
@@ -154,7 +154,7 @@ _unary_fun_hd_noloop_template = '''
         {{dx_assign}}
         {{ddx_assign}}
       #:if test_coverage
-        {{interface_name}}_{{usn}}_counter = {{interface_name}}_{{usn}}_counter + 1
+        {{interface_name}}_{{usnc}}_counter = {{interface_name}}_{{usnc}}_counter + 1
       #:endif
     end function'''
 
@@ -331,23 +331,35 @@ def uv_types(num_types, is_hyper_dual):
     if num_types[0] == 'dual':
         ut = "type(${dual_type}$)" 
         uts = "${dual_sn}$"
+        if is_hyper_dual:
+            utsc = 'hd'
+        else:
+            utsc = 'd'
     elif num_types[0] == 'real':
         ut = "real(${real_kind}$)"
         uts = 'r'
+        utsc = 'r'
     elif num_types[0] == 'integer':
         ut = "integer"
         uts = 'i'
+        utsc = 'i'
 
     if num_types[1] == 'dual':
         vt = "type(${dual_type}$)" 
         vts = "${dual_sn}$"
+        if is_hyper_dual:
+            vtsc = 'hd'
+        else:
+            vtsc = 'd'
     elif num_types[1] == 'real':
         vt = "real(${real_kind}$)"
         vts = 'r'
+        vtsc = 'r'
     elif num_types[1] == 'integer':
         vt = "integer"
         vts = 'i'
-    return ut, uts, vt, vts
+        vtsc = 'i'
+    return ut, uts, utsc, vt, vts, vtsc
 
 def binary_overload(fun, is_hyper_dual=True, arg_class=('dual','dual')):
     """Generate Fortran code for hyper-dual-number overloads of binary functions
@@ -372,7 +384,7 @@ def binary_overload(fun, is_hyper_dual=True, arg_class=('dual','dual')):
     u_class, v_class = arg_class
 
     # Create type string and type suffix for the u and v arguments
-    u_type, usn, v_type, vsn = uv_types(arg_class, is_hyper_dual)
+    u_type, usn, usnc, v_type, vsn, vsnc = uv_types(arg_class, is_hyper_dual)
     res_type = 'type(${dual_type}$)'
 
     if u_class == "integer":
@@ -476,7 +488,9 @@ def binary_overload(fun, is_hyper_dual=True, arg_class=('dual','dual')):
             code = Template(_binary_fun_hd_template).render(
                 interface_name = fun.__name__,
                 usn = usn,
+                usnc = usnc,
                 vsn = vsn,
+                vsnc = vsnc,
                 u_type = u_type,
                 v_type = v_type,
                 res_type = res_type,
@@ -489,7 +503,9 @@ def binary_overload(fun, is_hyper_dual=True, arg_class=('dual','dual')):
             code = Template(_binary_fun_hd_noloop_template).render(
                 interface_name = fun.__name__,
                 usn = usn,
+                usnc = usnc,
                 vsn = vsn,
+                vsnc = vsnc,
                 u_type = u_type,
                 v_type = v_type,
                 res_type = res_type,
@@ -502,7 +518,9 @@ def binary_overload(fun, is_hyper_dual=True, arg_class=('dual','dual')):
         code = Template(_binary_fun_d_template).render(
             interface_name = fun.__name__,
             usn = usn,
+            usnc = usnc,
             vsn = vsn,
+            vsnc = vsnc,
             u_type = u_type,
             v_type = v_type,
             res_type = res_type,
@@ -540,12 +558,18 @@ def unary_overload(fun, is_hyper_dual=True, u_class='dual'):
     if u_class == 'dual':
         u_type = "type(${dual_type}$)" 
         usn = "${dual_sn}$"
+        if is_hyper_dual:
+            usnc = 'hd'
+        else:
+            usnc = 'd'
     elif u_class == 'real':
         u_type = "real(${real_kind}$)"
         usn = 'r'
+        usnc = 'r'
     elif u_class == 'integer':
         u_type = "integer"
         usn = 'i'
+        usnc = 'i'
 
     res_type = 'type(${dual_type}$)'
 
@@ -611,7 +635,8 @@ def unary_overload(fun, is_hyper_dual=True, u_class='dual'):
         if has_loop:
             code = Template(_unary_fun_hd_template).render(
                 interface_name = fun.__name__,
-                usn = usn,
+                usn = usn, 
+                usnc = usnc,
                 u_type = u_type,
                 res_type = res_type,
                 temp_decl = temp_decl,
@@ -623,6 +648,7 @@ def unary_overload(fun, is_hyper_dual=True, u_class='dual'):
             code = Template(_unary_fun_hd_noloop_template).render(
                 interface_name = fun.__name__,
                 usn = usn,
+                usnc = usnc,
                 u_type = u_type,
                 res_type = res_type,
                 temp_decl = temp_decl,
@@ -634,6 +660,7 @@ def unary_overload(fun, is_hyper_dual=True, u_class='dual'):
         code = Template(_unary_fun_d_template).render(
             interface_name = fun.__name__,
             usn = usn,
+            usnc = usnc,
             u_type = u_type,
             res_type = res_type,
             temp_decl = temp_decl,
