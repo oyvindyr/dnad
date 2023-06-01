@@ -17,12 +17,11 @@ module example_dual_undef_mod
         real(dp) :: dx(num_deriv) = 0  ! derivatives
     end type
 
-
-    interface initialize ! Initialize a dual or hyper dual number
+    interface initialize 
+        !! Initialize a dual or hyper dual number
         module procedure initialize_d_scalar
         module procedure initialize_d_vector
     end interface
-  
     interface assignment (=)
         module procedure assign_d_i  ! dual=integer, elemental
         module procedure assign_d_r  ! dual=real, elemental

@@ -141,17 +141,17 @@ module test_hdual2_mod
         real(dp) :: ddx(num_deriv*(num_deriv + 1)/2) = 0  ! Lower triangular of Hessian
     end type
 
-    interface hessian ! Extract Hessian from a hyper-dual number
-        module procedure hessian_hd
-    end interface
-
-    interface initialize ! Initialize a dual or hyper dual number
+    interface initialize 
+        !! Initialize a dual or hyper dual number
         module procedure initialize_d_scalar
         module procedure initialize_d_vector
         module procedure initialize_hd_scalar
         module procedure initialize_hd_vector
     end interface
-  
+    interface hessian 
+        !! Extract Hessian from a hyper-dual number
+        module procedure hessian_hd
+    end interface
     interface assignment (=)
         module procedure assign_d_i  ! dual=integer, elemental
         module procedure assign_d_r  ! dual=real, elemental
@@ -725,21 +725,20 @@ contains
     end subroutine
     pure function hessian_hd(d) result(m)
         type(hdual_uvw_t), intent(in) :: d
-        real(dp) :: m(num_deriv, num_deriv)
+        real(dp) :: m(size(d%dx), size(d%dx))
         
         integer i, j, k
 
         k = 0
-        do j = 1, num_deriv
+        do j = 1, size(d%dx)
             k = k + 1
             m(j, j) = d%ddx(k)
-            do i = j+1, num_deriv
+            do i = j+1, size(d%dx)
                 k = k + 1
                 m(i, j) = d%ddx(k)
                 m(j, i) = d%ddx(k)
             end do
         end do
-        ! m = d%ddx
 
     end function
     impure elemental subroutine assign_d_i(u, i)

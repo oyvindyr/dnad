@@ -1,4 +1,4 @@
-#:def dnad_public_interface_statements(selected_interfaces) 
+#:def dnad_overload_interfaces_public(selected_interfaces) 
   #:set interface_list = dnad.select_interfaces(selected_interfaces)
   #:if "=" in interface_list 
     public assignment (=)

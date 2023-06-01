@@ -1,0 +1,117 @@
+#:def dnad_display_interface(dual_shortnames = [], hdual_shortnames = [])
+    interface display
+        !! Display one or more dual or hyper dual numbers
+      #:for dual_sn in dual_shortnames
+        module procedure display__${dual_sn}$_1input
+        module procedure display__${dual_sn}$_2input
+      #:endfor
+      #:for hdual_sn in hdual_shortnames
+        module procedure display__${hdual_sn}$_1input
+        module procedure display__${hdual_sn}$_2input
+      #:endfor
+    end interface
+#:enddef
+
+#:def dnad_display_implementations(&
+        dual_types = [], dual_shortnames = [], &
+        hdual_types = [], hdual_shortnames = [])
+  #!
+  #:assert len(dual_types) > 0 or len(hdual_types) > 0
+  #:assert len(dual_types) == len(dual_shortnames)
+  #:assert len(hdual_types) == len(hdual_shortnames)
+  #!
+  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
+    subroutine display__${dual_sn}$_1input(d, name)
+        type(${dual_type}$), intent(in) :: d
+        character(len=*), intent(in) :: name
+        integer :: i, j, k
+
+        print*, "Function values:"
+        print*, " ",name,"%x"
+        print '(ES22.14)', d%x
+
+        print*, "Derivatives:"
+        print*, " i    ", name, "%dx(i)"
+        do i = 1, size(d%dx)
+            print '(I3, ES22.14)' , i, d%dx(i)
+        end do
+
+    end subroutine
+    subroutine display__${dual_sn}$_2input(d1, d2, name1, name2)
+      type(${dual_type}$), intent(in) :: d1
+      type(${dual_type}$), intent(in) :: d2
+      character(len=*), intent(in) :: name1
+      character(len=*), intent(in) :: name2
+      integer :: i, j, k
+
+      print*, "Function values:"
+      print*, " ",name1, "%x                  ", name2, "%x"
+      print '(ES22.14, ES22.14)', d1%x, d2%x
+
+      print*, "Derivatives:"
+      print*, " i    ", name1, "%dx(i)                ", name2, "%dx(i)"
+      do i = 1, size(d1%dx)
+          print '(I3, ES22.14, ES22.14)' , i, d1%dx(i), d2%dx(i)
+      end do
+
+    end subroutine
+  #:endfor
+
+  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
+    subroutine display__${hdual_sn}$_1input(d, name)
+        type(${hdual_type}$), intent(in) :: d
+        character(len=*), intent(in) :: name
+        integer :: i, j, k
+
+        print*, "Function values:"
+        print*, " ",name,"%x"
+        print '(ES22.14)', d%x
+
+        print*, "Derivatives:"
+        print*, " i    ", name, "%dx(i)"
+        do i = 1, size(d%dx)
+            print '(I3, ES22.14)' , i, d%dx(i)
+        end do
+
+        print*, "Lower triangular of Hessian matrix, h(i,j)"
+        print*, " k  i  j   ", name, "%ddx(k)"
+        k = 0
+        do j = 1, size(d%dx)
+            do i = j, size(d%dx)
+                k = k + 1
+                print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d%ddx(k)
+            end do
+        end do
+
+    end subroutine
+    subroutine display__${hdual_sn}$_2input(d1, d2, name1, name2)
+      type(${hdual_type}$), intent(in) :: d1
+      type(${hdual_type}$), intent(in) :: d2
+      character(len=*), intent(in) :: name1
+      character(len=*), intent(in) :: name2
+      integer :: i, j, k
+
+      print*, "Function values:"
+      print*, " ",name1, "%x                  ", name2, "%x"
+      print '(ES22.14, ES22.14)', d1%x, d2%x
+
+      print*, "Derivatives:"
+      print*, " i    ", name1, "%dx(i)                ", name2, "%dx(i)"
+      do i = 1, size(d1%dx)
+          print '(I3, ES22.14, ES22.14)' , i, d1%dx(i), d2%dx(i)
+      end do
+
+      print*, "Lower triangular of Hessian matrix, h(i,j)"
+      print*, " k  i  j   ", name1, "%ddx(k)            ", name2, "%ddx(k)"
+      k = 0
+      do j = 1, size(d1%dx)
+          do i = j, size(d1%dx)
+              k = k + 1
+              print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d1%ddx(k), d2%ddx(k)
+          end do
+      end do
+
+    end subroutine
+  #:endfor
+
+#:enddef

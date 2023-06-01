@@ -1,8 +1,11 @@
 #:mute
 
 #:include '../src/macros/dnad_dual_types.fypp'
-#:include '../src/macros/dnad_interfaces.fypp'
-#:include '../src/macros/dnad_implementations.fypp'
+#:include '../src/macros/dnad_overload_interfaces.fypp'
+#:include '../src/macros/dnad_overload_implementations.fypp'
+#:include '../src/macros/dnad_initialize.fypp'
+#:include '../src/macros/dnad_hessian.fypp'
+
 
 #! When stringent = False, the dnad functions assume that the derivative exists. It is does not exist (for instance for abs(0.0))
 #! the result will be undefined. When stringent = True (or not defined) some logic is included in the mathematical functions to
@@ -34,7 +37,9 @@ module example_hdual_mod
 
     #! Inject interfaces
     #!  Note: Calling a macro with $ will send in python variables as arguments
-    $:dnad_interfaces(selected_interfaces, hdual_shortnames = ['hd'])
+    $:dnad_initialize_interface(hdual_shortnames = ['hd'])
+    $:dnad_hessian_interface(hdual_shortnames = ['hd'])
+    $:dnad_overload_interfaces(selected_interfaces, hdual_shortnames = ['hd'])
     
 contains
 
@@ -99,7 +104,9 @@ contains
     end function
 
     #! Inject overloaded function implementations
-    $:dnad_implementations("dp", &
+    $:dnad_initialize_implementations("dp", hdual_types = ['hdual_uvw_t'], hdual_shortnames = ['hd'])
+    $:dnad_hessian_implementations(   "dp", hdual_types = ['hdual_uvw_t'], hdual_shortnames = ['hd'])
+    $:dnad_overload_implementations("dp", &
             hdual_types = ['hdual_uvw_t'], hdual_shortnames = ['hd'], hdual_sizes = ['num_deriv'], &
             selected_interfaces=selected_interfaces, &
             stringent=stringent)

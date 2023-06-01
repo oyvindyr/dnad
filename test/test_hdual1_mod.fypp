@@ -1,8 +1,10 @@
 #:mute
 
 #:include '../src/macros/dnad_dual_types.fypp'
-#:include '../src/macros/dnad_interfaces.fypp'
-#:include '../src/macros/dnad_implementations.fypp'
+#:include '../src/macros/dnad_overload_interfaces.fypp'
+#:include '../src/macros/dnad_overload_implementations.fypp'
+#:include '../src/macros/dnad_initialize.fypp'
+#:include '../src/macros/dnad_hessian.fypp'
 
 #! Include call counters to check test coverage:
 #: set test_coverage = True
@@ -37,7 +39,9 @@ module test_hdual1_mod
     @:dnad_dual_type(dual_xy_t, dp, num_deriv, sequence)
     @:dnad_hdual_type(hdual_xy_t, dp, num_deriv, sequence)
 
-    $:dnad_interfaces(selected_interfaces, dual_shortnames = ['d'], hdual_shortnames=['hd'])
+    $:dnad_initialize_interface(dual_shortnames = ['d'], hdual_shortnames=['hd'])
+    $:dnad_hessian_interface(hdual_shortnames=['hd'])
+    $:dnad_overload_interfaces(selected_interfaces, dual_shortnames = ['d'], hdual_shortnames=['hd'])
     
 contains
 
@@ -163,7 +167,12 @@ contains
         ddf(1, 2) = ddf(2, 1)              ! d**2f/dydx
     end subroutine
 
-    $:dnad_implementations("dp", &
+    $:dnad_initialize_implementations("dp", &
+            dual_types = ['dual_xy_t'],   dual_shortnames =  ['d'], &
+            hdual_types = ['hdual_xy_t'], hdual_shortnames = ['hd'])
+    $:dnad_hessian_implementations("dp", &
+            hdual_types = ['hdual_xy_t'], hdual_shortnames = ['hd'])
+    $:dnad_overload_implementations("dp", &
              dual_types = ['dual_xy_t'],   dual_shortnames =  ['d'],  dual_sizes = ['num_deriv'], &
             hdual_types = ['hdual_xy_t'], hdual_shortnames = ['hd'], hdual_sizes = ['num_deriv'], &
             selected_interfaces=selected_interfaces, stringent=stringent, &

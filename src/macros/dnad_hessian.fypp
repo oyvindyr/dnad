@@ -1,0 +1,32 @@
+#:def dnad_hessian_interface(hdual_shortnames)
+    interface hessian 
+        !! Extract Hessian from a hyper-dual number
+      #:for hdual_sn in hdual_shortnames
+        module procedure hessian_${hdual_sn}$
+      #:endfor
+    end interface
+#:enddef
+
+#:def dnad_hessian_implementations(real_kind, hdual_types, hdual_shortnames)
+  #:assert len(hdual_types) == len(hdual_shortnames)
+  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
+    pure function hessian_${hdual_sn}$(d) result(m)
+        type(${hdual_type}$), intent(in) :: d
+        real(${real_kind}$) :: m(size(d%dx), size(d%dx))
+        
+        integer i, j, k
+
+        k = 0
+        do j = 1, size(d%dx)
+            k = k + 1
+            m(j, j) = d%ddx(k)
+            do i = j+1, size(d%dx)
+                k = k + 1
+                m(i, j) = d%ddx(k)
+                m(j, i) = d%ddx(k)
+            end do
+        end do
+
+    end function
+  #:endfor
+#:enddef

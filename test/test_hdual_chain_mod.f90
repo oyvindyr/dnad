@@ -164,18 +164,8 @@ module test_hdual_chain_mod
         module procedure f_of_y__y ! Function of y, with derivatives wrt y
     end interface
 
-    interface chain_duals
-        !! Generic function for converting a function value from one dual-type to another by applying the chain rule of derivation
-        module procedure chain_duals__dualy_dualx
-        module procedure chain_duals__hdualy_hdualx
-    end interface
-
-    interface hessian ! Extract Hessian from a hyper-dual number
-        module procedure hessian_hdualx
-        module procedure hessian_hdualy
-    end interface
-
-    interface initialize ! Initialize a dual or hyper dual number
+    interface initialize 
+        !! Initialize a dual or hyper dual number
         module procedure initialize_dualx_scalar
         module procedure initialize_dualx_vector
         module procedure initialize_dualy_scalar
@@ -185,7 +175,27 @@ module test_hdual_chain_mod
         module procedure initialize_hdualy_scalar
         module procedure initialize_hdualy_vector
     end interface
-  
+    interface display
+        !! Display one or more dual or hyper dual numbers
+        module procedure display__dualx_1input
+        module procedure display__dualx_2input
+        module procedure display__dualy_1input
+        module procedure display__dualy_2input
+        module procedure display__hdualx_1input
+        module procedure display__hdualx_2input
+        module procedure display__hdualy_1input
+        module procedure display__hdualy_2input
+    end interface
+    interface hessian 
+        !! Extract Hessian from a hyper-dual number
+        module procedure hessian_hdualx
+        module procedure hessian_hdualy
+    end interface
+    interface chain_duals
+        !! Generic function for converting a dual or hyper-dual number from one dual-type to another by applying the chain rule of derivation
+        module procedure chain_duals__dualy_dualx
+        module procedure chain_duals__hdualy_hdualx
+    end interface
     interface assignment (=)
         module procedure assign_dualx_i  ! dual=integer, elemental
         module procedure assign_dualx_r  ! dual=real, elemental
@@ -621,78 +631,55 @@ contains
         ! Same as fx_chain, but computed directly
         fx = f_of_x(xx)
 
-        print*, "fun: ", fx%x, fx_chain%x, fx%x - fx_chain%x
-        do i = 1, nx
-            print*, "der: ", fx%dx(i), fx_chain%dx(i), fx%dx(i) - fx_chain%dx(i)
-        end do
-        do i = 1, size(fx%ddx)
-            print*, "hess: ", fx%ddx(i), fx_chain%ddx(i), fx%ddx(i) - fx_chain%ddx(i)
-        end do
+        print*," "
+        call display(yy, "yy")
+        print*," "
+        call display(fx, fx_chain, "fx", "fx_chain")
+
+        ! print*, "fun: ", fx%x, fx_chain%x, fx%x - fx_chain%x
+        ! do i = 1, nx
+        !     print*, "der: ", fx%dx(i), fx_chain%dx(i), fx%dx(i) - fx_chain%dx(i)
+        ! end do
+        ! do i = 1, size(fx%ddx)
+        !     print*, "hess: ", fx%ddx(i), fx_chain%ddx(i), fx%ddx(i) - fx_chain%ddx(i)
+        ! end do
 
         is_ok = .true.
 
 
     end function
 
-    function chain_duals__dualy_dualx(fy, yx) result(fx)
+    ! subroutine display(d1, d2, name1, name2)
+    !     type(hdual_x_t), intent(in) :: d1
+    !     type(hdual_x_t), intent(in) :: d2
+    !     character(len=*), intent(in) :: name1
+    !     character(len=*), intent(in) :: name2
+    !     integer :: i, j, k
 
-        type(dual_y_t), intent(in) :: fy
-        type(dual_x_t), intent(in) :: yx(size(fy%dx))
-        type(dual_x_t) :: fx
-        
-        integer :: p, j
+    !     ! fx%x         fx_chain%x
+    !     ! -6.71560920418316E-01 -6.71560920418316E-01
 
-        fx%x = fy%x
-        fx%dx = 0
-        do p = 1, size(fy%dx)
-            do j = 1, size(fx%dx)
-                fx%dx(j) = fx%dx(j) + fy%dx(p)*yx(p)%dx(j)
-            end do
-        end do
+    !     print*, "Function values:"
+    !     print*, " ",name1, "%x                  ", name2, "%x"
+    !     write(*,'(ES22.14, ES22.14)'), d1%x, d2%x
 
+    !     print*, "Derivatives:"
+    !     print*, " i    ", name1, "%dx(i)                ", name2, "%dx(i)"
+    !     do i = 1, size(d1%dx)
+    !         print '(I3, ES22.14, ES22.14)' , i, d1%dx(i), d2%dx(i)
+    !     end do
 
-    end function
-    function chain_duals__hdualy_hdualx(fy, yx) result(fx)
+    !     print*, "Lower triangular of Hessian matrix, h(i,j)"
+    !     print*, " k  i  j   ", name1, "%ddx(k)            ", name2, "%ddx(k)"
+    !     k = 0
+    !     do j = 1, size(d1%dx)
+    !         do i = j, size(d1%dx)
+    !             k = k + 1
+    !             print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d1%ddx(k), d2%ddx(k)
+    !         end do
+    !     end do
 
-        type(hdual_y_t), intent(in) :: fy
-        type(hdual_x_t), intent(in) :: yx(size(fy%dx))
-        type(hdual_x_t) :: fx
-        
-        integer :: p, j
-        integer :: i, q, k, nk
-        real(dp) :: hfy(size(fy%dx), size(fy%dx))
-        real(dp) :: tmp
-
-        fx%x = fy%x
-        fx%dx = 0
-        do p = 1, size(fy%dx)
-            do j = 1, size(fx%dx)
-                fx%dx(j) = fx%dx(j) + fy%dx(p)*yx(p)%dx(j)
-            end do
-        end do
-
-        nk = size(fx%dx)*(size(fx%dx)+1)/2
-        fx%ddx = 0
-        do p = 1, size(fy%dx)
-            do k = 1, nk
-                fx%ddx(k) = fx%ddx(k) + fy%dx(p)*yx(p)%ddx(k)
-            end do
-        end do
-        hfy = hessian(fy)
-        do q = 1, size(fy%dx)
-            do p = 1, size(fy%dx)
-                k = 0
-                do j = 1, size(fx%dx)
-                    tmp = hfy(p,q)*yx(q)%dx(j)
-                    do i = j, size(fx%dx)
-                        k = k + 1
-                        fx%ddx(k) = fx%ddx(k) + tmp*yx(p)%dx(i)
-                    end do
-                end do
-            end do
-        end do
-
-    end function
+    ! end subroutine
 
     function f_of_y__x(y) result(f)
         type(hdual_x_t), intent(in) :: y(ny)
@@ -717,7 +704,6 @@ contains
         type(hdual_x_t) :: f
         f = f_of_y(y_of_x(x))
     end function
-
     pure subroutine initialize_dualx_scalar(dual, val, idiff)
         !! Initialize a single dual number, whose derivative with respect to design variable 'idiff' is 1
         type(dual_x_t), intent(out) :: dual
@@ -826,42 +812,277 @@ contains
         end do
 
     end subroutine
+    subroutine display__dualx_1input(d, name)
+        type(dual_x_t), intent(in) :: d
+        character(len=*), intent(in) :: name
+        integer :: i, j, k
+
+        print*, "Function values:"
+        print*, " ",name,"%x"
+        print '(ES22.14)', d%x
+
+        print*, "Derivatives:"
+        print*, " i    ", name, "%dx(i)"
+        do i = 1, size(d%dx)
+            print '(I3, ES22.14)' , i, d%dx(i)
+        end do
+
+    end subroutine
+    subroutine display__dualx_2input(d1, d2, name1, name2)
+      type(dual_x_t), intent(in) :: d1
+      type(dual_x_t), intent(in) :: d2
+      character(len=*), intent(in) :: name1
+      character(len=*), intent(in) :: name2
+      integer :: i, j, k
+
+      print*, "Function values:"
+      print*, " ",name1, "%x                  ", name2, "%x"
+      print '(ES22.14, ES22.14)', d1%x, d2%x
+
+      print*, "Derivatives:"
+      print*, " i    ", name1, "%dx(i)                ", name2, "%dx(i)"
+      do i = 1, size(d1%dx)
+          print '(I3, ES22.14, ES22.14)' , i, d1%dx(i), d2%dx(i)
+      end do
+
+    end subroutine
+    subroutine display__dualy_1input(d, name)
+        type(dual_y_t), intent(in) :: d
+        character(len=*), intent(in) :: name
+        integer :: i, j, k
+
+        print*, "Function values:"
+        print*, " ",name,"%x"
+        print '(ES22.14)', d%x
+
+        print*, "Derivatives:"
+        print*, " i    ", name, "%dx(i)"
+        do i = 1, size(d%dx)
+            print '(I3, ES22.14)' , i, d%dx(i)
+        end do
+
+    end subroutine
+    subroutine display__dualy_2input(d1, d2, name1, name2)
+      type(dual_y_t), intent(in) :: d1
+      type(dual_y_t), intent(in) :: d2
+      character(len=*), intent(in) :: name1
+      character(len=*), intent(in) :: name2
+      integer :: i, j, k
+
+      print*, "Function values:"
+      print*, " ",name1, "%x                  ", name2, "%x"
+      print '(ES22.14, ES22.14)', d1%x, d2%x
+
+      print*, "Derivatives:"
+      print*, " i    ", name1, "%dx(i)                ", name2, "%dx(i)"
+      do i = 1, size(d1%dx)
+          print '(I3, ES22.14, ES22.14)' , i, d1%dx(i), d2%dx(i)
+      end do
+
+    end subroutine
+
+    subroutine display__hdualx_1input(d, name)
+        type(hdual_x_t), intent(in) :: d
+        character(len=*), intent(in) :: name
+        integer :: i, j, k
+
+        print*, "Function values:"
+        print*, " ",name,"%x"
+        print '(ES22.14)', d%x
+
+        print*, "Derivatives:"
+        print*, " i    ", name, "%dx(i)"
+        do i = 1, size(d%dx)
+            print '(I3, ES22.14)' , i, d%dx(i)
+        end do
+
+        print*, "Lower triangular of Hessian matrix, h(i,j)"
+        print*, " k  i  j   ", name, "%ddx(k)"
+        k = 0
+        do j = 1, size(d%dx)
+            do i = j, size(d%dx)
+                k = k + 1
+                print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d%ddx(k)
+            end do
+        end do
+
+    end subroutine
+    subroutine display__hdualx_2input(d1, d2, name1, name2)
+      type(hdual_x_t), intent(in) :: d1
+      type(hdual_x_t), intent(in) :: d2
+      character(len=*), intent(in) :: name1
+      character(len=*), intent(in) :: name2
+      integer :: i, j, k
+
+      print*, "Function values:"
+      print*, " ",name1, "%x                  ", name2, "%x"
+      print '(ES22.14, ES22.14)', d1%x, d2%x
+
+      print*, "Derivatives:"
+      print*, " i    ", name1, "%dx(i)                ", name2, "%dx(i)"
+      do i = 1, size(d1%dx)
+          print '(I3, ES22.14, ES22.14)' , i, d1%dx(i), d2%dx(i)
+      end do
+
+      print*, "Lower triangular of Hessian matrix, h(i,j)"
+      print*, " k  i  j   ", name1, "%ddx(k)            ", name2, "%ddx(k)"
+      k = 0
+      do j = 1, size(d1%dx)
+          do i = j, size(d1%dx)
+              k = k + 1
+              print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d1%ddx(k), d2%ddx(k)
+          end do
+      end do
+
+    end subroutine
+    subroutine display__hdualy_1input(d, name)
+        type(hdual_y_t), intent(in) :: d
+        character(len=*), intent(in) :: name
+        integer :: i, j, k
+
+        print*, "Function values:"
+        print*, " ",name,"%x"
+        print '(ES22.14)', d%x
+
+        print*, "Derivatives:"
+        print*, " i    ", name, "%dx(i)"
+        do i = 1, size(d%dx)
+            print '(I3, ES22.14)' , i, d%dx(i)
+        end do
+
+        print*, "Lower triangular of Hessian matrix, h(i,j)"
+        print*, " k  i  j   ", name, "%ddx(k)"
+        k = 0
+        do j = 1, size(d%dx)
+            do i = j, size(d%dx)
+                k = k + 1
+                print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d%ddx(k)
+            end do
+        end do
+
+    end subroutine
+    subroutine display__hdualy_2input(d1, d2, name1, name2)
+      type(hdual_y_t), intent(in) :: d1
+      type(hdual_y_t), intent(in) :: d2
+      character(len=*), intent(in) :: name1
+      character(len=*), intent(in) :: name2
+      integer :: i, j, k
+
+      print*, "Function values:"
+      print*, " ",name1, "%x                  ", name2, "%x"
+      print '(ES22.14, ES22.14)', d1%x, d2%x
+
+      print*, "Derivatives:"
+      print*, " i    ", name1, "%dx(i)                ", name2, "%dx(i)"
+      do i = 1, size(d1%dx)
+          print '(I3, ES22.14, ES22.14)' , i, d1%dx(i), d2%dx(i)
+      end do
+
+      print*, "Lower triangular of Hessian matrix, h(i,j)"
+      print*, " k  i  j   ", name1, "%ddx(k)            ", name2, "%ddx(k)"
+      k = 0
+      do j = 1, size(d1%dx)
+          do i = j, size(d1%dx)
+              k = k + 1
+              print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d1%ddx(k), d2%ddx(k)
+          end do
+      end do
+
+    end subroutine
+
     pure function hessian_hdualx(d) result(m)
         type(hdual_x_t), intent(in) :: d
-        real(dp) :: m(nx, nx)
+        real(dp) :: m(size(d%dx), size(d%dx))
         
         integer i, j, k
 
         k = 0
-        do j = 1, nx
+        do j = 1, size(d%dx)
             k = k + 1
             m(j, j) = d%ddx(k)
-            do i = j+1, nx
+            do i = j+1, size(d%dx)
                 k = k + 1
                 m(i, j) = d%ddx(k)
                 m(j, i) = d%ddx(k)
             end do
         end do
-        ! m = d%ddx
 
     end function
     pure function hessian_hdualy(d) result(m)
         type(hdual_y_t), intent(in) :: d
-        real(dp) :: m(ny, ny)
+        real(dp) :: m(size(d%dx), size(d%dx))
         
         integer i, j, k
 
         k = 0
-        do j = 1, ny
+        do j = 1, size(d%dx)
             k = k + 1
             m(j, j) = d%ddx(k)
-            do i = j+1, ny
+            do i = j+1, size(d%dx)
                 k = k + 1
                 m(i, j) = d%ddx(k)
                 m(j, i) = d%ddx(k)
             end do
         end do
-        ! m = d%ddx
+
+    end function
+    pure function chain_duals__dualy_dualx(fy, yx) result(fx)
+
+        type(dual_y_t), intent(in) :: fy
+        type(dual_x_t), intent(in) :: yx(size(fy%dx))
+        type(dual_x_t) :: fx
+        
+        integer :: p, j
+
+        fx%x = fy%x
+        fx%dx = 0
+        do p = 1, size(fy%dx)
+            do j = 1, size(fx%dx)
+                fx%dx(j) = fx%dx(j) + fy%dx(p)*yx(p)%dx(j)
+            end do
+        end do
+
+
+    end function
+    pure function chain_duals__hdualy_hdualx(fy, yx) result(fx)
+
+        type(hdual_y_t), intent(in) :: fy
+        type(hdual_x_t), intent(in) :: yx(size(fy%dx))
+        type(hdual_x_t) :: fx
+        
+        integer :: p, j
+        integer :: i, q, k, nk
+        real(dp) :: hfy(size(fy%dx), size(fy%dx))
+        real(dp) :: tmp
+
+        fx%x = fy%x
+        fx%dx = 0
+        do p = 1, size(fy%dx)
+            do j = 1, size(fx%dx)
+                fx%dx(j) = fx%dx(j) + fy%dx(p)*yx(p)%dx(j)
+            end do
+        end do
+
+        nk = size(fx%dx)*(size(fx%dx)+1)/2
+        fx%ddx = 0
+        do p = 1, size(fy%dx)
+            do k = 1, nk
+                fx%ddx(k) = fx%ddx(k) + fy%dx(p)*yx(p)%ddx(k)
+            end do
+        end do
+        hfy = hessian(fy)
+        do q = 1, size(fy%dx)
+            do p = 1, size(fy%dx)
+                k = 0
+                do j = 1, size(fx%dx)
+                    tmp = hfy(p,q)*yx(q)%dx(j)
+                    do i = j, size(fx%dx)
+                        k = k + 1
+                        fx%ddx(k) = fx%ddx(k) + tmp*yx(p)%dx(i)
+                    end do
+                end do
+            end do
+        end do
 
     end function
     impure elemental subroutine assign_dualx_i(u, i)

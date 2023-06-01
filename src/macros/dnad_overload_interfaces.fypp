@@ -1,28 +1,9 @@
-#:def dnad_interfaces(selected_interfaces, dual_shortnames=[], hdual_shortnames=[]) 
+#:def dnad_overload_interfaces(selected_interfaces, dual_shortnames=[], hdual_shortnames=[]) 
     #!
     #:assert len(dual_shortnames) > 0 or len(hdual_shortnames) > 0
     #!
     #:set interface_list = dnad.select_interfaces(selected_interfaces)
     #!
-  #:if len(hdual_shortnames) > 0
-    interface hessian ! Extract Hessian from a hyper-dual number
-      #:for hdual_sn in hdual_shortnames
-        module procedure hessian_${hdual_sn}$
-      #:endfor
-    end interface
-  #:endif
-
-    interface initialize ! Initialize a dual or hyper dual number
-      #:for dual_sn in dual_shortnames
-        module procedure initialize_${dual_sn}$_scalar
-        module procedure initialize_${dual_sn}$_vector
-      #:endfor
-      #:for hdual_sn in hdual_shortnames
-        module procedure initialize_${hdual_sn}$_scalar
-        module procedure initialize_${hdual_sn}$_vector
-      #:endfor
-    end interface
-  
   #:if "=" in interface_list 
     interface assignment (=)
       #:for dual_sn in dual_shortnames

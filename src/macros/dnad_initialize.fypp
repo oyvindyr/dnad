@@ -1,4 +1,27 @@
-#:def initialize_d(dual_type, dual_sn, real_kind)
+    
+#:def dnad_initialize_interface(dual_shortnames = [], hdual_shortnames = [])
+    interface initialize 
+        !! Initialize a dual or hyper dual number
+      #:for dual_sn in dual_shortnames
+        module procedure initialize_${dual_sn}$_scalar
+        module procedure initialize_${dual_sn}$_vector
+      #:endfor
+      #:for hdual_sn in hdual_shortnames
+        module procedure initialize_${hdual_sn}$_scalar
+        module procedure initialize_${hdual_sn}$_vector
+      #:endfor
+    end interface
+#:enddef
+
+#:def dnad_initialize_implementations(real_kind, &
+        dual_types = [], dual_shortnames = [], &
+        hdual_types = [], hdual_shortnames = [])
+  #!
+  #:assert len(dual_types) > 0 or len(hdual_types) > 0
+  #:assert len(dual_types) == len(dual_shortnames)
+  #:assert len(hdual_types) == len(hdual_shortnames)
+  #!
+  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
     pure subroutine initialize_${dual_sn}$_scalar(dual, val, idiff)
         !! Initialize a single dual number, whose derivative with respect to design variable 'idiff' is 1
         type(${dual_type}$), intent(out) :: dual
@@ -25,12 +48,11 @@
         end do
 
     end subroutine
-#:enddef
-
-#:def initialize_hd(dual_type, dual_sn, real_kind)
-    pure subroutine initialize_${dual_sn}$_scalar(hdual, val, idiff)
+  #:endfor
+  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
+    pure subroutine initialize_${hdual_sn}$_scalar(hdual, val, idiff)
         !! Initialize a single hyper-dual number, whose derivative with respect to design variable 'idiff' is 1
-        type(${dual_type}$), intent(out) :: hdual
+        type(${hdual_type}$), intent(out) :: hdual
         real(${real_kind}$), intent(in) :: val
         integer, intent(in) :: idiff
         
@@ -40,10 +62,10 @@
         hdual%dx(idiff) = 1
 
     end subroutine
-    pure subroutine initialize_${dual_sn}$_vector(hdual, val)
+    pure subroutine initialize_${hdual_sn}$_vector(hdual, val)
         !! Initialize a vector of hyper-dual numbers, where the derivative of 
         !! number i with respect to design variable i is 1
-        type(${dual_type}$), intent(out) :: hdual(:)
+        type(${hdual_type}$), intent(out) :: hdual(:)
         real(${real_kind}$), intent(in) :: val(:)
 
         integer :: i
@@ -56,4 +78,5 @@
         end do
 
     end subroutine
+  #:endfor
 #:enddef
