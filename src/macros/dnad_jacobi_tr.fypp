@@ -1,0 +1,53 @@
+#:def dnad_jacobi_tr_interface(dual_shortnames = [], hdual_shortnames = [])
+    interface jacobi_tr
+        !! Extract transpose of Jacobi matrix from a vector of dual or hyper-dual numbers.
+        !! - A hyper-dual vector results in a dual matrix.
+        !! - A dual vector results in a real matrix.
+      #:for dual_sn in dual_shortnames
+        module procedure jacobi_tr__${dual_sn}$
+      #:endfor
+      #:for hdual_sn in hdual_shortnames
+        module procedure jacobi_tr__${hdual_sn}$
+      #:endfor
+    end interface
+#:enddef
+
+#:def dnad_jacobi_tr_implementations_hdual(real_kind, &
+        hdual_types, hdual_shortnames, dual_types)
+  #:assert len(hdual_types) == len(hdual_shortnames) == len(dual_types)
+  #:for hdual_type, hdual_sn, dual_type in zip(hdual_types, hdual_shortnames, dual_types)
+    pure function jacobi_tr__${hdual_sn}$(x) result(y)
+        type(${hdual_type}$), intent(in) :: x(:)
+        type(${dual_type}$) :: y(size(x(1)%dx),size(x))
+
+        real(${real_kind}$) :: hess(size(x(1)%dx), size(x(1)%dx))
+        integer :: i, j
+
+        do j = 1, size(x)
+            hess = hessian(x(j))
+            do i = 1, size(x(1)%dx)
+                y(i,j)%x = x(j)%dx(i)
+                y(i,j)%dx = hess(:,i)
+            end do
+        end do
+
+    end function
+  #:endfor
+#:enddef
+
+#:def dnad_jacobi_tr_implementations_dual(real_kind, &
+        dual_types, dual_shortnames)
+  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
+    pure function jacobi_tr__${dual_sn}$(x) result(y)
+        type(${dual_type}$), intent(in) :: x(:)
+        real(${real_kind}$) :: y(size(x(1)%dx),size(x))
+
+        integer :: j
+
+        do j = 1, size(x)
+            y(:,j) = x(j)%dx
+        end do
+
+    end function
+  #:endfor
+#:enddef
