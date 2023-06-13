@@ -9,8 +9,6 @@
 #:include '../src/macros/dnad_chain_duals.fypp'
 #:include '../src/macros/dnad_display.fypp'
 
-#! Include call counters to check test coverage:
-#: set test_coverage = True
 
 #! When stringent = False, the dnad functions assume that the derivative exists. It is does not exist (for instance for abs(0.0))
 #! the result will be undefined. When stringent = True (or not defined) some logic is included in the mathematical functions to
@@ -19,8 +17,8 @@
 #:set stringent = False
 
 #! selected_interfaces is a comma separated list or "--all"
-#!set selected_interfaces = "=,*,log,sqrt"
-#:set selected_interfaces = "--all"
+#:set selected_interfaces = "=,+,-,*,**,log,sqrt"
+#!set selected_interfaces = "--all"
 
 #:endmute
 module test_hdual_chain_mod
@@ -32,12 +30,6 @@ module test_hdual_chain_mod
 
     integer, parameter :: ny = 2
     integer, parameter :: nx = 3
-
-
-    ! Implementation call counters to show test coverage:
-  #:for impl in dnad.all_implementations
-    integer :: ${impl+"_counter"}$ = 0
-  #:endfor
 
   #:if stringent
     ! Workaround to make pure functions produce NaN's deliberately:
@@ -85,6 +77,8 @@ contains
         ! random x
         call random_number(x)
         x = 5*x + 0.1_dp
+
+        ! Initialize xx, representing x as a function of x, with derivatives wrt x
         call initialize(xx, x)
         
         ! y as a function of x, with derivatives wrt x
@@ -116,6 +110,17 @@ contains
         call display(jacobi_tr(yx), "yxjt")
 
         is_ok = .true.
+        if (abs(fx_chain%x - fx%x) > abs_tol) then
+            is_ok = .false.
+        end if
+        if (maxval(abs(fx_chain%dx - fx%dx)) > abs_tol) then
+            is_ok = .false.
+        end if
+        if (maxval(abs(fx_chain%ddx - fx%ddx)) > abs_tol) then
+            is_ok = .false.
+        end if
+
+        
 
 
     end function
@@ -140,6 +145,7 @@ contains
         type(hdual_x_t) :: f
         f = f_of_y(y_of_x(x))
     end function
+
     $:dnad_initialize_implementations("dp", &
             dual_types = ['dual_x_t', 'dual_y_t'], dual_shortnames = ['dualx', 'dualy'], &
             hdual_types = ['hdual_x_t', 'hdual_y_t'], hdual_shortnames = ['hdualx', 'hdualy'])
@@ -158,8 +164,7 @@ contains
     $:dnad_overload_implementations("dp", &
             dual_types = ['dual_x_t', 'dual_y_t'], dual_shortnames = ['dualx', 'dualy'], dual_sizes = ['nx', 'ny'], &
             hdual_types = ['hdual_x_t', 'hdual_y_t'], hdual_shortnames = ['hdualx', 'hdualy'], hdual_sizes = ['nx', 'ny'], &
-            selected_interfaces=selected_interfaces, stringent=stringent, &
-            test_coverage=test_coverage)
+            selected_interfaces=selected_interfaces, stringent=stringent)
     
   #:if stringent
     ! Workaround to make pure functions produce NaN's deliberately:
