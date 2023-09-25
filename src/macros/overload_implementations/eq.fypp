@@ -9,7 +9,7 @@
          type(${dual_type}$), intent(in) :: lhs, rhs
          logical :: res
 
-         res = (lhs%x == rhs%x)
+         res = (lhs%f == rhs%f)
 
     end function
     ${elemental_purity}$  function eq_${dual_sn}$_i(lhs, rhs) result(res)
@@ -17,7 +17,7 @@
          integer, intent(in) :: rhs
          logical :: res
 
-         res = (lhs%x == rhs)
+         res = (lhs%f == rhs)
 
     end function
     ${elemental_purity}$  function eq_${dual_sn}$_r(lhs, rhs) result(res)
@@ -25,7 +25,7 @@
          real(${real_kind}$), intent(in) :: rhs
          logical :: res
 
-         res = (lhs%x == rhs)
+         res = (lhs%f == rhs)
 
     end function
     ${elemental_purity}$  function eq_i_${dual_sn}$(lhs, rhs) result(res)
@@ -33,7 +33,7 @@
          type(${dual_type}$), intent(in) :: rhs
          logical :: res
 
-         res = (lhs == rhs%x)
+         res = (lhs == rhs%f)
 
     end function
     ${elemental_purity}$  function eq_r_${dual_sn}$(lhs, rhs) result(res)
@@ -41,7 +41,7 @@
          type(${dual_type}$), intent(in) :: rhs
          logical :: res
 
-         res = (lhs == rhs%x)
+         res = (lhs == rhs%f)
 
     end function
 #:enddef

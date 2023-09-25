@@ -78,13 +78,13 @@ contains
 
 
         print *, "Function value 1:"
-        print *, fhd(1)%x
+        print *, fhd(1)%f
         print *, "Function value 2:"
-        print *, fhd(2)%x
+        print *, fhd(2)%f
         print *, "Gradient 1:"
-        print *, fhd(1)%dx
+        print *, fhd(1)%g
         print *, "Gradient 2:"
-        print *, fhd(2)%dx
+        print *, fhd(2)%g
         print *, "Hessian 1:"
         do i = 1, num_deriv
             print *, hessian1(i, :)

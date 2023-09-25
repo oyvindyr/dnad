@@ -101,10 +101,10 @@ contains
         do i = 1, nval
 
             fvd(i) = fd(i)
-            dfd(:, i) = fd(i)%dx
+            dfd(:, i) = fd(i)%g
 
             fvh(i) = fhd(i)
-            dfh(:, i) = fhd(i)%dx
+            dfh(:, i) = fhd(i)%g
             ddfh(:, :, i) = hessian(fhd(i))
 
         end do

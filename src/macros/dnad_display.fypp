@@ -65,12 +65,12 @@
         $:print_dpart_1input(hdual_type)
 
         print*, "Lower triangular of Hessian matrix, h(i,j)"
-        print*, " k  i  j   ", name, "%ddx(k)"
+        print*, " k  i  j   ", name, "%h(k)"
         k = 0
-        do j = 1, size(d%dx)
-            do i = j, size(d%dx)
+        do j = 1, size(d%g)
+            do i = j, size(d%g)
                 k = k + 1
-                print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d%ddx(k)
+                print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d%h(k)
             end do
         end do
 
@@ -83,13 +83,13 @@
         $:print_dpart_1input_vec(hdual_type)
 
         print*, "Lower triangular of Hessian matrix, h(i,j)"
-        print*, " p  k  i  j   ", name, "(p)%ddx(k)"
+        print*, " p  k  i  j   ", name, "(p)%h(k)"
         do p = 1, size(d)
             k = 0
-            do j = 1, size(d(1)%dx)
-                do i = j, size(d(1)%dx)
+            do j = 1, size(d(1)%g)
+                do i = j, size(d(1)%g)
                     k = k + 1
-                    print '(I3, I3, I3, I3, ES22.14, ES22.14)', p, k, i, j, d(p)%ddx(k)
+                    print '(I3, I3, I3, I3, ES22.14, ES22.14)', p, k, i, j, d(p)%h(k)
                 end do
             end do
         end do
@@ -105,12 +105,12 @@
       $:print_dpart_2input(hdual_type)
 
       print*, "Lower triangular of Hessian matrix, h(i,j)"
-      print*, " k  i  j   ", name1, "%ddx(k)            ", name2, "%ddx(k)"
+      print*, " k  i  j   ", name1, "%h(k)            ", name2, "%h(k)"
       k = 0
-      do j = 1, size(d1%dx)
-          do i = j, size(d1%dx)
+      do j = 1, size(d1%g)
+          do i = j, size(d1%g)
               k = k + 1
-              print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d1%ddx(k), d2%ddx(k)
+              print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d1%h(k), d2%h(k)
           end do
       end do
 
@@ -121,47 +121,47 @@
 
 #:def print_dpart_1input(dual_type)
         print*, "Function values:"
-        print*, " ",name,"%x"
-        print '(ES22.14)', d%x
+        print*, " ",name,"%f"
+        print '(ES22.14)', d%f
 
         print*, "Derivatives:"
-        print*, " i    ", name, "%dx(i)"
-        do i = 1, size(d%dx)
-            print '(I3, ES22.14)' , i, d%dx(i)
+        print*, " i    ", name, "%g(i)"
+        do i = 1, size(d%g)
+            print '(I3, ES22.14)' , i, d%g(i)
         end do
 #:enddef
 
 #:def print_dpart_1input_vec(dual_type)
         print*, "Function values:"
-        print*, " ",name,"(p)%x"
+        print*, " ",name,"(p)%f"
         do p = 1, size(d)
-            print '(I3, ES22.14)', p, d(p)%x
+            print '(I3, ES22.14)', p, d(p)%f
         end do
 
         print*, "Derivatives:"
-        print*, " p   i    ", name, "(p)%dx(i)"
+        print*, " p   i    ", name, "(p)%g(i)"
         do p = 1, size(d)
-            do i = 1, size(d(1)%dx)
-                print '(I3, I3, ES22.14)', p, i, d(p)%dx(i)
+            do i = 1, size(d(1)%g)
+                print '(I3, I3, ES22.14)', p, i, d(p)%g(i)
             end do
         end do
 #:enddef
 
 #:def print_dpart_1input_mat(dual_type)
         print*, "Function values:"
-        print*, " ",name,"(p,q)%x"
+        print*, " ",name,"(p,q)%f"
         do q = 1, size(d, 2)
             do p = 1, size(d, 1)
-                print '(I3, I3, ES22.14)', p, q, d(p, q)%x
+                print '(I3, I3, ES22.14)', p, q, d(p, q)%f
             end do
         end do
 
         print*, "Derivatives:"
-        print*, " p  q  i    ", name, "(p)%dx(i)"
+        print*, " p  q  i    ", name, "(p)%g(i)"
         do q = 1, size(d, 2)
             do p = 1, size(d, 1)
-                do i = 1, size(d(1, 1)%dx)
-                    print '(I3, I3, I3, ES22.14)', p, q, i, d(p,q)%dx(i)
+                do i = 1, size(d(1, 1)%g)
+                    print '(I3, I3, I3, ES22.14)', p, q, i, d(p,q)%g(i)
                 end do
             end do
         end do
@@ -169,13 +169,13 @@
 
 #:def print_dpart_2input(dual_type)
         print*, "Function values:"
-        print*, " ",name1, "%x                  ", name2, "%x"
-        print '(ES22.14, ES22.14)', d1%x, d2%x
+        print*, " ",name1, "%f                  ", name2, "%f"
+        print '(ES22.14, ES22.14)', d1%f, d2%f
 
         print*, "Derivatives:"
-        print*, " i    ", name1, "%dx(i)                ", name2, "%dx(i)"
-        do i = 1, size(d1%dx)
-            print '(I3, ES22.14, ES22.14)' , i, d1%dx(i), d2%dx(i)
+        print*, " i    ", name1, "%g(i)                ", name2, "%g(i)"
+        do i = 1, size(d1%g)
+            print '(I3, ES22.14, ES22.14)' , i, d1%g(i), d2%g(i)
         end do
 #:enddef
 

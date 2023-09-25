@@ -12,18 +12,18 @@
   #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
     pure function hessian_${hdual_sn}$(d) result(m)
         type(${hdual_type}$), intent(in) :: d
-        real(${real_kind}$) :: m(size(d%dx), size(d%dx))
+        real(${real_kind}$) :: m(size(d%g), size(d%g))
         
         integer i, j, k
 
         k = 0
-        do j = 1, size(d%dx)
+        do j = 1, size(d%g)
             k = k + 1
-            m(j, j) = d%ddx(k)
-            do i = j+1, size(d%dx)
+            m(j, j) = d%h(k)
+            do i = j+1, size(d%g)
                 k = k + 1
-                m(i, j) = d%ddx(k)
-                m(j, i) = d%ddx(k)
+                m(i, j) = d%h(k)
+                m(j, i) = d%h(k)
             end do
         end do
 

@@ -13,8 +13,8 @@ module example_dual_undef_mod
     type :: dual_uvw_t
         !! dual number type
         sequence
-        real(dp) :: x = 0  ! functional value
-        real(dp) :: dx(num_deriv) = 0  ! derivatives
+        real(dp) :: f = 0  ! functional value
+        real(dp) :: g(num_deriv) = 0  ! derivatives
     end type
 
     interface initialize 
@@ -55,10 +55,10 @@ contains
 
 
         print *, "Function value:"
-        print *, fhd%x
+        print *, fhd%f
 
         print *, "Gradient:"
-        print *, fhd%dx
+        print *, fhd%g
 
     end subroutine
 
@@ -74,9 +74,9 @@ contains
         real(dp), intent(in) :: val
         integer, intent(in) :: idiff
         
-        dual%x = val
-        dual%dx = 0
-        dual%dx(idiff) = 1
+        dual%f = val
+        dual%g = 0
+        dual%g(idiff) = 1
 
     end subroutine
     pure subroutine initialize_d_vector(dual, val)
@@ -88,9 +88,9 @@ contains
         integer :: i
 
         do i = 1, size(dual)
-            dual(i)%x = val(i)
-            dual(i)%dx = 0
-            dual(i)%dx(i) = 1
+            dual(i)%f = val(i)
+            dual(i)%g = 0
+            dual(i)%g(i) = 1
         end do
 
     end subroutine
@@ -98,89 +98,89 @@ contains
         type(dual_uvw_t), intent(out) :: u
         integer, intent(in) :: i
 
-        u%x = real(i, dp)  ! This is faster than direct assignment
-        u%dx = 0.0_dp
+        u%f = real(i, dp)  ! This is faster than direct assignment
+        u%g = 0.0_dp
 
     end subroutine
     elemental subroutine assign_d_r(u, r)
         type(dual_uvw_t), intent(out) :: u
         real(dp), intent(in) :: r
 
-        u%x = r
-        u%dx = 0.0_dp
+        u%f = r
+        u%g = 0.0_dp
 
     end subroutine
     elemental subroutine assign_i_d(i, v)
         type(dual_uvw_t), intent(in) :: v
         integer, intent(out) :: i
 
-        i = int(v%x)
+        i = int(v%f)
 
     end subroutine
     elemental subroutine assign_r_d(r, v)
         type(dual_uvw_t), intent(in) :: v
         real(dp), intent(out) :: r
 
-        r = v%x
+        r = v%f
 
     end subroutine
     elemental function unary_add_d(u) result(res)
         type(dual_uvw_t), intent(in) :: u
         type(dual_uvw_t) :: res
         
-        res%x = u%x
-        res%dx = u%dx
+        res%f = u%f
+        res%g = u%g
     end function
     elemental function add_d_d(u, v) result(res)
         type(dual_uvw_t), intent(in) :: u
         type(dual_uvw_t), intent(in) :: v
         type(dual_uvw_t) :: res
         
-        res%x = u%x + v%x
-        res%dx = u%dx + v%dx
+        res%f = u%f + v%f
+        res%g = u%g + v%g
     end function
     elemental function add_d_r(u, v) result(res)
         type(dual_uvw_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(dual_uvw_t) :: res
         
-        res%x = u%x + v
-        res%dx = u%dx
+        res%f = u%f + v
+        res%g = u%g
     end function
     elemental function add_r_d(u, v) result(res)
         real(dp), intent(in) :: u
         type(dual_uvw_t), intent(in) :: v
         type(dual_uvw_t) :: res
         
-        res%x = u + v%x
-        res%dx = v%dx
+        res%f = u + v%f
+        res%g = v%g
     end function
     elemental function add_d_i(u, v) result(res)
         type(dual_uvw_t), intent(in) :: u
         integer, intent(in) :: v
         type(dual_uvw_t) :: res
         
-        res%x = u%x + v
-        res%dx = u%dx
+        res%f = u%f + v
+        res%g = u%g
     end function
     elemental function add_i_d(u, v) result(res)
         integer, intent(in) :: u
         type(dual_uvw_t), intent(in) :: v
         type(dual_uvw_t) :: res
         
-        res%x = u + v%x
-        res%dx = v%dx
+        res%f = u + v%f
+        res%g = v%g
     end function
     elemental  function acos_d(u) result(res)
         type(dual_uvw_t), intent(in) :: u
         type(dual_uvw_t) :: res
 
-        res%x = acos(u%x)
+        res%f = acos(u%f)
     
-        if (u%x == 1.0_dp .or. u%x == -1.0_dp) then
-            res%dx = set_Nan()  ! Undefined derivative
+        if (u%f == 1.0_dp .or. u%f == -1.0_dp) then
+            res%g = set_Nan()  ! Undefined derivative
         else
-            res%dx = -u%dx / sqrt(1.0_dp - u%x**2)
+            res%g = -u%g / sqrt(1.0_dp - u%f**2)
         end if
 
     end function

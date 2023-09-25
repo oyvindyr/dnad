@@ -12,28 +12,28 @@ module test_hdual_chain_mod
     type :: dual_y_t
         !! dual number type
         sequence
-        real(dp) :: x = 0  ! functional value
-        real(dp) :: dx(ny) = 0  ! derivatives
+        real(dp) :: f = 0  ! functional value
+        real(dp) :: g(ny) = 0  ! derivatives
     end type
     type :: dual_x_t
         !! dual number type
         sequence
-        real(dp) :: x = 0  ! functional value
-        real(dp) :: dx(nx) = 0  ! derivatives
+        real(dp) :: f = 0  ! functional value
+        real(dp) :: g(nx) = 0  ! derivatives
     end type
     type :: hdual_y_t
         !! hyper-dual number type
         sequence
-        real(dp) :: x = 0  ! functional value
-        real(dp) :: dx(ny) = 0  ! derivatives
-        real(dp) :: ddx(ny*(ny + 1)/2) = 0  ! Lower triangular of Hessian
+        real(dp) :: f = 0  ! functional value
+        real(dp) :: g(ny) = 0  ! derivatives
+        real(dp) :: h(ny*(ny + 1)/2) = 0  ! Lower triangular of Hessian
     end type
     type :: hdual_x_t
         !! hyper-dual number type
         sequence
-        real(dp) :: x = 0  ! functional value
-        real(dp) :: dx(nx) = 0  ! derivatives
-        real(dp) :: ddx(nx*(nx + 1)/2) = 0  ! Lower triangular of Hessian
+        real(dp) :: f = 0  ! functional value
+        real(dp) :: g(nx) = 0  ! derivatives
+        real(dp) :: h(nx*(nx + 1)/2) = 0  ! Lower triangular of Hessian
     end type
 
     interface  f_of_y
@@ -238,7 +238,7 @@ contains
         yx = y_of_x(xx)
 
         ! y as a function of y, with derivatives wrt y
-        call initialize(yy, yx(:)%x)
+        call initialize(yy, yx(:)%f)
 
         ! f as a function of y, with derivatives wrt y
         fy = f_of_y(yy)
@@ -263,13 +263,13 @@ contains
         call display(jacobi_tr(yx), "yxjt")
 
         is_ok = .true.
-        if (abs(fx_chain%x - fx%x) > abs_tol) then
+        if (abs(fx_chain%f - fx%f) > abs_tol) then
             is_ok = .false.
         end if
-        if (maxval(abs(fx_chain%dx - fx%dx)) > abs_tol) then
+        if (maxval(abs(fx_chain%g - fx%g)) > abs_tol) then
             is_ok = .false.
         end if
-        if (maxval(abs(fx_chain%ddx - fx%ddx)) > abs_tol) then
+        if (maxval(abs(fx_chain%h - fx%h)) > abs_tol) then
             is_ok = .false.
         end if
 
@@ -308,9 +308,9 @@ contains
         real(dp), intent(in) :: val
         integer, intent(in) :: idiff
         
-        dual%x = val
-        dual%dx = 0
-        dual%dx(idiff) = 1
+        dual%f = val
+        dual%g = 0
+        dual%g(idiff) = 1
 
     end subroutine
     pure subroutine initialize_dualx_vector(dual, val)
@@ -322,9 +322,9 @@ contains
         integer :: i
 
         do i = 1, size(dual)
-            dual(i)%x = val(i)
-            dual(i)%dx = 0
-            dual(i)%dx(i) = 1
+            dual(i)%f = val(i)
+            dual(i)%g = 0
+            dual(i)%g(i) = 1
         end do
 
     end subroutine
@@ -334,9 +334,9 @@ contains
         real(dp), intent(in) :: val
         integer, intent(in) :: idiff
         
-        dual%x = val
-        dual%dx = 0
-        dual%dx(idiff) = 1
+        dual%f = val
+        dual%g = 0
+        dual%g(idiff) = 1
 
     end subroutine
     pure subroutine initialize_dualy_vector(dual, val)
@@ -348,9 +348,9 @@ contains
         integer :: i
 
         do i = 1, size(dual)
-            dual(i)%x = val(i)
-            dual(i)%dx = 0
-            dual(i)%dx(i) = 1
+            dual(i)%f = val(i)
+            dual(i)%g = 0
+            dual(i)%g(i) = 1
         end do
 
     end subroutine
@@ -360,10 +360,10 @@ contains
         real(dp), intent(in) :: val
         integer, intent(in) :: idiff
         
-        hdual%x = val
-        hdual%dx = 0
-        hdual%ddx = 0
-        hdual%dx(idiff) = 1
+        hdual%f = val
+        hdual%g = 0
+        hdual%h = 0
+        hdual%g(idiff) = 1
 
     end subroutine
     pure subroutine initialize_hdualx_vector(hdual, val)
@@ -375,10 +375,10 @@ contains
         integer :: i
         
         do i = 1, size(hdual)
-            hdual(i)%x = val(i)
-            hdual(i)%dx = 0
-            hdual(i)%ddx = 0
-            hdual(i)%dx(i) = 1
+            hdual(i)%f = val(i)
+            hdual(i)%g = 0
+            hdual(i)%h = 0
+            hdual(i)%g(i) = 1
         end do
 
     end subroutine
@@ -388,10 +388,10 @@ contains
         real(dp), intent(in) :: val
         integer, intent(in) :: idiff
         
-        hdual%x = val
-        hdual%dx = 0
-        hdual%ddx = 0
-        hdual%dx(idiff) = 1
+        hdual%f = val
+        hdual%g = 0
+        hdual%h = 0
+        hdual%g(idiff) = 1
 
     end subroutine
     pure subroutine initialize_hdualy_vector(hdual, val)
@@ -403,10 +403,10 @@ contains
         integer :: i
         
         do i = 1, size(hdual)
-            hdual(i)%x = val(i)
-            hdual(i)%dx = 0
-            hdual(i)%ddx = 0
-            hdual(i)%dx(i) = 1
+            hdual(i)%f = val(i)
+            hdual(i)%g = 0
+            hdual(i)%h = 0
+            hdual(i)%g(i) = 1
         end do
 
     end subroutine
@@ -416,13 +416,13 @@ contains
         integer :: i
 
         print*, "Function values:"
-        print*, " ",name,"%x"
-        print '(ES22.14)', d%x
+        print*, " ",name,"%f"
+        print '(ES22.14)', d%f
 
         print*, "Derivatives:"
-        print*, " i    ", name, "%dx(i)"
-        do i = 1, size(d%dx)
-            print '(I3, ES22.14)' , i, d%dx(i)
+        print*, " i    ", name, "%g(i)"
+        do i = 1, size(d%g)
+            print '(I3, ES22.14)' , i, d%g(i)
         end do
     end subroutine
     subroutine display__dualx_1input_vec(d, name)
@@ -431,16 +431,16 @@ contains
         integer :: i, p
 
         print*, "Function values:"
-        print*, " ",name,"(p)%x"
+        print*, " ",name,"(p)%f"
         do p = 1, size(d)
-            print '(I3, ES22.14)', p, d(p)%x
+            print '(I3, ES22.14)', p, d(p)%f
         end do
 
         print*, "Derivatives:"
-        print*, " p   i    ", name, "(p)%dx(i)"
+        print*, " p   i    ", name, "(p)%g(i)"
         do p = 1, size(d)
-            do i = 1, size(d(1)%dx)
-                print '(I3, I3, ES22.14)', p, i, d(p)%dx(i)
+            do i = 1, size(d(1)%g)
+                print '(I3, I3, ES22.14)', p, i, d(p)%g(i)
             end do
         end do
     end subroutine
@@ -450,19 +450,19 @@ contains
         integer :: i, p, q
 
         print*, "Function values:"
-        print*, " ",name,"(p,q)%x"
+        print*, " ",name,"(p,q)%f"
         do q = 1, size(d, 2)
             do p = 1, size(d, 1)
-                print '(I3, I3, ES22.14)', p, q, d(p, q)%x
+                print '(I3, I3, ES22.14)', p, q, d(p, q)%f
             end do
         end do
 
         print*, "Derivatives:"
-        print*, " p  q  i    ", name, "(p)%dx(i)"
+        print*, " p  q  i    ", name, "(p)%g(i)"
         do q = 1, size(d, 2)
             do p = 1, size(d, 1)
-                do i = 1, size(d(1, 1)%dx)
-                    print '(I3, I3, I3, ES22.14)', p, q, i, d(p,q)%dx(i)
+                do i = 1, size(d(1, 1)%g)
+                    print '(I3, I3, I3, ES22.14)', p, q, i, d(p,q)%g(i)
                 end do
             end do
         end do
@@ -475,13 +475,13 @@ contains
         integer :: i
 
         print*, "Function values:"
-        print*, " ",name1, "%x                  ", name2, "%x"
-        print '(ES22.14, ES22.14)', d1%x, d2%x
+        print*, " ",name1, "%f                  ", name2, "%f"
+        print '(ES22.14, ES22.14)', d1%f, d2%f
 
         print*, "Derivatives:"
-        print*, " i    ", name1, "%dx(i)                ", name2, "%dx(i)"
-        do i = 1, size(d1%dx)
-            print '(I3, ES22.14, ES22.14)' , i, d1%dx(i), d2%dx(i)
+        print*, " i    ", name1, "%g(i)                ", name2, "%g(i)"
+        do i = 1, size(d1%g)
+            print '(I3, ES22.14, ES22.14)' , i, d1%g(i), d2%g(i)
         end do
     end subroutine
     subroutine display__dualy_1input(d, name)
@@ -490,13 +490,13 @@ contains
         integer :: i
 
         print*, "Function values:"
-        print*, " ",name,"%x"
-        print '(ES22.14)', d%x
+        print*, " ",name,"%f"
+        print '(ES22.14)', d%f
 
         print*, "Derivatives:"
-        print*, " i    ", name, "%dx(i)"
-        do i = 1, size(d%dx)
-            print '(I3, ES22.14)' , i, d%dx(i)
+        print*, " i    ", name, "%g(i)"
+        do i = 1, size(d%g)
+            print '(I3, ES22.14)' , i, d%g(i)
         end do
     end subroutine
     subroutine display__dualy_1input_vec(d, name)
@@ -505,16 +505,16 @@ contains
         integer :: i, p
 
         print*, "Function values:"
-        print*, " ",name,"(p)%x"
+        print*, " ",name,"(p)%f"
         do p = 1, size(d)
-            print '(I3, ES22.14)', p, d(p)%x
+            print '(I3, ES22.14)', p, d(p)%f
         end do
 
         print*, "Derivatives:"
-        print*, " p   i    ", name, "(p)%dx(i)"
+        print*, " p   i    ", name, "(p)%g(i)"
         do p = 1, size(d)
-            do i = 1, size(d(1)%dx)
-                print '(I3, I3, ES22.14)', p, i, d(p)%dx(i)
+            do i = 1, size(d(1)%g)
+                print '(I3, I3, ES22.14)', p, i, d(p)%g(i)
             end do
         end do
     end subroutine
@@ -524,19 +524,19 @@ contains
         integer :: i, p, q
 
         print*, "Function values:"
-        print*, " ",name,"(p,q)%x"
+        print*, " ",name,"(p,q)%f"
         do q = 1, size(d, 2)
             do p = 1, size(d, 1)
-                print '(I3, I3, ES22.14)', p, q, d(p, q)%x
+                print '(I3, I3, ES22.14)', p, q, d(p, q)%f
             end do
         end do
 
         print*, "Derivatives:"
-        print*, " p  q  i    ", name, "(p)%dx(i)"
+        print*, " p  q  i    ", name, "(p)%g(i)"
         do q = 1, size(d, 2)
             do p = 1, size(d, 1)
-                do i = 1, size(d(1, 1)%dx)
-                    print '(I3, I3, I3, ES22.14)', p, q, i, d(p,q)%dx(i)
+                do i = 1, size(d(1, 1)%g)
+                    print '(I3, I3, I3, ES22.14)', p, q, i, d(p,q)%g(i)
                 end do
             end do
         end do
@@ -549,13 +549,13 @@ contains
         integer :: i
 
         print*, "Function values:"
-        print*, " ",name1, "%x                  ", name2, "%x"
-        print '(ES22.14, ES22.14)', d1%x, d2%x
+        print*, " ",name1, "%f                  ", name2, "%f"
+        print '(ES22.14, ES22.14)', d1%f, d2%f
 
         print*, "Derivatives:"
-        print*, " i    ", name1, "%dx(i)                ", name2, "%dx(i)"
-        do i = 1, size(d1%dx)
-            print '(I3, ES22.14, ES22.14)' , i, d1%dx(i), d2%dx(i)
+        print*, " i    ", name1, "%g(i)                ", name2, "%g(i)"
+        do i = 1, size(d1%g)
+            print '(I3, ES22.14, ES22.14)' , i, d1%g(i), d2%g(i)
         end do
     end subroutine
 
@@ -565,22 +565,22 @@ contains
         integer :: i, j, k
 
         print*, "Function values:"
-        print*, " ",name,"%x"
-        print '(ES22.14)', d%x
+        print*, " ",name,"%f"
+        print '(ES22.14)', d%f
 
         print*, "Derivatives:"
-        print*, " i    ", name, "%dx(i)"
-        do i = 1, size(d%dx)
-            print '(I3, ES22.14)' , i, d%dx(i)
+        print*, " i    ", name, "%g(i)"
+        do i = 1, size(d%g)
+            print '(I3, ES22.14)' , i, d%g(i)
         end do
 
         print*, "Lower triangular of Hessian matrix, h(i,j)"
-        print*, " k  i  j   ", name, "%ddx(k)"
+        print*, " k  i  j   ", name, "%h(k)"
         k = 0
-        do j = 1, size(d%dx)
-            do i = j, size(d%dx)
+        do j = 1, size(d%g)
+            do i = j, size(d%g)
                 k = k + 1
-                print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d%ddx(k)
+                print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d%h(k)
             end do
         end do
 
@@ -591,27 +591,27 @@ contains
         integer :: i, j, k, p
 
         print*, "Function values:"
-        print*, " ",name,"(p)%x"
+        print*, " ",name,"(p)%f"
         do p = 1, size(d)
-            print '(I3, ES22.14)', p, d(p)%x
+            print '(I3, ES22.14)', p, d(p)%f
         end do
 
         print*, "Derivatives:"
-        print*, " p   i    ", name, "(p)%dx(i)"
+        print*, " p   i    ", name, "(p)%g(i)"
         do p = 1, size(d)
-            do i = 1, size(d(1)%dx)
-                print '(I3, I3, ES22.14)', p, i, d(p)%dx(i)
+            do i = 1, size(d(1)%g)
+                print '(I3, I3, ES22.14)', p, i, d(p)%g(i)
             end do
         end do
 
         print*, "Lower triangular of Hessian matrix, h(i,j)"
-        print*, " p  k  i  j   ", name, "(p)%ddx(k)"
+        print*, " p  k  i  j   ", name, "(p)%h(k)"
         do p = 1, size(d)
             k = 0
-            do j = 1, size(d(1)%dx)
-                do i = j, size(d(1)%dx)
+            do j = 1, size(d(1)%g)
+                do i = j, size(d(1)%g)
                     k = k + 1
-                    print '(I3, I3, I3, I3, ES22.14, ES22.14)', p, k, i, j, d(p)%ddx(k)
+                    print '(I3, I3, I3, I3, ES22.14, ES22.14)', p, k, i, j, d(p)%h(k)
                 end do
             end do
         end do
@@ -625,22 +625,22 @@ contains
       integer :: i, j, k
 
         print*, "Function values:"
-        print*, " ",name1, "%x                  ", name2, "%x"
-        print '(ES22.14, ES22.14)', d1%x, d2%x
+        print*, " ",name1, "%f                  ", name2, "%f"
+        print '(ES22.14, ES22.14)', d1%f, d2%f
 
         print*, "Derivatives:"
-        print*, " i    ", name1, "%dx(i)                ", name2, "%dx(i)"
-        do i = 1, size(d1%dx)
-            print '(I3, ES22.14, ES22.14)' , i, d1%dx(i), d2%dx(i)
+        print*, " i    ", name1, "%g(i)                ", name2, "%g(i)"
+        do i = 1, size(d1%g)
+            print '(I3, ES22.14, ES22.14)' , i, d1%g(i), d2%g(i)
         end do
 
       print*, "Lower triangular of Hessian matrix, h(i,j)"
-      print*, " k  i  j   ", name1, "%ddx(k)            ", name2, "%ddx(k)"
+      print*, " k  i  j   ", name1, "%h(k)            ", name2, "%h(k)"
       k = 0
-      do j = 1, size(d1%dx)
-          do i = j, size(d1%dx)
+      do j = 1, size(d1%g)
+          do i = j, size(d1%g)
               k = k + 1
-              print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d1%ddx(k), d2%ddx(k)
+              print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d1%h(k), d2%h(k)
           end do
       end do
 
@@ -651,22 +651,22 @@ contains
         integer :: i, j, k
 
         print*, "Function values:"
-        print*, " ",name,"%x"
-        print '(ES22.14)', d%x
+        print*, " ",name,"%f"
+        print '(ES22.14)', d%f
 
         print*, "Derivatives:"
-        print*, " i    ", name, "%dx(i)"
-        do i = 1, size(d%dx)
-            print '(I3, ES22.14)' , i, d%dx(i)
+        print*, " i    ", name, "%g(i)"
+        do i = 1, size(d%g)
+            print '(I3, ES22.14)' , i, d%g(i)
         end do
 
         print*, "Lower triangular of Hessian matrix, h(i,j)"
-        print*, " k  i  j   ", name, "%ddx(k)"
+        print*, " k  i  j   ", name, "%h(k)"
         k = 0
-        do j = 1, size(d%dx)
-            do i = j, size(d%dx)
+        do j = 1, size(d%g)
+            do i = j, size(d%g)
                 k = k + 1
-                print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d%ddx(k)
+                print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d%h(k)
             end do
         end do
 
@@ -677,27 +677,27 @@ contains
         integer :: i, j, k, p
 
         print*, "Function values:"
-        print*, " ",name,"(p)%x"
+        print*, " ",name,"(p)%f"
         do p = 1, size(d)
-            print '(I3, ES22.14)', p, d(p)%x
+            print '(I3, ES22.14)', p, d(p)%f
         end do
 
         print*, "Derivatives:"
-        print*, " p   i    ", name, "(p)%dx(i)"
+        print*, " p   i    ", name, "(p)%g(i)"
         do p = 1, size(d)
-            do i = 1, size(d(1)%dx)
-                print '(I3, I3, ES22.14)', p, i, d(p)%dx(i)
+            do i = 1, size(d(1)%g)
+                print '(I3, I3, ES22.14)', p, i, d(p)%g(i)
             end do
         end do
 
         print*, "Lower triangular of Hessian matrix, h(i,j)"
-        print*, " p  k  i  j   ", name, "(p)%ddx(k)"
+        print*, " p  k  i  j   ", name, "(p)%h(k)"
         do p = 1, size(d)
             k = 0
-            do j = 1, size(d(1)%dx)
-                do i = j, size(d(1)%dx)
+            do j = 1, size(d(1)%g)
+                do i = j, size(d(1)%g)
                     k = k + 1
-                    print '(I3, I3, I3, I3, ES22.14, ES22.14)', p, k, i, j, d(p)%ddx(k)
+                    print '(I3, I3, I3, I3, ES22.14, ES22.14)', p, k, i, j, d(p)%h(k)
                 end do
             end do
         end do
@@ -711,22 +711,22 @@ contains
       integer :: i, j, k
 
         print*, "Function values:"
-        print*, " ",name1, "%x                  ", name2, "%x"
-        print '(ES22.14, ES22.14)', d1%x, d2%x
+        print*, " ",name1, "%f                  ", name2, "%f"
+        print '(ES22.14, ES22.14)', d1%f, d2%f
 
         print*, "Derivatives:"
-        print*, " i    ", name1, "%dx(i)                ", name2, "%dx(i)"
-        do i = 1, size(d1%dx)
-            print '(I3, ES22.14, ES22.14)' , i, d1%dx(i), d2%dx(i)
+        print*, " i    ", name1, "%g(i)                ", name2, "%g(i)"
+        do i = 1, size(d1%g)
+            print '(I3, ES22.14, ES22.14)' , i, d1%g(i), d2%g(i)
         end do
 
       print*, "Lower triangular of Hessian matrix, h(i,j)"
-      print*, " k  i  j   ", name1, "%ddx(k)            ", name2, "%ddx(k)"
+      print*, " k  i  j   ", name1, "%h(k)            ", name2, "%h(k)"
       k = 0
-      do j = 1, size(d1%dx)
-          do i = j, size(d1%dx)
+      do j = 1, size(d1%g)
+          do i = j, size(d1%g)
               k = k + 1
-              print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d1%ddx(k), d2%ddx(k)
+              print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d1%h(k), d2%h(k)
           end do
       end do
 
@@ -734,147 +734,157 @@ contains
 
     pure function hessian_hdualx(d) result(m)
         type(hdual_x_t), intent(in) :: d
-        real(dp) :: m(size(d%dx), size(d%dx))
+        real(dp) :: m(size(d%g), size(d%g))
         
         integer i, j, k
 
         k = 0
-        do j = 1, size(d%dx)
+        do j = 1, size(d%g)
             k = k + 1
-            m(j, j) = d%ddx(k)
-            do i = j+1, size(d%dx)
+            m(j, j) = d%h(k)
+            do i = j+1, size(d%g)
                 k = k + 1
-                m(i, j) = d%ddx(k)
-                m(j, i) = d%ddx(k)
+                m(i, j) = d%h(k)
+                m(j, i) = d%h(k)
             end do
         end do
 
     end function
     pure function hessian_hdualy(d) result(m)
         type(hdual_y_t), intent(in) :: d
-        real(dp) :: m(size(d%dx), size(d%dx))
+        real(dp) :: m(size(d%g), size(d%g))
         
         integer i, j, k
 
         k = 0
-        do j = 1, size(d%dx)
+        do j = 1, size(d%g)
             k = k + 1
-            m(j, j) = d%ddx(k)
-            do i = j+1, size(d%dx)
+            m(j, j) = d%h(k)
+            do i = j+1, size(d%g)
                 k = k + 1
-                m(i, j) = d%ddx(k)
-                m(j, i) = d%ddx(k)
+                m(i, j) = d%h(k)
+                m(j, i) = d%h(k)
             end do
         end do
 
     end function
     pure function jacobi_tr__hdualx(x) result(y)
         type(hdual_x_t), intent(in) :: x(:)
-        type(dual_x_t) :: y(size(x(1)%dx),size(x))
+        type(dual_x_t) :: y(size(x(1)%g),size(x))
 
-        real(dp) :: hess(size(x(1)%dx), size(x(1)%dx))
+        real(dp) :: hess(size(x(1)%g), size(x(1)%g))
         integer :: i, j
 
         do j = 1, size(x)
             hess = hessian(x(j))
-            do i = 1, size(x(1)%dx)
-                y(i,j)%x = x(j)%dx(i)
-                y(i,j)%dx = hess(:,i)
+            do i = 1, size(x(1)%g)
+                y(i,j)%f = x(j)%g(i)
+                y(i,j)%g = hess(:,i)
             end do
         end do
 
     end function
     pure function jacobi_tr__hdualy(x) result(y)
         type(hdual_y_t), intent(in) :: x(:)
-        type(dual_y_t) :: y(size(x(1)%dx),size(x))
+        type(dual_y_t) :: y(size(x(1)%g),size(x))
 
-        real(dp) :: hess(size(x(1)%dx), size(x(1)%dx))
+        real(dp) :: hess(size(x(1)%g), size(x(1)%g))
         integer :: i, j
 
         do j = 1, size(x)
             hess = hessian(x(j))
-            do i = 1, size(x(1)%dx)
-                y(i,j)%x = x(j)%dx(i)
-                y(i,j)%dx = hess(:,i)
+            do i = 1, size(x(1)%g)
+                y(i,j)%f = x(j)%g(i)
+                y(i,j)%g = hess(:,i)
             end do
         end do
 
     end function
     pure function jacobi_tr__dualx(x) result(y)
         type(dual_x_t), intent(in) :: x(:)
-        real(dp) :: y(size(x(1)%dx),size(x))
+        real(dp) :: y(size(x(1)%g),size(x))
 
         integer :: j
 
         do j = 1, size(x)
-            y(:,j) = x(j)%dx
+            y(:,j) = x(j)%g
         end do
 
     end function
     pure function jacobi_tr__dualy(x) result(y)
         type(dual_y_t), intent(in) :: x(:)
-        real(dp) :: y(size(x(1)%dx),size(x))
+        real(dp) :: y(size(x(1)%g),size(x))
 
         integer :: j
 
         do j = 1, size(x)
-            y(:,j) = x(j)%dx
+            y(:,j) = x(j)%g
         end do
 
     end function
     pure function chain_duals__dualy_dualx(fy, yx) result(fx)
-
+        !! Convert a function value from type(dual_y_t) to type(dual_x_t)
+        !! by applying the chain rule of derivation. Second input yx(:) has type(dual_x_t)
+        !! and represents the design variables by which the derivatives of fy is taken with respect to.
+        !! Thus, size(yx) needs to be equal to size(fy%g) (size known at compile time).
+         
+        ! This function has been automatically generated by dnad_chain_duals.fypp
         type(dual_y_t), intent(in) :: fy
-        type(dual_x_t), intent(in) :: yx(size(fy%dx))
+        type(dual_x_t), intent(in) :: yx(size(fy%g))
         type(dual_x_t) :: fx
         
         integer :: p, j
 
-        fx%x = fy%x
-        fx%dx = 0
-        do p = 1, size(fy%dx)
-            do j = 1, size(fx%dx)
-                fx%dx(j) = fx%dx(j) + fy%dx(p)*yx(p)%dx(j)
+        fx%f = fy%f
+        fx%g = 0
+        do p = 1, size(fy%g)
+            do j = 1, size(fx%g)
+                fx%g(j) = fx%g(j) + fy%g(p)*yx(p)%g(j)
             end do
         end do
 
 
     end function
     pure function chain_duals__hdualy_hdualx(fy, yx) result(fx)
-
+        !! Convert a function value from type(hdual_y_t) to type(hdual_x_t)
+        !! by applying the chain rule of derivation. Second input yx(:) has type(hdual_x_t)
+        !! and represents the design variables by which the derivatives of fy is taken with respect to.
+        !! Thus, size(yx) needs to be equal to size(fy%g) (size known at compile time).
+         
+        ! This function has been automatically generated by dnad_chain_duals.fypp
         type(hdual_y_t), intent(in) :: fy
-        type(hdual_x_t), intent(in) :: yx(size(fy%dx))
+        type(hdual_x_t), intent(in) :: yx(size(fy%g))
         type(hdual_x_t) :: fx
         
         integer :: p, j
         integer :: i, q, k, nk
-        real(dp) :: hfy(size(fy%dx), size(fy%dx))
+        real(dp) :: hfy(size(fy%g), size(fy%g))
         real(dp) :: tmp
 
-        fx%x = fy%x
-        fx%dx = 0
-        do p = 1, size(fy%dx)
-            do j = 1, size(fx%dx)
-                fx%dx(j) = fx%dx(j) + fy%dx(p)*yx(p)%dx(j)
+        fx%f = fy%f
+        fx%g = 0
+        do p = 1, size(fy%g)
+            do j = 1, size(fx%g)
+                fx%g(j) = fx%g(j) + fy%g(p)*yx(p)%g(j)
             end do
         end do
 
-        nk = size(fx%dx)*(size(fx%dx)+1)/2
-        fx%ddx = 0
-        do p = 1, size(fy%dx)
+        nk = size(fx%g)*(size(fx%g)+1)/2
+        fx%h = 0
+        do p = 1, size(fy%g)
             do k = 1, nk
-                fx%ddx(k) = fx%ddx(k) + fy%dx(p)*yx(p)%ddx(k)
+                fx%h(k) = fx%h(k) + fy%g(p)*yx(p)%h(k)
             end do
         end do
         hfy = hessian(fy)
-        do q = 1, size(fy%dx)
-            do p = 1, size(fy%dx)
+        do q = 1, size(fy%g)
+            do p = 1, size(fy%g)
                 k = 0
-                do j = 1, size(fx%dx)
-                    tmp = hfy(p,q)*yx(q)%dx(j)
-                    do i = j, size(fx%dx)
+                do j = 1, size(fx%g)
+                    tmp = hfy(p,q)*yx(q)%g(j)
+                    do i = j, size(fx%g)
                         k = k + 1
-                        fx%ddx(k) = fx%ddx(k) + tmp*yx(p)%dx(i)
+                        fx%h(k) = fx%h(k) + tmp*yx(p)%g(i)
                     end do
                 end do
             end do
@@ -885,605 +895,605 @@ contains
         type(dual_x_t), intent(out) :: u
         integer, intent(in) :: i
 
-        u%x = real(i, dp)  ! This is faster than direct assignment
-        u%dx = 0.0_dp
+        u%f = real(i, dp)  ! This is faster than direct assignment
+        u%g = 0.0_dp
 
     end subroutine
     elemental subroutine assign_dualx_r(u, r)
         type(dual_x_t), intent(out) :: u
         real(dp), intent(in) :: r
 
-        u%x = r
-        u%dx = 0.0_dp
+        u%f = r
+        u%g = 0.0_dp
 
     end subroutine
     elemental subroutine assign_i_dualx(i, v)
         type(dual_x_t), intent(in) :: v
         integer, intent(out) :: i
 
-        i = int(v%x)
+        i = int(v%f)
 
     end subroutine
     elemental subroutine assign_r_dualx(r, v)
         type(dual_x_t), intent(in) :: v
         real(dp), intent(out) :: r
 
-        r = v%x
+        r = v%f
 
     end subroutine
     elemental subroutine assign_dualy_i(u, i)
         type(dual_y_t), intent(out) :: u
         integer, intent(in) :: i
 
-        u%x = real(i, dp)  ! This is faster than direct assignment
-        u%dx = 0.0_dp
+        u%f = real(i, dp)  ! This is faster than direct assignment
+        u%g = 0.0_dp
 
     end subroutine
     elemental subroutine assign_dualy_r(u, r)
         type(dual_y_t), intent(out) :: u
         real(dp), intent(in) :: r
 
-        u%x = r
-        u%dx = 0.0_dp
+        u%f = r
+        u%g = 0.0_dp
 
     end subroutine
     elemental subroutine assign_i_dualy(i, v)
         type(dual_y_t), intent(in) :: v
         integer, intent(out) :: i
 
-        i = int(v%x)
+        i = int(v%f)
 
     end subroutine
     elemental subroutine assign_r_dualy(r, v)
         type(dual_y_t), intent(in) :: v
         real(dp), intent(out) :: r
 
-        r = v%x
+        r = v%f
 
     end subroutine
     elemental subroutine assign_hdualx_i(u, i)
         type(hdual_x_t), intent(out) :: u
         integer, intent(in) :: i
 
-        u%x = real(i, dp)  ! This is faster than direct assignment
-        u%dx = 0.0_dp
-        u%ddx = 0.0_dp
+        u%f = real(i, dp)  ! This is faster than direct assignment
+        u%g = 0.0_dp
+        u%h = 0.0_dp
 
     end subroutine
     elemental subroutine assign_hdualx_r(u, r)
         type(hdual_x_t), intent(out) :: u
         real(dp), intent(in) :: r
 
-        u%x = r
-        u%dx = 0.0_dp
-        u%ddx = 0.0_dp
+        u%f = r
+        u%g = 0.0_dp
+        u%h = 0.0_dp
 
     end subroutine
     elemental subroutine assign_i_hdualx(i, v)
         type(hdual_x_t), intent(in) :: v
         integer, intent(out) :: i
 
-        i = int(v%x)
+        i = int(v%f)
 
     end subroutine
     elemental subroutine assign_r_hdualx(r, v)
         type(hdual_x_t), intent(in) :: v
         real(dp), intent(out) :: r
 
-        r = v%x
+        r = v%f
 
     end subroutine
     elemental subroutine assign_hdualy_i(u, i)
         type(hdual_y_t), intent(out) :: u
         integer, intent(in) :: i
 
-        u%x = real(i, dp)  ! This is faster than direct assignment
-        u%dx = 0.0_dp
-        u%ddx = 0.0_dp
+        u%f = real(i, dp)  ! This is faster than direct assignment
+        u%g = 0.0_dp
+        u%h = 0.0_dp
 
     end subroutine
     elemental subroutine assign_hdualy_r(u, r)
         type(hdual_y_t), intent(out) :: u
         real(dp), intent(in) :: r
 
-        u%x = r
-        u%dx = 0.0_dp
-        u%ddx = 0.0_dp
+        u%f = r
+        u%g = 0.0_dp
+        u%h = 0.0_dp
 
     end subroutine
     elemental subroutine assign_i_hdualy(i, v)
         type(hdual_y_t), intent(in) :: v
         integer, intent(out) :: i
 
-        i = int(v%x)
+        i = int(v%f)
 
     end subroutine
     elemental subroutine assign_r_hdualy(r, v)
         type(hdual_y_t), intent(in) :: v
         real(dp), intent(out) :: r
 
-        r = v%x
+        r = v%f
 
     end subroutine
     elemental function unary_add_dualx(u) result(res)
         type(dual_x_t), intent(in) :: u
         type(dual_x_t) :: res
         
-        res%x = u%x
-        res%dx = u%dx
+        res%f = u%f
+        res%g = u%g
     end function
     elemental function add_dualx_dualx(u, v) result(res)
         type(dual_x_t), intent(in) :: u
         type(dual_x_t), intent(in) :: v
         type(dual_x_t) :: res
         
-        res%x = u%x + v%x
-        res%dx = u%dx + v%dx
+        res%f = u%f + v%f
+        res%g = u%g + v%g
     end function
     elemental function add_dualx_r(u, v) result(res)
         type(dual_x_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(dual_x_t) :: res
         
-        res%x = u%x + v
-        res%dx = u%dx
+        res%f = u%f + v
+        res%g = u%g
     end function
     elemental function add_r_dualx(u, v) result(res)
         real(dp), intent(in) :: u
         type(dual_x_t), intent(in) :: v
         type(dual_x_t) :: res
         
-        res%x = u + v%x
-        res%dx = v%dx
+        res%f = u + v%f
+        res%g = v%g
     end function
     elemental function add_dualx_i(u, v) result(res)
         type(dual_x_t), intent(in) :: u
         integer, intent(in) :: v
         type(dual_x_t) :: res
         
-        res%x = u%x + v
-        res%dx = u%dx
+        res%f = u%f + v
+        res%g = u%g
     end function
     elemental function add_i_dualx(u, v) result(res)
         integer, intent(in) :: u
         type(dual_x_t), intent(in) :: v
         type(dual_x_t) :: res
         
-        res%x = u + v%x
-        res%dx = v%dx
+        res%f = u + v%f
+        res%g = v%g
     end function
     elemental function unary_add_dualy(u) result(res)
         type(dual_y_t), intent(in) :: u
         type(dual_y_t) :: res
         
-        res%x = u%x
-        res%dx = u%dx
+        res%f = u%f
+        res%g = u%g
     end function
     elemental function add_dualy_dualy(u, v) result(res)
         type(dual_y_t), intent(in) :: u
         type(dual_y_t), intent(in) :: v
         type(dual_y_t) :: res
         
-        res%x = u%x + v%x
-        res%dx = u%dx + v%dx
+        res%f = u%f + v%f
+        res%g = u%g + v%g
     end function
     elemental function add_dualy_r(u, v) result(res)
         type(dual_y_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(dual_y_t) :: res
         
-        res%x = u%x + v
-        res%dx = u%dx
+        res%f = u%f + v
+        res%g = u%g
     end function
     elemental function add_r_dualy(u, v) result(res)
         real(dp), intent(in) :: u
         type(dual_y_t), intent(in) :: v
         type(dual_y_t) :: res
         
-        res%x = u + v%x
-        res%dx = v%dx
+        res%f = u + v%f
+        res%g = v%g
     end function
     elemental function add_dualy_i(u, v) result(res)
         type(dual_y_t), intent(in) :: u
         integer, intent(in) :: v
         type(dual_y_t) :: res
         
-        res%x = u%x + v
-        res%dx = u%dx
+        res%f = u%f + v
+        res%g = u%g
     end function
     elemental function add_i_dualy(u, v) result(res)
         integer, intent(in) :: u
         type(dual_y_t), intent(in) :: v
         type(dual_y_t) :: res
         
-        res%x = u + v%x
-        res%dx = v%dx
+        res%f = u + v%f
+        res%g = v%g
     end function
     elemental function unary_add_hdualx(u) result(res)
         type(hdual_x_t), intent(in) :: u
         type(hdual_x_t) :: res
         
-        res%x = u%x
-        res%dx = u%dx
-        res%ddx = u%ddx
+        res%f = u%f
+        res%g = u%g
+        res%h = u%h
     end function
     elemental function add_hdualx_hdualx(u, v) result(res)
         type(hdual_x_t), intent(in) :: u
         type(hdual_x_t), intent(in) :: v
         type(hdual_x_t) :: res
         
-        res%x = u%x + v%x
-        res%dx = u%dx + v%dx
-        res%ddx = u%ddx + v%ddx
+        res%f = u%f + v%f
+        res%g = u%g + v%g
+        res%h = u%h + v%h
     end function
     elemental function add_hdualx_r(u, v) result(res)
         type(hdual_x_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual_x_t) :: res
         
-        res%x = u%x + v
-        res%dx = u%dx
-        res%ddx = u%ddx
+        res%f = u%f + v
+        res%g = u%g
+        res%h = u%h
     end function
     elemental function add_r_hdualx(u, v) result(res)
         real(dp), intent(in) :: u
         type(hdual_x_t), intent(in) :: v
         type(hdual_x_t) :: res
         
-        res%x = u + v%x
-        res%dx = v%dx
-        res%ddx = v%ddx
+        res%f = u + v%f
+        res%g = v%g
+        res%h = v%h
     end function
     elemental function add_hdualx_i(u, v) result(res)
         type(hdual_x_t), intent(in) :: u
         integer, intent(in) :: v
         type(hdual_x_t) :: res
         
-        res%x = u%x + v
-        res%dx = u%dx
-        res%ddx = u%ddx
+        res%f = u%f + v
+        res%g = u%g
+        res%h = u%h
     end function
     elemental function add_i_hdualx(u, v) result(res)
         integer, intent(in) :: u
         type(hdual_x_t), intent(in) :: v
         type(hdual_x_t) :: res
         
-        res%x = u + v%x
-        res%dx = v%dx
-        res%ddx = v%ddx
+        res%f = u + v%f
+        res%g = v%g
+        res%h = v%h
     end function
     elemental function unary_add_hdualy(u) result(res)
         type(hdual_y_t), intent(in) :: u
         type(hdual_y_t) :: res
         
-        res%x = u%x
-        res%dx = u%dx
-        res%ddx = u%ddx
+        res%f = u%f
+        res%g = u%g
+        res%h = u%h
     end function
     elemental function add_hdualy_hdualy(u, v) result(res)
         type(hdual_y_t), intent(in) :: u
         type(hdual_y_t), intent(in) :: v
         type(hdual_y_t) :: res
         
-        res%x = u%x + v%x
-        res%dx = u%dx + v%dx
-        res%ddx = u%ddx + v%ddx
+        res%f = u%f + v%f
+        res%g = u%g + v%g
+        res%h = u%h + v%h
     end function
     elemental function add_hdualy_r(u, v) result(res)
         type(hdual_y_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual_y_t) :: res
         
-        res%x = u%x + v
-        res%dx = u%dx
-        res%ddx = u%ddx
+        res%f = u%f + v
+        res%g = u%g
+        res%h = u%h
     end function
     elemental function add_r_hdualy(u, v) result(res)
         real(dp), intent(in) :: u
         type(hdual_y_t), intent(in) :: v
         type(hdual_y_t) :: res
         
-        res%x = u + v%x
-        res%dx = v%dx
-        res%ddx = v%ddx
+        res%f = u + v%f
+        res%g = v%g
+        res%h = v%h
     end function
     elemental function add_hdualy_i(u, v) result(res)
         type(hdual_y_t), intent(in) :: u
         integer, intent(in) :: v
         type(hdual_y_t) :: res
         
-        res%x = u%x + v
-        res%dx = u%dx
-        res%ddx = u%ddx
+        res%f = u%f + v
+        res%g = u%g
+        res%h = u%h
     end function
     elemental function add_i_hdualy(u, v) result(res)
         integer, intent(in) :: u
         type(hdual_y_t), intent(in) :: v
         type(hdual_y_t) :: res
         
-        res%x = u + v%x
-        res%dx = v%dx
-        res%ddx = v%ddx
+        res%f = u + v%f
+        res%g = v%g
+        res%h = v%h
     end function
     elemental function unary_minus_dualx(u) result(res)
         type(dual_x_t), intent(in) :: u
         type(dual_x_t) :: res
         
-        res%x = -u%x
-        res%dx = -u%dx
+        res%f = -u%f
+        res%g = -u%g
     end function
     elemental function minus_dualx_dualx(u, v) result(res)
         type(dual_x_t), intent(in) :: u
         type(dual_x_t), intent(in) :: v
         type(dual_x_t) :: res
         
-        res%x = u%x - v%x
-        res%dx = u%dx - v%dx
+        res%f = u%f - v%f
+        res%g = u%g - v%g
     end function
     elemental function minus_dualx_r(u, v) result(res)
         type(dual_x_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(dual_x_t) :: res
         
-        res%x = u%x - v
-        res%dx = u%dx
+        res%f = u%f - v
+        res%g = u%g
     end function
     elemental function minus_r_dualx(u, v) result(res)
         real(dp), intent(in) :: u
         type(dual_x_t), intent(in) :: v
         type(dual_x_t) :: res
         
-        res%x = u - v%x
-        res%dx = -v%dx
+        res%f = u - v%f
+        res%g = -v%g
     end function
     elemental function minus_dualx_i(u, v) result(res)
         type(dual_x_t), intent(in) :: u
         integer, intent(in) :: v
         type(dual_x_t) :: res
         
-        res%x = u%x - v
-        res%dx = u%dx
+        res%f = u%f - v
+        res%g = u%g
     end function
     elemental function minus_i_dualx(u, v) result(res)
         integer, intent(in) :: u
         type(dual_x_t), intent(in) :: v
         type(dual_x_t) :: res
         
-        res%x = u - v%x
-        res%dx = -v%dx
+        res%f = u - v%f
+        res%g = -v%g
     end function
     elemental function unary_minus_dualy(u) result(res)
         type(dual_y_t), intent(in) :: u
         type(dual_y_t) :: res
         
-        res%x = -u%x
-        res%dx = -u%dx
+        res%f = -u%f
+        res%g = -u%g
     end function
     elemental function minus_dualy_dualy(u, v) result(res)
         type(dual_y_t), intent(in) :: u
         type(dual_y_t), intent(in) :: v
         type(dual_y_t) :: res
         
-        res%x = u%x - v%x
-        res%dx = u%dx - v%dx
+        res%f = u%f - v%f
+        res%g = u%g - v%g
     end function
     elemental function minus_dualy_r(u, v) result(res)
         type(dual_y_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(dual_y_t) :: res
         
-        res%x = u%x - v
-        res%dx = u%dx
+        res%f = u%f - v
+        res%g = u%g
     end function
     elemental function minus_r_dualy(u, v) result(res)
         real(dp), intent(in) :: u
         type(dual_y_t), intent(in) :: v
         type(dual_y_t) :: res
         
-        res%x = u - v%x
-        res%dx = -v%dx
+        res%f = u - v%f
+        res%g = -v%g
     end function
     elemental function minus_dualy_i(u, v) result(res)
         type(dual_y_t), intent(in) :: u
         integer, intent(in) :: v
         type(dual_y_t) :: res
         
-        res%x = u%x - v
-        res%dx = u%dx
+        res%f = u%f - v
+        res%g = u%g
     end function
     elemental function minus_i_dualy(u, v) result(res)
         integer, intent(in) :: u
         type(dual_y_t), intent(in) :: v
         type(dual_y_t) :: res
         
-        res%x = u - v%x
-        res%dx = -v%dx
+        res%f = u - v%f
+        res%g = -v%g
     end function
     elemental function unary_minus_hdualx(u) result(res)
         type(hdual_x_t), intent(in) :: u
         type(hdual_x_t) :: res
         
-        res%x = -u%x
-        res%dx = -u%dx
-        res%ddx = -u%ddx
+        res%f = -u%f
+        res%g = -u%g
+        res%h = -u%h
     end function
     elemental function minus_hdualx_hdualx(u, v) result(res)
         type(hdual_x_t), intent(in) :: u
         type(hdual_x_t), intent(in) :: v
         type(hdual_x_t) :: res
         
-        res%x = u%x - v%x
-        res%dx = u%dx - v%dx
-        res%ddx = u%ddx - v%ddx
+        res%f = u%f - v%f
+        res%g = u%g - v%g
+        res%h = u%h - v%h
     end function
     elemental function minus_hdualx_r(u, v) result(res)
         type(hdual_x_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual_x_t) :: res
         
-        res%x = u%x - v
-        res%dx = u%dx
-        res%ddx = u%ddx
+        res%f = u%f - v
+        res%g = u%g
+        res%h = u%h
     end function
     elemental function minus_r_hdualx(u, v) result(res)
         real(dp), intent(in) :: u
         type(hdual_x_t), intent(in) :: v
         type(hdual_x_t) :: res
         
-        res%x = u - v%x
-        res%dx = -v%dx
-        res%ddx = -v%ddx
+        res%f = u - v%f
+        res%g = -v%g
+        res%h = -v%h
     end function
     elemental function minus_hdualx_i(u, v) result(res)
         type(hdual_x_t), intent(in) :: u
         integer, intent(in) :: v
         type(hdual_x_t) :: res
         
-        res%x = u%x - v
-        res%dx = u%dx
-        res%ddx = u%ddx
+        res%f = u%f - v
+        res%g = u%g
+        res%h = u%h
     end function
     elemental function minus_i_hdualx(u, v) result(res)
         integer, intent(in) :: u
         type(hdual_x_t), intent(in) :: v
         type(hdual_x_t) :: res
         
-        res%x = u - v%x
-        res%dx = -v%dx
-        res%ddx = -v%ddx
+        res%f = u - v%f
+        res%g = -v%g
+        res%h = -v%h
     end function
     elemental function unary_minus_hdualy(u) result(res)
         type(hdual_y_t), intent(in) :: u
         type(hdual_y_t) :: res
         
-        res%x = -u%x
-        res%dx = -u%dx
-        res%ddx = -u%ddx
+        res%f = -u%f
+        res%g = -u%g
+        res%h = -u%h
     end function
     elemental function minus_hdualy_hdualy(u, v) result(res)
         type(hdual_y_t), intent(in) :: u
         type(hdual_y_t), intent(in) :: v
         type(hdual_y_t) :: res
         
-        res%x = u%x - v%x
-        res%dx = u%dx - v%dx
-        res%ddx = u%ddx - v%ddx
+        res%f = u%f - v%f
+        res%g = u%g - v%g
+        res%h = u%h - v%h
     end function
     elemental function minus_hdualy_r(u, v) result(res)
         type(hdual_y_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual_y_t) :: res
         
-        res%x = u%x - v
-        res%dx = u%dx
-        res%ddx = u%ddx
+        res%f = u%f - v
+        res%g = u%g
+        res%h = u%h
     end function
     elemental function minus_r_hdualy(u, v) result(res)
         real(dp), intent(in) :: u
         type(hdual_y_t), intent(in) :: v
         type(hdual_y_t) :: res
         
-        res%x = u - v%x
-        res%dx = -v%dx
-        res%ddx = -v%ddx
+        res%f = u - v%f
+        res%g = -v%g
+        res%h = -v%h
     end function
     elemental function minus_hdualy_i(u, v) result(res)
         type(hdual_y_t), intent(in) :: u
         integer, intent(in) :: v
         type(hdual_y_t) :: res
         
-        res%x = u%x - v
-        res%dx = u%dx
-        res%ddx = u%ddx
+        res%f = u%f - v
+        res%g = u%g
+        res%h = u%h
     end function
     elemental function minus_i_hdualy(u, v) result(res)
         integer, intent(in) :: u
         type(hdual_y_t), intent(in) :: v
         type(hdual_y_t) :: res
         
-        res%x = u - v%x
-        res%dx = -v%dx
-        res%ddx = -v%ddx
+        res%f = u - v%f
+        res%g = -v%g
+        res%h = -v%h
     end function
     elemental function mult_dualx_dualx(u, v) result(res)
         type(dual_x_t), intent(in) :: u
         type(dual_x_t), intent(in) :: v
         type(dual_x_t) :: res
         
-        res%x = u%x*v%x
-        res%dx = u%dx*v%x + u%x*v%dx
+        res%f = u%f*v%f
+        res%g = u%g*v%f + u%f*v%g
     end function
     elemental function mult_dualx_r(u, v) result(res)
         type(dual_x_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(dual_x_t) :: res
         
-        res%x = u%x*v
-        res%dx = u%dx*v
+        res%f = u%f*v
+        res%g = u%g*v
     end function
     elemental function mult_r_dualx(u, v) result(res)
         real(dp), intent(in) :: u
         type(dual_x_t), intent(in) :: v
         type(dual_x_t) :: res
         
-        res%x = u*v%x
-        res%dx = u*v%dx
+        res%f = u*v%f
+        res%g = u*v%g
     end function
     elemental function mult_dualx_i(u, v) result(res)
         type(dual_x_t), intent(in) :: u
         integer, intent(in) :: v
         type(dual_x_t) :: res
         
-        res%x = u%x*v
-        res%dx = u%dx*v
+        res%f = u%f*v
+        res%g = u%g*v
     end function
     elemental function mult_i_dualx(u, v) result(res)
         integer, intent(in) :: u
         type(dual_x_t), intent(in) :: v
         type(dual_x_t) :: res
         
-        res%x = u*v%x
-        res%dx = u*v%dx
+        res%f = u*v%f
+        res%g = u*v%g
     end function
     elemental function mult_dualy_dualy(u, v) result(res)
         type(dual_y_t), intent(in) :: u
         type(dual_y_t), intent(in) :: v
         type(dual_y_t) :: res
         
-        res%x = u%x*v%x
-        res%dx = u%dx*v%x + u%x*v%dx
+        res%f = u%f*v%f
+        res%g = u%g*v%f + u%f*v%g
     end function
     elemental function mult_dualy_r(u, v) result(res)
         type(dual_y_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(dual_y_t) :: res
         
-        res%x = u%x*v
-        res%dx = u%dx*v
+        res%f = u%f*v
+        res%g = u%g*v
     end function
     elemental function mult_r_dualy(u, v) result(res)
         real(dp), intent(in) :: u
         type(dual_y_t), intent(in) :: v
         type(dual_y_t) :: res
         
-        res%x = u*v%x
-        res%dx = u*v%dx
+        res%f = u*v%f
+        res%g = u*v%g
     end function
     elemental function mult_dualy_i(u, v) result(res)
         type(dual_y_t), intent(in) :: u
         integer, intent(in) :: v
         type(dual_y_t) :: res
         
-        res%x = u%x*v
-        res%dx = u%dx*v
+        res%f = u%f*v
+        res%g = u%g*v
     end function
     elemental function mult_i_dualy(u, v) result(res)
         integer, intent(in) :: u
         type(dual_y_t), intent(in) :: v
         type(dual_y_t) :: res
         
-        res%x = u*v%x
-        res%dx = u*v%dx
+        res%f = u*v%f
+        res%g = u*v%g
     end function
     elemental function mult_hdualx_hdualx(u, v) result(res)
         type(hdual_x_t), intent(in) :: u
@@ -1491,13 +1501,13 @@ contains
         type(hdual_x_t) :: res
         integer :: i, j, k
         
-        res%x = u%x*v%x
-        res%dx = u%dx*v%x + u%x*v%dx
+        res%f = u%f*v%f
+        res%g = u%g*v%f + u%f*v%g
         k = 0
         do j = 1, nx
             do i = j, nx
                 k = k + 1
-                res%ddx(k) = u%ddx(k)*v%x + u%dx(i)*v%dx(j) + u%dx(j)*v%dx(i) + u%x*v%ddx(k)
+                res%h(k) = u%h(k)*v%f + u%g(i)*v%g(j) + u%g(j)*v%g(i) + u%f*v%h(k)
             end do
         end do
     end function
@@ -1506,36 +1516,36 @@ contains
         real(dp), intent(in) :: v
         type(hdual_x_t) :: res
         
-        res%x = u%x*v
-        res%dx = u%dx*v
-        res%ddx = u%ddx*v
+        res%f = u%f*v
+        res%g = u%g*v
+        res%h = u%h*v
     end function
     elemental function mult_r_hdualx(u, v) result(res)
         real(dp), intent(in) :: u
         type(hdual_x_t), intent(in) :: v
         type(hdual_x_t) :: res
         
-        res%x = u*v%x
-        res%dx = u*v%dx
-        res%ddx = u*v%ddx
+        res%f = u*v%f
+        res%g = u*v%g
+        res%h = u*v%h
     end function
     elemental function mult_hdualx_i(u, v) result(res)
         type(hdual_x_t), intent(in) :: u
         integer, intent(in) :: v
         type(hdual_x_t) :: res
         
-        res%x = u%x*v
-        res%dx = u%dx*v
-        res%ddx = u%ddx*v
+        res%f = u%f*v
+        res%g = u%g*v
+        res%h = u%h*v
     end function
     elemental function mult_i_hdualx(u, v) result(res)
         integer, intent(in) :: u
         type(hdual_x_t), intent(in) :: v
         type(hdual_x_t) :: res
         
-        res%x = u*v%x
-        res%dx = u*v%dx
-        res%ddx = u*v%ddx
+        res%f = u*v%f
+        res%g = u*v%g
+        res%h = u*v%h
     end function
     elemental function mult_hdualy_hdualy(u, v) result(res)
         type(hdual_y_t), intent(in) :: u
@@ -1543,13 +1553,13 @@ contains
         type(hdual_y_t) :: res
         integer :: i, j, k
         
-        res%x = u%x*v%x
-        res%dx = u%dx*v%x + u%x*v%dx
+        res%f = u%f*v%f
+        res%g = u%g*v%f + u%f*v%g
         k = 0
         do j = 1, ny
             do i = j, ny
                 k = k + 1
-                res%ddx(k) = u%ddx(k)*v%x + u%dx(i)*v%dx(j) + u%dx(j)*v%dx(i) + u%x*v%ddx(k)
+                res%h(k) = u%h(k)*v%f + u%g(i)*v%g(j) + u%g(j)*v%g(i) + u%f*v%h(k)
             end do
         end do
     end function
@@ -1558,52 +1568,52 @@ contains
         real(dp), intent(in) :: v
         type(hdual_y_t) :: res
         
-        res%x = u%x*v
-        res%dx = u%dx*v
-        res%ddx = u%ddx*v
+        res%f = u%f*v
+        res%g = u%g*v
+        res%h = u%h*v
     end function
     elemental function mult_r_hdualy(u, v) result(res)
         real(dp), intent(in) :: u
         type(hdual_y_t), intent(in) :: v
         type(hdual_y_t) :: res
         
-        res%x = u*v%x
-        res%dx = u*v%dx
-        res%ddx = u*v%ddx
+        res%f = u*v%f
+        res%g = u*v%g
+        res%h = u*v%h
     end function
     elemental function mult_hdualy_i(u, v) result(res)
         type(hdual_y_t), intent(in) :: u
         integer, intent(in) :: v
         type(hdual_y_t) :: res
         
-        res%x = u%x*v
-        res%dx = u%dx*v
-        res%ddx = u%ddx*v
+        res%f = u%f*v
+        res%g = u%g*v
+        res%h = u%h*v
     end function
     elemental function mult_i_hdualy(u, v) result(res)
         integer, intent(in) :: u
         type(hdual_y_t), intent(in) :: v
         type(hdual_y_t) :: res
         
-        res%x = u*v%x
-        res%dx = u*v%dx
-        res%ddx = u*v%ddx
+        res%f = u*v%f
+        res%g = u*v%g
+        res%h = u*v%h
     end function
     elemental function pow_dualx_i(u, v) result(res)
         type(dual_x_t), intent(in) :: u
         integer, intent(in) :: v
         type(dual_x_t) :: res
         
-        res%x = u%x**v
-        res%dx = u%x**(v - 1)*u%dx*v
+        res%f = u%f**v
+        res%g = u%f**(v - 1)*u%g*v
     end function
     elemental function pow_dualx_r(u, v) result(res)
         type(dual_x_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(dual_x_t) :: res
         
-        res%x = u%x**v
-        res%dx = u%x**(v - 1)*u%dx*v
+        res%f = u%f**v
+        res%g = u%f**(v - 1)*u%g*v
     end function
     elemental function pow_dualx_dualx(u, v) result(res)
         type(dual_x_t), intent(in) :: u
@@ -1611,9 +1621,9 @@ contains
         type(dual_x_t) :: res
         real(dp) :: t0
         
-        t0 = u%x**v%x
-        res%x = t0
-        res%dx = t0*(u%dx*v%x/u%x + v%dx*log(u%x))
+        t0 = u%f**v%f
+        res%f = t0
+        res%g = t0*(u%g*v%f/u%f + v%g*log(u%f))
 
     end function
     elemental function pow_dualy_i(u, v) result(res)
@@ -1621,16 +1631,16 @@ contains
         integer, intent(in) :: v
         type(dual_y_t) :: res
         
-        res%x = u%x**v
-        res%dx = u%x**(v - 1)*u%dx*v
+        res%f = u%f**v
+        res%g = u%f**(v - 1)*u%g*v
     end function
     elemental function pow_dualy_r(u, v) result(res)
         type(dual_y_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(dual_y_t) :: res
         
-        res%x = u%x**v
-        res%dx = u%x**(v - 1)*u%dx*v
+        res%f = u%f**v
+        res%g = u%f**(v - 1)*u%g*v
     end function
     elemental function pow_dualy_dualy(u, v) result(res)
         type(dual_y_t), intent(in) :: u
@@ -1638,9 +1648,9 @@ contains
         type(dual_y_t) :: res
         real(dp) :: t0
         
-        t0 = u%x**v%x
-        res%x = t0
-        res%dx = t0*(u%dx*v%x/u%x + v%dx*log(u%x))
+        t0 = u%f**v%f
+        res%f = t0
+        res%g = t0*(u%g*v%f/u%f + v%g*log(u%f))
 
     end function
     elemental function pow_hdualx_i(u, v) result(res)
@@ -1649,13 +1659,13 @@ contains
         type(hdual_x_t) :: res
         integer :: i, j, k
         
-        res%x = u%x**v
-        res%dx = u%x**(v - 1)*v*u%dx
+        res%f = u%f**v
+        res%g = u%f**(v - 1)*v*u%g
         k = 0
         do j = 1, nx
             do i = j, nx
                 k = k + 1
-                res%ddx(k) = v*(u%dx(i)*u%dx(j)*(v - 1)*u%x**(v-2) + u%ddx(k)*u%x**(v-1))
+                res%h(k) = v*(u%g(i)*u%g(j)*(v - 1)*u%f**(v-2) + u%h(k)*u%f**(v-1))
             end do
         end do
     end function
@@ -1665,13 +1675,13 @@ contains
         type(hdual_x_t) :: res
         integer :: i, j, k
         
-        res%x = u%x**v
-        res%dx = u%x**(v - 1)*v*u%dx
+        res%f = u%f**v
+        res%g = u%f**(v - 1)*v*u%g
         k = 0
         do j = 1, nx
             do i = j, nx
                 k = k + 1
-                res%ddx(k) = v*(u%dx(i)*u%dx(j)*(v - 1)*u%x**(v-2) + u%ddx(k)*u%x**(v-1))
+                res%h(k) = v*(u%g(i)*u%g(j)*(v - 1)*u%f**(v-2) + u%h(k)*u%f**(v-1))
             end do
         end do
     end function
@@ -1682,18 +1692,18 @@ contains
         integer :: i, j, k
         real(dp) :: t0,t1,t2,t3
         
-        t0 = u%x**v%x
-        t1 = log(u%x)
-        t2 = 1.0_dp/u%x
-        t3 = t1*v%x + 1
-        res%x = t0
-        res%dx = t0*(t1*v%dx + t2*u%dx*v%x)
+        t0 = u%f**v%f
+        t1 = log(u%f)
+        t2 = 1.0_dp/u%f
+        t3 = t1*v%f + 1
+        res%f = t0
+        res%g = t0*(t1*v%g + t2*u%g*v%f)
         k = 0
         do j = 1, nx
             do i = j, nx
                 k = k + 1
-                res%ddx(k) = t0*(t1*v%ddx(k) + t2*u%ddx(k)*v%x + t2*u%dx(j)*(t2*u%dx(i)*v%x*(v%x - &
-      1) + t3*v%dx(i)) + v%dx(j)*(t1**2*v%dx(i) + t2*t3*u%dx(i)))
+                res%h(k) = t0*(t1*v%h(k) + t2*u%h(k)*v%f + t2*u%g(j)*(t2*u%g(i)*v%f*(v%f - &
+      1) + t3*v%g(i)) + v%g(j)*(t1**2*v%g(i) + t2*t3*u%g(i)))
             end do
         end do
     end function
@@ -1703,13 +1713,13 @@ contains
         type(hdual_y_t) :: res
         integer :: i, j, k
         
-        res%x = u%x**v
-        res%dx = u%x**(v - 1)*v*u%dx
+        res%f = u%f**v
+        res%g = u%f**(v - 1)*v*u%g
         k = 0
         do j = 1, ny
             do i = j, ny
                 k = k + 1
-                res%ddx(k) = v*(u%dx(i)*u%dx(j)*(v - 1)*u%x**(v-2) + u%ddx(k)*u%x**(v-1))
+                res%h(k) = v*(u%g(i)*u%g(j)*(v - 1)*u%f**(v-2) + u%h(k)*u%f**(v-1))
             end do
         end do
     end function
@@ -1719,13 +1729,13 @@ contains
         type(hdual_y_t) :: res
         integer :: i, j, k
         
-        res%x = u%x**v
-        res%dx = u%x**(v - 1)*v*u%dx
+        res%f = u%f**v
+        res%g = u%f**(v - 1)*v*u%g
         k = 0
         do j = 1, ny
             do i = j, ny
                 k = k + 1
-                res%ddx(k) = v*(u%dx(i)*u%dx(j)*(v - 1)*u%x**(v-2) + u%ddx(k)*u%x**(v-1))
+                res%h(k) = v*(u%g(i)*u%g(j)*(v - 1)*u%f**(v-2) + u%h(k)*u%f**(v-1))
             end do
         end do
     end function
@@ -1736,18 +1746,18 @@ contains
         integer :: i, j, k
         real(dp) :: t0,t1,t2,t3
         
-        t0 = u%x**v%x
-        t1 = log(u%x)
-        t2 = 1.0_dp/u%x
-        t3 = t1*v%x + 1
-        res%x = t0
-        res%dx = t0*(t1*v%dx + t2*u%dx*v%x)
+        t0 = u%f**v%f
+        t1 = log(u%f)
+        t2 = 1.0_dp/u%f
+        t3 = t1*v%f + 1
+        res%f = t0
+        res%g = t0*(t1*v%g + t2*u%g*v%f)
         k = 0
         do j = 1, ny
             do i = j, ny
                 k = k + 1
-                res%ddx(k) = t0*(t1*v%ddx(k) + t2*u%ddx(k)*v%x + t2*u%dx(j)*(t2*u%dx(i)*v%x*(v%x - &
-      1) + t3*v%dx(i)) + v%dx(j)*(t1**2*v%dx(i) + t2*t3*u%dx(i)))
+                res%h(k) = t0*(t1*v%h(k) + t2*u%h(k)*v%f + t2*u%g(j)*(t2*u%g(i)*v%f*(v%f - &
+      1) + t3*v%g(i)) + v%g(j)*(t1**2*v%g(i) + t2*t3*u%g(i)))
             end do
         end do
     end function
@@ -1755,15 +1765,15 @@ contains
         type(dual_x_t), intent(in) :: u
         type(dual_x_t) :: res
         
-        res%x = log(u%x)
-        res%dx = u%dx/u%x
+        res%f = log(u%f)
+        res%g = u%g/u%f
     end function
     elemental function log_dualy(u) result(res)
         type(dual_y_t), intent(in) :: u
         type(dual_y_t) :: res
         
-        res%x = log(u%x)
-        res%dx = u%dx/u%x
+        res%f = log(u%f)
+        res%g = u%g/u%f
     end function
     elemental function log_hdualx(u) result(res)
         type(hdual_x_t), intent(in) :: u
@@ -1771,14 +1781,14 @@ contains
         integer :: i, j, k
         real(dp) :: t0
         
-        t0 = 1.0_dp/u%x
-        res%x = log(u%x)
-        res%dx = t0*u%dx
+        t0 = 1.0_dp/u%f
+        res%f = log(u%f)
+        res%g = t0*u%g
         k = 0
         do j = 1, nx
             do i = j, nx
                 k = k + 1
-                res%ddx(k) = t0*(-t0*u%dx(i)*u%dx(j) + u%ddx(k))
+                res%h(k) = t0*(-t0*u%g(i)*u%g(j) + u%h(k))
             end do
         end do
     end function
@@ -1788,14 +1798,14 @@ contains
         integer :: i, j, k
         real(dp) :: t0
         
-        t0 = 1.0_dp/u%x
-        res%x = log(u%x)
-        res%dx = t0*u%dx
+        t0 = 1.0_dp/u%f
+        res%f = log(u%f)
+        res%g = t0*u%g
         k = 0
         do j = 1, ny
             do i = j, ny
                 k = k + 1
-                res%ddx(k) = t0*(-t0*u%dx(i)*u%dx(j) + u%ddx(k))
+                res%h(k) = t0*(-t0*u%g(i)*u%g(j) + u%h(k))
             end do
         end do
     end function
@@ -1804,9 +1814,9 @@ contains
         type(dual_x_t) :: res
         real(dp) :: t0
         
-        t0 = sqrt(u%x)
-        res%x = t0
-        res%dx = 0.5_dp*u%dx/t0
+        t0 = sqrt(u%f)
+        res%f = t0
+        res%g = 0.5_dp*u%g/t0
     end function
 
     elemental function sqrt_dualy(u) result(res)
@@ -1814,9 +1824,9 @@ contains
         type(dual_y_t) :: res
         real(dp) :: t0
         
-        t0 = sqrt(u%x)
-        res%x = t0
-        res%dx = 0.5_dp*u%dx/t0
+        t0 = sqrt(u%f)
+        res%f = t0
+        res%g = 0.5_dp*u%g/t0
     end function
 
     elemental function sqrt_hdualx(u) result(res)
@@ -1825,15 +1835,15 @@ contains
         integer :: i, j, k
         real(dp) :: t0,t1
         
-        t0 = sqrt(u%x)
+        t0 = sqrt(u%f)
         t1 = 1.0_dp/t0
-        res%x = t0
-        res%dx = 0.5_dp*t1*u%dx
+        res%f = t0
+        res%g = 0.5_dp*t1*u%g
         k = 0
         do j = 1, nx
             do i = j, nx
                 k = k + 1
-                res%ddx(k) = (0.25_dp)*t1*(2*u%ddx(k) - u%dx(i)*u%dx(j)/u%x)
+                res%h(k) = (0.25_dp)*t1*(2*u%h(k) - u%g(i)*u%g(j)/u%f)
             end do
         end do
     end function
@@ -1843,15 +1853,15 @@ contains
         integer :: i, j, k
         real(dp) :: t0,t1
         
-        t0 = sqrt(u%x)
+        t0 = sqrt(u%f)
         t1 = 1.0_dp/t0
-        res%x = t0
-        res%dx = 0.5_dp*t1*u%dx
+        res%f = t0
+        res%g = 0.5_dp*t1*u%g
         k = 0
         do j = 1, ny
             do i = j, ny
                 k = k + 1
-                res%ddx(k) = (0.25_dp)*t1*(2*u%ddx(k) - u%dx(i)*u%dx(j)/u%x)
+                res%h(k) = (0.25_dp)*t1*(2*u%h(k) - u%g(i)*u%g(j)/u%f)
             end do
         end do
     end function

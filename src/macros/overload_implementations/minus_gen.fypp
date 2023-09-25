@@ -9,8 +9,8 @@
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
         
-        res%x = -u%x
-        res%dx = -u%dx
+        res%f = -u%f
+        res%g = -u%g
       #:if test_coverage
         unary_minus_d_counter = unary_minus_d_counter + 1
       #:endif
@@ -20,8 +20,8 @@
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
         
-        res%x = u%x - v%x
-        res%dx = u%dx - v%dx
+        res%f = u%f - v%f
+        res%g = u%g - v%g
       #:if test_coverage
         minus_d_d_counter = minus_d_d_counter + 1
       #:endif
@@ -31,8 +31,8 @@
         real(${real_kind}$), intent(in) :: v
         type(${dual_type}$) :: res
         
-        res%x = u%x - v
-        res%dx = u%dx
+        res%f = u%f - v
+        res%g = u%g
       #:if test_coverage
         minus_d_r_counter = minus_d_r_counter + 1
       #:endif
@@ -42,8 +42,8 @@
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
         
-        res%x = u - v%x
-        res%dx = -v%dx
+        res%f = u - v%f
+        res%g = -v%g
       #:if test_coverage
         minus_r_d_counter = minus_r_d_counter + 1
       #:endif
@@ -53,8 +53,8 @@
         integer, intent(in) :: v
         type(${dual_type}$) :: res
         
-        res%x = u%x - v
-        res%dx = u%dx
+        res%f = u%f - v
+        res%g = u%g
       #:if test_coverage
         minus_d_i_counter = minus_d_i_counter + 1
       #:endif
@@ -64,8 +64,8 @@
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
         
-        res%x = u - v%x
-        res%dx = -v%dx
+        res%f = u - v%f
+        res%g = -v%g
       #:if test_coverage
         minus_i_d_counter = minus_i_d_counter + 1
       #:endif
@@ -82,9 +82,9 @@
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
         
-        res%x = -u%x
-        res%dx = -u%dx
-        res%ddx = -u%ddx
+        res%f = -u%f
+        res%g = -u%g
+        res%h = -u%h
       #:if test_coverage
         unary_minus_hd_counter = unary_minus_hd_counter + 1
       #:endif
@@ -94,9 +94,9 @@
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
         
-        res%x = u%x - v%x
-        res%dx = u%dx - v%dx
-        res%ddx = u%ddx - v%ddx
+        res%f = u%f - v%f
+        res%g = u%g - v%g
+        res%h = u%h - v%h
       #:if test_coverage
         minus_hd_hd_counter = minus_hd_hd_counter + 1
       #:endif
@@ -106,9 +106,9 @@
         real(${real_kind}$), intent(in) :: v
         type(${dual_type}$) :: res
         
-        res%x = u%x - v
-        res%dx = u%dx
-        res%ddx = u%ddx
+        res%f = u%f - v
+        res%g = u%g
+        res%h = u%h
       #:if test_coverage
         minus_hd_r_counter = minus_hd_r_counter + 1
       #:endif
@@ -118,9 +118,9 @@
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
         
-        res%x = u - v%x
-        res%dx = -v%dx
-        res%ddx = -v%ddx
+        res%f = u - v%f
+        res%g = -v%g
+        res%h = -v%h
       #:if test_coverage
         minus_r_hd_counter = minus_r_hd_counter + 1
       #:endif
@@ -130,9 +130,9 @@
         integer, intent(in) :: v
         type(${dual_type}$) :: res
         
-        res%x = u%x - v
-        res%dx = u%dx
-        res%ddx = u%ddx
+        res%f = u%f - v
+        res%g = u%g
+        res%h = u%h
       #:if test_coverage
         minus_hd_i_counter = minus_hd_i_counter + 1
       #:endif
@@ -142,9 +142,9 @@
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
         
-        res%x = u - v%x
-        res%dx = -v%dx
-        res%ddx = -v%ddx
+        res%f = u - v%f
+        res%g = -v%g
+        res%h = -v%h
       #:if test_coverage
         minus_i_hd_counter = minus_i_hd_counter + 1
       #:endif

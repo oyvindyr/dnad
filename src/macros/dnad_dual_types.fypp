@@ -4,8 +4,8 @@
         #! statement can for instance be 'sequence' or nothing
         #!   the original dnad code had 'sequence' here, but I dont know what it is good for...
         ${statement}$
-        real(${real_kind}$) :: x = 0  ! functional value
-        real(${real_kind}$) :: dx(${size_dx}$) = 0  ! derivatives
+        real(${real_kind}$) :: f = 0  ! functional value
+        real(${real_kind}$) :: g(${size_dx}$) = 0  ! derivatives
     end type
 #:enddef
 
@@ -15,8 +15,8 @@
         #! statement can for instance be 'sequence' or nothing
         #!   the original dnad code had 'sequence' here, but I dont know what it is good for...
         ${statement}$
-        real(${real_kind}$) :: x = 0  ! functional value
-        real(${real_kind}$) :: dx(${size_dx}$) = 0  ! derivatives
-        real(${real_kind}$) :: ddx(${size_dx}$*(${size_dx}$ + 1)/2) = 0  ! Lower triangular of Hessian
+        real(${real_kind}$) :: f = 0  ! functional value
+        real(${real_kind}$) :: g(${size_dx}$) = 0  ! derivatives
+        real(${real_kind}$) :: h(${size_dx}$*(${size_dx}$ + 1)/2) = 0  ! Lower triangular of Hessian
     end type
 #:enddef

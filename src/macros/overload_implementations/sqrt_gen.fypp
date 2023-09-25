@@ -10,9 +10,9 @@
         type(${dual_type}$) :: res
         real(${real_kind}$) :: t0
         
-        t0 = sqrt(u%x)
-        res%x = t0
-        res%dx = 0.5_${real_kind}$*u%dx/t0
+        t0 = sqrt(u%f)
+        res%f = t0
+        res%g = 0.5_${real_kind}$*u%g/t0
       #:if test_coverage
         sqrt_d_counter = sqrt_d_counter + 1
       #:endif
@@ -31,15 +31,15 @@
         integer :: i, j, k
         real(${real_kind}$) :: t0,t1
         
-        t0 = sqrt(u%x)
+        t0 = sqrt(u%f)
         t1 = 1.0_${real_kind}$/t0
-        res%x = t0
-        res%dx = 0.5_${real_kind}$*t1*u%dx
+        res%f = t0
+        res%g = 0.5_${real_kind}$*t1*u%g
         k = 0
         do j = 1, ${size_dx}$
             do i = j, ${size_dx}$
                 k = k + 1
-                res%ddx(k) = (0.25_${real_kind}$)*t1*(2*u%ddx(k) - u%dx(i)*u%dx(j)/u%x)
+                res%h(k) = (0.25_${real_kind}$)*t1*(2*u%h(k) - u%g(i)*u%g(j)/u%f)
             end do
         end do
       #:if test_coverage

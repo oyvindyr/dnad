@@ -18,16 +18,16 @@
   #:for hdual_type, hdual_sn, dual_type in zip(hdual_types, hdual_shortnames, dual_types)
     pure function jacobi_tr__${hdual_sn}$(x) result(y)
         type(${hdual_type}$), intent(in) :: x(:)
-        type(${dual_type}$) :: y(size(x(1)%dx),size(x))
+        type(${dual_type}$) :: y(size(x(1)%g),size(x))
 
-        real(${real_kind}$) :: hess(size(x(1)%dx), size(x(1)%dx))
+        real(${real_kind}$) :: hess(size(x(1)%g), size(x(1)%g))
         integer :: i, j
 
         do j = 1, size(x)
             hess = hessian(x(j))
-            do i = 1, size(x(1)%dx)
-                y(i,j)%x = x(j)%dx(i)
-                y(i,j)%dx = hess(:,i)
+            do i = 1, size(x(1)%g)
+                y(i,j)%f = x(j)%g(i)
+                y(i,j)%g = hess(:,i)
             end do
         end do
 
@@ -40,12 +40,12 @@
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
     pure function jacobi_tr__${dual_sn}$(x) result(y)
         type(${dual_type}$), intent(in) :: x(:)
-        real(${real_kind}$) :: y(size(x(1)%dx),size(x))
+        real(${real_kind}$) :: y(size(x(1)%g),size(x))
 
         integer :: j
 
         do j = 1, size(x)
-            y(:,j) = x(j)%dx
+            y(:,j) = x(j)%g
         end do
 
     end function

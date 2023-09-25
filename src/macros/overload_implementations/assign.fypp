@@ -8,8 +8,8 @@
         type(${dual_type}$), intent(out) :: u
         integer, intent(in) :: i
 
-        u%x = real(i, ${real_kind}$)  ! This is faster than direct assignment
-        u%dx = 0.0_${real_kind}$
+        u%f = real(i, ${real_kind}$)  ! This is faster than direct assignment
+        u%g = 0.0_${real_kind}$
       #:if test_coverage
         assign_d_i_counter = assign_d_i_counter + 1
       #:endif
@@ -19,8 +19,8 @@
         type(${dual_type}$), intent(out) :: u
         real(${real_kind}$), intent(in) :: r
 
-        u%x = r
-        u%dx = 0.0_${real_kind}$
+        u%f = r
+        u%g = 0.0_${real_kind}$
       #:if test_coverage
         assign_d_r_counter = assign_d_r_counter + 1
       #:endif
@@ -30,7 +30,7 @@
         type(${dual_type}$), intent(in) :: v
         integer, intent(out) :: i
 
-        i = int(v%x)
+        i = int(v%f)
       #:if test_coverage
         assign_i_d_counter = assign_i_d_counter + 1
       #:endif
@@ -40,7 +40,7 @@
         type(${dual_type}$), intent(in) :: v
         real(${real_kind}$), intent(out) :: r
 
-        r = v%x
+        r = v%f
       #:if test_coverage
         assign_r_d_counter = assign_r_d_counter + 1
       #:endif
@@ -58,9 +58,9 @@
         type(${dual_type}$), intent(out) :: u
         integer, intent(in) :: i
 
-        u%x = real(i, ${real_kind}$)  ! This is faster than direct assignment
-        u%dx = 0.0_${real_kind}$
-        u%ddx = 0.0_${real_kind}$
+        u%f = real(i, ${real_kind}$)  ! This is faster than direct assignment
+        u%g = 0.0_${real_kind}$
+        u%h = 0.0_${real_kind}$
       #:if test_coverage
         assign_hd_i_counter = assign_hd_i_counter + 1
       #:endif
@@ -70,9 +70,9 @@
         type(${dual_type}$), intent(out) :: u
         real(${real_kind}$), intent(in) :: r
 
-        u%x = r
-        u%dx = 0.0_${real_kind}$
-        u%ddx = 0.0_${real_kind}$
+        u%f = r
+        u%g = 0.0_${real_kind}$
+        u%h = 0.0_${real_kind}$
       #:if test_coverage
         assign_hd_r_counter = assign_hd_r_counter + 1
       #:endif
@@ -82,7 +82,7 @@
         type(${dual_type}$), intent(in) :: v
         integer, intent(out) :: i
 
-        i = int(v%x)
+        i = int(v%f)
       #:if test_coverage
         assign_i_hd_counter = assign_i_hd_counter + 1
       #:endif
@@ -92,7 +92,7 @@
         type(${dual_type}$), intent(in) :: v
         real(${real_kind}$), intent(out) :: r
 
-        r = v%x
+        r = v%f
       #:if test_coverage
         assign_r_hd_counter = assign_r_hd_counter + 1
       #:endif

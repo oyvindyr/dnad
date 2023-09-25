@@ -13,22 +13,22 @@
         integer :: i
       #:endif
         
-        t0 = sqrt(u%x)
-        res%x = t0
+        t0 = sqrt(u%f)
+        res%f = t0
       #:if stringent
-        if (res%x /= 0) then
-            res%dx = 0.5_${real_kind}$*u%dx/t0
+        if (res%f /= 0) then
+            res%g = 0.5_${real_kind}$*u%g/t0
         else
             do i = 1, ${size_dx}$
-                if (u%dx(i) == 0) then
-                    res%dx(i) = 0
+                if (u%g(i) == 0) then
+                    res%g(i) = 0
                 else
-                    res%dx(i) = set_NaN()
+                    res%g(i) = set_NaN()
                 end if
             end do
         end if
       #:else
-        res%dx = 0.5_${real_kind}$*u%dx/t0
+        res%g = 0.5_${real_kind}$*u%g/t0
       #:endif
       #:if test_coverage
         sqrt_d_counter = sqrt_d_counter + 1
@@ -49,36 +49,36 @@
         integer :: i, j, k
         real(${real_kind}$) :: t0,t1
         
-        t0 = sqrt(u%x)
+        t0 = sqrt(u%f)
         t1 = 1.0_${real_kind}$/t0
-        res%x = t0
+        res%f = t0
       #:if stringent
-        if (res%x /= 0) then
-            res%dx = 0.5_${real_kind}$*t1*u%dx
+        if (res%f /= 0) then
+            res%g = 0.5_${real_kind}$*t1*u%g
             k = 0
             do j = 1, ${size_dx}$
                 do i = j, ${size_dx}$
                     k = k + 1
-                    res%ddx(k) = (0.25_${real_kind}$)*t1*(2*u%ddx(k) - u%dx(i)*u%dx(j)/u%x)
+                    res%h(k) = (0.25_${real_kind}$)*t1*(2*u%h(k) - u%g(i)*u%g(j)/u%f)
                 end do
             end do
         else
             do i = 1, ${size_dx}$
-                if (u%dx(i) == 0) then
-                    res%dx(i) = 0
+                if (u%g(i) == 0) then
+                    res%g(i) = 0
                 else
-                    res%dx(i) = set_NaN()
+                    res%g(i) = set_NaN()
                 end if
             end do
-            res%ddx = set_NaN() ! Not sure if this is correct..
+            res%h = set_NaN() ! Not sure if this is correct..
         end if
       #:else
-        res%dx = 0.5_${real_kind}$*t1*u%dx
+        res%g = 0.5_${real_kind}$*t1*u%g
         k = 0
         do j = 1, ${size_dx}$
             do i = j, ${size_dx}$
                 k = k + 1
-                res%ddx(k) = (0.25_${real_kind}$)*t1*(2*u%ddx(k) - u%dx(i)*u%dx(j)/u%x)
+                res%h(k) = (0.25_${real_kind}$)*t1*(2*u%h(k) - u%g(i)*u%g(j)/u%f)
             end do
         end do
       #:endif

@@ -11,10 +11,10 @@
         type(${dual_type}$) :: res
         real(${real_kind}$) :: t0,t1
         
-        t0 = 1.0_${real_kind}$/v%x
-        t1 = t0*u%x
-        res%x = t1
-        res%dx = t0*(-t1*v%dx + u%dx)
+        t0 = 1.0_${real_kind}$/v%f
+        t1 = t0*u%f
+        res%f = t1
+        res%g = t0*(-t1*v%g + u%g)
       #:if test_coverage
         div_d_d_counter = div_d_d_counter + 1
       #:endif
@@ -26,8 +26,8 @@
         real(${real_kind}$) :: t0
         
         t0 = 1.0_${real_kind}$/v
-        res%x = t0*u%x
-        res%dx = t0*u%dx
+        res%f = t0*u%f
+        res%g = t0*u%g
       #:if test_coverage
         div_d_r_counter = div_d_r_counter + 1
       #:endif
@@ -37,8 +37,8 @@
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
         
-        res%x = u/v%x
-        res%dx = -u*v%dx/v%x**2
+        res%f = u/v%f
+        res%g = -u*v%g/v%f**2
       #:if test_coverage
         div_r_d_counter = div_r_d_counter + 1
       #:endif
@@ -50,8 +50,8 @@
         real(${real_kind}$) :: t0
         
         t0 = 1.0_${real_kind}$/v
-        res%x = t0*u%x
-        res%dx = t0*u%dx
+        res%f = t0*u%f
+        res%g = t0*u%g
       #:if test_coverage
         div_d_i_counter = div_d_i_counter + 1
       #:endif
@@ -61,8 +61,8 @@
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
         
-        res%x = u/v%x
-        res%dx = -u*v%dx/v%x**2
+        res%f = u/v%f
+        res%g = -u*v%g/v%f**2
       #:if test_coverage
         div_i_d_counter = div_i_d_counter + 1
       #:endif
@@ -82,16 +82,16 @@
         integer :: i, j, k
         real(${real_kind}$) :: t0,t1
         
-        t0 = 1.0_${real_kind}$/v%x
-        t1 = t0*u%x
-        res%x = t1
-        res%dx = t0*(-t1*v%dx + u%dx)
+        t0 = 1.0_${real_kind}$/v%f
+        t1 = t0*u%f
+        res%f = t1
+        res%g = t0*(-t1*v%g + u%g)
         k = 0
         do j = 1, ${size_dx}$
             do i = j, ${size_dx}$
                 k = k + 1
-                res%ddx(k) = t0*(-t0*u%dx(j)*v%dx(i) - t0*v%dx(j)*(-2*t1*v%dx(i) + u%dx(i)) - t1* &
-      v%ddx(k) + u%ddx(k))
+                res%h(k) = t0*(-t0*u%g(j)*v%g(i) - t0*v%g(j)*(-2*t1*v%g(i) + u%g(i)) - t1* &
+      v%h(k) + u%h(k))
             end do
         end do
       #:if test_coverage
@@ -105,9 +105,9 @@
         real(${real_kind}$) :: t0
         
         t0 = 1.0_${real_kind}$/v
-        res%x = t0*u%x
-        res%dx = t0*u%dx
-        res%ddx = t0*u%ddx
+        res%f = t0*u%f
+        res%g = t0*u%g
+        res%h = t0*u%h
       #:if test_coverage
         div_hd_r_counter = div_hd_r_counter + 1
       #:endif
@@ -119,15 +119,15 @@
         integer :: i, j, k
         real(${real_kind}$) :: t0,t1
         
-        t0 = 1.0_${real_kind}$/v%x
-        t1 = u/v%x**2
-        res%x = t0*u
-        res%dx = -t1*v%dx
+        t0 = 1.0_${real_kind}$/v%f
+        t1 = u/v%f**2
+        res%f = t0*u
+        res%g = -t1*v%g
         k = 0
         do j = 1, ${size_dx}$
             do i = j, ${size_dx}$
                 k = k + 1
-                res%ddx(k) = t1*(2*t0*v%dx(i)*v%dx(j) - v%ddx(k))
+                res%h(k) = t1*(2*t0*v%g(i)*v%g(j) - v%h(k))
             end do
         end do
       #:if test_coverage
@@ -141,9 +141,9 @@
         real(${real_kind}$) :: t0
         
         t0 = 1.0_${real_kind}$/v
-        res%x = t0*u%x
-        res%dx = t0*u%dx
-        res%ddx = t0*u%ddx
+        res%f = t0*u%f
+        res%g = t0*u%g
+        res%h = t0*u%h
       #:if test_coverage
         div_hd_i_counter = div_hd_i_counter + 1
       #:endif
@@ -155,15 +155,15 @@
         integer :: i, j, k
         real(${real_kind}$) :: t0,t1
         
-        t0 = 1.0_${real_kind}$/v%x
-        t1 = u/v%x**2
-        res%x = t0*u
-        res%dx = -t1*v%dx
+        t0 = 1.0_${real_kind}$/v%f
+        t1 = u/v%f**2
+        res%f = t0*u
+        res%g = -t1*v%g
         k = 0
         do j = 1, ${size_dx}$
             do i = j, ${size_dx}$
                 k = k + 1
-                res%ddx(k) = t1*(2*t0*v%dx(i)*v%dx(j) - v%ddx(k))
+                res%h(k) = t1*(2*t0*v%g(i)*v%g(j) - v%h(k))
             end do
         end do
       #:if test_coverage

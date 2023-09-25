@@ -39,8 +39,8 @@ _binary_fun_d_template = '''
         {{temp_assign}}
         {%- endfor -%}
         {%- endif %}
-        {{x_assign}}
-        {{dx_assign}}
+        {{f_assign}}
+        {{g_assign}}
       #:if test_coverage
         {{interface_name}}_{{usnc}}_{{vsnc}}_counter = {{interface_name}}_{{usnc}}_{{vsnc}}_counter + 1
       #:endif
@@ -57,8 +57,8 @@ _unary_fun_d_template = '''
         {{temp_assign}}
         {%- endfor -%}
         {%- endif %}
-        {{x_assign}}
-        {{dx_assign}}
+        {{f_assign}}
+        {{g_assign}}
       #:if test_coverage
         {{interface_name}}_{{usnc}}_counter = {{interface_name}}_{{usnc}}_counter + 1
       #:endif
@@ -77,13 +77,13 @@ _binary_fun_hd_template = '''
         {{temp_assign}}
         {%- endfor -%}
         {%- endif %}
-        {{x_assign}}
-        {{dx_assign}}
+        {{f_assign}}
+        {{g_assign}}
         k = 0
         do j = 1, ${size_dx}$
             do i = j, ${size_dx}$
                 k = k + 1
-                {{ddx_assign}}
+                {{h_assign}}
             end do
         end do
       #:if test_coverage
@@ -103,13 +103,13 @@ _unary_fun_hd_template = '''
         {{temp_assign}}
         {%- endfor -%}
         {%- endif %}
-        {{x_assign}}
-        {{dx_assign}}
+        {{f_assign}}
+        {{g_assign}}
         k = 0
         do j = 1, ${size_dx}$
             do i = j, ${size_dx}$
                 k = k + 1
-                {{ddx_assign}}
+                {{h_assign}}
             end do
         end do
       #:if test_coverage
@@ -130,9 +130,9 @@ _binary_fun_hd_noloop_template = '''
         {{temp_assign}}
         {%- endfor -%}
         {%- endif %}
-        {{x_assign}}
-        {{dx_assign}}
-        {{ddx_assign}}
+        {{f_assign}}
+        {{g_assign}}
+        {{h_assign}}
       #:if test_coverage
         {{interface_name}}_{{usnc}}_{{vsnc}}_counter = {{interface_name}}_{{usnc}}_{{vsnc}}_counter + 1
       #:endif
@@ -150,9 +150,9 @@ _unary_fun_hd_noloop_template = '''
         {{temp_assign}}
         {%- endfor -%}
         {%- endif %}
-        {{x_assign}}
-        {{dx_assign}}
-        {{ddx_assign}}
+        {{f_assign}}
+        {{g_assign}}
+        {{h_assign}}
       #:if test_coverage
         {{interface_name}}_{{usnc}}_counter = {{interface_name}}_{{usnc}}_counter + 1
       #:endif
@@ -255,28 +255,28 @@ def replace_literals(code):
 
 def replacements_x(c, u_type, v_type=None):
     if u_type == 'dual':
-        c = c.replace('u_x', f'u%x')
+        c = c.replace('u_x', f'u%f')
     else:
         c = c.replace('u_x', 'u')
 
     if v_type is not None:
         if v_type == 'dual':
-            c = c.replace('v_x', f'v%x')
+            c = c.replace('v_x', f'v%f')
         else:
             c = c.replace('v_x', 'v')
     return c
 
 def replacements_dx(c, u_type, v_type=None):
     if u_type == 'dual':
-        c = c.replace('u_x', f'u%x')
-        c = c.replace('u_dx1', f'u%dx') # Vector
+        c = c.replace('u_x', f'u%f')
+        c = c.replace('u_dx1', f'u%g') # Vector
     else:
         c = c.replace('u_x', 'u')
 
     if v_type is not None:
         if v_type == 'dual':
-            c = c.replace('v_x', f'v%x')
-            c = c.replace('v_dx1', f'v%dx') # Vector
+            c = c.replace('v_x', f'v%f')
+            c = c.replace('v_dx1', f'v%g') # Vector
         else:
             c = c.replace('v_x', 'v')
     return c
@@ -291,40 +291,40 @@ def replacements_ddx(c, u_type, v_type=None):
 
 def replacements_ddx_with_loop(c, u_type, v_type):
     if u_type == 'dual':
-        c = c.replace('u_x', f'u%x')
-        c = c.replace('u_dx1', f'u%dx(i)')
+        c = c.replace('u_x', f'u%f')
+        c = c.replace('u_dx1', f'u%g(i)')
     else:
         c = c.replace('u_x', 'u')
 
     if v_type is not None:
         if v_type == 'dual':
-            c = c.replace('v_x', f'v%x')
-            c = c.replace('v_dx1', f'v%dx(i)')
+            c = c.replace('v_x', f'v%f')
+            c = c.replace('v_dx1', f'v%g(i)')
         else:
             c = c.replace('v_x', 'v')
 
-    c = c.replace('u_dx2', f'u%dx(j)')
-    c = c.replace('u_ddx', f'u%ddx(k)')
+    c = c.replace('u_dx2', f'u%g(j)')
+    c = c.replace('u_ddx', f'u%h(k)')
     if v_type is not None:
-        c = c.replace('v_dx2', f'v%dx(j)')
-        c = c.replace('v_ddx', f'v%ddx(k)')
+        c = c.replace('v_dx2', f'v%g(j)')
+        c = c.replace('v_ddx', f'v%h(k)')
     return c
 
 def replacements_ddx_no_loop(c, u_type, v_type):
     if u_type == 'dual':
-        c = c.replace('u_x', f'u%x')
+        c = c.replace('u_x', f'u%f')
     else:
         c = c.replace('u_x', 'u')
 
     if v_type is not None:
         if v_type == 'dual':
-            c = c.replace('v_x', f'v%x')
+            c = c.replace('v_x', f'v%f')
         else:
             c = c.replace('v_x', 'v')
 
-    c = c.replace('u_ddx', f'u%ddx')
+    c = c.replace('u_ddx', f'u%h')
     if v_type is not None:
-        c = c.replace('v_ddx', f'v%ddx')
+        c = c.replace('v_ddx', f'v%h')
     return c
 
 def uv_types(num_types, is_hyper_dual):
@@ -454,10 +454,10 @@ def binary_overload(fun, is_hyper_dual=True, arg_class=('dual','dual')):
 
     if is_hyper_dual:
         expr = (f, df1, ddf)
-        assign_to = (f'res%x', f'res%dx', f'res%ddx(k)')
+        assign_to = (f'res%f', f'res%g', f'res%h(k)')
     else:
         expr = (f, df1)
-        assign_to = (f'res%x', f'res%dx')
+        assign_to = (f'res%f', f'res%g')
 
     # code1, code2 = apply_cse_and_return_fcode(expr, assign_to, source_format='free',standard=95, skip_cse=skip_cse, code1=code1)
 
@@ -476,12 +476,12 @@ def binary_overload(fun, is_hyper_dual=True, arg_class=('dual','dual')):
     for var, var_expr in rvar:
         temp_assigns.append(replacements_x(fcode(var_expr,assign_to=var,source_format='free',standard=95), u_class, v_class))
 
-    x_assign = replacements_x(fcode(rexpr[0], assign_to=assign_to[0], source_format='free',standard=95), u_class, v_class)
-    dx_assign = replacements_dx(fcode(rexpr[1], assign_to=assign_to[1], source_format='free',standard=95), u_class, v_class)
+    f_assign = replacements_x(fcode(rexpr[0], assign_to=assign_to[0], source_format='free',standard=95), u_class, v_class)
+    g_assign = replacements_dx(fcode(rexpr[1], assign_to=assign_to[1], source_format='free',standard=95), u_class, v_class)
     if is_hyper_dual:
-        has_loop, ddx_assign = replacements_ddx(fcode(rexpr[2], assign_to=assign_to[2], source_format='free',standard=95), u_class, v_class)
+        has_loop, h_assign = replacements_ddx(fcode(rexpr[2], assign_to=assign_to[2], source_format='free',standard=95), u_class, v_class)
         if not has_loop:
-            ddx_assign = ddx_assign.replace(f'res%ddx(k)', f'res%ddx')
+            h_assign = h_assign.replace(f'res%h(k)', f'res%h')
 
     if is_hyper_dual:
         if has_loop:
@@ -496,9 +496,9 @@ def binary_overload(fun, is_hyper_dual=True, arg_class=('dual','dual')):
                 res_type = res_type,
                 temp_decl = temp_decl,
                 temp_assigns = temp_assigns,
-                x_assign = x_assign,
-                dx_assign = dx_assign,
-                ddx_assign = ddx_assign)
+                f_assign = f_assign,
+                g_assign = g_assign,
+                h_assign = h_assign)
         else:
             code = Template(_binary_fun_hd_noloop_template).render(
                 interface_name = fun.__name__,
@@ -511,9 +511,9 @@ def binary_overload(fun, is_hyper_dual=True, arg_class=('dual','dual')):
                 res_type = res_type,
                 temp_decl = temp_decl,
                 temp_assigns = temp_assigns,
-                x_assign = x_assign,
-                dx_assign = dx_assign,
-                ddx_assign = ddx_assign)
+                f_assign = f_assign,
+                g_assign = g_assign,
+                h_assign = h_assign)
     else:
         code = Template(_binary_fun_d_template).render(
             interface_name = fun.__name__,
@@ -526,8 +526,8 @@ def binary_overload(fun, is_hyper_dual=True, arg_class=('dual','dual')):
             res_type = res_type,
             temp_decl = temp_decl,
             temp_assigns = temp_assigns,
-            x_assign = x_assign,
-            dx_assign = dx_assign)
+            f_assign = f_assign,
+            g_assign = g_assign)
 
 
     return code
@@ -604,10 +604,10 @@ def unary_overload(fun, is_hyper_dual=True, u_class='dual'):
 
     if is_hyper_dual:
         expr = (f, df1, ddf)
-        assign_to = (f'res%x', f'res%dx', f'res%ddx(k)')
+        assign_to = (f'res%f', f'res%g', f'res%h(k)')
     else:
         expr = (f, df1)
-        assign_to = (f'res%x', f'res%dx')
+        assign_to = (f'res%f', f'res%g')
 
     rvar, rexpr = sp.cse(sp.simplify(expr),
         order='none', list=False, symbols=sp.utilities.iterables.numbered_symbols(prefix='t', start=0), 
@@ -624,12 +624,12 @@ def unary_overload(fun, is_hyper_dual=True, u_class='dual'):
     for var, var_expr in rvar:
         temp_assigns.append(replacements_x(fcode(var_expr,assign_to=var,source_format='free',standard=95), u_class))
 
-    x_assign = replacements_x(fcode(rexpr[0], assign_to=assign_to[0], source_format='free',standard=95), u_class)
-    dx_assign = replacements_dx(fcode(rexpr[1], assign_to=assign_to[1], source_format='free',standard=95), u_class)
+    f_assign = replacements_x(fcode(rexpr[0], assign_to=assign_to[0], source_format='free',standard=95), u_class)
+    g_assign = replacements_dx(fcode(rexpr[1], assign_to=assign_to[1], source_format='free',standard=95), u_class)
     if is_hyper_dual:
-        has_loop, ddx_assign = replacements_ddx(fcode(rexpr[2], assign_to=assign_to[2], source_format='free',standard=95), u_class)
+        has_loop, h_assign = replacements_ddx(fcode(rexpr[2], assign_to=assign_to[2], source_format='free',standard=95), u_class)
         if not has_loop:
-            ddx_assign = ddx_assign.replace(f'res%ddx(k)', f'res%ddx')
+            h_assign = h_assign.replace(f'res%h(k)', f'res%h')
 
     if is_hyper_dual:
         if has_loop:
@@ -641,9 +641,9 @@ def unary_overload(fun, is_hyper_dual=True, u_class='dual'):
                 res_type = res_type,
                 temp_decl = temp_decl,
                 temp_assigns = temp_assigns,
-                x_assign = x_assign,
-                dx_assign = dx_assign,
-                ddx_assign = ddx_assign)
+                f_assign = f_assign,
+                g_assign = g_assign,
+                h_assign = h_assign)
         else:
             code = Template(_unary_fun_hd_noloop_template).render(
                 interface_name = fun.__name__,
@@ -653,9 +653,9 @@ def unary_overload(fun, is_hyper_dual=True, u_class='dual'):
                 res_type = res_type,
                 temp_decl = temp_decl,
                 temp_assigns = temp_assigns,
-                x_assign = x_assign,
-                dx_assign = dx_assign,
-                ddx_assign = ddx_assign)
+                f_assign = f_assign,
+                g_assign = g_assign,
+                h_assign = h_assign)
     else:
         code = Template(_unary_fun_d_template).render(
             interface_name = fun.__name__,
@@ -665,8 +665,8 @@ def unary_overload(fun, is_hyper_dual=True, u_class='dual'):
             res_type = res_type,
             temp_decl = temp_decl,
             temp_assigns = temp_assigns,
-            x_assign = x_assign,
-            dx_assign = dx_assign)
+            f_assign = f_assign,
+            g_assign = g_assign)
 
 
     return code

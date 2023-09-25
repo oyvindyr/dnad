@@ -85,7 +85,7 @@ contains
         yx = y_of_x(xx)
 
         ! y as a function of y, with derivatives wrt y
-        call initialize(yy, yx(:)%x)
+        call initialize(yy, yx(:)%f)
 
         ! f as a function of y, with derivatives wrt y
         fy = f_of_y(yy)
@@ -110,13 +110,13 @@ contains
         call display(jacobi_tr(yx), "yxjt")
 
         is_ok = .true.
-        if (abs(fx_chain%x - fx%x) > abs_tol) then
+        if (abs(fx_chain%f - fx%f) > abs_tol) then
             is_ok = .false.
         end if
-        if (maxval(abs(fx_chain%dx - fx%dx)) > abs_tol) then
+        if (maxval(abs(fx_chain%g - fx%g)) > abs_tol) then
             is_ok = .false.
         end if
-        if (maxval(abs(fx_chain%ddx - fx%ddx)) > abs_tol) then
+        if (maxval(abs(fx_chain%h - fx%h)) > abs_tol) then
             is_ok = .false.
         end if
 

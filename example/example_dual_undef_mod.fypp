@@ -53,10 +53,10 @@ contains
 
 
         print *, "Function value:"
-        print *, fhd%x
+        print *, fhd%f
 
         print *, "Gradient:"
-        print *, fhd%dx
+        print *, fhd%g
 
     end subroutine
 

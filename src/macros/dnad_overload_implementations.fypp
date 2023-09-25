@@ -158,22 +158,22 @@
 
         ! We need this!
       #:if stringent == True
-        if (u%x == 0) then
-            res%x = 0.0_${real_kind}$
+        if (u%f == 0) then
+            res%f = 0.0_${real_kind}$
             do i = 1, ${dual_size}$
-                if (u%dx(i) .eq. 0.0_${real_kind}$) then
-                    res%dx(i) = 0.0_${real_kind}$
+                if (u%g(i) .eq. 0.0_${real_kind}$) then
+                    res%g(i) = 0.0_${real_kind}$
                 else
-                    res%dx(i) = set_NaN()
+                    res%g(i) = set_NaN()
                 end if
             end do
         else 
-            res%x = abs(u%x)
-            res%dx = abs(u%dx)
+            res%f = abs(u%f)
+            res%g = abs(u%g)
         end if
       #:else 
-        res%x = abs(u%x)
-        res%dx = abs(u%dx)
+        res%f = abs(u%f)
+        res%g = abs(u%g)
       #:endif
 
     end function
@@ -185,16 +185,16 @@
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
 
-        res%x = acos(u%x)
+        res%f = acos(u%f)
     
       #:if stringent == True
-        if (u%x == 1.0_${real_kind}$ .or. u%x == -1.0_${real_kind}$) then
-            res%dx = set_Nan()  ! Undefined derivative
+        if (u%f == 1.0_${real_kind}$ .or. u%f == -1.0_${real_kind}$) then
+            res%g = set_Nan()  ! Undefined derivative
         else
-            res%dx = -u%dx / sqrt(1.0_${real_kind}$ - u%x**2)
+            res%g = -u%g / sqrt(1.0_${real_kind}$ - u%f**2)
         end if
       #:else 
-        res%dx = -u%dx / sqrt(1.0_${real_kind}$ - u%x**2)
+        res%g = -u%g / sqrt(1.0_${real_kind}$ - u%f**2)
       #:endif
 
     end function
@@ -206,15 +206,15 @@
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
 
-        res%x = asin(u%x)
+        res%f = asin(u%f)
       #:if stringent == True
-        if (u%x == 1.0_${real_kind}$ .or. u%x == -1.0_${real_kind}$) then
-            res%dx = set_NaN()  ! Undefined derivative
+        if (u%f == 1.0_${real_kind}$ .or. u%f == -1.0_${real_kind}$) then
+            res%g = set_NaN()  ! Undefined derivative
         else
-            res%dx = u%dx / sqrt(1.0_${real_kind}$ - u%x**2)
+            res%g = u%g / sqrt(1.0_${real_kind}$ - u%f**2)
         end if
       #:else 
-        res%dx = u%dx / sqrt(1.0_${real_kind}$ - u%x**2)
+        res%g = u%g / sqrt(1.0_${real_kind}$ - u%f**2)
       #:endif
 
     end function
@@ -226,8 +226,8 @@
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
 
-        res%x = atan(u%x)
-        res%dx = u%dx / (1.0_${real_kind}$ + u%x**2)
+        res%f = atan(u%f)
+        res%g = u%g / (1.0_${real_kind}$ + u%f**2)
 
     end function
   #:endfor
@@ -240,10 +240,10 @@
 
         real(${real_kind}$) :: usq_plus_vsq
 
-        res%x = atan2(u%x, v%x)
+        res%f = atan2(u%f, v%f)
 
-        usq_plus_vsq = u%x**2 + v%x**2
-        res%dx = v%x / usq_plus_vsq * u%dx - u%x / usq_plus_vsq * v%dx
+        usq_plus_vsq = u%f**2 + v%f**2
+        res%g = v%f / usq_plus_vsq * u%g - u%f / usq_plus_vsq * v%g
 
     end function
   #:endfor
@@ -254,8 +254,8 @@
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
 
-        res%x = cos(u%x)
-        res%dx = -sin(u%x) * u%dx
+        res%f = cos(u%f)
+        res%g = -sin(u%f) * u%g
 
     end function
   #:endfor
@@ -268,9 +268,9 @@
 
         integer :: i
 
-        res%x = dot_product(u%x, v%x)
+        res%f = dot_product(u%f, v%f)
         do i = 1, ${dual_size}$
-            res%dx(i) = dot_product(u%x, v%dx(i)) + dot_product(v%x, u%dx(i))
+            res%g(i) = dot_product(u%f, v%g(i)) + dot_product(v%f, u%g(i))
         end do
 
     end function
@@ -284,9 +284,9 @@
 
         real(${real_kind}$) :: exp_x
 
-        exp_x = exp(u%x)
-        res%x = exp_x
-        res%dx = u%dx * exp_x
+        exp_x = exp(u%f)
+        res%f = exp_x
+        res%g = u%g * exp_x
 
     end function
   #:endfor
@@ -297,7 +297,7 @@
          type(${dual_type}$), intent(in) :: u
          integer :: res
 
-         res = int(u%x)
+         res = int(u%f)
 
     end function
   #:endfor
@@ -318,9 +318,9 @@
 
         real(${real_kind}$) :: inv
 
-        inv = 1.0_${real_kind}$ / (u%x * log(10.0_${real_kind}$))
-        res%x = log10(u%x)
-        res%dx = u%dx * inv
+        inv = 1.0_${real_kind}$ / (u%f * log(10.0_${real_kind}$))
+        res%f = log10(u%f)
+        res%g = u%g * inv
 
     end function
   #:endfor
@@ -333,9 +333,9 @@
 
         integer :: i
 
-        res%x = matmul(u%x, v%x)
+        res%f = matmul(u%f, v%f)
         do i = 1, ${dual_size}$
-            res%dx(i) = matmul(u%dx(i), v%x) + matmul(u%x, v%dx(i))
+            res%g(i) = matmul(u%g(i), v%f) + matmul(u%f, v%g(i))
         end do
 
     end function
@@ -344,9 +344,9 @@
         type(${dual_type}$) :: res(size(u,1))
         integer :: i
 
-        res%x = matmul(u%x, v%x)
+        res%f = matmul(u%f, v%f)
         do i = 1, ${dual_size}$
-            res%dx(i) = matmul(u%dx(i), v%x) + matmul(u%x, v%dx(i))
+            res%g(i) = matmul(u%g(i), v%f) + matmul(u%f, v%g(i))
         end do
 
     end function
@@ -355,9 +355,9 @@
         type(${dual_type}$) :: res(size(v, 2))
         integer::i
 
-        res%x = matmul(u%x, v%x)
+        res%f = matmul(u%f, v%f)
         do i = 1, ${dual_size}$
-            res%dx(i) = matmul(u%dx(i), v%x) + matmul(u%x, v%dx(i))
+            res%g(i) = matmul(u%g(i), v%f) + matmul(u%f, v%g(i))
         end do
 
     end function
@@ -369,7 +369,7 @@
         type(${dual_type}$), intent(in) :: val1, val2
         type(${dual_type}$) :: res
 
-        if (val1%x > val2%x) then
+        if (val1%f > val2%f) then
             res = val1
         else
             res = val2
@@ -381,7 +381,7 @@
         integer, intent(in) :: i
         type(${dual_type}$) :: res
 
-        if (u%x > i) then
+        if (u%f > i) then
             res = u
         else
             res = i
@@ -393,7 +393,7 @@
         real(${real_kind}$), intent(in) :: r
         type(${dual_type}$) :: res
 
-        if (u%x > r) then
+        if (u%f > r) then
             res = u
         else
             res = r
@@ -405,7 +405,7 @@
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
 
-        if (u%x > n) then
+        if (u%f > n) then
             res = u
         else
             res = n
@@ -421,19 +421,19 @@
         type(${dual_type}$), intent(in), optional :: val3, val4,val5
         type(${dual_type}$) :: res
 
-        if (val1%x > val2%x) then
+        if (val1%f > val2%f) then
             res = val1
         else
             res = val2
         endif
         if(present(val3))then
-           if(res%x < val3%x) res = val3
+           if(res%f < val3%f) res = val3
         endif
         if(present(val4))then
-           if(res%x < val4%x) res = val4
+           if(res%f < val4%f) res = val4
         endif
         if(present(val5))then
-           if(res%x < val5%x) res = val5
+           if(res%f < val5%f) res = val5
         endif
 
     end function
@@ -446,7 +446,7 @@
         integer :: iloc(1)
         type(${dual_type}$) :: res
 
-        iloc=maxloc(u%x)
+        iloc=maxloc(u%f)
         res=u(iloc(1))
 
     end function
@@ -458,7 +458,7 @@
         type(${dual_type}$), intent(in) :: val1, val2
         type(${dual_type}$) :: res
 
-        if (val1%x < val2%x) then
+        if (val1%f < val2%f) then
             res = val1
         else
             res = val2
@@ -470,7 +470,7 @@
         real(${real_kind}$), intent(in) :: r
         type(${dual_type}$) :: res
 
-        if (u%x < r) then
+        if (u%f < r) then
             res = u
         else
             res = r
@@ -486,16 +486,16 @@
         type(${dual_type}$), intent(in), optional :: val3, val4
         type(${dual_type}$) :: res
 
-        if (val1%x < val2%x) then
+        if (val1%f < val2%f) then
             res = val1
         else
             res = val2
         endif
         if(present(val3))then
-           if(res%x > val3%x) res = val3
+           if(res%f > val3%f) res = val3
         endif
         if(present(val4))then
-           if(res%x > val4%x) res = val4
+           if(res%f > val4%f) res = val4
         endif
 
     end function
@@ -508,7 +508,7 @@
         integer :: iloc(1)
         type(${dual_type}$) :: res
 
-        iloc=minloc(u%x)
+        iloc=minloc(u%f)
         res=u(iloc(1))
 
     end function
@@ -520,7 +520,7 @@
         type(${dual_type}$), intent(in) :: u
         integer :: res
 
-        res=nint(u%x)
+        res=nint(u%f)
 
     end function
   #:endfor
@@ -531,7 +531,7 @@
         type(${dual_type}$), intent(in) :: val1, val2
         type(${dual_type}$) :: res
 
-        if (val2%x < 0.0_${real_kind}$) then
+        if (val2%f < 0.0_${real_kind}$) then
             res = -abs(val1)
         else
             res =  abs(val1)
@@ -543,7 +543,7 @@
         type(${dual_type}$), intent(in) :: val2
         type(${dual_type}$) :: res
 
-        if (val2%x < 0.0_${real_kind}$) then
+        if (val2%f < 0.0_${real_kind}$) then
             res = -abs(val1)
         else
             res = abs(val1)
@@ -558,8 +558,8 @@
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
 
-        res%x = sin(u%x)
-        res%dx = cos(u%x) * u%dx
+        res%f = sin(u%f)
+        res%g = cos(u%f) * u%g
 
     end function
   #:endfor
@@ -570,8 +570,8 @@
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
 
-        res%x = tan(u%x)
-        res%dx = u%dx / cos(u%x)**2
+        res%f = tan(u%f)
+        res%g = u%g / cos(u%f)**2
 
     end function
   #:endfor
@@ -591,9 +591,9 @@
         type(${dual_type}$) :: res
         integer :: i
 
-        res%x = sum(u%x)
+        res%f = sum(u%f)
         do i = 1, ${dual_size}$
-            res%dx(i) = sum(u%dx(i))
+            res%g(i) = sum(u%g(i))
         end do
 
     end function
@@ -605,7 +605,7 @@
         type(${dual_type}$), intent(in) :: array(:)
         integer :: ind(1)
 
-        ind = maxloc(array%x)
+        ind = maxloc(array%f)
 
     end function
   #:endfor

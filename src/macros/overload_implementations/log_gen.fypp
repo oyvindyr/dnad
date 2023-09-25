@@ -9,8 +9,8 @@
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
         
-        res%x = log(u%x)
-        res%dx = u%dx/u%x
+        res%f = log(u%f)
+        res%g = u%g/u%f
       #:if test_coverage
         log_d_counter = log_d_counter + 1
       #:endif
@@ -29,14 +29,14 @@
         integer :: i, j, k
         real(${real_kind}$) :: t0
         
-        t0 = 1.0_${real_kind}$/u%x
-        res%x = log(u%x)
-        res%dx = t0*u%dx
+        t0 = 1.0_${real_kind}$/u%f
+        res%f = log(u%f)
+        res%g = t0*u%g
         k = 0
         do j = 1, ${size_dx}$
             do i = j, ${size_dx}$
                 k = k + 1
-                res%ddx(k) = t0*(-t0*u%dx(i)*u%dx(j) + u%ddx(k))
+                res%h(k) = t0*(-t0*u%g(i)*u%g(j) + u%h(k))
             end do
         end do
       #:if test_coverage

@@ -28,9 +28,9 @@
         real(${real_kind}$), intent(in) :: val
         integer, intent(in) :: idiff
         
-        dual%x = val
-        dual%dx = 0
-        dual%dx(idiff) = 1
+        dual%f = val
+        dual%g = 0
+        dual%g(idiff) = 1
 
     end subroutine
     pure subroutine initialize_${dual_sn}$_vector(dual, val)
@@ -42,9 +42,9 @@
         integer :: i
 
         do i = 1, size(dual)
-            dual(i)%x = val(i)
-            dual(i)%dx = 0
-            dual(i)%dx(i) = 1
+            dual(i)%f = val(i)
+            dual(i)%g = 0
+            dual(i)%g(i) = 1
         end do
 
     end subroutine
@@ -56,10 +56,10 @@
         real(${real_kind}$), intent(in) :: val
         integer, intent(in) :: idiff
         
-        hdual%x = val
-        hdual%dx = 0
-        hdual%ddx = 0
-        hdual%dx(idiff) = 1
+        hdual%f = val
+        hdual%g = 0
+        hdual%h = 0
+        hdual%g(idiff) = 1
 
     end subroutine
     pure subroutine initialize_${hdual_sn}$_vector(hdual, val)
@@ -71,10 +71,10 @@
         integer :: i
         
         do i = 1, size(hdual)
-            hdual(i)%x = val(i)
-            hdual(i)%dx = 0
-            hdual(i)%ddx = 0
-            hdual(i)%dx(i) = 1
+            hdual(i)%f = val(i)
+            hdual(i)%g = 0
+            hdual(i)%h = 0
+            hdual(i)%g(i) = 1
         end do
 
     end subroutine
