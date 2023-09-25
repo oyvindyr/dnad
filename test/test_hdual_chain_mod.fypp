@@ -50,7 +50,7 @@ module test_hdual_chain_mod
     $:dnad_display_interface(dual_shortnames = ['dualx', 'dualy'], hdual_shortnames=['hdualx', 'hdualy'])
     $:dnad_hessian_interface(hdual_shortnames=['hdualx', 'hdualy'])
     $:dnad_jacobi_tr_interface(dual_shortnames = ['dualx', 'dualy'], hdual_shortnames=['hdualx', 'hdualy'])
-    $:dnad_chain_duals_interface(dual_y_names = ['dualy', 'hdualy'], dual_x_names = ['dualx', 'hdualx'])
+    $:dnad_chain_duals_interface(dual_y_shortnames = ['dualy', 'hdualy'], dual_x_shortnames = ['dualx', 'hdualx'])
     $:dnad_overload_interfaces(selected_interfaces, &
             dual_shortnames = ['dualx', 'dualy'], hdual_shortnames=['hdualx', 'hdualy'])
     
