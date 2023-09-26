@@ -40,7 +40,7 @@ module test_hdual1_mod
 
     $:dnad_initialize_interface(["xy:h"])
     $:dnad_getter_interfaces(["xy:h"])
-    $:dnad_overload_interfaces(selected_interfaces, dual_shortnames = ['d'], hdual_shortnames=['hd'])
+    $:dnad_overload_interfaces(["xy:h"], selected_interfaces)
     
 contains
 
@@ -85,10 +85,10 @@ contains
         do i = 1, nval
 
             fvd(i) = fd(i)
-            dfd(:, i) = fd(i)%g
+            dfd(:, i) = gradient(fd(i))
 
             fvh(i) = fhd(i)
-            dfh(:, i) = fhd(i)%g
+            dfh(:, i) = gradient(fhd(i))
             ddfh(:, :, i) = hessian(fhd(i))
 
         end do
@@ -168,11 +168,7 @@ contains
 
     $:dnad_initialize_implementations(["xy:h"], "dp")
     $:dnad_getter_implementations(["xy:h"], "dp")
-    $:dnad_overload_implementations("dp", &
-             dual_types = ['dual__xy_t'],   dual_shortnames =  ['d'],  dual_sizes = ['num_deriv'], &
-            hdual_types = ['hdual__xy_t'], hdual_shortnames = ['hd'], hdual_sizes = ['num_deriv'], &
-            selected_interfaces=selected_interfaces, stringent=stringent, &
-            test_coverage=test_coverage)
+    $:dnad_overload_implementations(["xy:h"], "dp", selected_interfaces=selected_interfaces, stringent=stringent, test_coverage=test_coverage)
     
   #:if stringent
     ! Workaround to make pure functions produce NaN's deliberately:

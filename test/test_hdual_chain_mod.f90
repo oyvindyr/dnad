@@ -111,122 +111,122 @@ module test_hdual_chain_mod
         module procedure chain_duals__hd_y_x
     end interface
     interface assignment (=)
-        module procedure assign_dualx_i  ! dual=integer, elemental
-        module procedure assign_dualx_r  ! dual=real, elemental
-        module procedure assign_i_dualx  ! integer=dual, elemental
-        module procedure assign_r_dualx  ! real=dual, elemental
-        module procedure assign_dualy_i  ! dual=integer, elemental
-        module procedure assign_dualy_r  ! dual=real, elemental
-        module procedure assign_i_dualy  ! integer=dual, elemental
-        module procedure assign_r_dualy  ! real=dual, elemental
-        module procedure assign_hdualx_i  ! dual=integer, elemental
-        module procedure assign_hdualx_r  ! dual=real, elemental
-        module procedure assign_i_hdualx  ! integer=dual, elemental
-        module procedure assign_r_hdualx  ! real=dual, elemental
-        module procedure assign_hdualy_i  ! dual=integer, elemental
-        module procedure assign_hdualy_r  ! dual=real, elemental
-        module procedure assign_i_hdualy  ! integer=dual, elemental
-        module procedure assign_r_hdualy  ! real=dual, elemental
+        module procedure assign__dx_i  ! dual=integer, elemental
+        module procedure assign__dx_r  ! dual=real, elemental
+        module procedure assign__i_dx  ! integer=dual, elemental
+        module procedure assign__r_dx  ! real=dual, elemental
+        module procedure assign__dy_i  ! dual=integer, elemental
+        module procedure assign__dy_r  ! dual=real, elemental
+        module procedure assign__i_dy  ! integer=dual, elemental
+        module procedure assign__r_dy  ! real=dual, elemental
+        module procedure assign__hdx_i  ! dual=integer, elemental
+        module procedure assign__hdx_r  ! dual=real, elemental
+        module procedure assign__i_hdx  ! integer=dual, elemental
+        module procedure assign__r_hdx  ! real=dual, elemental
+        module procedure assign__hdy_i  ! dual=integer, elemental
+        module procedure assign__hdy_r  ! dual=real, elemental
+        module procedure assign__i_hdy  ! integer=dual, elemental
+        module procedure assign__r_hdy  ! real=dual, elemental
     end interface
     interface operator (+)
-        module procedure unary_add_dualx   ! +dual number, elemental
-        module procedure add_dualx_dualx       ! dual + dual, elemental
-        module procedure add_dualx_i       ! dual + integer, elemental
-        module procedure add_dualx_r       ! dual + real, elemental
-        module procedure add_i_dualx       ! integer + dual, elemental
-        module procedure add_r_dualx       ! real + dual, elemental
-        module procedure unary_add_dualy   ! +dual number, elemental
-        module procedure add_dualy_dualy       ! dual + dual, elemental
-        module procedure add_dualy_i       ! dual + integer, elemental
-        module procedure add_dualy_r       ! dual + real, elemental
-        module procedure add_i_dualy       ! integer + dual, elemental
-        module procedure add_r_dualy       ! real + dual, elemental
-        module procedure unary_add_hdualx  ! +dual number, elemental
-        module procedure add_hdualx_hdualx     ! dual + dual, elemental
-        module procedure add_hdualx_i      ! dual + integer, elemental
-        module procedure add_hdualx_r      ! dual + real, elemental
-        module procedure add_i_hdualx      ! integer + dual, elemental
-        module procedure add_r_hdualx      ! real + dual, elemental
-        module procedure unary_add_hdualy  ! +dual number, elemental
-        module procedure add_hdualy_hdualy     ! dual + dual, elemental
-        module procedure add_hdualy_i      ! dual + integer, elemental
-        module procedure add_hdualy_r      ! dual + real, elemental
-        module procedure add_i_hdualy      ! integer + dual, elemental
-        module procedure add_r_hdualy      ! real + dual, elemental
+        module procedure add__dx   ! +dual number, elemental
+        module procedure add__dx_dx       ! dual + dual, elemental
+        module procedure add__dx_i       ! dual + integer, elemental
+        module procedure add__dx_r       ! dual + real, elemental
+        module procedure add__i_dx       ! integer + dual, elemental
+        module procedure add__r_dx       ! real + dual, elemental
+        module procedure add__dy   ! +dual number, elemental
+        module procedure add__dy_dy       ! dual + dual, elemental
+        module procedure add__dy_i       ! dual + integer, elemental
+        module procedure add__dy_r       ! dual + real, elemental
+        module procedure add__i_dy       ! integer + dual, elemental
+        module procedure add__r_dy       ! real + dual, elemental
+        module procedure add__hdx  ! +dual number, elemental
+        module procedure add__hdx_hdx     ! dual + dual, elemental
+        module procedure add__hdx_i      ! dual + integer, elemental
+        module procedure add__hdx_r      ! dual + real, elemental
+        module procedure add__i_hdx      ! integer + dual, elemental
+        module procedure add__r_hdx      ! real + dual, elemental
+        module procedure add__hdy  ! +dual number, elemental
+        module procedure add__hdy_hdy     ! dual + dual, elemental
+        module procedure add__hdy_i      ! dual + integer, elemental
+        module procedure add__hdy_r      ! dual + real, elemental
+        module procedure add__i_hdy      ! integer + dual, elemental
+        module procedure add__r_hdy      ! real + dual, elemental
     end interface
     interface operator (-)
-        module procedure unary_minus_dualx  ! negate a dual number,elemental
-        module procedure minus_dualx_dualx      ! dual -dual,elemental
-        module procedure minus_dualx_i      ! dual-integer,elemental
-        module procedure minus_dualx_r      ! dual-real,elemental
-        module procedure minus_i_dualx      ! integer-dual,elemental
-        module procedure minus_r_dualx      ! real-dual,elemental
-        module procedure unary_minus_dualy  ! negate a dual number,elemental
-        module procedure minus_dualy_dualy      ! dual -dual,elemental
-        module procedure minus_dualy_i      ! dual-integer,elemental
-        module procedure minus_dualy_r      ! dual-real,elemental
-        module procedure minus_i_dualy      ! integer-dual,elemental
-        module procedure minus_r_dualy      ! real-dual,elemental
-        module procedure unary_minus_hdualx ! negate a dual number,elemental
-        module procedure minus_hdualx_hdualx    ! dual -dual,elemental
-        module procedure minus_hdualx_i     ! dual-integer,elemental
-        module procedure minus_hdualx_r     ! dual-real,elemental
-        module procedure minus_i_hdualx     ! integer-dual,elemental
-        module procedure minus_r_hdualx     ! real-dual,elemental
-        module procedure unary_minus_hdualy ! negate a dual number,elemental
-        module procedure minus_hdualy_hdualy    ! dual -dual,elemental
-        module procedure minus_hdualy_i     ! dual-integer,elemental
-        module procedure minus_hdualy_r     ! dual-real,elemental
-        module procedure minus_i_hdualy     ! integer-dual,elemental
-        module procedure minus_r_hdualy     ! real-dual,elemental
+        module procedure minus__dx  ! negate a dual number,elemental
+        module procedure minus__dx_dx      ! dual -dual,elemental
+        module procedure minus__dx_i      ! dual-integer,elemental
+        module procedure minus__dx_r      ! dual-real,elemental
+        module procedure minus__i_dx      ! integer-dual,elemental
+        module procedure minus__r_dx      ! real-dual,elemental
+        module procedure minus__dy  ! negate a dual number,elemental
+        module procedure minus__dy_dy      ! dual -dual,elemental
+        module procedure minus__dy_i      ! dual-integer,elemental
+        module procedure minus__dy_r      ! dual-real,elemental
+        module procedure minus__i_dy      ! integer-dual,elemental
+        module procedure minus__r_dy      ! real-dual,elemental
+        module procedure minus__hdx ! negate a dual number,elemental
+        module procedure minus__hdx_hdx    ! dual -dual,elemental
+        module procedure minus__hdx_i     ! dual-integer,elemental
+        module procedure minus__hdx_r     ! dual-real,elemental
+        module procedure minus__i_hdx     ! integer-dual,elemental
+        module procedure minus__r_hdx     ! real-dual,elemental
+        module procedure minus__hdy ! negate a dual number,elemental
+        module procedure minus__hdy_hdy    ! dual -dual,elemental
+        module procedure minus__hdy_i     ! dual-integer,elemental
+        module procedure minus__hdy_r     ! dual-real,elemental
+        module procedure minus__i_hdy     ! integer-dual,elemental
+        module procedure minus__r_hdy     ! real-dual,elemental
     end interface
     interface operator (*)
-        module procedure mult_dualx_dualx    ! dual*dual, elemental
-        module procedure mult_dualx_i    ! dual*integer,elemental
-        module procedure mult_dualx_r    ! dual*real,elemental
-        module procedure mult_i_dualx    ! integer*dual,elemental
-        module procedure mult_r_dualx    ! real*dual,elemental
-        module procedure mult_dualy_dualy    ! dual*dual, elemental
-        module procedure mult_dualy_i    ! dual*integer,elemental
-        module procedure mult_dualy_r    ! dual*real,elemental
-        module procedure mult_i_dualy    ! integer*dual,elemental
-        module procedure mult_r_dualy    ! real*dual,elemental
-        module procedure mult_hdualx_hdualx  ! dual*dual, elemental
-        module procedure mult_hdualx_i   ! dual*integer,elemental
-        module procedure mult_hdualx_r   ! dual*real,elemental
-        module procedure mult_i_hdualx   ! integer*dual,elemental
-        module procedure mult_r_hdualx   ! real*dual,elemental
-        module procedure mult_hdualy_hdualy  ! dual*dual, elemental
-        module procedure mult_hdualy_i   ! dual*integer,elemental
-        module procedure mult_hdualy_r   ! dual*real,elemental
-        module procedure mult_i_hdualy   ! integer*dual,elemental
-        module procedure mult_r_hdualy   ! real*dual,elemental
+        module procedure mult__dx_dx    ! dual*dual, elemental
+        module procedure mult__dx_i    ! dual*integer,elemental
+        module procedure mult__dx_r    ! dual*real,elemental
+        module procedure mult__i_dx    ! integer*dual,elemental
+        module procedure mult__r_dx    ! real*dual,elemental
+        module procedure mult__dy_dy    ! dual*dual, elemental
+        module procedure mult__dy_i    ! dual*integer,elemental
+        module procedure mult__dy_r    ! dual*real,elemental
+        module procedure mult__i_dy    ! integer*dual,elemental
+        module procedure mult__r_dy    ! real*dual,elemental
+        module procedure mult__hdx_hdx  ! dual*dual, elemental
+        module procedure mult__hdx_i   ! dual*integer,elemental
+        module procedure mult__hdx_r   ! dual*real,elemental
+        module procedure mult__i_hdx   ! integer*dual,elemental
+        module procedure mult__r_hdx   ! real*dual,elemental
+        module procedure mult__hdy_hdy  ! dual*dual, elemental
+        module procedure mult__hdy_i   ! dual*integer,elemental
+        module procedure mult__hdy_r   ! dual*real,elemental
+        module procedure mult__i_hdy   ! integer*dual,elemental
+        module procedure mult__r_hdy   ! real*dual,elemental
     end interface
     interface operator (**)
-        module procedure pow_dualx_i ! dual number to an integer power,elemental
-        module procedure pow_dualx_r ! dual number to a real power, elemental
-        module procedure pow_dualx_dualx ! dual number to a dual power, elemental
-        module procedure pow_dualy_i ! dual number to an integer power,elemental
-        module procedure pow_dualy_r ! dual number to a real power, elemental
-        module procedure pow_dualy_dualy ! dual number to a dual power, elemental
-        module procedure pow_hdualx_i ! hdual number to an integer power,elemental
-        module procedure pow_hdualx_r ! hdual number to a real power, elemental
-        module procedure pow_hdualx_hdualx ! hdual number to a hdual power, elemental
-        module procedure pow_hdualy_i ! hdual number to an integer power,elemental
-        module procedure pow_hdualy_r ! hdual number to a real power, elemental
-        module procedure pow_hdualy_hdualy ! hdual number to a hdual power, elemental
+        module procedure pow__dx_i ! dual number to an integer power,elemental
+        module procedure pow__dx_r ! dual number to a real power, elemental
+        module procedure pow__dx_dx ! dual number to a dual power, elemental
+        module procedure pow__dy_i ! dual number to an integer power,elemental
+        module procedure pow__dy_r ! dual number to a real power, elemental
+        module procedure pow__dy_dy ! dual number to a dual power, elemental
+        module procedure pow__hdx_i ! hdual number to an integer power,elemental
+        module procedure pow__hdx_r ! hdual number to a real power, elemental
+        module procedure pow__hdx_hdx ! hdual number to a hdual power, elemental
+        module procedure pow__hdy_i ! hdual number to an integer power,elemental
+        module procedure pow__hdy_r ! hdual number to a real power, elemental
+        module procedure pow__hdy_hdy ! hdual number to a hdual power, elemental
     end interface
     interface log
-        module procedure log_dualx ! log of a dual number, elemental
-        module procedure log_dualy ! log of a dual number, elemental
-        module procedure log_hdualx ! log of a dual number, elemental
-        module procedure log_hdualy ! log of a dual number, elemental
+        module procedure log__dx ! log of a dual number, elemental
+        module procedure log__dy ! log of a dual number, elemental
+        module procedure log__hdx ! log of a dual number, elemental
+        module procedure log__hdy ! log of a dual number, elemental
     end interface
     interface sqrt
-        module procedure sqrt_dualx ! obtain the sqrt of a dual number, elemental
-        module procedure sqrt_dualy ! obtain the sqrt of a dual number, elemental
-        module procedure sqrt_hdualx ! obtain the sqrt of a dual number, elemental
-        module procedure sqrt_hdualy ! obtain the sqrt of a dual number, elemental
+        module procedure sqrt__dx ! obtain the sqrt of a dual number, elemental
+        module procedure sqrt__dy ! obtain the sqrt of a dual number, elemental
+        module procedure sqrt__hdx ! obtain the sqrt of a dual number, elemental
+        module procedure sqrt__hdy ! obtain the sqrt of a dual number, elemental
     end interface
     
 contains
@@ -995,67 +995,67 @@ contains
         end do
 
     end function
-    elemental subroutine assign_dualx_i(u, i)
-        type(dual_x_t), intent(out) :: u
+    elemental subroutine assign__dx_i(u, i)
+        type(dual__x_t), intent(out) :: u
         integer, intent(in) :: i
 
         u%f = real(i, dp)  ! This is faster than direct assignment
         u%g = 0.0_dp
 
     end subroutine
-    elemental subroutine assign_dualx_r(u, r)
-        type(dual_x_t), intent(out) :: u
+    elemental subroutine assign__dx_r(u, r)
+        type(dual__x_t), intent(out) :: u
         real(dp), intent(in) :: r
 
         u%f = r
         u%g = 0.0_dp
 
     end subroutine
-    elemental subroutine assign_i_dualx(i, v)
-        type(dual_x_t), intent(in) :: v
+    elemental subroutine assign__i_dx(i, v)
+        type(dual__x_t), intent(in) :: v
         integer, intent(out) :: i
 
         i = int(v%f)
 
     end subroutine
-    elemental subroutine assign_r_dualx(r, v)
-        type(dual_x_t), intent(in) :: v
+    elemental subroutine assign__r_dx(r, v)
+        type(dual__x_t), intent(in) :: v
         real(dp), intent(out) :: r
 
         r = v%f
 
     end subroutine
-    elemental subroutine assign_dualy_i(u, i)
-        type(dual_y_t), intent(out) :: u
+    elemental subroutine assign__dy_i(u, i)
+        type(dual__y_t), intent(out) :: u
         integer, intent(in) :: i
 
         u%f = real(i, dp)  ! This is faster than direct assignment
         u%g = 0.0_dp
 
     end subroutine
-    elemental subroutine assign_dualy_r(u, r)
-        type(dual_y_t), intent(out) :: u
+    elemental subroutine assign__dy_r(u, r)
+        type(dual__y_t), intent(out) :: u
         real(dp), intent(in) :: r
 
         u%f = r
         u%g = 0.0_dp
 
     end subroutine
-    elemental subroutine assign_i_dualy(i, v)
-        type(dual_y_t), intent(in) :: v
+    elemental subroutine assign__i_dy(i, v)
+        type(dual__y_t), intent(in) :: v
         integer, intent(out) :: i
 
         i = int(v%f)
 
     end subroutine
-    elemental subroutine assign_r_dualy(r, v)
-        type(dual_y_t), intent(in) :: v
+    elemental subroutine assign__r_dy(r, v)
+        type(dual__y_t), intent(in) :: v
         real(dp), intent(out) :: r
 
         r = v%f
 
     end subroutine
-    elemental subroutine assign_hdualx_i(u, i)
+    elemental subroutine assign__hdx_i(u, i)
         type(hdual__x_t), intent(out) :: u
         integer, intent(in) :: i
 
@@ -1064,7 +1064,7 @@ contains
         u%h = 0.0_dp
 
     end subroutine
-    elemental subroutine assign_hdualx_r(u, r)
+    elemental subroutine assign__hdx_r(u, r)
         type(hdual__x_t), intent(out) :: u
         real(dp), intent(in) :: r
 
@@ -1073,21 +1073,21 @@ contains
         u%h = 0.0_dp
 
     end subroutine
-    elemental subroutine assign_i_hdualx(i, v)
+    elemental subroutine assign__i_hdx(i, v)
         type(hdual__x_t), intent(in) :: v
         integer, intent(out) :: i
 
         i = int(v%d%f)
 
     end subroutine
-    elemental subroutine assign_r_hdualx(r, v)
+    elemental subroutine assign__r_hdx(r, v)
         type(hdual__x_t), intent(in) :: v
         real(dp), intent(out) :: r
 
         r = v%d%f
 
     end subroutine
-    elemental subroutine assign_hdualy_i(u, i)
+    elemental subroutine assign__hdy_i(u, i)
         type(hdual__y_t), intent(out) :: u
         integer, intent(in) :: i
 
@@ -1096,7 +1096,7 @@ contains
         u%h = 0.0_dp
 
     end subroutine
-    elemental subroutine assign_hdualy_r(u, r)
+    elemental subroutine assign__hdy_r(u, r)
         type(hdual__y_t), intent(out) :: u
         real(dp), intent(in) :: r
 
@@ -1105,115 +1105,115 @@ contains
         u%h = 0.0_dp
 
     end subroutine
-    elemental subroutine assign_i_hdualy(i, v)
+    elemental subroutine assign__i_hdy(i, v)
         type(hdual__y_t), intent(in) :: v
         integer, intent(out) :: i
 
         i = int(v%d%f)
 
     end subroutine
-    elemental subroutine assign_r_hdualy(r, v)
+    elemental subroutine assign__r_hdy(r, v)
         type(hdual__y_t), intent(in) :: v
         real(dp), intent(out) :: r
 
         r = v%d%f
 
     end subroutine
-    elemental function unary_add_dualx(u) result(res)
-        type(dual_x_t), intent(in) :: u
-        type(dual_x_t) :: res
+    elemental function add__dx(u) result(res)
+        type(dual__x_t), intent(in) :: u
+        type(dual__x_t) :: res
         
         res%f = u%f
         res%g = u%g
     end function
-    elemental function add_dualx_dualx(u, v) result(res)
-        type(dual_x_t), intent(in) :: u
-        type(dual_x_t), intent(in) :: v
-        type(dual_x_t) :: res
+    elemental function add__dx_dx(u, v) result(res)
+        type(dual__x_t), intent(in) :: u
+        type(dual__x_t), intent(in) :: v
+        type(dual__x_t) :: res
         
         res%f = u%f + v%f
         res%g = u%g + v%g
     end function
-    elemental function add_dualx_r(u, v) result(res)
-        type(dual_x_t), intent(in) :: u
+    elemental function add__dx_r(u, v) result(res)
+        type(dual__x_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(dual_x_t) :: res
+        type(dual__x_t) :: res
         
         res%f = u%f + v
         res%g = u%g
     end function
-    elemental function add_r_dualx(u, v) result(res)
+    elemental function add__r_dx(u, v) result(res)
         real(dp), intent(in) :: u
-        type(dual_x_t), intent(in) :: v
-        type(dual_x_t) :: res
+        type(dual__x_t), intent(in) :: v
+        type(dual__x_t) :: res
         
         res%f = u + v%f
         res%g = v%g
     end function
-    elemental function add_dualx_i(u, v) result(res)
-        type(dual_x_t), intent(in) :: u
+    elemental function add__dx_i(u, v) result(res)
+        type(dual__x_t), intent(in) :: u
         integer, intent(in) :: v
-        type(dual_x_t) :: res
+        type(dual__x_t) :: res
         
         res%f = u%f + v
         res%g = u%g
     end function
-    elemental function add_i_dualx(u, v) result(res)
+    elemental function add__i_dx(u, v) result(res)
         integer, intent(in) :: u
-        type(dual_x_t), intent(in) :: v
-        type(dual_x_t) :: res
+        type(dual__x_t), intent(in) :: v
+        type(dual__x_t) :: res
         
         res%f = u + v%f
         res%g = v%g
     end function
-    elemental function unary_add_dualy(u) result(res)
-        type(dual_y_t), intent(in) :: u
-        type(dual_y_t) :: res
+    elemental function add__dy(u) result(res)
+        type(dual__y_t), intent(in) :: u
+        type(dual__y_t) :: res
         
         res%f = u%f
         res%g = u%g
     end function
-    elemental function add_dualy_dualy(u, v) result(res)
-        type(dual_y_t), intent(in) :: u
-        type(dual_y_t), intent(in) :: v
-        type(dual_y_t) :: res
+    elemental function add__dy_dy(u, v) result(res)
+        type(dual__y_t), intent(in) :: u
+        type(dual__y_t), intent(in) :: v
+        type(dual__y_t) :: res
         
         res%f = u%f + v%f
         res%g = u%g + v%g
     end function
-    elemental function add_dualy_r(u, v) result(res)
-        type(dual_y_t), intent(in) :: u
+    elemental function add__dy_r(u, v) result(res)
+        type(dual__y_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(dual_y_t) :: res
+        type(dual__y_t) :: res
         
         res%f = u%f + v
         res%g = u%g
     end function
-    elemental function add_r_dualy(u, v) result(res)
+    elemental function add__r_dy(u, v) result(res)
         real(dp), intent(in) :: u
-        type(dual_y_t), intent(in) :: v
-        type(dual_y_t) :: res
+        type(dual__y_t), intent(in) :: v
+        type(dual__y_t) :: res
         
         res%f = u + v%f
         res%g = v%g
     end function
-    elemental function add_dualy_i(u, v) result(res)
-        type(dual_y_t), intent(in) :: u
+    elemental function add__dy_i(u, v) result(res)
+        type(dual__y_t), intent(in) :: u
         integer, intent(in) :: v
-        type(dual_y_t) :: res
+        type(dual__y_t) :: res
         
         res%f = u%f + v
         res%g = u%g
     end function
-    elemental function add_i_dualy(u, v) result(res)
+    elemental function add__i_dy(u, v) result(res)
         integer, intent(in) :: u
-        type(dual_y_t), intent(in) :: v
-        type(dual_y_t) :: res
+        type(dual__y_t), intent(in) :: v
+        type(dual__y_t) :: res
         
         res%f = u + v%f
         res%g = v%g
     end function
-    elemental function unary_add_hdualx(u) result(res)
+    elemental function add__hdx(u) result(res)
         type(hdual__x_t), intent(in) :: u
         type(hdual__x_t) :: res
         
@@ -1221,7 +1221,7 @@ contains
         res%d%g = u%d%g
         res%h = u%h
     end function
-    elemental function add_hdualx_hdualx(u, v) result(res)
+    elemental function add__hdx_hdx(u, v) result(res)
         type(hdual__x_t), intent(in) :: u
         type(hdual__x_t), intent(in) :: v
         type(hdual__x_t) :: res
@@ -1230,7 +1230,7 @@ contains
         res%d%g = u%d%g + v%d%g
         res%h = u%h + v%h
     end function
-    elemental function add_hdualx_r(u, v) result(res)
+    elemental function add__hdx_r(u, v) result(res)
         type(hdual__x_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual__x_t) :: res
@@ -1239,7 +1239,7 @@ contains
         res%d%g = u%d%g
         res%h = u%h
     end function
-    elemental function add_r_hdualx(u, v) result(res)
+    elemental function add__r_hdx(u, v) result(res)
         real(dp), intent(in) :: u
         type(hdual__x_t), intent(in) :: v
         type(hdual__x_t) :: res
@@ -1248,7 +1248,7 @@ contains
         res%d%g = v%d%g
         res%h = v%h
     end function
-    elemental function add_hdualx_i(u, v) result(res)
+    elemental function add__hdx_i(u, v) result(res)
         type(hdual__x_t), intent(in) :: u
         integer, intent(in) :: v
         type(hdual__x_t) :: res
@@ -1257,7 +1257,7 @@ contains
         res%d%g = u%d%g
         res%h = u%h
     end function
-    elemental function add_i_hdualx(u, v) result(res)
+    elemental function add__i_hdx(u, v) result(res)
         integer, intent(in) :: u
         type(hdual__x_t), intent(in) :: v
         type(hdual__x_t) :: res
@@ -1266,7 +1266,7 @@ contains
         res%d%g = v%d%g
         res%h = v%h
     end function
-    elemental function unary_add_hdualy(u) result(res)
+    elemental function add__hdy(u) result(res)
         type(hdual__y_t), intent(in) :: u
         type(hdual__y_t) :: res
         
@@ -1274,7 +1274,7 @@ contains
         res%d%g = u%d%g
         res%h = u%h
     end function
-    elemental function add_hdualy_hdualy(u, v) result(res)
+    elemental function add__hdy_hdy(u, v) result(res)
         type(hdual__y_t), intent(in) :: u
         type(hdual__y_t), intent(in) :: v
         type(hdual__y_t) :: res
@@ -1283,7 +1283,7 @@ contains
         res%d%g = u%d%g + v%d%g
         res%h = u%h + v%h
     end function
-    elemental function add_hdualy_r(u, v) result(res)
+    elemental function add__hdy_r(u, v) result(res)
         type(hdual__y_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual__y_t) :: res
@@ -1292,7 +1292,7 @@ contains
         res%d%g = u%d%g
         res%h = u%h
     end function
-    elemental function add_r_hdualy(u, v) result(res)
+    elemental function add__r_hdy(u, v) result(res)
         real(dp), intent(in) :: u
         type(hdual__y_t), intent(in) :: v
         type(hdual__y_t) :: res
@@ -1301,7 +1301,7 @@ contains
         res%d%g = v%d%g
         res%h = v%h
     end function
-    elemental function add_hdualy_i(u, v) result(res)
+    elemental function add__hdy_i(u, v) result(res)
         type(hdual__y_t), intent(in) :: u
         integer, intent(in) :: v
         type(hdual__y_t) :: res
@@ -1310,7 +1310,7 @@ contains
         res%d%g = u%d%g
         res%h = u%h
     end function
-    elemental function add_i_hdualy(u, v) result(res)
+    elemental function add__i_hdy(u, v) result(res)
         integer, intent(in) :: u
         type(hdual__y_t), intent(in) :: v
         type(hdual__y_t) :: res
@@ -1319,101 +1319,101 @@ contains
         res%d%g = v%d%g
         res%h = v%h
     end function
-    elemental function unary_minus_dualx(u) result(res)
-        type(dual_x_t), intent(in) :: u
-        type(dual_x_t) :: res
+    elemental function minus__dx(u) result(res)
+        type(dual__x_t), intent(in) :: u
+        type(dual__x_t) :: res
         
         res%f = -u%f
         res%g = -u%g
     end function
-    elemental function minus_dualx_dualx(u, v) result(res)
-        type(dual_x_t), intent(in) :: u
-        type(dual_x_t), intent(in) :: v
-        type(dual_x_t) :: res
+    elemental function minus__dx_dx(u, v) result(res)
+        type(dual__x_t), intent(in) :: u
+        type(dual__x_t), intent(in) :: v
+        type(dual__x_t) :: res
         
         res%f = u%f - v%f
         res%g = u%g - v%g
     end function
-    elemental function minus_dualx_r(u, v) result(res)
-        type(dual_x_t), intent(in) :: u
+    elemental function minus__dx_r(u, v) result(res)
+        type(dual__x_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(dual_x_t) :: res
+        type(dual__x_t) :: res
         
         res%f = u%f - v
         res%g = u%g
     end function
-    elemental function minus_r_dualx(u, v) result(res)
+    elemental function minus__r_dx(u, v) result(res)
         real(dp), intent(in) :: u
-        type(dual_x_t), intent(in) :: v
-        type(dual_x_t) :: res
+        type(dual__x_t), intent(in) :: v
+        type(dual__x_t) :: res
         
         res%f = u - v%f
         res%g = -v%g
     end function
-    elemental function minus_dualx_i(u, v) result(res)
-        type(dual_x_t), intent(in) :: u
+    elemental function minus__dx_i(u, v) result(res)
+        type(dual__x_t), intent(in) :: u
         integer, intent(in) :: v
-        type(dual_x_t) :: res
+        type(dual__x_t) :: res
         
         res%f = u%f - v
         res%g = u%g
     end function
-    elemental function minus_i_dualx(u, v) result(res)
+    elemental function minus__i_dx(u, v) result(res)
         integer, intent(in) :: u
-        type(dual_x_t), intent(in) :: v
-        type(dual_x_t) :: res
+        type(dual__x_t), intent(in) :: v
+        type(dual__x_t) :: res
         
         res%f = u - v%f
         res%g = -v%g
     end function
-    elemental function unary_minus_dualy(u) result(res)
-        type(dual_y_t), intent(in) :: u
-        type(dual_y_t) :: res
+    elemental function minus__dy(u) result(res)
+        type(dual__y_t), intent(in) :: u
+        type(dual__y_t) :: res
         
         res%f = -u%f
         res%g = -u%g
     end function
-    elemental function minus_dualy_dualy(u, v) result(res)
-        type(dual_y_t), intent(in) :: u
-        type(dual_y_t), intent(in) :: v
-        type(dual_y_t) :: res
+    elemental function minus__dy_dy(u, v) result(res)
+        type(dual__y_t), intent(in) :: u
+        type(dual__y_t), intent(in) :: v
+        type(dual__y_t) :: res
         
         res%f = u%f - v%f
         res%g = u%g - v%g
     end function
-    elemental function minus_dualy_r(u, v) result(res)
-        type(dual_y_t), intent(in) :: u
+    elemental function minus__dy_r(u, v) result(res)
+        type(dual__y_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(dual_y_t) :: res
+        type(dual__y_t) :: res
         
         res%f = u%f - v
         res%g = u%g
     end function
-    elemental function minus_r_dualy(u, v) result(res)
+    elemental function minus__r_dy(u, v) result(res)
         real(dp), intent(in) :: u
-        type(dual_y_t), intent(in) :: v
-        type(dual_y_t) :: res
+        type(dual__y_t), intent(in) :: v
+        type(dual__y_t) :: res
         
         res%f = u - v%f
         res%g = -v%g
     end function
-    elemental function minus_dualy_i(u, v) result(res)
-        type(dual_y_t), intent(in) :: u
+    elemental function minus__dy_i(u, v) result(res)
+        type(dual__y_t), intent(in) :: u
         integer, intent(in) :: v
-        type(dual_y_t) :: res
+        type(dual__y_t) :: res
         
         res%f = u%f - v
         res%g = u%g
     end function
-    elemental function minus_i_dualy(u, v) result(res)
+    elemental function minus__i_dy(u, v) result(res)
         integer, intent(in) :: u
-        type(dual_y_t), intent(in) :: v
-        type(dual_y_t) :: res
+        type(dual__y_t), intent(in) :: v
+        type(dual__y_t) :: res
         
         res%f = u - v%f
         res%g = -v%g
     end function
-    elemental function unary_minus_hdualx(u) result(res)
+    elemental function minus__hdx(u) result(res)
         type(hdual__x_t), intent(in) :: u
         type(hdual__x_t) :: res
         
@@ -1421,7 +1421,7 @@ contains
         res%d%g = -u%d%g
         res%h = -u%h
     end function
-    elemental function minus_hdualx_hdualx(u, v) result(res)
+    elemental function minus__hdx_hdx(u, v) result(res)
         type(hdual__x_t), intent(in) :: u
         type(hdual__x_t), intent(in) :: v
         type(hdual__x_t) :: res
@@ -1430,7 +1430,7 @@ contains
         res%d%g = u%d%g - v%d%g
         res%h = u%h - v%h
     end function
-    elemental function minus_hdualx_r(u, v) result(res)
+    elemental function minus__hdx_r(u, v) result(res)
         type(hdual__x_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual__x_t) :: res
@@ -1439,7 +1439,7 @@ contains
         res%d%g = u%d%g
         res%h = u%h
     end function
-    elemental function minus_r_hdualx(u, v) result(res)
+    elemental function minus__r_hdx(u, v) result(res)
         real(dp), intent(in) :: u
         type(hdual__x_t), intent(in) :: v
         type(hdual__x_t) :: res
@@ -1448,7 +1448,7 @@ contains
         res%d%g = -v%d%g
         res%h = -v%h
     end function
-    elemental function minus_hdualx_i(u, v) result(res)
+    elemental function minus__hdx_i(u, v) result(res)
         type(hdual__x_t), intent(in) :: u
         integer, intent(in) :: v
         type(hdual__x_t) :: res
@@ -1457,7 +1457,7 @@ contains
         res%d%g = u%d%g
         res%h = u%h
     end function
-    elemental function minus_i_hdualx(u, v) result(res)
+    elemental function minus__i_hdx(u, v) result(res)
         integer, intent(in) :: u
         type(hdual__x_t), intent(in) :: v
         type(hdual__x_t) :: res
@@ -1466,7 +1466,7 @@ contains
         res%d%g = -v%d%g
         res%h = -v%h
     end function
-    elemental function unary_minus_hdualy(u) result(res)
+    elemental function minus__hdy(u) result(res)
         type(hdual__y_t), intent(in) :: u
         type(hdual__y_t) :: res
         
@@ -1474,7 +1474,7 @@ contains
         res%d%g = -u%d%g
         res%h = -u%h
     end function
-    elemental function minus_hdualy_hdualy(u, v) result(res)
+    elemental function minus__hdy_hdy(u, v) result(res)
         type(hdual__y_t), intent(in) :: u
         type(hdual__y_t), intent(in) :: v
         type(hdual__y_t) :: res
@@ -1483,7 +1483,7 @@ contains
         res%d%g = u%d%g - v%d%g
         res%h = u%h - v%h
     end function
-    elemental function minus_hdualy_r(u, v) result(res)
+    elemental function minus__hdy_r(u, v) result(res)
         type(hdual__y_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual__y_t) :: res
@@ -1492,7 +1492,7 @@ contains
         res%d%g = u%d%g
         res%h = u%h
     end function
-    elemental function minus_r_hdualy(u, v) result(res)
+    elemental function minus__r_hdy(u, v) result(res)
         real(dp), intent(in) :: u
         type(hdual__y_t), intent(in) :: v
         type(hdual__y_t) :: res
@@ -1501,7 +1501,7 @@ contains
         res%d%g = -v%d%g
         res%h = -v%h
     end function
-    elemental function minus_hdualy_i(u, v) result(res)
+    elemental function minus__hdy_i(u, v) result(res)
         type(hdual__y_t), intent(in) :: u
         integer, intent(in) :: v
         type(hdual__y_t) :: res
@@ -1510,7 +1510,7 @@ contains
         res%d%g = u%d%g
         res%h = u%h
     end function
-    elemental function minus_i_hdualy(u, v) result(res)
+    elemental function minus__i_hdy(u, v) result(res)
         integer, intent(in) :: u
         type(hdual__y_t), intent(in) :: v
         type(hdual__y_t) :: res
@@ -1519,87 +1519,87 @@ contains
         res%d%g = -v%d%g
         res%h = -v%h
     end function
-    elemental function mult_dualx_dualx(u, v) result(res)
-        type(dual_x_t), intent(in) :: u
-        type(dual_x_t), intent(in) :: v
-        type(dual_x_t) :: res
+    elemental function mult__dx_dx(u, v) result(res)
+        type(dual__x_t), intent(in) :: u
+        type(dual__x_t), intent(in) :: v
+        type(dual__x_t) :: res
         
         res%f = u%f*v%f
         res%g = u%g*v%f + u%f*v%g
     end function
-    elemental function mult_dualx_r(u, v) result(res)
-        type(dual_x_t), intent(in) :: u
+    elemental function mult__dx_r(u, v) result(res)
+        type(dual__x_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(dual_x_t) :: res
+        type(dual__x_t) :: res
         
         res%f = u%f*v
         res%g = u%g*v
     end function
-    elemental function mult_r_dualx(u, v) result(res)
+    elemental function mult__r_dx(u, v) result(res)
         real(dp), intent(in) :: u
-        type(dual_x_t), intent(in) :: v
-        type(dual_x_t) :: res
+        type(dual__x_t), intent(in) :: v
+        type(dual__x_t) :: res
         
         res%f = u*v%f
         res%g = u*v%g
     end function
-    elemental function mult_dualx_i(u, v) result(res)
-        type(dual_x_t), intent(in) :: u
+    elemental function mult__dx_i(u, v) result(res)
+        type(dual__x_t), intent(in) :: u
         integer, intent(in) :: v
-        type(dual_x_t) :: res
+        type(dual__x_t) :: res
         
         res%f = u%f*v
         res%g = u%g*v
     end function
-    elemental function mult_i_dualx(u, v) result(res)
+    elemental function mult__i_dx(u, v) result(res)
         integer, intent(in) :: u
-        type(dual_x_t), intent(in) :: v
-        type(dual_x_t) :: res
+        type(dual__x_t), intent(in) :: v
+        type(dual__x_t) :: res
         
         res%f = u*v%f
         res%g = u*v%g
     end function
-    elemental function mult_dualy_dualy(u, v) result(res)
-        type(dual_y_t), intent(in) :: u
-        type(dual_y_t), intent(in) :: v
-        type(dual_y_t) :: res
+    elemental function mult__dy_dy(u, v) result(res)
+        type(dual__y_t), intent(in) :: u
+        type(dual__y_t), intent(in) :: v
+        type(dual__y_t) :: res
         
         res%f = u%f*v%f
         res%g = u%g*v%f + u%f*v%g
     end function
-    elemental function mult_dualy_r(u, v) result(res)
-        type(dual_y_t), intent(in) :: u
+    elemental function mult__dy_r(u, v) result(res)
+        type(dual__y_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(dual_y_t) :: res
+        type(dual__y_t) :: res
         
         res%f = u%f*v
         res%g = u%g*v
     end function
-    elemental function mult_r_dualy(u, v) result(res)
+    elemental function mult__r_dy(u, v) result(res)
         real(dp), intent(in) :: u
-        type(dual_y_t), intent(in) :: v
-        type(dual_y_t) :: res
+        type(dual__y_t), intent(in) :: v
+        type(dual__y_t) :: res
         
         res%f = u*v%f
         res%g = u*v%g
     end function
-    elemental function mult_dualy_i(u, v) result(res)
-        type(dual_y_t), intent(in) :: u
+    elemental function mult__dy_i(u, v) result(res)
+        type(dual__y_t), intent(in) :: u
         integer, intent(in) :: v
-        type(dual_y_t) :: res
+        type(dual__y_t) :: res
         
         res%f = u%f*v
         res%g = u%g*v
     end function
-    elemental function mult_i_dualy(u, v) result(res)
+    elemental function mult__i_dy(u, v) result(res)
         integer, intent(in) :: u
-        type(dual_y_t), intent(in) :: v
-        type(dual_y_t) :: res
+        type(dual__y_t), intent(in) :: v
+        type(dual__y_t) :: res
         
         res%f = u*v%f
         res%g = u*v%g
     end function
-    elemental function mult_hdualx_hdualx(u, v) result(res)
+    elemental function mult__hdx_hdx(u, v) result(res)
         type(hdual__x_t), intent(in) :: u
         type(hdual__x_t), intent(in) :: v
         type(hdual__x_t) :: res
@@ -1608,14 +1608,14 @@ contains
         res%d%f = u%d%f*v%d%f
         res%d%g = u%d%g*v%d%f + u%d%f*v%d%g
         k = 0
-        do j = 1, nx
-            do i = j, nx
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = u%h(k)*v%d%f + u%d%g(i)*v%d%g(j) + u%d%g(j)*v%d%g(i) + u%d%f*v%h(k)
             end do
         end do
     end function
-    elemental function mult_hdualx_r(u, v) result(res)
+    elemental function mult__hdx_r(u, v) result(res)
         type(hdual__x_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual__x_t) :: res
@@ -1624,7 +1624,7 @@ contains
         res%d%g = u%d%g*v
         res%h = u%h*v
     end function
-    elemental function mult_r_hdualx(u, v) result(res)
+    elemental function mult__r_hdx(u, v) result(res)
         real(dp), intent(in) :: u
         type(hdual__x_t), intent(in) :: v
         type(hdual__x_t) :: res
@@ -1633,7 +1633,7 @@ contains
         res%d%g = u*v%d%g
         res%h = u*v%h
     end function
-    elemental function mult_hdualx_i(u, v) result(res)
+    elemental function mult__hdx_i(u, v) result(res)
         type(hdual__x_t), intent(in) :: u
         integer, intent(in) :: v
         type(hdual__x_t) :: res
@@ -1642,7 +1642,7 @@ contains
         res%d%g = u%d%g*v
         res%h = u%h*v
     end function
-    elemental function mult_i_hdualx(u, v) result(res)
+    elemental function mult__i_hdx(u, v) result(res)
         integer, intent(in) :: u
         type(hdual__x_t), intent(in) :: v
         type(hdual__x_t) :: res
@@ -1651,7 +1651,7 @@ contains
         res%d%g = u*v%d%g
         res%h = u*v%h
     end function
-    elemental function mult_hdualy_hdualy(u, v) result(res)
+    elemental function mult__hdy_hdy(u, v) result(res)
         type(hdual__y_t), intent(in) :: u
         type(hdual__y_t), intent(in) :: v
         type(hdual__y_t) :: res
@@ -1660,14 +1660,14 @@ contains
         res%d%f = u%d%f*v%d%f
         res%d%g = u%d%g*v%d%f + u%d%f*v%d%g
         k = 0
-        do j = 1, ny
-            do i = j, ny
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = u%h(k)*v%d%f + u%d%g(i)*v%d%g(j) + u%d%g(j)*v%d%g(i) + u%d%f*v%h(k)
             end do
         end do
     end function
-    elemental function mult_hdualy_r(u, v) result(res)
+    elemental function mult__hdy_r(u, v) result(res)
         type(hdual__y_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual__y_t) :: res
@@ -1676,7 +1676,7 @@ contains
         res%d%g = u%d%g*v
         res%h = u%h*v
     end function
-    elemental function mult_r_hdualy(u, v) result(res)
+    elemental function mult__r_hdy(u, v) result(res)
         real(dp), intent(in) :: u
         type(hdual__y_t), intent(in) :: v
         type(hdual__y_t) :: res
@@ -1685,7 +1685,7 @@ contains
         res%d%g = u*v%d%g
         res%h = u*v%h
     end function
-    elemental function mult_hdualy_i(u, v) result(res)
+    elemental function mult__hdy_i(u, v) result(res)
         type(hdual__y_t), intent(in) :: u
         integer, intent(in) :: v
         type(hdual__y_t) :: res
@@ -1694,7 +1694,7 @@ contains
         res%d%g = u%d%g*v
         res%h = u%h*v
     end function
-    elemental function mult_i_hdualy(u, v) result(res)
+    elemental function mult__i_hdy(u, v) result(res)
         integer, intent(in) :: u
         type(hdual__y_t), intent(in) :: v
         type(hdual__y_t) :: res
@@ -1703,26 +1703,26 @@ contains
         res%d%g = u*v%d%g
         res%h = u*v%h
     end function
-    elemental function pow_dualx_i(u, v) result(res)
-        type(dual_x_t), intent(in) :: u
+    elemental function pow__dx_i(u, v) result(res)
+        type(dual__x_t), intent(in) :: u
         integer, intent(in) :: v
-        type(dual_x_t) :: res
+        type(dual__x_t) :: res
         
         res%f = u%f**v
         res%g = u%f**(v - 1)*u%g*v
     end function
-    elemental function pow_dualx_r(u, v) result(res)
-        type(dual_x_t), intent(in) :: u
+    elemental function pow__dx_r(u, v) result(res)
+        type(dual__x_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(dual_x_t) :: res
+        type(dual__x_t) :: res
         
         res%f = u%f**v
         res%g = u%f**(v - 1)*u%g*v
     end function
-    elemental function pow_dualx_dualx(u, v) result(res)
-        type(dual_x_t), intent(in) :: u
-        type(dual_x_t), intent(in) :: v
-        type(dual_x_t) :: res
+    elemental function pow__dx_dx(u, v) result(res)
+        type(dual__x_t), intent(in) :: u
+        type(dual__x_t), intent(in) :: v
+        type(dual__x_t) :: res
         real(dp) :: t0
         
         t0 = u%f**v%f
@@ -1730,26 +1730,26 @@ contains
         res%g = t0*(u%g*v%f/u%f + v%g*log(u%f))
 
     end function
-    elemental function pow_dualy_i(u, v) result(res)
-        type(dual_y_t), intent(in) :: u
+    elemental function pow__dy_i(u, v) result(res)
+        type(dual__y_t), intent(in) :: u
         integer, intent(in) :: v
-        type(dual_y_t) :: res
+        type(dual__y_t) :: res
         
         res%f = u%f**v
         res%g = u%f**(v - 1)*u%g*v
     end function
-    elemental function pow_dualy_r(u, v) result(res)
-        type(dual_y_t), intent(in) :: u
+    elemental function pow__dy_r(u, v) result(res)
+        type(dual__y_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(dual_y_t) :: res
+        type(dual__y_t) :: res
         
         res%f = u%f**v
         res%g = u%f**(v - 1)*u%g*v
     end function
-    elemental function pow_dualy_dualy(u, v) result(res)
-        type(dual_y_t), intent(in) :: u
-        type(dual_y_t), intent(in) :: v
-        type(dual_y_t) :: res
+    elemental function pow__dy_dy(u, v) result(res)
+        type(dual__y_t), intent(in) :: u
+        type(dual__y_t), intent(in) :: v
+        type(dual__y_t) :: res
         real(dp) :: t0
         
         t0 = u%f**v%f
@@ -1757,7 +1757,7 @@ contains
         res%g = t0*(u%g*v%f/u%f + v%g*log(u%f))
 
     end function
-    elemental function pow_hdualx_i(u, v) result(res)
+    elemental function pow__hdx_i(u, v) result(res)
         type(hdual__x_t), intent(in) :: u
         integer, intent(in) :: v
         type(hdual__x_t) :: res
@@ -1766,14 +1766,14 @@ contains
         res%d%f = u%d%f**v
         res%d%g = u%d%f**(v - 1)*v*u%d%g
         k = 0
-        do j = 1, nx
-            do i = j, nx
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = v*(u%d%g(i)*u%d%g(j)*(v - 1)*u%d%f**(v-2) + u%h(k)*u%d%f**(v-1))
             end do
         end do
     end function
-    elemental function pow_hdualx_r(u, v) result(res)
+    elemental function pow__hdx_r(u, v) result(res)
         type(hdual__x_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual__x_t) :: res
@@ -1782,14 +1782,14 @@ contains
         res%d%f = u%d%f**v
         res%d%g = u%d%f**(v - 1)*v*u%d%g
         k = 0
-        do j = 1, nx
-            do i = j, nx
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = v*(u%d%g(i)*u%d%g(j)*(v - 1)*u%d%f**(v-2) + u%h(k)*u%d%f**(v-1))
             end do
         end do
     end function
-    elemental function pow_hdualx_hdualx(u, v) result(res)
+    elemental function pow__hdx_hdx(u, v) result(res)
         type(hdual__x_t), intent(in) :: u
         type(hdual__x_t), intent(in) :: v
         type(hdual__x_t) :: res
@@ -1803,15 +1803,15 @@ contains
         res%d%f = t0
         res%d%g = t0*(t1*v%d%g + t2*u%d%g*v%d%f)
         k = 0
-        do j = 1, nx
-            do i = j, nx
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = t0*(t1*v%h(k) + t2*u%h(k)*v%d%f + t2*u%d%g(j)*(t2*u%d%g(i)*v%d%f*(v%d%f - &
       1) + t3*v%d%g(i)) + v%d%g(j)*(t1**2*v%d%g(i) + t2*t3*u%d%g(i)))
             end do
         end do
     end function
-    elemental function pow_hdualy_i(u, v) result(res)
+    elemental function pow__hdy_i(u, v) result(res)
         type(hdual__y_t), intent(in) :: u
         integer, intent(in) :: v
         type(hdual__y_t) :: res
@@ -1820,14 +1820,14 @@ contains
         res%d%f = u%d%f**v
         res%d%g = u%d%f**(v - 1)*v*u%d%g
         k = 0
-        do j = 1, ny
-            do i = j, ny
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = v*(u%d%g(i)*u%d%g(j)*(v - 1)*u%d%f**(v-2) + u%h(k)*u%d%f**(v-1))
             end do
         end do
     end function
-    elemental function pow_hdualy_r(u, v) result(res)
+    elemental function pow__hdy_r(u, v) result(res)
         type(hdual__y_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual__y_t) :: res
@@ -1836,14 +1836,14 @@ contains
         res%d%f = u%d%f**v
         res%d%g = u%d%f**(v - 1)*v*u%d%g
         k = 0
-        do j = 1, ny
-            do i = j, ny
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = v*(u%d%g(i)*u%d%g(j)*(v - 1)*u%d%f**(v-2) + u%h(k)*u%d%f**(v-1))
             end do
         end do
     end function
-    elemental function pow_hdualy_hdualy(u, v) result(res)
+    elemental function pow__hdy_hdy(u, v) result(res)
         type(hdual__y_t), intent(in) :: u
         type(hdual__y_t), intent(in) :: v
         type(hdual__y_t) :: res
@@ -1857,29 +1857,29 @@ contains
         res%d%f = t0
         res%d%g = t0*(t1*v%d%g + t2*u%d%g*v%d%f)
         k = 0
-        do j = 1, ny
-            do i = j, ny
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = t0*(t1*v%h(k) + t2*u%h(k)*v%d%f + t2*u%d%g(j)*(t2*u%d%g(i)*v%d%f*(v%d%f - &
       1) + t3*v%d%g(i)) + v%d%g(j)*(t1**2*v%d%g(i) + t2*t3*u%d%g(i)))
             end do
         end do
     end function
-    elemental function log_dualx(u) result(res)
-        type(dual_x_t), intent(in) :: u
-        type(dual_x_t) :: res
+    elemental function log__dx(u) result(res)
+        type(dual__x_t), intent(in) :: u
+        type(dual__x_t) :: res
         
         res%f = log(u%f)
         res%g = u%g/u%f
     end function
-    elemental function log_dualy(u) result(res)
-        type(dual_y_t), intent(in) :: u
-        type(dual_y_t) :: res
+    elemental function log__dy(u) result(res)
+        type(dual__y_t), intent(in) :: u
+        type(dual__y_t) :: res
         
         res%f = log(u%f)
         res%g = u%g/u%f
     end function
-    elemental function log_hdualx(u) result(res)
+    elemental function log__hdx(u) result(res)
         type(hdual__x_t), intent(in) :: u
         type(hdual__x_t) :: res
         integer :: i, j, k
@@ -1889,14 +1889,14 @@ contains
         res%d%f = log(u%d%f)
         res%d%g = t0*u%d%g
         k = 0
-        do j = 1, nx
-            do i = j, nx
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = t0*(-t0*u%d%g(i)*u%d%g(j) + u%h(k))
             end do
         end do
     end function
-    elemental function log_hdualy(u) result(res)
+    elemental function log__hdy(u) result(res)
         type(hdual__y_t), intent(in) :: u
         type(hdual__y_t) :: res
         integer :: i, j, k
@@ -1906,16 +1906,16 @@ contains
         res%d%f = log(u%d%f)
         res%d%g = t0*u%d%g
         k = 0
-        do j = 1, ny
-            do i = j, ny
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = t0*(-t0*u%d%g(i)*u%d%g(j) + u%h(k))
             end do
         end do
     end function
-    elemental function sqrt_dualx(u) result(res)
-        type(dual_x_t), intent(in) :: u
-        type(dual_x_t) :: res
+    elemental function sqrt__dx(u) result(res)
+        type(dual__x_t), intent(in) :: u
+        type(dual__x_t) :: res
         real(dp) :: t0
         
         t0 = sqrt(u%f)
@@ -1923,9 +1923,9 @@ contains
         res%g = 0.5_dp*u%g/t0
     end function
 
-    elemental function sqrt_dualy(u) result(res)
-        type(dual_y_t), intent(in) :: u
-        type(dual_y_t) :: res
+    elemental function sqrt__dy(u) result(res)
+        type(dual__y_t), intent(in) :: u
+        type(dual__y_t) :: res
         real(dp) :: t0
         
         t0 = sqrt(u%f)
@@ -1933,7 +1933,7 @@ contains
         res%g = 0.5_dp*u%g/t0
     end function
 
-    elemental function sqrt_hdualx(u) result(res)
+    elemental function sqrt__hdx(u) result(res)
         type(hdual__x_t), intent(in) :: u
         type(hdual__x_t) :: res
         integer :: i, j, k
@@ -1944,14 +1944,14 @@ contains
         res%d%f = t0
         res%d%g = 0.5_dp*t1*u%d%g
         k = 0
-        do j = 1, nx
-            do i = j, nx
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = (0.25_dp)*t1*(2*u%h(k) - u%d%g(i)*u%d%g(j)/u%d%f)
             end do
         end do
     end function
-    elemental function sqrt_hdualy(u) result(res)
+    elemental function sqrt__hdy(u) result(res)
         type(hdual__y_t), intent(in) :: u
         type(hdual__y_t) :: res
         integer :: i, j, k
@@ -1962,8 +1962,8 @@ contains
         res%d%f = t0
         res%d%g = 0.5_dp*t1*u%d%g
         k = 0
-        do j = 1, ny
-            do i = j, ny
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = (0.25_dp)*t1*(2*u%h(k) - u%d%g(i)*u%d%g(j)/u%d%f)
             end do

@@ -5,14 +5,14 @@
     #:else
         #:set elemental_purity = "impure elemental"
     #:endif
-    ${elemental_purity}$ function unary_minus__${dual_sn}$(u) result(res)
+    ${elemental_purity}$ function minus__${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
         
         res%f = -u%f
         res%g = -u%g
       #:if test_coverage
-        unary_minus_d_counter = unary_minus_d_counter + 1
+        minus__d_counter = minus__d_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function minus__${dual_sn}$_${dual_sn}$(u, v) result(res)
@@ -23,7 +23,7 @@
         res%f = u%f - v%f
         res%g = u%g - v%g
       #:if test_coverage
-        minus_d_d_counter = minus_d_d_counter + 1
+        minus__d_d_counter = minus__d_d_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function minus__${dual_sn}$_r(u, v) result(res)
@@ -34,7 +34,7 @@
         res%f = u%f - v
         res%g = u%g
       #:if test_coverage
-        minus_d_r_counter = minus_d_r_counter + 1
+        minus__d_r_counter = minus__d_r_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function minus__r_${dual_sn}$(u, v) result(res)
@@ -45,7 +45,7 @@
         res%f = u - v%f
         res%g = -v%g
       #:if test_coverage
-        minus_r_d_counter = minus_r_d_counter + 1
+        minus__r_d_counter = minus__r_d_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function minus__${dual_sn}$_i(u, v) result(res)
@@ -56,7 +56,7 @@
         res%f = u%f - v
         res%g = u%g
       #:if test_coverage
-        minus_d_i_counter = minus_d_i_counter + 1
+        minus__d_i_counter = minus__d_i_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function minus__i_${dual_sn}$(u, v) result(res)
@@ -67,7 +67,7 @@
         res%f = u - v%f
         res%g = -v%g
       #:if test_coverage
-        minus_i_d_counter = minus_i_d_counter + 1
+        minus__i_d_counter = minus__i_d_counter + 1
       #:endif
     end function
 #:enddef
@@ -78,7 +78,7 @@
     #:else
         #:set elemental_purity = "impure elemental"
     #:endif
-    ${elemental_purity}$ function unary_minus__${dual_sn}$(u) result(res)
+    ${elemental_purity}$ function minus__${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
         
@@ -86,7 +86,7 @@
         res%d%g = -u%d%g
         res%h = -u%h
       #:if test_coverage
-        unary_minus_hd_counter = unary_minus_hd_counter + 1
+        minus__hd_counter = minus__hd_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function minus__${dual_sn}$_${dual_sn}$(u, v) result(res)
@@ -98,7 +98,7 @@
         res%d%g = u%d%g - v%d%g
         res%h = u%h - v%h
       #:if test_coverage
-        minus_hd_hd_counter = minus_hd_hd_counter + 1
+        minus__hd_hd_counter = minus__hd_hd_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function minus__${dual_sn}$_r(u, v) result(res)
@@ -110,7 +110,7 @@
         res%d%g = u%d%g
         res%h = u%h
       #:if test_coverage
-        minus_hd_r_counter = minus_hd_r_counter + 1
+        minus__hd_r_counter = minus__hd_r_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function minus__r_${dual_sn}$(u, v) result(res)
@@ -122,7 +122,7 @@
         res%d%g = -v%d%g
         res%h = -v%h
       #:if test_coverage
-        minus_r_hd_counter = minus_r_hd_counter + 1
+        minus__r_hd_counter = minus__r_hd_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function minus__${dual_sn}$_i(u, v) result(res)
@@ -134,7 +134,7 @@
         res%d%g = u%d%g
         res%h = u%h
       #:if test_coverage
-        minus_hd_i_counter = minus_hd_i_counter + 1
+        minus__hd_i_counter = minus__hd_i_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function minus__i_${dual_sn}$(u, v) result(res)
@@ -146,7 +146,7 @@
         res%d%g = -v%d%g
         res%h = -v%h
       #:if test_coverage
-        minus_i_hd_counter = minus_i_hd_counter + 1
+        minus__i_hd_counter = minus__i_hd_counter + 1
       #:endif
     end function
 #:enddef

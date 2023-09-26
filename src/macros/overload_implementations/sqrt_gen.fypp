@@ -14,7 +14,7 @@
         res%f = t0
         res%g = 0.5_${real_kind}$*u%g/t0
       #:if test_coverage
-        sqrt_d_counter = sqrt_d_counter + 1
+        sqrt__d_counter = sqrt__d_counter + 1
       #:endif
     end function
 #:enddef
@@ -43,7 +43,7 @@
             end do
         end do
       #:if test_coverage
-        sqrt_hd_counter = sqrt_hd_counter + 1
+        sqrt__hd_counter = sqrt__hd_counter + 1
       #:endif
     end function
 #:enddef

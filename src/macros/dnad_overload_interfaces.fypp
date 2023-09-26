@@ -1,7 +1,7 @@
 #:def dnad_overload_interfaces(type_specs, selected_interfaces) 
     #!
     #:set interface_list = dnad.select_interfaces(selected_interfaces)
-    #:set dual_type, dual_sn, hdual_type, hdual_sn = dnad.decode_type_specs(type_specs)
+    #:set dual_types, dual_shortnames, hdual_types, hdual_shortnames = dnad.decode_type_specs(type_specs)
     #!
   #:if "=" in interface_list 
     interface assignment (=)
@@ -22,7 +22,7 @@
   #:if "+" in interface_list 
     interface operator (+)
       #:for dual_sn in dual_shortnames
-        module procedure add__unary_${dual_sn}$   ! +dual number, elemental
+        module procedure add__${dual_sn}$   ! +dual number, elemental
         module procedure add__${dual_sn}$_${dual_sn}$       ! dual + dual, elemental
         module procedure add__${dual_sn}$_i       ! dual + integer, elemental
         module procedure add__${dual_sn}$_r       ! dual + real, elemental
@@ -30,7 +30,7 @@
         module procedure add__r_${dual_sn}$       ! real + dual, elemental
       #:endfor
       #:for hdual_sn in hdual_shortnames
-        module procedure add__unary_${hdual_sn}$  ! +dual number, elemental
+        module procedure add__${hdual_sn}$  ! +dual number, elemental
         module procedure add__${hdual_sn}$_${hdual_sn}$     ! dual + dual, elemental
         module procedure add__${hdual_sn}$_i      ! dual + integer, elemental
         module procedure add__${hdual_sn}$_r      ! dual + real, elemental
@@ -42,7 +42,7 @@
   #:if "-" in interface_list 
     interface operator (-)
       #:for dual_sn in dual_shortnames
-        module procedure minus__unary_${dual_sn}$  ! negate a dual number,elemental
+        module procedure minus__${dual_sn}$  ! negate a dual number,elemental
         module procedure minus__${dual_sn}$_${dual_sn}$      ! dual -dual,elemental
         module procedure minus__${dual_sn}$_i      ! dual-integer,elemental
         module procedure minus__${dual_sn}$_r      ! dual-real,elemental
@@ -50,7 +50,7 @@
         module procedure minus__r_${dual_sn}$      ! real-dual,elemental
       #:endfor
       #:for hdual_sn in hdual_shortnames
-        module procedure minus__unary_${hdual_sn}$ ! negate a dual number,elemental
+        module procedure minus__${hdual_sn}$ ! negate a dual number,elemental
         module procedure minus__${hdual_sn}$_${hdual_sn}$    ! dual -dual,elemental
         module procedure minus__${hdual_sn}$_i     ! dual-integer,elemental
         module procedure minus__${hdual_sn}$_r     ! dual-real,elemental

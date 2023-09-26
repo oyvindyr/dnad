@@ -22,7 +22,7 @@
 #:def dnad_overload_implementations(type_specs, real_kind, selected_interfaces="--all", stringent=True, is_pure=True, test_coverage=False) 
 #! 
 #:set interface_list = dnad.select_interfaces(selected_interfaces)
-#:set dual_type, dual_sn, hdual_type, hdual_sn = dnad.decode_type_specs(type_specs)
+#:set dual_types, dual_shortnames, hdual_types, hdual_shortnames = dnad.decode_type_specs(type_specs)
 #!
 #:if is_pure and not test_coverage
     #:set elemental_purity = "elemental"
@@ -95,50 +95,50 @@
 #! 
 #:if "==" in interface_list 
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    $:eq(dual_type, dual_sn, real_kind, is_pure, test_coverage)
+    $:eq(dual_type, dual_sn, real_kind, is_pure, False, test_coverage)
   #:endfor
   #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
-    $:eq(hdual_type, hdual_sn, real_kind, is_pure, test_coverage)
+    $:eq(hdual_type, hdual_sn, real_kind, is_pure, True, test_coverage)
   #:endfor
 #:endif 
 #:if "<=" in interface_list 
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    $:le(dual_type, dual_sn, real_kind, is_pure, test_coverage)
+    $:le(dual_type, dual_sn, real_kind, is_pure, False, test_coverage)
   #:endfor
   #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
-    $:le(hdual_type, hdual_sn, real_kind, is_pure, test_coverage)
+    $:le(hdual_type, hdual_sn, real_kind, is_pure, True, test_coverage)
   #:endfor
 #:endif 
 #:if "<" in interface_list 
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    $:lt(dual_type, dual_sn, real_kind, is_pure, test_coverage)
+    $:lt(dual_type, dual_sn, real_kind, is_pure, False, test_coverage)
   #:endfor
   #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
-    $:lt(hdual_type, hdual_sn, real_kind, is_pure, test_coverage)
+    $:lt(hdual_type, hdual_sn, real_kind, is_pure, True, test_coverage)
   #:endfor
 #:endif 
 #:if ">=" in interface_list 
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    $:ge(dual_type, dual_sn, real_kind, is_pure, test_coverage)
+    $:ge(dual_type, dual_sn, real_kind, is_pure, False, test_coverage)
   #:endfor
   #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
-    $:ge(hdual_type, hdual_sn, real_kind, is_pure, test_coverage)
+    $:ge(hdual_type, hdual_sn, real_kind, is_pure, True, test_coverage)
   #:endfor
 #:endif 
 #:if ">" in interface_list 
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    $:gt(dual_type, dual_sn, real_kind, is_pure, test_coverage)
+    $:gt(dual_type, dual_sn, real_kind, is_pure, False, test_coverage)
   #:endfor
   #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
-    $:gt(hdual_type, hdual_sn, real_kind, is_pure, test_coverage)
+    $:gt(hdual_type, hdual_sn, real_kind, is_pure, True, test_coverage)
   #:endfor
 #:endif 
 #:if "/=" in interface_list 
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    $:ne(dual_type, dual_sn, real_kind, is_pure, test_coverage)
+    $:ne(dual_type, dual_sn, real_kind, is_pure, False, test_coverage)
   #:endfor
   #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
-    $:ne(hdual_type, hdual_sn, real_kind, is_pure, test_coverage)
+    $:ne(hdual_type, hdual_sn, real_kind, is_pure, True, test_coverage)
   #:endfor
 #:endif 
 #:if "abs" in interface_list or "dabs" in interface_list
@@ -261,7 +261,7 @@
         integer :: i
 
         res%f = dot_product(u%f, v%f)
-        do i = 1, size(u%g)
+        do i = 1, size(res%g)
             res%g(i) = dot_product(u%f, v%g(i)) + dot_product(v%f, u%g(i))
         end do
 
@@ -326,7 +326,7 @@
         integer :: i
 
         res%f = matmul(u%f, v%f)
-        do i = 1, size(res%g)
+        do i = 1, size(res(1,1)%g)
             res%g(i) = matmul(u%g(i), v%f) + matmul(u%f, v%g(i))
         end do
 
@@ -337,7 +337,7 @@
         integer :: i
 
         res%f = matmul(u%f, v%f)
-        do i = 1, size(res%g)
+        do i = 1, size(res(1)%g)
             res%g(i) = matmul(u%g(i), v%f) + matmul(u%f, v%g(i))
         end do
 
@@ -348,7 +348,7 @@
         integer::i
 
         res%f = matmul(u%f, v%f)
-        do i = 1, size(res%g)
+        do i = 1, size(res(1)%g)
             res%g(i) = matmul(u%g(i), v%f) + matmul(u%f, v%g(i))
         end do
 
@@ -569,10 +569,10 @@
   #:endfor
 #:endif 
 #:if "sqrt" in interface_list
-  #:for dual_type, dual_sn, in zip(dual_types, dual_shortnames)
+  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
     $:sqrt_d(dual_type, dual_sn, real_kind, is_pure, test_coverage, stringent)
   #:endfor
-  #:for hdual_type, hdual_sn, in zip(hdual_types, hdual_shortnames)
+  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
     $:sqrt_hd(hdual_type, hdual_sn, real_kind, is_pure, test_coverage, stringent)
   #:endfor
 #:endif 
@@ -584,7 +584,7 @@
         integer :: i
 
         res%f = sum(u%f)
-        do i = 1, size(u%g)
+        do i = 1, size(res%g)
             res%g(i) = sum(u%g(i))
         end do
 

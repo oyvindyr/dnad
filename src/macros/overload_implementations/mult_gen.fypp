@@ -13,7 +13,7 @@
         res%f = u%f*v%f
         res%g = u%g*v%f + u%f*v%g
       #:if test_coverage
-        mult_d_d_counter = mult_d_d_counter + 1
+        mult__d_d_counter = mult__d_d_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function mult__${dual_sn}$_r(u, v) result(res)
@@ -24,7 +24,7 @@
         res%f = u%f*v
         res%g = u%g*v
       #:if test_coverage
-        mult_d_r_counter = mult_d_r_counter + 1
+        mult__d_r_counter = mult__d_r_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function mult__r_${dual_sn}$(u, v) result(res)
@@ -35,7 +35,7 @@
         res%f = u*v%f
         res%g = u*v%g
       #:if test_coverage
-        mult_r_d_counter = mult_r_d_counter + 1
+        mult__r_d_counter = mult__r_d_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function mult__${dual_sn}$_i(u, v) result(res)
@@ -46,7 +46,7 @@
         res%f = u%f*v
         res%g = u%g*v
       #:if test_coverage
-        mult_d_i_counter = mult_d_i_counter + 1
+        mult__d_i_counter = mult__d_i_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function mult__i_${dual_sn}$(u, v) result(res)
@@ -57,7 +57,7 @@
         res%f = u*v%f
         res%g = u*v%g
       #:if test_coverage
-        mult_i_d_counter = mult_i_d_counter + 1
+        mult__i_d_counter = mult__i_d_counter + 1
       #:endif
     end function
 #:enddef
@@ -84,7 +84,7 @@
             end do
         end do
       #:if test_coverage
-        mult_hd_hd_counter = mult_hd_hd_counter + 1
+        mult__hd_hd_counter = mult__hd_hd_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function mult__${dual_sn}$_r(u, v) result(res)
@@ -96,7 +96,7 @@
         res%d%g = u%d%g*v
         res%h = u%h*v
       #:if test_coverage
-        mult_hd_r_counter = mult_hd_r_counter + 1
+        mult__hd_r_counter = mult__hd_r_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function mult__r_${dual_sn}$(u, v) result(res)
@@ -108,7 +108,7 @@
         res%d%g = u*v%d%g
         res%h = u*v%h
       #:if test_coverage
-        mult_r_hd_counter = mult_r_hd_counter + 1
+        mult__r_hd_counter = mult__r_hd_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function mult__${dual_sn}$_i(u, v) result(res)
@@ -120,7 +120,7 @@
         res%d%g = u%d%g*v
         res%h = u%h*v
       #:if test_coverage
-        mult_hd_i_counter = mult_hd_i_counter + 1
+        mult__hd_i_counter = mult__hd_i_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function mult__i_${dual_sn}$(u, v) result(res)
@@ -132,7 +132,7 @@
         res%d%g = u*v%d%g
         res%h = u*v%h
       #:if test_coverage
-        mult_i_hd_counter = mult_i_hd_counter + 1
+        mult__i_hd_counter = mult__i_hd_counter + 1
       #:endif
     end function
 #:enddef

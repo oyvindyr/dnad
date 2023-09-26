@@ -5,126 +5,156 @@ module test_hdual2_mod
     integer, parameter :: num_deriv = 3
 
     ! Implementation call counters to show test coverage:
-    integer :: assign_d_i_counter = 0
-    integer :: assign_d_r_counter = 0
-    integer :: assign_i_d_counter = 0
-    integer :: assign_r_d_counter = 0
-    integer :: assign_hd_i_counter = 0
-    integer :: assign_hd_r_counter = 0
-    integer :: assign_i_hd_counter = 0
-    integer :: assign_r_hd_counter = 0
-    integer :: unary_add_d_counter = 0
-    integer :: add_d_d_counter = 0
-    integer :: add_d_i_counter = 0
-    integer :: add_d_r_counter = 0
-    integer :: add_i_d_counter = 0
-    integer :: add_r_d_counter = 0
-    integer :: unary_add_hd_counter = 0
-    integer :: add_hd_hd_counter = 0
-    integer :: add_hd_i_counter = 0
-    integer :: add_hd_r_counter = 0
-    integer :: add_i_hd_counter = 0
-    integer :: add_r_hd_counter = 0
-    integer :: unary_minus_d_counter = 0
-    integer :: minus_d_d_counter = 0
-    integer :: minus_d_i_counter = 0
-    integer :: minus_d_r_counter = 0
-    integer :: minus_i_d_counter = 0
-    integer :: minus_r_d_counter = 0
-    integer :: unary_minus_hd_counter = 0
-    integer :: minus_hd_hd_counter = 0
-    integer :: minus_hd_i_counter = 0
-    integer :: minus_hd_r_counter = 0
-    integer :: minus_i_hd_counter = 0
-    integer :: minus_r_hd_counter = 0
-    integer :: mult_d_d_counter = 0
-    integer :: mult_d_i_counter = 0
-    integer :: mult_d_r_counter = 0
-    integer :: mult_i_d_counter = 0
-    integer :: mult_r_d_counter = 0
-    integer :: mult_hd_hd_counter = 0
-    integer :: mult_hd_i_counter = 0
-    integer :: mult_hd_r_counter = 0
-    integer :: mult_i_hd_counter = 0
-    integer :: mult_r_hd_counter = 0
-    integer :: div_d_d_counter = 0
-    integer :: div_d_r_counter = 0
-    integer :: div_r_d_counter = 0
-    integer :: div_d_i_counter = 0
-    integer :: div_i_d_counter = 0
-    integer :: div_hd_hd_counter = 0
-    integer :: div_hd_r_counter = 0
-    integer :: div_r_hd_counter = 0
-    integer :: div_hd_i_counter = 0
-    integer :: div_i_hd_counter = 0
-    integer :: pow_d_i_counter = 0
-    integer :: pow_d_r_counter = 0
-    integer :: pow_d_d_counter = 0
-    integer :: pow_hd_i_counter = 0
-    integer :: pow_hd_r_counter = 0
-    integer :: pow_hd_hd_counter = 0
-    integer :: eq_dd_counter = 0
-    integer :: eq_di_counter = 0
-    integer :: eq_dr_counter = 0
-    integer :: eq_id_counter = 0
-    integer :: eq_rd_counter = 0
-    integer :: le_dd_counter = 0
-    integer :: le_di_counter = 0
-    integer :: le_dr_counter = 0
-    integer :: le_id_counter = 0
-    integer :: le_rd_counter = 0
-    integer :: lt_dd_counter = 0
-    integer :: lt_di_counter = 0
-    integer :: lt_dr_counter = 0
-    integer :: lt_id_counter = 0
-    integer :: lt_rd_counter = 0
-    integer :: ge_dd_counter = 0
-    integer :: ge_di_counter = 0
-    integer :: ge_dr_counter = 0
-    integer :: ge_id_counter = 0
-    integer :: ge_rd_counter = 0
-    integer :: gt_dd_counter = 0
-    integer :: gt_di_counter = 0
-    integer :: gt_dr_counter = 0
-    integer :: gt_id_counter = 0
-    integer :: gt_rd_counter = 0
-    integer :: ne_dd_counter = 0
-    integer :: ne_di_counter = 0
-    integer :: ne_dr_counter = 0
-    integer :: ne_id_counter = 0
-    integer :: ne_rd_counter = 0
-    integer :: abs_d_counter = 0
-    integer :: acos_d_counter = 0
-    integer :: asin_d_counter = 0
-    integer :: atan_d_counter = 0
-    integer :: atan2_d_counter = 0
-    integer :: cos_d_counter = 0
-    integer :: dot_product_dd_counter = 0
-    integer :: exp_d_counter = 0
-    integer :: int_d_counter = 0
-    integer :: log_d_counter = 0
-    integer :: log_hd_counter = 0
-    integer :: log10_d_counter = 0
-    integer :: matmul_dd_counter = 0
-    integer :: matmul_dv_counter = 0
-    integer :: matmul_vd_counter = 0
-    integer :: max_dd_counter = 0
-    integer :: max_di_counter = 0
-    integer :: max_dr_counter = 0
-    integer :: max_rd_counter = 0
-    integer :: dmax1_dd_counter = 0
-    integer :: maxval_d_counter = 0
-    integer :: min_dd_counter = 0
-    integer :: min_dr_counter = 0
-    integer :: dmin1_dd_counter = 0
-    integer :: minval_d_counter = 0
-    integer :: nint_d_counter = 0
-    integer :: sin_d_counter = 0
-    integer :: tan_d_counter = 0
-    integer :: sqrt_d_counter = 0
-    integer :: sqrt_hd_counter = 0
-    integer :: sum_d_counter = 0
-    integer :: maxloc_d_counter = 0
+    integer :: assign__d_i_counter = 0
+    integer :: assign__d_r_counter = 0
+    integer :: assign__i_d_counter = 0
+    integer :: assign__r_d_counter = 0
+    integer :: assign__hd_i_counter = 0
+    integer :: assign__hd_r_counter = 0
+    integer :: assign__i_hd_counter = 0
+    integer :: assign__r_hd_counter = 0
+    integer :: add__d_counter = 0
+    integer :: add__d_d_counter = 0
+    integer :: add__d_i_counter = 0
+    integer :: add__d_r_counter = 0
+    integer :: add__i_d_counter = 0
+    integer :: add__r_d_counter = 0
+    integer :: add__hd_counter = 0
+    integer :: add__hd_hd_counter = 0
+    integer :: add__hd_i_counter = 0
+    integer :: add__hd_r_counter = 0
+    integer :: add__i_hd_counter = 0
+    integer :: add__r_hd_counter = 0
+    integer :: minus__d_counter = 0
+    integer :: minus__d_d_counter = 0
+    integer :: minus__d_i_counter = 0
+    integer :: minus__d_r_counter = 0
+    integer :: minus__i_d_counter = 0
+    integer :: minus__r_d_counter = 0
+    integer :: minus__hd_counter = 0
+    integer :: minus__hd_hd_counter = 0
+    integer :: minus__hd_i_counter = 0
+    integer :: minus__hd_r_counter = 0
+    integer :: minus__i_hd_counter = 0
+    integer :: minus__r_hd_counter = 0
+    integer :: mult__d_d_counter = 0
+    integer :: mult__d_i_counter = 0
+    integer :: mult__d_r_counter = 0
+    integer :: mult__i_d_counter = 0
+    integer :: mult__r_d_counter = 0
+    integer :: mult__hd_hd_counter = 0
+    integer :: mult__hd_i_counter = 0
+    integer :: mult__hd_r_counter = 0
+    integer :: mult__i_hd_counter = 0
+    integer :: mult__r_hd_counter = 0
+    integer :: div__d_d_counter = 0
+    integer :: div__d_r_counter = 0
+    integer :: div__r_d_counter = 0
+    integer :: div__d_i_counter = 0
+    integer :: div__i_d_counter = 0
+    integer :: div__hd_hd_counter = 0
+    integer :: div__hd_r_counter = 0
+    integer :: div__r_hd_counter = 0
+    integer :: div__hd_i_counter = 0
+    integer :: div__i_hd_counter = 0
+    integer :: pow__d_i_counter = 0
+    integer :: pow__d_r_counter = 0
+    integer :: pow__d_d_counter = 0
+    integer :: pow__hd_i_counter = 0
+    integer :: pow__hd_r_counter = 0
+    integer :: pow__hd_hd_counter = 0
+    integer :: eq__d_d_counter = 0
+    integer :: eq__d_i_counter = 0
+    integer :: eq__d_r_counter = 0
+    integer :: eq__i_d_counter = 0
+    integer :: eq__r_d_counter = 0
+    integer :: le__d_d_counter = 0
+    integer :: le__d_i_counter = 0
+    integer :: le__d_r_counter = 0
+    integer :: le__i_d_counter = 0
+    integer :: le__r_d_counter = 0
+    integer :: lt__d_d_counter = 0
+    integer :: lt__d_i_counter = 0
+    integer :: lt__d_r_counter = 0
+    integer :: lt__i_d_counter = 0
+    integer :: lt__r_d_counter = 0
+    integer :: ge__d_d_counter = 0
+    integer :: ge__d_i_counter = 0
+    integer :: ge__d_r_counter = 0
+    integer :: ge__i_d_counter = 0
+    integer :: ge__r_d_counter = 0
+    integer :: gt__d_d_counter = 0
+    integer :: gt__d_i_counter = 0
+    integer :: gt__d_r_counter = 0
+    integer :: gt__i_d_counter = 0
+    integer :: gt__r_d_counter = 0
+    integer :: ne__d_d_counter = 0
+    integer :: ne__d_i_counter = 0
+    integer :: ne__d_r_counter = 0
+    integer :: ne__i_d_counter = 0
+    integer :: ne__r_d_counter = 0
+    integer :: eq__hd_hd_counter = 0
+    integer :: eq__hd_i_counter = 0
+    integer :: eq__hd_r_counter = 0
+    integer :: eq__i_hd_counter = 0
+    integer :: eq__r_hd_counter = 0
+    integer :: le__hd_hd_counter = 0
+    integer :: le__hd_i_counter = 0
+    integer :: le__hd_r_counter = 0
+    integer :: le__i_hd_counter = 0
+    integer :: le__r_hd_counter = 0
+    integer :: lt__hd_hd_counter = 0
+    integer :: lt__hd_i_counter = 0
+    integer :: lt__hd_r_counter = 0
+    integer :: lt__i_hd_counter = 0
+    integer :: lt__r_hd_counter = 0
+    integer :: ge__hd_hd_counter = 0
+    integer :: ge__hd_i_counter = 0
+    integer :: ge__hd_r_counter = 0
+    integer :: ge__i_hd_counter = 0
+    integer :: ge__r_hd_counter = 0
+    integer :: gt__hd_hd_counter = 0
+    integer :: gt__hd_i_counter = 0
+    integer :: gt__hd_r_counter = 0
+    integer :: gt__i_hd_counter = 0
+    integer :: gt__r_hd_counter = 0
+    integer :: ne__hd_hd_counter = 0
+    integer :: ne__hd_i_counter = 0
+    integer :: ne__hd_r_counter = 0
+    integer :: ne__i_hd_counter = 0
+    integer :: ne__r_hd_counter = 0
+    integer :: abs__d_counter = 0
+    integer :: acos__d_counter = 0
+    integer :: asin__d_counter = 0
+    integer :: atan__d_counter = 0
+    integer :: atan2__d_counter = 0
+    integer :: cos__d_counter = 0
+    integer :: dot_product__dd_counter = 0
+    integer :: exp__d_counter = 0
+    integer :: int__d_counter = 0
+    integer :: log__d_counter = 0
+    integer :: log__hd_counter = 0
+    integer :: log10__d_counter = 0
+    integer :: matmul__dd_counter = 0
+    integer :: matmul__dv_counter = 0
+    integer :: matmul__vd_counter = 0
+    integer :: max__dd_counter = 0
+    integer :: max__di_counter = 0
+    integer :: max__dr_counter = 0
+    integer :: max__rd_counter = 0
+    integer :: dmax1__dd_counter = 0
+    integer :: maxval__d_counter = 0
+    integer :: min__dd_counter = 0
+    integer :: min__dr_counter = 0
+    integer :: dmin1__dd_counter = 0
+    integer :: minval__d_counter = 0
+    integer :: nint__d_counter = 0
+    integer :: sin__d_counter = 0
+    integer :: tan__d_counter = 0
+    integer :: sqrt__d_counter = 0
+    integer :: sqrt__hd_counter = 0
+    integer :: sum__d_counter = 0
+    integer :: maxloc__d_counter = 0
 
     
     type :: dual__uvw_t
@@ -168,242 +198,242 @@ module test_hdual2_mod
         module procedure hessian__hd_uvw
     end interface
     interface assignment (=)
-        module procedure assign_d_i  ! dual=integer, elemental
-        module procedure assign_d_r  ! dual=real, elemental
-        module procedure assign_i_d  ! integer=dual, elemental
-        module procedure assign_r_d  ! real=dual, elemental
-        module procedure assign_hd_i  ! dual=integer, elemental
-        module procedure assign_hd_r  ! dual=real, elemental
-        module procedure assign_i_hd  ! integer=dual, elemental
-        module procedure assign_r_hd  ! real=dual, elemental
+        module procedure assign__duvw_i  ! dual=integer, elemental
+        module procedure assign__duvw_r  ! dual=real, elemental
+        module procedure assign__i_duvw  ! integer=dual, elemental
+        module procedure assign__r_duvw  ! real=dual, elemental
+        module procedure assign__hduvw_i  ! dual=integer, elemental
+        module procedure assign__hduvw_r  ! dual=real, elemental
+        module procedure assign__i_hduvw  ! integer=dual, elemental
+        module procedure assign__r_hduvw  ! real=dual, elemental
     end interface
     interface operator (+)
-        module procedure unary_add_d   ! +dual number, elemental
-        module procedure add_d_d       ! dual + dual, elemental
-        module procedure add_d_i       ! dual + integer, elemental
-        module procedure add_d_r       ! dual + real, elemental
-        module procedure add_i_d       ! integer + dual, elemental
-        module procedure add_r_d       ! real + dual, elemental
-        module procedure unary_add_hd  ! +dual number, elemental
-        module procedure add_hd_hd     ! dual + dual, elemental
-        module procedure add_hd_i      ! dual + integer, elemental
-        module procedure add_hd_r      ! dual + real, elemental
-        module procedure add_i_hd      ! integer + dual, elemental
-        module procedure add_r_hd      ! real + dual, elemental
+        module procedure add__duvw   ! +dual number, elemental
+        module procedure add__duvw_duvw       ! dual + dual, elemental
+        module procedure add__duvw_i       ! dual + integer, elemental
+        module procedure add__duvw_r       ! dual + real, elemental
+        module procedure add__i_duvw       ! integer + dual, elemental
+        module procedure add__r_duvw       ! real + dual, elemental
+        module procedure add__hduvw  ! +dual number, elemental
+        module procedure add__hduvw_hduvw     ! dual + dual, elemental
+        module procedure add__hduvw_i      ! dual + integer, elemental
+        module procedure add__hduvw_r      ! dual + real, elemental
+        module procedure add__i_hduvw      ! integer + dual, elemental
+        module procedure add__r_hduvw      ! real + dual, elemental
     end interface
     interface operator (-)
-        module procedure unary_minus_d  ! negate a dual number,elemental
-        module procedure minus_d_d      ! dual -dual,elemental
-        module procedure minus_d_i      ! dual-integer,elemental
-        module procedure minus_d_r      ! dual-real,elemental
-        module procedure minus_i_d      ! integer-dual,elemental
-        module procedure minus_r_d      ! real-dual,elemental
-        module procedure unary_minus_hd ! negate a dual number,elemental
-        module procedure minus_hd_hd    ! dual -dual,elemental
-        module procedure minus_hd_i     ! dual-integer,elemental
-        module procedure minus_hd_r     ! dual-real,elemental
-        module procedure minus_i_hd     ! integer-dual,elemental
-        module procedure minus_r_hd     ! real-dual,elemental
+        module procedure minus__duvw  ! negate a dual number,elemental
+        module procedure minus__duvw_duvw      ! dual -dual,elemental
+        module procedure minus__duvw_i      ! dual-integer,elemental
+        module procedure minus__duvw_r      ! dual-real,elemental
+        module procedure minus__i_duvw      ! integer-dual,elemental
+        module procedure minus__r_duvw      ! real-dual,elemental
+        module procedure minus__hduvw ! negate a dual number,elemental
+        module procedure minus__hduvw_hduvw    ! dual -dual,elemental
+        module procedure minus__hduvw_i     ! dual-integer,elemental
+        module procedure minus__hduvw_r     ! dual-real,elemental
+        module procedure minus__i_hduvw     ! integer-dual,elemental
+        module procedure minus__r_hduvw     ! real-dual,elemental
     end interface
     interface operator (*)
-        module procedure mult_d_d    ! dual*dual, elemental
-        module procedure mult_d_i    ! dual*integer,elemental
-        module procedure mult_d_r    ! dual*real,elemental
-        module procedure mult_i_d    ! integer*dual,elemental
-        module procedure mult_r_d    ! real*dual,elemental
-        module procedure mult_hd_hd  ! dual*dual, elemental
-        module procedure mult_hd_i   ! dual*integer,elemental
-        module procedure mult_hd_r   ! dual*real,elemental
-        module procedure mult_i_hd   ! integer*dual,elemental
-        module procedure mult_r_hd   ! real*dual,elemental
+        module procedure mult__duvw_duvw    ! dual*dual, elemental
+        module procedure mult__duvw_i    ! dual*integer,elemental
+        module procedure mult__duvw_r    ! dual*real,elemental
+        module procedure mult__i_duvw    ! integer*dual,elemental
+        module procedure mult__r_duvw    ! real*dual,elemental
+        module procedure mult__hduvw_hduvw  ! dual*dual, elemental
+        module procedure mult__hduvw_i   ! dual*integer,elemental
+        module procedure mult__hduvw_r   ! dual*real,elemental
+        module procedure mult__i_hduvw   ! integer*dual,elemental
+        module procedure mult__r_hduvw   ! real*dual,elemental
     end interface
     interface operator (/)
-        module procedure div_d_d    ! dual/dual, elemental
-        module procedure div_d_r    ! dual/real, elemental
-        module procedure div_r_d    ! real/dual, elemental
-        module procedure div_d_i    ! dual/integer, elemental
-        module procedure div_i_d    ! integer/dual, elemental
-        module procedure div_hd_hd  ! hdual/hdual, elemental
-        module procedure div_hd_r   ! hdual/real, elemental
-        module procedure div_r_hd   ! real/hdual, elemental
-        module procedure div_hd_i   ! hdual/integer, elemental
-        module procedure div_i_hd   ! integer/hdual, elemental
+        module procedure div__duvw_duvw    ! dual/dual, elemental
+        module procedure div__duvw_r    ! dual/real, elemental
+        module procedure div__r_duvw    ! real/dual, elemental
+        module procedure div__duvw_i    ! dual/integer, elemental
+        module procedure div__i_duvw    ! integer/dual, elemental
+        module procedure div__hduvw_hduvw  ! hdual/hdual, elemental
+        module procedure div__hduvw_r   ! hdual/real, elemental
+        module procedure div__r_hduvw   ! real/hdual, elemental
+        module procedure div__hduvw_i   ! hdual/integer, elemental
+        module procedure div__i_hduvw   ! integer/hdual, elemental
     end interface
     interface operator (**)
-        module procedure pow_d_i ! dual number to an integer power,elemental
-        module procedure pow_d_r ! dual number to a real power, elemental
-        module procedure pow_d_d ! dual number to a dual power, elemental
-        module procedure pow_hd_i ! hdual number to an integer power,elemental
-        module procedure pow_hd_r ! hdual number to a real power, elemental
-        module procedure pow_hd_hd ! hdual number to a hdual power, elemental
+        module procedure pow__duvw_i ! dual number to an integer power,elemental
+        module procedure pow__duvw_r ! dual number to a real power, elemental
+        module procedure pow__duvw_duvw ! dual number to a dual power, elemental
+        module procedure pow__hduvw_i ! hdual number to an integer power,elemental
+        module procedure pow__hduvw_r ! hdual number to a real power, elemental
+        module procedure pow__hduvw_hduvw ! hdual number to a hdual power, elemental
     end interface
     interface operator (==)
-        module procedure eq_d_d ! compare two dual numbers, elemental
-        module procedure eq_d_i ! compare a dual and an integer, elemental
-        module procedure eq_d_r ! compare a dual and a real, elemental
-        module procedure eq_i_d ! compare integer with a dual number, elemental
-        module procedure eq_r_d ! compare a real with a dual number, elemental
-        module procedure eq_hd_hd ! compare two hdual numbers, elemental
-        module procedure eq_hd_i ! compare a hdual and an integer, elemental
-        module procedure eq_hd_r ! compare a hdual and a real, elemental
-        module procedure eq_i_hd ! compare integer with a hdual number, elemental
-        module procedure eq_r_hd ! compare a real with a hdual number, elemental
+        module procedure eq__duvw_duvw ! compare two dual numbers, elemental
+        module procedure eq__duvw_i ! compare a dual and an integer, elemental
+        module procedure eq__duvw_r ! compare a dual and a real, elemental
+        module procedure eq__i_duvw ! compare integer with a dual number, elemental
+        module procedure eq__r_duvw ! compare a real with a dual number, elemental
+        module procedure eq__hduvw_hduvw ! compare two hdual numbers, elemental
+        module procedure eq__hduvw_i ! compare a hdual and an integer, elemental
+        module procedure eq__hduvw_r ! compare a hdual and a real, elemental
+        module procedure eq__i_hduvw ! compare integer with a hdual number, elemental
+        module procedure eq__r_hduvw ! compare a real with a hdual number, elemental
     end interface
     interface operator (<=)
-        module procedure le_d_d ! compare two dual numbers, elemental
-        module procedure le_d_i ! compare a dual and an integer, elemental
-        module procedure le_d_r ! compare a dual and a real, elemental
-        module procedure le_i_d ! compare integer with a dual number, elemental
-        module procedure le_r_d ! compare a real with a dual number, elemental
-        module procedure le_hd_hd ! compare two hdual numbers, elemental
-        module procedure le_hd_i ! compare a hdual and an integer, elemental
-        module procedure le_hd_r ! compare a hdual and a real, elemental
-        module procedure le_i_hd ! compare integer with a hdual number, elemental
-        module procedure le_r_hd ! compare a real with a hdual number, elemental
+        module procedure le__duvw_duvw ! compare two dual numbers, elemental
+        module procedure le__duvw_i ! compare a dual and an integer, elemental
+        module procedure le__duvw_r ! compare a dual and a real, elemental
+        module procedure le__i_duvw ! compare integer with a dual number, elemental
+        module procedure le__r_duvw ! compare a real with a dual number, elemental
+        module procedure le__hduvw_hduvw ! compare two hdual numbers, elemental
+        module procedure le__hduvw_i ! compare a hdual and an integer, elemental
+        module procedure le__hduvw_r ! compare a hdual and a real, elemental
+        module procedure le__i_hduvw ! compare integer with a hdual number, elemental
+        module procedure le__r_hduvw ! compare a real with a hdual number, elemental
     end interface
     interface operator (<)
-        module procedure lt_d_d ! compare two dual numbers, elemental
-        module procedure lt_d_i ! compare a dual and an integer, elemental
-        module procedure lt_d_r ! compare a dual and a real, elemental
-        module procedure lt_i_d ! compare integer with a dual number, elemental
-        module procedure lt_r_d ! compare a real with a dual number, elemental
-        module procedure lt_hd_hd ! compare two hdual numbers, elemental
-        module procedure lt_hd_i ! compare a hdual and an integer, elemental
-        module procedure lt_hd_r ! compare a hdual and a real, elemental
-        module procedure lt_i_hd ! compare integer with a hdual number, elemental
-        module procedure lt_r_hd ! compare a real with a hdual number, elemental
+        module procedure lt__duvw_duvw ! compare two dual numbers, elemental
+        module procedure lt__duvw_i ! compare a dual and an integer, elemental
+        module procedure lt__duvw_r ! compare a dual and a real, elemental
+        module procedure lt__i_duvw ! compare integer with a dual number, elemental
+        module procedure lt__r_duvw ! compare a real with a dual number, elemental
+        module procedure lt__hduvw_hduvw ! compare two hdual numbers, elemental
+        module procedure lt__hduvw_i ! compare a hdual and an integer, elemental
+        module procedure lt__hduvw_r ! compare a hdual and a real, elemental
+        module procedure lt__i_hduvw ! compare integer with a hdual number, elemental
+        module procedure lt__r_hduvw ! compare a real with a hdual number, elemental
     end interface
     interface operator (>=)
-        module procedure ge_d_d ! compare two dual numbers, elemental
-        module procedure ge_d_i ! compare a dual and an integer, elemental
-        module procedure ge_d_r ! compare a dual and a real, elemental
-        module procedure ge_i_d ! compare integer with a dual number, elemental
-        module procedure ge_r_d ! compare a real with a dual number, elemental
-        module procedure ge_hd_hd ! compare two hdual numbers, elemental
-        module procedure ge_hd_i ! compare a hdual and an integer, elemental
-        module procedure ge_hd_r ! compare a hdual and a real, elemental
-        module procedure ge_i_hd ! compare integer with a hdual number, elemental
-        module procedure ge_r_hd ! compare a real with a hdual number, elemental
+        module procedure ge__duvw_duvw ! compare two dual numbers, elemental
+        module procedure ge__duvw_i ! compare a dual and an integer, elemental
+        module procedure ge__duvw_r ! compare a dual and a real, elemental
+        module procedure ge__i_duvw ! compare integer with a dual number, elemental
+        module procedure ge__r_duvw ! compare a real with a dual number, elemental
+        module procedure ge__hduvw_hduvw ! compare two hdual numbers, elemental
+        module procedure ge__hduvw_i ! compare a hdual and an integer, elemental
+        module procedure ge__hduvw_r ! compare a hdual and a real, elemental
+        module procedure ge__i_hduvw ! compare integer with a hdual number, elemental
+        module procedure ge__r_hduvw ! compare a real with a hdual number, elemental
     end interface
     interface operator (>)
-        module procedure gt_d_d ! compare two dual numbers, elemental
-        module procedure gt_d_i ! compare a dual and an integer, elemental
-        module procedure gt_d_r ! compare a dual and a real, elemental
-        module procedure gt_i_d ! compare integer with a dual number, elemental
-        module procedure gt_r_d ! compare a real with a dual number, elemental
-        module procedure gt_hd_hd ! compare two hdual numbers, elemental
-        module procedure gt_hd_i ! compare a hdual and an integer, elemental
-        module procedure gt_hd_r ! compare a hdual and a real, elemental
-        module procedure gt_i_hd ! compare integer with a hdual number, elemental
-        module procedure gt_r_hd ! compare a real with a hdual number, elemental
+        module procedure gt__duvw_duvw ! compare two dual numbers, elemental
+        module procedure gt__duvw_i ! compare a dual and an integer, elemental
+        module procedure gt__duvw_r ! compare a dual and a real, elemental
+        module procedure gt__i_duvw ! compare integer with a dual number, elemental
+        module procedure gt__r_duvw ! compare a real with a dual number, elemental
+        module procedure gt__hduvw_hduvw ! compare two hdual numbers, elemental
+        module procedure gt__hduvw_i ! compare a hdual and an integer, elemental
+        module procedure gt__hduvw_r ! compare a hdual and a real, elemental
+        module procedure gt__i_hduvw ! compare integer with a hdual number, elemental
+        module procedure gt__r_hduvw ! compare a real with a hdual number, elemental
     end interface
     interface operator (/=)
-        module procedure ne_d_d ! compare two dual numbers, elemental
-        module procedure ne_d_i ! compare a dual and an integer, elemental
-        module procedure ne_d_r ! compare a dual and a real, elemental
-        module procedure ne_i_d ! compare integer with a dual number, elemental
-        module procedure ne_r_d ! compare a real with a dual number, elemental
-        module procedure ne_hd_hd ! compare two hdual numbers, elemental
-        module procedure ne_hd_i ! compare a hdual and an integer, elemental
-        module procedure ne_hd_r ! compare a hdual and a real, elemental
-        module procedure ne_i_hd ! compare integer with a hdual number, elemental
-        module procedure ne_r_hd ! compare a real with a hdual number, elemental
+        module procedure ne__duvw_duvw ! compare two dual numbers, elemental
+        module procedure ne__duvw_i ! compare a dual and an integer, elemental
+        module procedure ne__duvw_r ! compare a dual and a real, elemental
+        module procedure ne__i_duvw ! compare integer with a dual number, elemental
+        module procedure ne__r_duvw ! compare a real with a dual number, elemental
+        module procedure ne__hduvw_hduvw ! compare two hdual numbers, elemental
+        module procedure ne__hduvw_i ! compare a hdual and an integer, elemental
+        module procedure ne__hduvw_r ! compare a hdual and a real, elemental
+        module procedure ne__i_hduvw ! compare integer with a hdual number, elemental
+        module procedure ne__r_hduvw ! compare a real with a hdual number, elemental
     end interface
     interface abs
-        module procedure abs_d  ! absolute value of a dual number, elemental
+        module procedure abs__duvw  ! absolute value of a dual number, elemental
     end interface
     interface dabs
-        module procedure abs_d ! same as abs, used for some old fortran commands
+        module procedure abs__duvw ! same as abs, used for some old fortran commands
     end interface
     interface acos
-        module procedure acos_d ! arccosine of a dual number, elemental
+        module procedure acos__duvw ! arccosine of a dual number, elemental
     end interface
     interface asin
-        module procedure asin_d ! arcsine of a dual number, elemental
+        module procedure asin__duvw ! arcsine of a dual number, elemental
     end interface
     interface atan
-        module procedure atan_d ! arctan of a dual number, elemental
+        module procedure atan__duvw ! arctan of a dual number, elemental
     end interface
     interface atan2
-        module procedure atan2_d ! arctan of a dual number, elemental
+        module procedure atan2__duvw ! arctan of a dual number, elemental
     end interface
     interface cos
-        module procedure cos_d ! cosine of a dual number, elemental
+        module procedure cos__duvw ! cosine of a dual number, elemental
     end interface
     interface dcos
-        module procedure cos_d ! cosine of a dual number, elemental
+        module procedure cos__duvw ! cosine of a dual number, elemental
     end interface
     interface dot_product
-        module procedure dot_product_d_d ! dot product two dual number vectors
+        module procedure dot_product__duvw_duvw ! dot product two dual number vectors
     end interface
     interface exp
-        module procedure exp_d ! exponential of a dual number, elemental
+        module procedure exp__duvw ! exponential of a dual number, elemental
     end interface
     interface int
-        module procedure int_d ! integer part of a dual number, elemental
+        module procedure int__duvw ! integer part of a dual number, elemental
     end interface
     interface log
-        module procedure log_d ! log of a dual number, elemental
-        module procedure log_hd ! log of a dual number, elemental
+        module procedure log__duvw ! log of a dual number, elemental
+        module procedure log__hduvw ! log of a dual number, elemental
     end interface
     interface log10
-        module procedure log10_d ! log of a dual number, elemental
+        module procedure log10__duvw ! log of a dual number, elemental
     end interface
     interface matmul
-        module procedure matmul_d_d ! multiply two dual matrices
-        module procedure matmul_d_v ! multiply a dual matrix with a dual vector
-        module procedure matmul_v_d ! multiply a dual vector with a dual matrix
+        module procedure matmul__duvw_duvw ! multiply two dual matrices
+        module procedure matmul__duvw_v ! multiply a dual matrix with a dual vector
+        module procedure matmul__v_duvw ! multiply a dual vector with a dual matrix
     end interface
     interface max
-        module procedure max_d_d ! max of two dual numbers, elemental
-        module procedure max_d_i ! max of a dual number and an integer, elemental
-        module procedure max_d_r ! max of a dual number and a real, elemental
-        module procedure max_r_d ! max of a real,and a dual number,  elemental
+        module procedure max__duvw_duvw ! max of two dual numbers, elemental
+        module procedure max__duvw_i ! max of a dual number and an integer, elemental
+        module procedure max__duvw_r ! max of a dual number and a real, elemental
+        module procedure max__r_duvw ! max of a real,and a dual number,  elemental
     end interface
     interface dmax1
-        module procedure dmax1_d_d ! max of from two to four dual numbers, elemental
+        module procedure dmax1__duvw_duvw ! max of from two to four dual numbers, elemental
     end interface
     interface maxval
-        module procedure maxval_d ! maxval of a dual number vector
+        module procedure maxval__duvw ! maxval of a dual number vector
     end interface
     interface min
-        module procedure min_d_d ! min of from two to four dual numbers, elemental
-        module procedure min_d_r ! min of a dual and a real, elemental
+        module procedure min__duvw_duvw ! min of from two to four dual numbers, elemental
+        module procedure min__duvw_r ! min of a dual and a real, elemental
     end interface
     interface dmin1
-        module procedure dmin1_d_d ! min of from two to four dual numbers, elemental
+        module procedure dmin1__duvw_duvw ! min of from two to four dual numbers, elemental
     end interface
     interface minval
-        module procedure minval_d ! obtain the maxval  of a dual number vectgor
+        module procedure minval__duvw ! obtain the maxval  of a dual number vectgor
     end interface
     interface nint
-        module procedure nint_d ! nearest integer to the argument, elemental
+        module procedure nint__duvw ! nearest integer to the argument, elemental
     end interface
     interface  sign
-        module procedure  sign_d_d ! sign(a,b) with two dual numbers, elemental
-        module procedure  sign_r_d ! sign(a,b) with a real and a dual, elemental
+        module procedure  sign__duvw_duvw ! sign(a,b) with two dual numbers, elemental
+        module procedure  sign__r_duvw ! sign(a,b) with a real and a dual, elemental
     end interface
     interface sin
-        module procedure sin_d ! obtain sine of a dual number, elemental
+        module procedure sin__duvw ! obtain sine of a dual number, elemental
     end interface
     interface dsin
-        module procedure sin_d ! obtain sine of a dual number, elemental
+        module procedure sin__duvw ! obtain sine of a dual number, elemental
     end interface
     interface tan
-        module procedure tan_d ! obtain sine of a dual number, elemental
+        module procedure tan__duvw ! obtain sine of a dual number, elemental
     end interface
     interface dtan
-        module procedure tan_d ! obtain sine of a dual number, elemental
+        module procedure tan__duvw ! obtain sine of a dual number, elemental
     end interface
     interface sqrt
-        module procedure sqrt_d ! obtain the sqrt of a dual number, elemental
-        module procedure sqrt_hd ! obtain the sqrt of a dual number, elemental
+        module procedure sqrt__duvw ! obtain the sqrt of a dual number, elemental
+        module procedure sqrt__hduvw ! obtain the sqrt of a dual number, elemental
     end interface
     interface sum
-        module procedure sum_d ! sum a dual array
+        module procedure sum__duvw ! sum a dual array
     end interface
     interface maxloc
-        module procedure maxloc_d ! location of max in a dual array
+        module procedure maxloc__duvw ! location of max in a dual array
     end interface
     
 contains
@@ -464,10 +494,10 @@ contains
         do i = 1, nval
 
             fvd(i) = fd(i)
-            dfd(:, i) = fd(i)%g
+            dfd(:, i) = gradient(fd(i))
 
             fvh(i) = fhd(i)
-            dfh(:, i) = fhd(i)%g
+            dfh(:, i) = gradient(fhd(i))
             ddfh(:, :, i) = hessian(fhd(i))
 
         end do
@@ -494,126 +524,156 @@ contains
             print*, ddfh - ddf_fasit
         end if
 
-        print*, "assign_d_i_counter: ", assign_d_i_counter
-        print*, "assign_d_r_counter: ", assign_d_r_counter
-        print*, "assign_i_d_counter: ", assign_i_d_counter
-        print*, "assign_r_d_counter: ", assign_r_d_counter
-        print*, "assign_hd_i_counter: ", assign_hd_i_counter
-        print*, "assign_hd_r_counter: ", assign_hd_r_counter
-        print*, "assign_i_hd_counter: ", assign_i_hd_counter
-        print*, "assign_r_hd_counter: ", assign_r_hd_counter
-        print*, "unary_add_d_counter: ", unary_add_d_counter
-        print*, "add_d_d_counter: ", add_d_d_counter
-        print*, "add_d_i_counter: ", add_d_i_counter
-        print*, "add_d_r_counter: ", add_d_r_counter
-        print*, "add_i_d_counter: ", add_i_d_counter
-        print*, "add_r_d_counter: ", add_r_d_counter
-        print*, "unary_add_hd_counter: ", unary_add_hd_counter
-        print*, "add_hd_hd_counter: ", add_hd_hd_counter
-        print*, "add_hd_i_counter: ", add_hd_i_counter
-        print*, "add_hd_r_counter: ", add_hd_r_counter
-        print*, "add_i_hd_counter: ", add_i_hd_counter
-        print*, "add_r_hd_counter: ", add_r_hd_counter
-        print*, "unary_minus_d_counter: ", unary_minus_d_counter
-        print*, "minus_d_d_counter: ", minus_d_d_counter
-        print*, "minus_d_i_counter: ", minus_d_i_counter
-        print*, "minus_d_r_counter: ", minus_d_r_counter
-        print*, "minus_i_d_counter: ", minus_i_d_counter
-        print*, "minus_r_d_counter: ", minus_r_d_counter
-        print*, "unary_minus_hd_counter: ", unary_minus_hd_counter
-        print*, "minus_hd_hd_counter: ", minus_hd_hd_counter
-        print*, "minus_hd_i_counter: ", minus_hd_i_counter
-        print*, "minus_hd_r_counter: ", minus_hd_r_counter
-        print*, "minus_i_hd_counter: ", minus_i_hd_counter
-        print*, "minus_r_hd_counter: ", minus_r_hd_counter
-        print*, "mult_d_d_counter: ", mult_d_d_counter
-        print*, "mult_d_i_counter: ", mult_d_i_counter
-        print*, "mult_d_r_counter: ", mult_d_r_counter
-        print*, "mult_i_d_counter: ", mult_i_d_counter
-        print*, "mult_r_d_counter: ", mult_r_d_counter
-        print*, "mult_hd_hd_counter: ", mult_hd_hd_counter
-        print*, "mult_hd_i_counter: ", mult_hd_i_counter
-        print*, "mult_hd_r_counter: ", mult_hd_r_counter
-        print*, "mult_i_hd_counter: ", mult_i_hd_counter
-        print*, "mult_r_hd_counter: ", mult_r_hd_counter
-        print*, "div_d_d_counter: ", div_d_d_counter
-        print*, "div_d_r_counter: ", div_d_r_counter
-        print*, "div_r_d_counter: ", div_r_d_counter
-        print*, "div_d_i_counter: ", div_d_i_counter
-        print*, "div_i_d_counter: ", div_i_d_counter
-        print*, "div_hd_hd_counter: ", div_hd_hd_counter
-        print*, "div_hd_r_counter: ", div_hd_r_counter
-        print*, "div_r_hd_counter: ", div_r_hd_counter
-        print*, "div_hd_i_counter: ", div_hd_i_counter
-        print*, "div_i_hd_counter: ", div_i_hd_counter
-        print*, "pow_d_i_counter: ", pow_d_i_counter
-        print*, "pow_d_r_counter: ", pow_d_r_counter
-        print*, "pow_d_d_counter: ", pow_d_d_counter
-        print*, "pow_hd_i_counter: ", pow_hd_i_counter
-        print*, "pow_hd_r_counter: ", pow_hd_r_counter
-        print*, "pow_hd_hd_counter: ", pow_hd_hd_counter
-        print*, "eq_dd_counter: ", eq_dd_counter
-        print*, "eq_di_counter: ", eq_di_counter
-        print*, "eq_dr_counter: ", eq_dr_counter
-        print*, "eq_id_counter: ", eq_id_counter
-        print*, "eq_rd_counter: ", eq_rd_counter
-        print*, "le_dd_counter: ", le_dd_counter
-        print*, "le_di_counter: ", le_di_counter
-        print*, "le_dr_counter: ", le_dr_counter
-        print*, "le_id_counter: ", le_id_counter
-        print*, "le_rd_counter: ", le_rd_counter
-        print*, "lt_dd_counter: ", lt_dd_counter
-        print*, "lt_di_counter: ", lt_di_counter
-        print*, "lt_dr_counter: ", lt_dr_counter
-        print*, "lt_id_counter: ", lt_id_counter
-        print*, "lt_rd_counter: ", lt_rd_counter
-        print*, "ge_dd_counter: ", ge_dd_counter
-        print*, "ge_di_counter: ", ge_di_counter
-        print*, "ge_dr_counter: ", ge_dr_counter
-        print*, "ge_id_counter: ", ge_id_counter
-        print*, "ge_rd_counter: ", ge_rd_counter
-        print*, "gt_dd_counter: ", gt_dd_counter
-        print*, "gt_di_counter: ", gt_di_counter
-        print*, "gt_dr_counter: ", gt_dr_counter
-        print*, "gt_id_counter: ", gt_id_counter
-        print*, "gt_rd_counter: ", gt_rd_counter
-        print*, "ne_dd_counter: ", ne_dd_counter
-        print*, "ne_di_counter: ", ne_di_counter
-        print*, "ne_dr_counter: ", ne_dr_counter
-        print*, "ne_id_counter: ", ne_id_counter
-        print*, "ne_rd_counter: ", ne_rd_counter
-        print*, "abs_d_counter: ", abs_d_counter
-        print*, "acos_d_counter: ", acos_d_counter
-        print*, "asin_d_counter: ", asin_d_counter
-        print*, "atan_d_counter: ", atan_d_counter
-        print*, "atan2_d_counter: ", atan2_d_counter
-        print*, "cos_d_counter: ", cos_d_counter
-        print*, "dot_product_dd_counter: ", dot_product_dd_counter
-        print*, "exp_d_counter: ", exp_d_counter
-        print*, "int_d_counter: ", int_d_counter
-        print*, "log_d_counter: ", log_d_counter
-        print*, "log_hd_counter: ", log_hd_counter
-        print*, "log10_d_counter: ", log10_d_counter
-        print*, "matmul_dd_counter: ", matmul_dd_counter
-        print*, "matmul_dv_counter: ", matmul_dv_counter
-        print*, "matmul_vd_counter: ", matmul_vd_counter
-        print*, "max_dd_counter: ", max_dd_counter
-        print*, "max_di_counter: ", max_di_counter
-        print*, "max_dr_counter: ", max_dr_counter
-        print*, "max_rd_counter: ", max_rd_counter
-        print*, "dmax1_dd_counter: ", dmax1_dd_counter
-        print*, "maxval_d_counter: ", maxval_d_counter
-        print*, "min_dd_counter: ", min_dd_counter
-        print*, "min_dr_counter: ", min_dr_counter
-        print*, "dmin1_dd_counter: ", dmin1_dd_counter
-        print*, "minval_d_counter: ", minval_d_counter
-        print*, "nint_d_counter: ", nint_d_counter
-        print*, "sin_d_counter: ", sin_d_counter
-        print*, "tan_d_counter: ", tan_d_counter
-        print*, "sqrt_d_counter: ", sqrt_d_counter
-        print*, "sqrt_hd_counter: ", sqrt_hd_counter
-        print*, "sum_d_counter: ", sum_d_counter
-        print*, "maxloc_d_counter: ", maxloc_d_counter
+        print*, "assign__d_i_counter: ", assign__d_i_counter
+        print*, "assign__d_r_counter: ", assign__d_r_counter
+        print*, "assign__i_d_counter: ", assign__i_d_counter
+        print*, "assign__r_d_counter: ", assign__r_d_counter
+        print*, "assign__hd_i_counter: ", assign__hd_i_counter
+        print*, "assign__hd_r_counter: ", assign__hd_r_counter
+        print*, "assign__i_hd_counter: ", assign__i_hd_counter
+        print*, "assign__r_hd_counter: ", assign__r_hd_counter
+        print*, "add__d_counter: ", add__d_counter
+        print*, "add__d_d_counter: ", add__d_d_counter
+        print*, "add__d_i_counter: ", add__d_i_counter
+        print*, "add__d_r_counter: ", add__d_r_counter
+        print*, "add__i_d_counter: ", add__i_d_counter
+        print*, "add__r_d_counter: ", add__r_d_counter
+        print*, "add__hd_counter: ", add__hd_counter
+        print*, "add__hd_hd_counter: ", add__hd_hd_counter
+        print*, "add__hd_i_counter: ", add__hd_i_counter
+        print*, "add__hd_r_counter: ", add__hd_r_counter
+        print*, "add__i_hd_counter: ", add__i_hd_counter
+        print*, "add__r_hd_counter: ", add__r_hd_counter
+        print*, "minus__d_counter: ", minus__d_counter
+        print*, "minus__d_d_counter: ", minus__d_d_counter
+        print*, "minus__d_i_counter: ", minus__d_i_counter
+        print*, "minus__d_r_counter: ", minus__d_r_counter
+        print*, "minus__i_d_counter: ", minus__i_d_counter
+        print*, "minus__r_d_counter: ", minus__r_d_counter
+        print*, "minus__hd_counter: ", minus__hd_counter
+        print*, "minus__hd_hd_counter: ", minus__hd_hd_counter
+        print*, "minus__hd_i_counter: ", minus__hd_i_counter
+        print*, "minus__hd_r_counter: ", minus__hd_r_counter
+        print*, "minus__i_hd_counter: ", minus__i_hd_counter
+        print*, "minus__r_hd_counter: ", minus__r_hd_counter
+        print*, "mult__d_d_counter: ", mult__d_d_counter
+        print*, "mult__d_i_counter: ", mult__d_i_counter
+        print*, "mult__d_r_counter: ", mult__d_r_counter
+        print*, "mult__i_d_counter: ", mult__i_d_counter
+        print*, "mult__r_d_counter: ", mult__r_d_counter
+        print*, "mult__hd_hd_counter: ", mult__hd_hd_counter
+        print*, "mult__hd_i_counter: ", mult__hd_i_counter
+        print*, "mult__hd_r_counter: ", mult__hd_r_counter
+        print*, "mult__i_hd_counter: ", mult__i_hd_counter
+        print*, "mult__r_hd_counter: ", mult__r_hd_counter
+        print*, "div__d_d_counter: ", div__d_d_counter
+        print*, "div__d_r_counter: ", div__d_r_counter
+        print*, "div__r_d_counter: ", div__r_d_counter
+        print*, "div__d_i_counter: ", div__d_i_counter
+        print*, "div__i_d_counter: ", div__i_d_counter
+        print*, "div__hd_hd_counter: ", div__hd_hd_counter
+        print*, "div__hd_r_counter: ", div__hd_r_counter
+        print*, "div__r_hd_counter: ", div__r_hd_counter
+        print*, "div__hd_i_counter: ", div__hd_i_counter
+        print*, "div__i_hd_counter: ", div__i_hd_counter
+        print*, "pow__d_i_counter: ", pow__d_i_counter
+        print*, "pow__d_r_counter: ", pow__d_r_counter
+        print*, "pow__d_d_counter: ", pow__d_d_counter
+        print*, "pow__hd_i_counter: ", pow__hd_i_counter
+        print*, "pow__hd_r_counter: ", pow__hd_r_counter
+        print*, "pow__hd_hd_counter: ", pow__hd_hd_counter
+        print*, "eq__d_d_counter: ", eq__d_d_counter
+        print*, "eq__d_i_counter: ", eq__d_i_counter
+        print*, "eq__d_r_counter: ", eq__d_r_counter
+        print*, "eq__i_d_counter: ", eq__i_d_counter
+        print*, "eq__r_d_counter: ", eq__r_d_counter
+        print*, "le__d_d_counter: ", le__d_d_counter
+        print*, "le__d_i_counter: ", le__d_i_counter
+        print*, "le__d_r_counter: ", le__d_r_counter
+        print*, "le__i_d_counter: ", le__i_d_counter
+        print*, "le__r_d_counter: ", le__r_d_counter
+        print*, "lt__d_d_counter: ", lt__d_d_counter
+        print*, "lt__d_i_counter: ", lt__d_i_counter
+        print*, "lt__d_r_counter: ", lt__d_r_counter
+        print*, "lt__i_d_counter: ", lt__i_d_counter
+        print*, "lt__r_d_counter: ", lt__r_d_counter
+        print*, "ge__d_d_counter: ", ge__d_d_counter
+        print*, "ge__d_i_counter: ", ge__d_i_counter
+        print*, "ge__d_r_counter: ", ge__d_r_counter
+        print*, "ge__i_d_counter: ", ge__i_d_counter
+        print*, "ge__r_d_counter: ", ge__r_d_counter
+        print*, "gt__d_d_counter: ", gt__d_d_counter
+        print*, "gt__d_i_counter: ", gt__d_i_counter
+        print*, "gt__d_r_counter: ", gt__d_r_counter
+        print*, "gt__i_d_counter: ", gt__i_d_counter
+        print*, "gt__r_d_counter: ", gt__r_d_counter
+        print*, "ne__d_d_counter: ", ne__d_d_counter
+        print*, "ne__d_i_counter: ", ne__d_i_counter
+        print*, "ne__d_r_counter: ", ne__d_r_counter
+        print*, "ne__i_d_counter: ", ne__i_d_counter
+        print*, "ne__r_d_counter: ", ne__r_d_counter
+        print*, "eq__hd_hd_counter: ", eq__hd_hd_counter
+        print*, "eq__hd_i_counter: ", eq__hd_i_counter
+        print*, "eq__hd_r_counter: ", eq__hd_r_counter
+        print*, "eq__i_hd_counter: ", eq__i_hd_counter
+        print*, "eq__r_hd_counter: ", eq__r_hd_counter
+        print*, "le__hd_hd_counter: ", le__hd_hd_counter
+        print*, "le__hd_i_counter: ", le__hd_i_counter
+        print*, "le__hd_r_counter: ", le__hd_r_counter
+        print*, "le__i_hd_counter: ", le__i_hd_counter
+        print*, "le__r_hd_counter: ", le__r_hd_counter
+        print*, "lt__hd_hd_counter: ", lt__hd_hd_counter
+        print*, "lt__hd_i_counter: ", lt__hd_i_counter
+        print*, "lt__hd_r_counter: ", lt__hd_r_counter
+        print*, "lt__i_hd_counter: ", lt__i_hd_counter
+        print*, "lt__r_hd_counter: ", lt__r_hd_counter
+        print*, "ge__hd_hd_counter: ", ge__hd_hd_counter
+        print*, "ge__hd_i_counter: ", ge__hd_i_counter
+        print*, "ge__hd_r_counter: ", ge__hd_r_counter
+        print*, "ge__i_hd_counter: ", ge__i_hd_counter
+        print*, "ge__r_hd_counter: ", ge__r_hd_counter
+        print*, "gt__hd_hd_counter: ", gt__hd_hd_counter
+        print*, "gt__hd_i_counter: ", gt__hd_i_counter
+        print*, "gt__hd_r_counter: ", gt__hd_r_counter
+        print*, "gt__i_hd_counter: ", gt__i_hd_counter
+        print*, "gt__r_hd_counter: ", gt__r_hd_counter
+        print*, "ne__hd_hd_counter: ", ne__hd_hd_counter
+        print*, "ne__hd_i_counter: ", ne__hd_i_counter
+        print*, "ne__hd_r_counter: ", ne__hd_r_counter
+        print*, "ne__i_hd_counter: ", ne__i_hd_counter
+        print*, "ne__r_hd_counter: ", ne__r_hd_counter
+        print*, "abs__d_counter: ", abs__d_counter
+        print*, "acos__d_counter: ", acos__d_counter
+        print*, "asin__d_counter: ", asin__d_counter
+        print*, "atan__d_counter: ", atan__d_counter
+        print*, "atan2__d_counter: ", atan2__d_counter
+        print*, "cos__d_counter: ", cos__d_counter
+        print*, "dot_product__dd_counter: ", dot_product__dd_counter
+        print*, "exp__d_counter: ", exp__d_counter
+        print*, "int__d_counter: ", int__d_counter
+        print*, "log__d_counter: ", log__d_counter
+        print*, "log__hd_counter: ", log__hd_counter
+        print*, "log10__d_counter: ", log10__d_counter
+        print*, "matmul__dd_counter: ", matmul__dd_counter
+        print*, "matmul__dv_counter: ", matmul__dv_counter
+        print*, "matmul__vd_counter: ", matmul__vd_counter
+        print*, "max__dd_counter: ", max__dd_counter
+        print*, "max__di_counter: ", max__di_counter
+        print*, "max__dr_counter: ", max__dr_counter
+        print*, "max__rd_counter: ", max__rd_counter
+        print*, "dmax1__dd_counter: ", dmax1__dd_counter
+        print*, "maxval__d_counter: ", maxval__d_counter
+        print*, "min__dd_counter: ", min__dd_counter
+        print*, "min__dr_counter: ", min__dr_counter
+        print*, "dmin1__dd_counter: ", dmin1__dd_counter
+        print*, "minval__d_counter: ", minval__d_counter
+        print*, "nint__d_counter: ", nint__d_counter
+        print*, "sin__d_counter: ", sin__d_counter
+        print*, "tan__d_counter: ", tan__d_counter
+        print*, "sqrt__d_counter: ", sqrt__d_counter
+        print*, "sqrt__hd_counter: ", sqrt__hd_counter
+        print*, "sum__d_counter: ", sum__d_counter
+        print*, "maxloc__d_counter: ", maxloc__d_counter
 
         if (is_ok) then
             print *, "test_hdual2: ok"
@@ -799,139 +859,139 @@ contains
         end do
 
     end function
-    impure elemental subroutine assign_d_i(u, i)
+    impure elemental subroutine assign__duvw_i(u, i)
         type(dual__uvw_t), intent(out) :: u
         integer, intent(in) :: i
 
         u%f = real(i, dp)  ! This is faster than direct assignment
         u%g = 0.0_dp
-        assign_d_i_counter = assign_d_i_counter + 1
+        assign__d_i_counter = assign__d_i_counter + 1
 
     end subroutine
-    impure elemental subroutine assign_d_r(u, r)
+    impure elemental subroutine assign__duvw_r(u, r)
         type(dual__uvw_t), intent(out) :: u
         real(dp), intent(in) :: r
 
         u%f = r
         u%g = 0.0_dp
-        assign_d_r_counter = assign_d_r_counter + 1
+        assign__d_r_counter = assign__d_r_counter + 1
 
     end subroutine
-    impure elemental subroutine assign_i_d(i, v)
+    impure elemental subroutine assign__i_duvw(i, v)
         type(dual__uvw_t), intent(in) :: v
         integer, intent(out) :: i
 
         i = int(v%f)
-        assign_i_d_counter = assign_i_d_counter + 1
+        assign__i_d_counter = assign__i_d_counter + 1
 
     end subroutine
-    impure elemental subroutine assign_r_d(r, v)
+    impure elemental subroutine assign__r_duvw(r, v)
         type(dual__uvw_t), intent(in) :: v
         real(dp), intent(out) :: r
 
         r = v%f
-        assign_r_d_counter = assign_r_d_counter + 1
+        assign__r_d_counter = assign__r_d_counter + 1
 
     end subroutine
-    impure elemental subroutine assign_hd_i(u, i)
+    impure elemental subroutine assign__hduvw_i(u, i)
         type(hdual__uvw_t), intent(out) :: u
         integer, intent(in) :: i
 
         u%d%f = real(i, dp)  ! This is faster than direct assignment
         u%d%g = 0.0_dp
         u%h = 0.0_dp
-        assign_hd_i_counter = assign_hd_i_counter + 1
+        assign__hd_i_counter = assign__hd_i_counter + 1
 
     end subroutine
-    impure elemental subroutine assign_hd_r(u, r)
+    impure elemental subroutine assign__hduvw_r(u, r)
         type(hdual__uvw_t), intent(out) :: u
         real(dp), intent(in) :: r
 
         u%d%f = r
         u%d%g = 0.0_dp
         u%h = 0.0_dp
-        assign_hd_r_counter = assign_hd_r_counter + 1
+        assign__hd_r_counter = assign__hd_r_counter + 1
 
     end subroutine
-    impure elemental subroutine assign_i_hd(i, v)
+    impure elemental subroutine assign__i_hduvw(i, v)
         type(hdual__uvw_t), intent(in) :: v
         integer, intent(out) :: i
 
         i = int(v%d%f)
-        assign_i_hd_counter = assign_i_hd_counter + 1
+        assign__i_hd_counter = assign__i_hd_counter + 1
 
     end subroutine
-    impure elemental subroutine assign_r_hd(r, v)
+    impure elemental subroutine assign__r_hduvw(r, v)
         type(hdual__uvw_t), intent(in) :: v
         real(dp), intent(out) :: r
 
         r = v%d%f
-        assign_r_hd_counter = assign_r_hd_counter + 1
+        assign__r_hd_counter = assign__r_hd_counter + 1
 
     end subroutine
-    impure elemental function unary_add_d(u) result(res)
+    impure elemental function add__duvw(u) result(res)
         type(dual__uvw_t), intent(in) :: u
         type(dual__uvw_t) :: res
         
         res%f = u%f
         res%g = u%g
-        unary_add_d_counter = unary_add_d_counter + 1
+        add__d_counter = add__d_counter + 1
     end function
-    impure elemental function add_d_d(u, v) result(res)
+    impure elemental function add__duvw_duvw(u, v) result(res)
         type(dual__uvw_t), intent(in) :: u
         type(dual__uvw_t), intent(in) :: v
         type(dual__uvw_t) :: res
         
         res%f = u%f + v%f
         res%g = u%g + v%g
-        add_d_d_counter = add_d_d_counter + 1
+        add__d_d_counter = add__d_d_counter + 1
     end function
-    impure elemental function add_d_r(u, v) result(res)
+    impure elemental function add__duvw_r(u, v) result(res)
         type(dual__uvw_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(dual__uvw_t) :: res
         
         res%f = u%f + v
         res%g = u%g
-        add_d_r_counter = add_d_r_counter + 1
+        add__d_r_counter = add__d_r_counter + 1
     end function
-    impure elemental function add_r_d(u, v) result(res)
+    impure elemental function add__r_duvw(u, v) result(res)
         real(dp), intent(in) :: u
         type(dual__uvw_t), intent(in) :: v
         type(dual__uvw_t) :: res
         
         res%f = u + v%f
         res%g = v%g
-        add_r_d_counter = add_r_d_counter + 1
+        add__r_d_counter = add__r_d_counter + 1
     end function
-    impure elemental function add_d_i(u, v) result(res)
+    impure elemental function add__duvw_i(u, v) result(res)
         type(dual__uvw_t), intent(in) :: u
         integer, intent(in) :: v
         type(dual__uvw_t) :: res
         
         res%f = u%f + v
         res%g = u%g
-        add_d_i_counter = add_d_i_counter + 1
+        add__d_i_counter = add__d_i_counter + 1
     end function
-    impure elemental function add_i_d(u, v) result(res)
+    impure elemental function add__i_duvw(u, v) result(res)
         integer, intent(in) :: u
         type(dual__uvw_t), intent(in) :: v
         type(dual__uvw_t) :: res
         
         res%f = u + v%f
         res%g = v%g
-        add_i_d_counter = add_i_d_counter + 1
+        add__i_d_counter = add__i_d_counter + 1
     end function
-    impure elemental function unary_add_hd(u) result(res)
+    impure elemental function add__hduvw(u) result(res)
         type(hdual__uvw_t), intent(in) :: u
         type(hdual__uvw_t) :: res
         
         res%d%f = u%d%f
         res%d%g = u%d%g
         res%h = u%h
-        unary_add_hd_counter = unary_add_hd_counter + 1
+        add__hd_counter = add__hd_counter + 1
     end function
-    impure elemental function add_hd_hd(u, v) result(res)
+    impure elemental function add__hduvw_hduvw(u, v) result(res)
         type(hdual__uvw_t), intent(in) :: u
         type(hdual__uvw_t), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -939,9 +999,9 @@ contains
         res%d%f = u%d%f + v%d%f
         res%d%g = u%d%g + v%d%g
         res%h = u%h + v%h
-        add_hd_hd_counter = add_hd_hd_counter + 1
+        add__hd_hd_counter = add__hd_hd_counter + 1
     end function
-    impure elemental function add_hd_r(u, v) result(res)
+    impure elemental function add__hduvw_r(u, v) result(res)
         type(hdual__uvw_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -949,9 +1009,9 @@ contains
         res%d%f = u%d%f + v
         res%d%g = u%d%g
         res%h = u%h
-        add_hd_r_counter = add_hd_r_counter + 1
+        add__hd_r_counter = add__hd_r_counter + 1
     end function
-    impure elemental function add_r_hd(u, v) result(res)
+    impure elemental function add__r_hduvw(u, v) result(res)
         real(dp), intent(in) :: u
         type(hdual__uvw_t), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -959,9 +1019,9 @@ contains
         res%d%f = u + v%d%f
         res%d%g = v%d%g
         res%h = v%h
-        add_r_hd_counter = add_r_hd_counter + 1
+        add__r_hd_counter = add__r_hd_counter + 1
     end function
-    impure elemental function add_hd_i(u, v) result(res)
+    impure elemental function add__hduvw_i(u, v) result(res)
         type(hdual__uvw_t), intent(in) :: u
         integer, intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -969,9 +1029,9 @@ contains
         res%d%f = u%d%f + v
         res%d%g = u%d%g
         res%h = u%h
-        add_hd_i_counter = add_hd_i_counter + 1
+        add__hd_i_counter = add__hd_i_counter + 1
     end function
-    impure elemental function add_i_hd(u, v) result(res)
+    impure elemental function add__i_hduvw(u, v) result(res)
         integer, intent(in) :: u
         type(hdual__uvw_t), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -979,71 +1039,71 @@ contains
         res%d%f = u + v%d%f
         res%d%g = v%d%g
         res%h = v%h
-        add_i_hd_counter = add_i_hd_counter + 1
+        add__i_hd_counter = add__i_hd_counter + 1
     end function
-    impure elemental function unary_minus_d(u) result(res)
+    impure elemental function minus__duvw(u) result(res)
         type(dual__uvw_t), intent(in) :: u
         type(dual__uvw_t) :: res
         
         res%f = -u%f
         res%g = -u%g
-        unary_minus_d_counter = unary_minus_d_counter + 1
+        minus__d_counter = minus__d_counter + 1
     end function
-    impure elemental function minus_d_d(u, v) result(res)
+    impure elemental function minus__duvw_duvw(u, v) result(res)
         type(dual__uvw_t), intent(in) :: u
         type(dual__uvw_t), intent(in) :: v
         type(dual__uvw_t) :: res
         
         res%f = u%f - v%f
         res%g = u%g - v%g
-        minus_d_d_counter = minus_d_d_counter + 1
+        minus__d_d_counter = minus__d_d_counter + 1
     end function
-    impure elemental function minus_d_r(u, v) result(res)
+    impure elemental function minus__duvw_r(u, v) result(res)
         type(dual__uvw_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(dual__uvw_t) :: res
         
         res%f = u%f - v
         res%g = u%g
-        minus_d_r_counter = minus_d_r_counter + 1
+        minus__d_r_counter = minus__d_r_counter + 1
     end function
-    impure elemental function minus_r_d(u, v) result(res)
+    impure elemental function minus__r_duvw(u, v) result(res)
         real(dp), intent(in) :: u
         type(dual__uvw_t), intent(in) :: v
         type(dual__uvw_t) :: res
         
         res%f = u - v%f
         res%g = -v%g
-        minus_r_d_counter = minus_r_d_counter + 1
+        minus__r_d_counter = minus__r_d_counter + 1
     end function
-    impure elemental function minus_d_i(u, v) result(res)
+    impure elemental function minus__duvw_i(u, v) result(res)
         type(dual__uvw_t), intent(in) :: u
         integer, intent(in) :: v
         type(dual__uvw_t) :: res
         
         res%f = u%f - v
         res%g = u%g
-        minus_d_i_counter = minus_d_i_counter + 1
+        minus__d_i_counter = minus__d_i_counter + 1
     end function
-    impure elemental function minus_i_d(u, v) result(res)
+    impure elemental function minus__i_duvw(u, v) result(res)
         integer, intent(in) :: u
         type(dual__uvw_t), intent(in) :: v
         type(dual__uvw_t) :: res
         
         res%f = u - v%f
         res%g = -v%g
-        minus_i_d_counter = minus_i_d_counter + 1
+        minus__i_d_counter = minus__i_d_counter + 1
     end function
-    impure elemental function unary_minus_hd(u) result(res)
+    impure elemental function minus__hduvw(u) result(res)
         type(hdual__uvw_t), intent(in) :: u
         type(hdual__uvw_t) :: res
         
         res%d%f = -u%d%f
         res%d%g = -u%d%g
         res%h = -u%h
-        unary_minus_hd_counter = unary_minus_hd_counter + 1
+        minus__hd_counter = minus__hd_counter + 1
     end function
-    impure elemental function minus_hd_hd(u, v) result(res)
+    impure elemental function minus__hduvw_hduvw(u, v) result(res)
         type(hdual__uvw_t), intent(in) :: u
         type(hdual__uvw_t), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -1051,9 +1111,9 @@ contains
         res%d%f = u%d%f - v%d%f
         res%d%g = u%d%g - v%d%g
         res%h = u%h - v%h
-        minus_hd_hd_counter = minus_hd_hd_counter + 1
+        minus__hd_hd_counter = minus__hd_hd_counter + 1
     end function
-    impure elemental function minus_hd_r(u, v) result(res)
+    impure elemental function minus__hduvw_r(u, v) result(res)
         type(hdual__uvw_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -1061,9 +1121,9 @@ contains
         res%d%f = u%d%f - v
         res%d%g = u%d%g
         res%h = u%h
-        minus_hd_r_counter = minus_hd_r_counter + 1
+        minus__hd_r_counter = minus__hd_r_counter + 1
     end function
-    impure elemental function minus_r_hd(u, v) result(res)
+    impure elemental function minus__r_hduvw(u, v) result(res)
         real(dp), intent(in) :: u
         type(hdual__uvw_t), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -1071,9 +1131,9 @@ contains
         res%d%f = u - v%d%f
         res%d%g = -v%d%g
         res%h = -v%h
-        minus_r_hd_counter = minus_r_hd_counter + 1
+        minus__r_hd_counter = minus__r_hd_counter + 1
     end function
-    impure elemental function minus_hd_i(u, v) result(res)
+    impure elemental function minus__hduvw_i(u, v) result(res)
         type(hdual__uvw_t), intent(in) :: u
         integer, intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -1081,9 +1141,9 @@ contains
         res%d%f = u%d%f - v
         res%d%g = u%d%g
         res%h = u%h
-        minus_hd_i_counter = minus_hd_i_counter + 1
+        minus__hd_i_counter = minus__hd_i_counter + 1
     end function
-    impure elemental function minus_i_hd(u, v) result(res)
+    impure elemental function minus__i_hduvw(u, v) result(res)
         integer, intent(in) :: u
         type(hdual__uvw_t), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -1091,54 +1151,54 @@ contains
         res%d%f = u - v%d%f
         res%d%g = -v%d%g
         res%h = -v%h
-        minus_i_hd_counter = minus_i_hd_counter + 1
+        minus__i_hd_counter = minus__i_hd_counter + 1
     end function
-    impure elemental function mult_d_d(u, v) result(res)
+    impure elemental function mult__duvw_duvw(u, v) result(res)
         type(dual__uvw_t), intent(in) :: u
         type(dual__uvw_t), intent(in) :: v
         type(dual__uvw_t) :: res
         
         res%f = u%f*v%f
         res%g = u%g*v%f + u%f*v%g
-        mult_d_d_counter = mult_d_d_counter + 1
+        mult__d_d_counter = mult__d_d_counter + 1
     end function
-    impure elemental function mult_d_r(u, v) result(res)
+    impure elemental function mult__duvw_r(u, v) result(res)
         type(dual__uvw_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(dual__uvw_t) :: res
         
         res%f = u%f*v
         res%g = u%g*v
-        mult_d_r_counter = mult_d_r_counter + 1
+        mult__d_r_counter = mult__d_r_counter + 1
     end function
-    impure elemental function mult_r_d(u, v) result(res)
+    impure elemental function mult__r_duvw(u, v) result(res)
         real(dp), intent(in) :: u
         type(dual__uvw_t), intent(in) :: v
         type(dual__uvw_t) :: res
         
         res%f = u*v%f
         res%g = u*v%g
-        mult_r_d_counter = mult_r_d_counter + 1
+        mult__r_d_counter = mult__r_d_counter + 1
     end function
-    impure elemental function mult_d_i(u, v) result(res)
+    impure elemental function mult__duvw_i(u, v) result(res)
         type(dual__uvw_t), intent(in) :: u
         integer, intent(in) :: v
         type(dual__uvw_t) :: res
         
         res%f = u%f*v
         res%g = u%g*v
-        mult_d_i_counter = mult_d_i_counter + 1
+        mult__d_i_counter = mult__d_i_counter + 1
     end function
-    impure elemental function mult_i_d(u, v) result(res)
+    impure elemental function mult__i_duvw(u, v) result(res)
         integer, intent(in) :: u
         type(dual__uvw_t), intent(in) :: v
         type(dual__uvw_t) :: res
         
         res%f = u*v%f
         res%g = u*v%g
-        mult_i_d_counter = mult_i_d_counter + 1
+        mult__i_d_counter = mult__i_d_counter + 1
     end function
-    impure elemental function mult_hd_hd(u, v) result(res)
+    impure elemental function mult__hduvw_hduvw(u, v) result(res)
         type(hdual__uvw_t), intent(in) :: u
         type(hdual__uvw_t), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -1147,15 +1207,15 @@ contains
         res%d%f = u%d%f*v%d%f
         res%d%g = u%d%g*v%d%f + u%d%f*v%d%g
         k = 0
-        do j = 1, num_deriv
-            do i = j, num_deriv
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = u%h(k)*v%d%f + u%d%g(i)*v%d%g(j) + u%d%g(j)*v%d%g(i) + u%d%f*v%h(k)
             end do
         end do
-        mult_hd_hd_counter = mult_hd_hd_counter + 1
+        mult__hd_hd_counter = mult__hd_hd_counter + 1
     end function
-    impure elemental function mult_hd_r(u, v) result(res)
+    impure elemental function mult__hduvw_r(u, v) result(res)
         type(hdual__uvw_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -1163,9 +1223,9 @@ contains
         res%d%f = u%d%f*v
         res%d%g = u%d%g*v
         res%h = u%h*v
-        mult_hd_r_counter = mult_hd_r_counter + 1
+        mult__hd_r_counter = mult__hd_r_counter + 1
     end function
-    impure elemental function mult_r_hd(u, v) result(res)
+    impure elemental function mult__r_hduvw(u, v) result(res)
         real(dp), intent(in) :: u
         type(hdual__uvw_t), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -1173,9 +1233,9 @@ contains
         res%d%f = u*v%d%f
         res%d%g = u*v%d%g
         res%h = u*v%h
-        mult_r_hd_counter = mult_r_hd_counter + 1
+        mult__r_hd_counter = mult__r_hd_counter + 1
     end function
-    impure elemental function mult_hd_i(u, v) result(res)
+    impure elemental function mult__hduvw_i(u, v) result(res)
         type(hdual__uvw_t), intent(in) :: u
         integer, intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -1183,9 +1243,9 @@ contains
         res%d%f = u%d%f*v
         res%d%g = u%d%g*v
         res%h = u%h*v
-        mult_hd_i_counter = mult_hd_i_counter + 1
+        mult__hd_i_counter = mult__hd_i_counter + 1
     end function
-    impure elemental function mult_i_hd(u, v) result(res)
+    impure elemental function mult__i_hduvw(u, v) result(res)
         integer, intent(in) :: u
         type(hdual__uvw_t), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -1193,9 +1253,9 @@ contains
         res%d%f = u*v%d%f
         res%d%g = u*v%d%g
         res%h = u*v%h
-        mult_i_hd_counter = mult_i_hd_counter + 1
+        mult__i_hd_counter = mult__i_hd_counter + 1
     end function
-    impure elemental function div_d_d(u, v) result(res)
+    impure elemental function div__duvw_duvw(u, v) result(res)
         type(dual__uvw_t), intent(in) :: u
         type(dual__uvw_t), intent(in) :: v
         type(dual__uvw_t) :: res
@@ -1205,9 +1265,9 @@ contains
         t1 = t0*u%f
         res%f = t1
         res%g = t0*(-t1*v%g + u%g)
-        div_d_d_counter = div_d_d_counter + 1
+        div__d_d_counter = div__d_d_counter + 1
     end function
-    impure elemental function div_d_r(u, v) result(res)
+    impure elemental function div__duvw_r(u, v) result(res)
         type(dual__uvw_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(dual__uvw_t) :: res
@@ -1216,18 +1276,18 @@ contains
         t0 = 1.0_dp/v
         res%f = t0*u%f
         res%g = t0*u%g
-        div_d_r_counter = div_d_r_counter + 1
+        div__d_r_counter = div__d_r_counter + 1
     end function
-    impure elemental function div_r_d(u, v) result(res)
+    impure elemental function div__r_duvw(u, v) result(res)
         real(dp), intent(in) :: u
         type(dual__uvw_t), intent(in) :: v
         type(dual__uvw_t) :: res
         
         res%f = u/v%f
         res%g = -u*v%g/v%f**2
-        div_r_d_counter = div_r_d_counter + 1
+        div__r_d_counter = div__r_d_counter + 1
     end function
-    impure elemental function div_d_i(u, v) result(res)
+    impure elemental function div__duvw_i(u, v) result(res)
         type(dual__uvw_t), intent(in) :: u
         integer, intent(in) :: v
         type(dual__uvw_t) :: res
@@ -1236,18 +1296,18 @@ contains
         t0 = 1.0_dp/v
         res%f = t0*u%f
         res%g = t0*u%g
-        div_d_i_counter = div_d_i_counter + 1
+        div__d_i_counter = div__d_i_counter + 1
     end function
-    impure elemental function div_i_d(u, v) result(res)
+    impure elemental function div__i_duvw(u, v) result(res)
         integer, intent(in) :: u
         type(dual__uvw_t), intent(in) :: v
         type(dual__uvw_t) :: res
         
         res%f = u/v%f
         res%g = -u*v%g/v%f**2
-        div_i_d_counter = div_i_d_counter + 1
+        div__i_d_counter = div__i_d_counter + 1
     end function
-    impure elemental function div_hd_hd(u, v) result(res)
+    impure elemental function div__hduvw_hduvw(u, v) result(res)
         type(hdual__uvw_t), intent(in) :: u
         type(hdual__uvw_t), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -1259,16 +1319,16 @@ contains
         res%d%f = t1
         res%d%g = t0*(-t1*v%d%g + u%d%g)
         k = 0
-        do j = 1, num_deriv
-            do i = j, num_deriv
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = t0*(-t0*u%d%g(j)*v%d%g(i) - t0*v%d%g(j)*(-2*t1*v%d%g(i) + u%d%g(i)) - t1* &
       v%h(k) + u%h(k))
             end do
         end do
-        div_hd_hd_counter = div_hd_hd_counter + 1
+        div__hd_hd_counter = div__hd_hd_counter + 1
     end function
-    impure elemental function div_hd_r(u, v) result(res)
+    impure elemental function div__hduvw_r(u, v) result(res)
         type(hdual__uvw_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -1278,9 +1338,9 @@ contains
         res%d%f = t0*u%d%f
         res%d%g = t0*u%d%g
         res%h = t0*u%h
-        div_hd_r_counter = div_hd_r_counter + 1
+        div__hd_r_counter = div__hd_r_counter + 1
     end function
-    impure elemental function div_r_hd(u, v) result(res)
+    impure elemental function div__r_hduvw(u, v) result(res)
         real(dp), intent(in) :: u
         type(hdual__uvw_t), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -1292,15 +1352,15 @@ contains
         res%d%f = t0*u
         res%d%g = -t1*v%d%g
         k = 0
-        do j = 1, num_deriv
-            do i = j, num_deriv
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = t1*(2*t0*v%d%g(i)*v%d%g(j) - v%h(k))
             end do
         end do
-        div_r_hd_counter = div_r_hd_counter + 1
+        div__r_hd_counter = div__r_hd_counter + 1
     end function
-    impure elemental function div_hd_i(u, v) result(res)
+    impure elemental function div__hduvw_i(u, v) result(res)
         type(hdual__uvw_t), intent(in) :: u
         integer, intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -1310,9 +1370,9 @@ contains
         res%d%f = t0*u%d%f
         res%d%g = t0*u%d%g
         res%h = t0*u%h
-        div_hd_i_counter = div_hd_i_counter + 1
+        div__hd_i_counter = div__hd_i_counter + 1
     end function
-    impure elemental function div_i_hd(u, v) result(res)
+    impure elemental function div__i_hduvw(u, v) result(res)
         integer, intent(in) :: u
         type(hdual__uvw_t), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -1324,33 +1384,33 @@ contains
         res%d%f = t0*u
         res%d%g = -t1*v%d%g
         k = 0
-        do j = 1, num_deriv
-            do i = j, num_deriv
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = t1*(2*t0*v%d%g(i)*v%d%g(j) - v%h(k))
             end do
         end do
-        div_i_hd_counter = div_i_hd_counter + 1
+        div__i_hd_counter = div__i_hd_counter + 1
     end function
-    impure elemental function pow_d_i(u, v) result(res)
+    impure elemental function pow__duvw_i(u, v) result(res)
         type(dual__uvw_t), intent(in) :: u
         integer, intent(in) :: v
         type(dual__uvw_t) :: res
         
         res%f = u%f**v
         res%g = u%f**(v - 1)*u%g*v
-        pow_d_i_counter = pow_d_i_counter + 1
+        pow__d_i_counter = pow__d_i_counter + 1
     end function
-    impure elemental function pow_d_r(u, v) result(res)
+    impure elemental function pow__duvw_r(u, v) result(res)
         type(dual__uvw_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(dual__uvw_t) :: res
         
         res%f = u%f**v
         res%g = u%f**(v - 1)*u%g*v
-        pow_d_r_counter = pow_d_r_counter + 1
+        pow__d_r_counter = pow__d_r_counter + 1
     end function
-    impure elemental function pow_d_d(u, v) result(res)
+    impure elemental function pow__duvw_duvw(u, v) result(res)
         type(dual__uvw_t), intent(in) :: u
         type(dual__uvw_t), intent(in) :: v
         type(dual__uvw_t) :: res
@@ -1360,9 +1420,9 @@ contains
         res%f = t0
         res%g = t0*(u%g*v%f/u%f + v%g*log(u%f))
 
-        pow_d_d_counter = pow_d_d_counter + 1
+        pow__d_d_counter = pow__d_d_counter + 1
     end function
-    impure elemental function pow_hd_i(u, v) result(res)
+    impure elemental function pow__hduvw_i(u, v) result(res)
         type(hdual__uvw_t), intent(in) :: u
         integer, intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -1371,15 +1431,15 @@ contains
         res%d%f = u%d%f**v
         res%d%g = u%d%f**(v - 1)*v*u%d%g
         k = 0
-        do j = 1, num_deriv
-            do i = j, num_deriv
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = v*(u%d%g(i)*u%d%g(j)*(v - 1)*u%d%f**(v-2) + u%h(k)*u%d%f**(v-1))
             end do
         end do
-        pow_hd_i_counter = pow_hd_i_counter + 1
+        pow__hd_i_counter = pow__hd_i_counter + 1
     end function
-    impure elemental function pow_hd_r(u, v) result(res)
+    impure elemental function pow__hduvw_r(u, v) result(res)
         type(hdual__uvw_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -1388,15 +1448,15 @@ contains
         res%d%f = u%d%f**v
         res%d%g = u%d%f**(v - 1)*v*u%d%g
         k = 0
-        do j = 1, num_deriv
-            do i = j, num_deriv
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = v*(u%d%g(i)*u%d%g(j)*(v - 1)*u%d%f**(v-2) + u%h(k)*u%d%f**(v-1))
             end do
         end do
-        pow_hd_r_counter = pow_hd_r_counter + 1
+        pow__hd_r_counter = pow__hd_r_counter + 1
     end function
-    impure elemental function pow_hd_hd(u, v) result(res)
+    impure elemental function pow__hduvw_hduvw(u, v) result(res)
         type(hdual__uvw_t), intent(in) :: u
         type(hdual__uvw_t), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -1410,23 +1470,23 @@ contains
         res%d%f = t0
         res%d%g = t0*(t1*v%d%g + t2*u%d%g*v%d%f)
         k = 0
-        do j = 1, num_deriv
-            do i = j, num_deriv
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = t0*(t1*v%h(k) + t2*u%h(k)*v%d%f + t2*u%d%g(j)*(t2*u%d%g(i)*v%d%f*(v%d%f - &
       1) + t3*v%d%g(i)) + v%d%g(j)*(t1**2*v%d%g(i) + t2*t3*u%d%g(i)))
             end do
         end do
-        pow_hd_hd_counter = pow_hd_hd_counter + 1
+        pow__hd_hd_counter = pow__hd_hd_counter + 1
     end function
-    impure elemental  function eq_d_d(lhs, rhs) result(res)
+    impure elemental  function eq__duvw_duvw(lhs, rhs) result(res)
          type(dual__uvw_t), intent(in) :: lhs, rhs
          logical :: res
 
          res = (lhs%f == rhs%f)
 
     end function
-    impure elemental  function eq_d_i(lhs, rhs) result(res)
+    impure elemental  function eq__duvw_i(lhs, rhs) result(res)
          type(dual__uvw_t), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
@@ -1434,7 +1494,7 @@ contains
          res = (lhs%f == rhs)
 
     end function
-    impure elemental  function eq_d_r(lhs, rhs) result(res)
+    impure elemental  function eq__duvw_r(lhs, rhs) result(res)
          type(dual__uvw_t), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
@@ -1442,7 +1502,7 @@ contains
          res = (lhs%f == rhs)
 
     end function
-    impure elemental  function eq_i_d(lhs, rhs) result(res)
+    impure elemental  function eq__i_duvw(lhs, rhs) result(res)
          integer, intent(in) :: lhs
          type(dual__uvw_t), intent(in) :: rhs
          logical :: res
@@ -1450,7 +1510,7 @@ contains
          res = (lhs == rhs%f)
 
     end function
-    impure elemental  function eq_r_d(lhs, rhs) result(res)
+    impure elemental  function eq__r_duvw(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
          type(dual__uvw_t), intent(in) :: rhs
          logical :: res
@@ -1458,53 +1518,53 @@ contains
          res = (lhs == rhs%f)
 
     end function
-    impure elemental  function eq_hd_hd(lhs, rhs) result(res)
+    impure elemental  function eq__hduvw_hduvw(lhs, rhs) result(res)
          type(hdual__uvw_t), intent(in) :: lhs, rhs
          logical :: res
 
-         res = (lhs%f == rhs%f)
+         res = (lhs%d%f == rhs%d%f)
 
     end function
-    impure elemental  function eq_hd_i(lhs, rhs) result(res)
+    impure elemental  function eq__hduvw_i(lhs, rhs) result(res)
          type(hdual__uvw_t), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
 
-         res = (lhs%f == rhs)
+         res = (lhs%d%f == rhs)
 
     end function
-    impure elemental  function eq_hd_r(lhs, rhs) result(res)
+    impure elemental  function eq__hduvw_r(lhs, rhs) result(res)
          type(hdual__uvw_t), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
 
-         res = (lhs%f == rhs)
+         res = (lhs%d%f == rhs)
 
     end function
-    impure elemental  function eq_i_hd(lhs, rhs) result(res)
+    impure elemental  function eq__i_hduvw(lhs, rhs) result(res)
          integer, intent(in) :: lhs
          type(hdual__uvw_t), intent(in) :: rhs
          logical :: res
 
-         res = (lhs == rhs%f)
+         res = (lhs == rhs%d%f)
 
     end function
-    impure elemental  function eq_r_hd(lhs, rhs) result(res)
+    impure elemental  function eq__r_hduvw(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
          type(hdual__uvw_t), intent(in) :: rhs
          logical :: res
 
-         res = (lhs == rhs%f)
+         res = (lhs == rhs%d%f)
 
     end function
-    impure elemental  function le_d_d(lhs, rhs) result(res)
+    impure elemental  function le__duvw_duvw(lhs, rhs) result(res)
          type(dual__uvw_t), intent(in) :: lhs, rhs
          logical :: res
 
          res = (lhs%f <= rhs%f)
 
     end function
-    impure elemental  function le_d_i(lhs, rhs) result(res)
+    impure elemental  function le__duvw_i(lhs, rhs) result(res)
          type(dual__uvw_t), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
@@ -1512,7 +1572,7 @@ contains
          res = (lhs%f <= rhs)
 
     end function
-    impure elemental  function le_d_r(lhs, rhs) result(res)
+    impure elemental  function le__duvw_r(lhs, rhs) result(res)
          type(dual__uvw_t), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
@@ -1520,7 +1580,7 @@ contains
          res = (lhs%f <= rhs)
 
     end function
-    impure elemental  function le_i_d(lhs, rhs) result(res)
+    impure elemental  function le__i_duvw(lhs, rhs) result(res)
          integer, intent(in) :: lhs
          type(dual__uvw_t), intent(in) :: rhs
          logical :: res
@@ -1528,7 +1588,7 @@ contains
          res = (lhs <= rhs%f)
 
     end function
-    impure elemental  function le_r_d(lhs, rhs) result(res)
+    impure elemental  function le__r_duvw(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
          type(dual__uvw_t), intent(in) :: rhs
          logical :: res
@@ -1536,53 +1596,53 @@ contains
          res = (lhs <= rhs%f)
 
     end function
-    impure elemental  function le_hd_hd(lhs, rhs) result(res)
+    impure elemental  function le__hduvw_hduvw(lhs, rhs) result(res)
          type(hdual__uvw_t), intent(in) :: lhs, rhs
          logical :: res
 
-         res = (lhs%f <= rhs%f)
+         res = (lhs%d%f <= rhs%d%f)
 
     end function
-    impure elemental  function le_hd_i(lhs, rhs) result(res)
+    impure elemental  function le__hduvw_i(lhs, rhs) result(res)
          type(hdual__uvw_t), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
 
-         res = (lhs%f <= rhs)
+         res = (lhs%d%f <= rhs)
 
     end function
-    impure elemental  function le_hd_r(lhs, rhs) result(res)
+    impure elemental  function le__hduvw_r(lhs, rhs) result(res)
          type(hdual__uvw_t), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
 
-         res = (lhs%f <= rhs)
+         res = (lhs%d%f <= rhs)
 
     end function
-    impure elemental  function le_i_hd(lhs, rhs) result(res)
+    impure elemental  function le__i_hduvw(lhs, rhs) result(res)
          integer, intent(in) :: lhs
          type(hdual__uvw_t), intent(in) :: rhs
          logical :: res
 
-         res = (lhs <= rhs%f)
+         res = (lhs <= rhs%d%f)
 
     end function
-    impure elemental  function le_r_hd(lhs, rhs) result(res)
+    impure elemental  function le__r_hduvw(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
          type(hdual__uvw_t), intent(in) :: rhs
          logical :: res
 
-         res = (lhs <= rhs%f)
+         res = (lhs <= rhs%d%f)
 
     end function
-    impure elemental  function lt_d_d(lhs, rhs) result(res)
+    impure elemental  function lt__duvw_duvw(lhs, rhs) result(res)
          type(dual__uvw_t), intent(in) :: lhs, rhs
          logical :: res
 
          res = (lhs%f < rhs%f)
 
     end function
-    impure elemental  function lt_d_i(lhs, rhs) result(res)
+    impure elemental  function lt__duvw_i(lhs, rhs) result(res)
          type(dual__uvw_t), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
@@ -1590,7 +1650,7 @@ contains
          res = (lhs%f < rhs)
 
     end function
-    impure elemental  function lt_d_r(lhs, rhs) result(res)
+    impure elemental  function lt__duvw_r(lhs, rhs) result(res)
          type(dual__uvw_t), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
@@ -1598,7 +1658,7 @@ contains
          res = (lhs%f < rhs)
 
     end function
-    impure elemental  function lt_i_d(lhs, rhs) result(res)
+    impure elemental  function lt__i_duvw(lhs, rhs) result(res)
          integer, intent(in) :: lhs
          type(dual__uvw_t), intent(in) :: rhs
          logical :: res
@@ -1606,7 +1666,7 @@ contains
          res = (lhs < rhs%f)
 
     end function
-    impure elemental  function lt_r_d(lhs, rhs) result(res)
+    impure elemental  function lt__r_duvw(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
          type(dual__uvw_t), intent(in) :: rhs
          logical :: res
@@ -1614,53 +1674,53 @@ contains
          res = (lhs < rhs%f)
 
     end function
-    impure elemental  function lt_hd_hd(lhs, rhs) result(res)
+    impure elemental  function lt__hduvw_hduvw(lhs, rhs) result(res)
          type(hdual__uvw_t), intent(in) :: lhs, rhs
          logical :: res
 
-         res = (lhs%f < rhs%f)
+         res = (lhs%d%f < rhs%d%f)
 
     end function
-    impure elemental  function lt_hd_i(lhs, rhs) result(res)
+    impure elemental  function lt__hduvw_i(lhs, rhs) result(res)
          type(hdual__uvw_t), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
 
-         res = (lhs%f < rhs)
+         res = (lhs%d%f < rhs)
 
     end function
-    impure elemental  function lt_hd_r(lhs, rhs) result(res)
+    impure elemental  function lt__hduvw_r(lhs, rhs) result(res)
          type(hdual__uvw_t), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
 
-         res = (lhs%f < rhs)
+         res = (lhs%d%f < rhs)
 
     end function
-    impure elemental  function lt_i_hd(lhs, rhs) result(res)
+    impure elemental  function lt__i_hduvw(lhs, rhs) result(res)
          integer, intent(in) :: lhs
          type(hdual__uvw_t), intent(in) :: rhs
          logical :: res
 
-         res = (lhs < rhs%f)
+         res = (lhs < rhs%d%f)
 
     end function
-    impure elemental  function lt_r_hd(lhs, rhs) result(res)
+    impure elemental  function lt__r_hduvw(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
          type(hdual__uvw_t), intent(in) :: rhs
          logical :: res
 
-         res = (lhs < rhs%f)
+         res = (lhs < rhs%d%f)
 
     end function
-    impure elemental  function ge_d_d(lhs, rhs) result(res)
+    impure elemental  function ge__duvw_duvw(lhs, rhs) result(res)
          type(dual__uvw_t), intent(in) :: lhs, rhs
          logical :: res
 
          res = (lhs%f >= rhs%f)
 
     end function
-    impure elemental  function ge_d_i(lhs, rhs) result(res)
+    impure elemental  function ge__duvw_i(lhs, rhs) result(res)
          type(dual__uvw_t), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
@@ -1668,7 +1728,7 @@ contains
          res = (lhs%f >= rhs)
 
     end function
-    impure elemental  function ge_d_r(lhs, rhs) result(res)
+    impure elemental  function ge__duvw_r(lhs, rhs) result(res)
          type(dual__uvw_t), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
@@ -1676,7 +1736,7 @@ contains
          res = (lhs%f >= rhs)
 
     end function
-    impure elemental  function ge_i_d(lhs, rhs) result(res)
+    impure elemental  function ge__i_duvw(lhs, rhs) result(res)
          integer, intent(in) :: lhs
          type(dual__uvw_t), intent(in) :: rhs
          logical :: res
@@ -1684,7 +1744,7 @@ contains
          res = (lhs >= rhs%f)
 
     end function
-    impure elemental  function ge_r_d(lhs, rhs) result(res)
+    impure elemental  function ge__r_duvw(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
          type(dual__uvw_t), intent(in) :: rhs
          logical :: res
@@ -1692,53 +1752,53 @@ contains
          res = (lhs >= rhs%f)
 
     end function
-    impure elemental  function ge_hd_hd(lhs, rhs) result(res)
+    impure elemental  function ge__hduvw_hduvw(lhs, rhs) result(res)
          type(hdual__uvw_t), intent(in) :: lhs, rhs
          logical :: res
 
-         res = (lhs%f >= rhs%f)
+         res = (lhs%d%f >= rhs%d%f)
 
     end function
-    impure elemental  function ge_hd_i(lhs, rhs) result(res)
+    impure elemental  function ge__hduvw_i(lhs, rhs) result(res)
          type(hdual__uvw_t), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
 
-         res = (lhs%f >= rhs)
+         res = (lhs%d%f >= rhs)
 
     end function
-    impure elemental  function ge_hd_r(lhs, rhs) result(res)
+    impure elemental  function ge__hduvw_r(lhs, rhs) result(res)
          type(hdual__uvw_t), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
 
-         res = (lhs%f >= rhs)
+         res = (lhs%d%f >= rhs)
 
     end function
-    impure elemental  function ge_i_hd(lhs, rhs) result(res)
+    impure elemental  function ge__i_hduvw(lhs, rhs) result(res)
          integer, intent(in) :: lhs
          type(hdual__uvw_t), intent(in) :: rhs
          logical :: res
 
-         res = (lhs >= rhs%f)
+         res = (lhs >= rhs%d%f)
 
     end function
-    impure elemental  function ge_r_hd(lhs, rhs) result(res)
+    impure elemental  function ge__r_hduvw(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
          type(hdual__uvw_t), intent(in) :: rhs
          logical :: res
 
-         res = (lhs >= rhs%f)
+         res = (lhs >= rhs%d%f)
 
     end function
-    impure elemental  function gt_d_d(lhs, rhs) result(res)
+    impure elemental  function gt__duvw_duvw(lhs, rhs) result(res)
          type(dual__uvw_t), intent(in) :: lhs, rhs
          logical :: res
 
          res = (lhs%f > rhs%f)
 
     end function
-    impure elemental  function gt_d_i(lhs, rhs) result(res)
+    impure elemental  function gt__duvw_i(lhs, rhs) result(res)
          type(dual__uvw_t), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
@@ -1746,7 +1806,7 @@ contains
          res = (lhs%f > rhs)
 
     end function
-    impure elemental  function gt_d_r(lhs, rhs) result(res)
+    impure elemental  function gt__duvw_r(lhs, rhs) result(res)
          type(dual__uvw_t), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
@@ -1754,7 +1814,7 @@ contains
          res = (lhs%f > rhs)
 
     end function
-    impure elemental  function gt_i_d(lhs, rhs) result(res)
+    impure elemental  function gt__i_duvw(lhs, rhs) result(res)
          integer, intent(in) :: lhs
          type(dual__uvw_t), intent(in) :: rhs
          logical :: res
@@ -1762,7 +1822,7 @@ contains
          res = (lhs > rhs%f)
 
     end function
-    impure elemental  function gt_r_d(lhs, rhs) result(res)
+    impure elemental  function gt__r_duvw(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
          type(dual__uvw_t), intent(in) :: rhs
          logical :: res
@@ -1770,53 +1830,53 @@ contains
          res = (lhs > rhs%f)
 
     end function
-    impure elemental  function gt_hd_hd(lhs, rhs) result(res)
+    impure elemental  function gt__hduvw_hduvw(lhs, rhs) result(res)
          type(hdual__uvw_t), intent(in) :: lhs, rhs
          logical :: res
 
-         res = (lhs%f > rhs%f)
+         res = (lhs%d%f > rhs%d%f)
 
     end function
-    impure elemental  function gt_hd_i(lhs, rhs) result(res)
+    impure elemental  function gt__hduvw_i(lhs, rhs) result(res)
          type(hdual__uvw_t), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
 
-         res = (lhs%f > rhs)
+         res = (lhs%d%f > rhs)
 
     end function
-    impure elemental  function gt_hd_r(lhs, rhs) result(res)
+    impure elemental  function gt__hduvw_r(lhs, rhs) result(res)
          type(hdual__uvw_t), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
 
-         res = (lhs%f > rhs)
+         res = (lhs%d%f > rhs)
 
     end function
-    impure elemental  function gt_i_hd(lhs, rhs) result(res)
+    impure elemental  function gt__i_hduvw(lhs, rhs) result(res)
          integer, intent(in) :: lhs
          type(hdual__uvw_t), intent(in) :: rhs
          logical :: res
 
-         res = (lhs > rhs%f)
+         res = (lhs > rhs%d%f)
 
     end function
-    impure elemental  function gt_r_hd(lhs, rhs) result(res)
+    impure elemental  function gt__r_hduvw(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
          type(hdual__uvw_t), intent(in) :: rhs
          logical :: res
 
-         res = (lhs > rhs%f)
+         res = (lhs > rhs%d%f)
 
     end function
-    impure elemental  function ne_d_d(lhs, rhs) result(res)
+    impure elemental  function ne__duvw_duvw(lhs, rhs) result(res)
          type(dual__uvw_t), intent(in) :: lhs, rhs
          logical :: res
 
          res = (lhs%f /= rhs%f)
 
     end function
-    impure elemental  function ne_d_i(lhs, rhs) result(res)
+    impure elemental  function ne__duvw_i(lhs, rhs) result(res)
          type(dual__uvw_t), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
@@ -1824,7 +1884,7 @@ contains
          res = (lhs%f /= rhs)
 
     end function
-    impure elemental  function ne_d_r(lhs, rhs) result(res)
+    impure elemental  function ne__duvw_r(lhs, rhs) result(res)
          type(dual__uvw_t), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
@@ -1832,7 +1892,7 @@ contains
          res = (lhs%f /= rhs)
 
     end function
-    impure elemental  function ne_i_d(lhs, rhs) result(res)
+    impure elemental  function ne__i_duvw(lhs, rhs) result(res)
          integer, intent(in) :: lhs
          type(dual__uvw_t), intent(in) :: rhs
          logical :: res
@@ -1840,7 +1900,7 @@ contains
          res = (lhs /= rhs%f)
 
     end function
-    impure elemental  function ne_r_d(lhs, rhs) result(res)
+    impure elemental  function ne__r_duvw(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
          type(dual__uvw_t), intent(in) :: rhs
          logical :: res
@@ -1848,46 +1908,46 @@ contains
          res = (lhs /= rhs%f)
 
     end function
-    impure elemental  function ne_hd_hd(lhs, rhs) result(res)
+    impure elemental  function ne__hduvw_hduvw(lhs, rhs) result(res)
          type(hdual__uvw_t), intent(in) :: lhs, rhs
          logical :: res
 
-         res = (lhs%f /= rhs%f)
+         res = (lhs%d%f /= rhs%d%f)
 
     end function
-    impure elemental  function ne_hd_i(lhs, rhs) result(res)
+    impure elemental  function ne__hduvw_i(lhs, rhs) result(res)
          type(hdual__uvw_t), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
 
-         res = (lhs%f /= rhs)
+         res = (lhs%d%f /= rhs)
 
     end function
-    impure elemental  function ne_hd_r(lhs, rhs) result(res)
+    impure elemental  function ne__hduvw_r(lhs, rhs) result(res)
          type(hdual__uvw_t), intent(in) :: lhs
          real(dp), intent(in) :: rhs
          logical :: res
 
-         res = (lhs%f /= rhs)
+         res = (lhs%d%f /= rhs)
 
     end function
-    impure elemental  function ne_i_hd(lhs, rhs) result(res)
+    impure elemental  function ne__i_hduvw(lhs, rhs) result(res)
          integer, intent(in) :: lhs
          type(hdual__uvw_t), intent(in) :: rhs
          logical :: res
 
-         res = (lhs /= rhs%f)
+         res = (lhs /= rhs%d%f)
 
     end function
-    impure elemental  function ne_r_hd(lhs, rhs) result(res)
+    impure elemental  function ne__r_hduvw(lhs, rhs) result(res)
          real(dp), intent(in) :: lhs
          type(hdual__uvw_t), intent(in) :: rhs
          logical :: res
 
-         res = (lhs /= rhs%f)
+         res = (lhs /= rhs%d%f)
 
     end function
-    impure elemental  function abs_d(u) result(res)
+    impure elemental  function abs__duvw(u) result(res)
         type(dual__uvw_t), intent(in) :: u
         type(dual__uvw_t) :: res
         integer :: i
@@ -1897,7 +1957,7 @@ contains
         res%g = abs(u%g)
 
     end function
-    impure elemental  function acos_d(u) result(res)
+    impure elemental  function acos__duvw(u) result(res)
         type(dual__uvw_t), intent(in) :: u
         type(dual__uvw_t) :: res
 
@@ -1906,7 +1966,7 @@ contains
         res%g = -u%g / sqrt(1.0_dp - u%f**2)
 
     end function
-    impure elemental  function asin_d(u) result(res)
+    impure elemental  function asin__duvw(u) result(res)
         type(dual__uvw_t), intent(in) :: u
         type(dual__uvw_t) :: res
 
@@ -1914,7 +1974,7 @@ contains
         res%g = u%g / sqrt(1.0_dp - u%f**2)
 
     end function
-    impure elemental  function atan_d(u) result(res)
+    impure elemental  function atan__duvw(u) result(res)
         type(dual__uvw_t), intent(in) :: u
         type(dual__uvw_t) :: res
 
@@ -1922,7 +1982,7 @@ contains
         res%g = u%g / (1.0_dp + u%f**2)
 
     end function
-    impure elemental  function atan2_d(u, v) result(res)
+    impure elemental  function atan2__duvw(u, v) result(res)
         type(dual__uvw_t), intent(in) :: u, v
         type(dual__uvw_t) :: res
 
@@ -1934,7 +1994,7 @@ contains
         res%g = v%f / usq_plus_vsq * u%g - u%f / usq_plus_vsq * v%g
 
     end function
-    impure elemental  function cos_d(u) result(res)
+    impure elemental  function cos__duvw(u) result(res)
         type(dual__uvw_t), intent(in) :: u
         type(dual__uvw_t) :: res
 
@@ -1942,19 +2002,19 @@ contains
         res%g = -sin(u%f) * u%g
 
     end function
-      function dot_product_d_d(u, v) result(res)
+      function dot_product__duvw_duvw(u, v) result(res)
         type(dual__uvw_t), intent(in) :: u(:), v(:)
         type(dual__uvw_t) :: res
 
         integer :: i
 
         res%f = dot_product(u%f, v%f)
-        do i = 1, num_deriv
+        do i = 1, size(res%g)
             res%g(i) = dot_product(u%f, v%g(i)) + dot_product(v%f, u%g(i))
         end do
 
     end function
-    impure elemental  function exp_d(u) result(res)
+    impure elemental  function exp__duvw(u) result(res)
         type(dual__uvw_t), intent(in) :: u
         type(dual__uvw_t) :: res
 
@@ -1965,22 +2025,22 @@ contains
         res%g = u%g * exp_x
 
     end function
-    impure elemental  function int_d(u) result(res)
+    impure elemental  function int__duvw(u) result(res)
          type(dual__uvw_t), intent(in) :: u
          integer :: res
 
          res = int(u%f)
 
     end function
-    impure elemental function log_d(u) result(res)
+    impure elemental function log__duvw(u) result(res)
         type(dual__uvw_t), intent(in) :: u
         type(dual__uvw_t) :: res
         
         res%f = log(u%f)
         res%g = u%g/u%f
-        log_d_counter = log_d_counter + 1
+        log__d_counter = log__d_counter + 1
     end function
-    impure elemental function log_hd(u) result(res)
+    impure elemental function log__hduvw(u) result(res)
         type(hdual__uvw_t), intent(in) :: u
         type(hdual__uvw_t) :: res
         integer :: i, j, k
@@ -1990,15 +2050,15 @@ contains
         res%d%f = log(u%d%f)
         res%d%g = t0*u%d%g
         k = 0
-        do j = 1, num_deriv
-            do i = j, num_deriv
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = t0*(-t0*u%d%g(i)*u%d%g(j) + u%h(k))
             end do
         end do
-        log_hd_counter = log_hd_counter + 1
+        log__hd_counter = log__hd_counter + 1
     end function
-    impure elemental  function log10_d(u) result(res)
+    impure elemental  function log10__duvw(u) result(res)
         type(dual__uvw_t), intent(in) :: u
         type(dual__uvw_t) :: res
 
@@ -2009,41 +2069,41 @@ contains
         res%g = u%g * inv
 
     end function
-      function matmul_d_d(u,v) result(res)
+      function matmul__duvw_duvw(u,v) result(res)
         type(dual__uvw_t), intent(in) :: u(:,:), v(:,:)
         type(dual__uvw_t) :: res(size(u,1), size(v,2))
 
         integer :: i
 
         res%f = matmul(u%f, v%f)
-        do i = 1, num_deriv
+        do i = 1, size(res(1,1)%g)
             res%g(i) = matmul(u%g(i), v%f) + matmul(u%f, v%g(i))
         end do
 
     end function
-      function matmul_d_v(u, v) result(res)
+      function matmul__duvw_v(u, v) result(res)
         type(dual__uvw_t), intent(in) :: u(:,:), v(:)
         type(dual__uvw_t) :: res(size(u,1))
         integer :: i
 
         res%f = matmul(u%f, v%f)
-        do i = 1, num_deriv
+        do i = 1, size(res(1)%g)
             res%g(i) = matmul(u%g(i), v%f) + matmul(u%f, v%g(i))
         end do
 
     end function
-      function matmul_v_d(u, v) result(res)
+      function matmul__v_duvw(u, v) result(res)
         type(dual__uvw_t), intent(in) :: u(:), v(:,:)
         type(dual__uvw_t) :: res(size(v, 2))
         integer::i
 
         res%f = matmul(u%f, v%f)
-        do i = 1, num_deriv
+        do i = 1, size(res(1)%g)
             res%g(i) = matmul(u%g(i), v%f) + matmul(u%f, v%g(i))
         end do
 
     end function
-    impure elemental  function max_d_d(val1, val2) result(res)
+    impure elemental  function max__duvw_duvw(val1, val2) result(res)
         type(dual__uvw_t), intent(in) :: val1, val2
         type(dual__uvw_t) :: res
 
@@ -2054,7 +2114,7 @@ contains
         endif
 
     end function
-    impure elemental  function max_d_i(u, i) result(res)
+    impure elemental  function max__duvw_i(u, i) result(res)
         type(dual__uvw_t), intent(in) :: u
         integer, intent(in) :: i
         type(dual__uvw_t) :: res
@@ -2066,7 +2126,7 @@ contains
         endif
 
     end function
-    impure elemental  function max_d_r(u, r) result(res)
+    impure elemental  function max__duvw_r(u, r) result(res)
         type(dual__uvw_t), intent(in) :: u
         real(dp), intent(in) :: r
         type(dual__uvw_t) :: res
@@ -2078,7 +2138,7 @@ contains
         endif
 
     end function
-     impure elemental  function max_r_d(n, u) result(res)
+     impure elemental  function max__r_duvw(n, u) result(res)
         real(dp), intent(in) :: n
         type(dual__uvw_t), intent(in) :: u
         type(dual__uvw_t) :: res
@@ -2090,7 +2150,7 @@ contains
         endif
 
     end function
-    impure elemental  function dmax1_d_d(val1, val2, val3, val4,val5) result(res)
+    impure elemental  function dmax1__duvw_duvw(val1, val2, val3, val4,val5) result(res)
         type(dual__uvw_t), intent(in) :: val1, val2
         type(dual__uvw_t), intent(in), optional :: val3, val4,val5
         type(dual__uvw_t) :: res
@@ -2111,7 +2171,7 @@ contains
         endif
 
     end function
-      function maxval_d(u) result(res)
+      function maxval__duvw(u) result(res)
         type(dual__uvw_t), intent(in) :: u(:)
         integer :: iloc(1)
         type(dual__uvw_t) :: res
@@ -2120,7 +2180,7 @@ contains
         res=u(iloc(1))
 
     end function
-    impure elemental  function min_d_d(val1, val2) result(res)
+    impure elemental  function min__duvw_duvw(val1, val2) result(res)
         type(dual__uvw_t), intent(in) :: val1, val2
         type(dual__uvw_t) :: res
 
@@ -2131,7 +2191,7 @@ contains
         endif
 
     end function
-    impure elemental  function min_d_r(u, r) result(res)
+    impure elemental  function min__duvw_r(u, r) result(res)
         type(dual__uvw_t), intent(in) :: u
         real(dp), intent(in) :: r
         type(dual__uvw_t) :: res
@@ -2143,7 +2203,7 @@ contains
         endif
 
     end function
-    impure elemental  function dmin1_d_d(val1, val2, val3, val4) result(res)
+    impure elemental  function dmin1__duvw_duvw(val1, val2, val3, val4) result(res)
         type(dual__uvw_t), intent(in) :: val1, val2
         type(dual__uvw_t), intent(in), optional :: val3, val4
         type(dual__uvw_t) :: res
@@ -2161,7 +2221,7 @@ contains
         endif
 
     end function
-      function minval_d(u) result(res)
+      function minval__duvw(u) result(res)
         type(dual__uvw_t), intent(in) :: u(:)
         integer :: iloc(1)
         type(dual__uvw_t) :: res
@@ -2170,14 +2230,14 @@ contains
         res=u(iloc(1))
 
     end function
-    impure elemental  function nint_d(u) result(res)
+    impure elemental  function nint__duvw(u) result(res)
         type(dual__uvw_t), intent(in) :: u
         integer :: res
 
         res=nint(u%f)
 
     end function
-    impure elemental  function sign_d_d(val1, val2) result(res)
+    impure elemental  function sign__duvw_duvw(val1, val2) result(res)
         type(dual__uvw_t), intent(in) :: val1, val2
         type(dual__uvw_t) :: res
 
@@ -2188,7 +2248,7 @@ contains
         endif
 
      end function
-    impure elemental  function sign_r_d(val1, val2) result(res)
+    impure elemental  function sign__r_duvw(val1, val2) result(res)
         real(dp), intent(in) :: val1
         type(dual__uvw_t), intent(in) :: val2
         type(dual__uvw_t) :: res
@@ -2200,7 +2260,7 @@ contains
         endif
 
      end function
-    impure elemental  function sin_d(u) result(res)
+    impure elemental  function sin__duvw(u) result(res)
         type(dual__uvw_t), intent(in) :: u
         type(dual__uvw_t) :: res
 
@@ -2208,7 +2268,7 @@ contains
         res%g = cos(u%f) * u%g
 
     end function
-    impure elemental  function tan_d(u) result(res)
+    impure elemental  function tan__duvw(u) result(res)
         type(dual__uvw_t), intent(in) :: u
         type(dual__uvw_t) :: res
 
@@ -2216,7 +2276,7 @@ contains
         res%g = u%g / cos(u%f)**2
 
     end function
-    impure elemental function sqrt_d(u) result(res)
+    impure elemental function sqrt__duvw(u) result(res)
         type(dual__uvw_t), intent(in) :: u
         type(dual__uvw_t) :: res
         real(dp) :: t0
@@ -2224,10 +2284,10 @@ contains
         t0 = sqrt(u%f)
         res%f = t0
         res%g = 0.5_dp*u%g/t0
-        sqrt_d_counter = sqrt_d_counter + 1
+        sqrt__d_counter = sqrt__d_counter + 1
     end function
 
-    impure elemental function sqrt_hd(u) result(res)
+    impure elemental function sqrt__hduvw(u) result(res)
         type(hdual__uvw_t), intent(in) :: u
         type(hdual__uvw_t) :: res
         integer :: i, j, k
@@ -2238,26 +2298,26 @@ contains
         res%d%f = t0
         res%d%g = 0.5_dp*t1*u%d%g
         k = 0
-        do j = 1, num_deriv
-            do i = j, num_deriv
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = (0.25_dp)*t1*(2*u%h(k) - u%d%g(i)*u%d%g(j)/u%d%f)
             end do
         end do
-        sqrt_hd_counter = sqrt_hd_counter + 1
+        sqrt__hd_counter = sqrt__hd_counter + 1
     end function
-      function sum_d(u) result(res)
+      function sum__duvw(u) result(res)
         type(dual__uvw_t), intent(in) :: u(:)
         type(dual__uvw_t) :: res
         integer :: i
 
         res%f = sum(u%f)
-        do i = 1, num_deriv
+        do i = 1, size(res%g)
             res%g(i) = sum(u%g(i))
         end do
 
     end function
-      function maxloc_d(array) result(ind)
+      function maxloc__duvw(array) result(ind)
         type(dual__uvw_t), intent(in) :: array(:)
         integer :: ind(1)
 

@@ -12,7 +12,7 @@
         res%f = log(u%f)
         res%g = u%g/u%f
       #:if test_coverage
-        log_d_counter = log_d_counter + 1
+        log__d_counter = log__d_counter + 1
       #:endif
     end function
 #:enddef
@@ -40,7 +40,7 @@
             end do
         end do
       #:if test_coverage
-        log_hd_counter = log_hd_counter + 1
+        log__hd_counter = log__hd_counter + 1
       #:endif
     end function
 #:enddef

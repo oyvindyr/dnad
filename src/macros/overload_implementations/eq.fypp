@@ -1,15 +1,20 @@
 
-#:def eq(dual_type, dual_sn, real_kind, is_pure, test_coverage)
+#:def eq(dual_type, dual_sn, real_kind, is_pure, is_hyper_dual, test_coverage)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"
     #:endif
+    #:if is_hyper_dual
+        #:set f = "d%f"
+    #:else
+        #:set f = "f"
+    #:endif
     ${elemental_purity}$  function eq__${dual_sn}$_${dual_sn}$(lhs, rhs) result(res)
          type(${dual_type}$), intent(in) :: lhs, rhs
          logical :: res
 
-         res = (lhs%f == rhs%f)
+         res = (lhs%${f}$ == rhs%${f}$)
 
     end function
     ${elemental_purity}$  function eq__${dual_sn}$_i(lhs, rhs) result(res)
@@ -17,7 +22,7 @@
          integer, intent(in) :: rhs
          logical :: res
 
-         res = (lhs%f == rhs)
+         res = (lhs%${f}$ == rhs)
 
     end function
     ${elemental_purity}$  function eq__${dual_sn}$_r(lhs, rhs) result(res)
@@ -25,7 +30,7 @@
          real(${real_kind}$), intent(in) :: rhs
          logical :: res
 
-         res = (lhs%f == rhs)
+         res = (lhs%${f}$ == rhs)
 
     end function
     ${elemental_purity}$  function eq__i_${dual_sn}$(lhs, rhs) result(res)
@@ -33,7 +38,7 @@
          type(${dual_type}$), intent(in) :: rhs
          logical :: res
 
-         res = (lhs == rhs%f)
+         res = (lhs == rhs%${f}$)
 
     end function
     ${elemental_purity}$  function eq__r_${dual_sn}$(lhs, rhs) result(res)
@@ -41,7 +46,7 @@
          type(${dual_type}$), intent(in) :: rhs
          logical :: res
 
-         res = (lhs == rhs%f)
+         res = (lhs == rhs%${f}$)
 
     end function
 #:enddef

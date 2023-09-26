@@ -11,7 +11,7 @@
         u%f = real(i, ${real_kind}$)  ! This is faster than direct assignment
         u%g = 0.0_${real_kind}$
       #:if test_coverage
-        assign_d_i_counter = assign_d_i_counter + 1
+        assign__d_i_counter = assign__d_i_counter + 1
       #:endif
 
     end subroutine
@@ -22,7 +22,7 @@
         u%f = r
         u%g = 0.0_${real_kind}$
       #:if test_coverage
-        assign_d_r_counter = assign_d_r_counter + 1
+        assign__d_r_counter = assign__d_r_counter + 1
       #:endif
 
     end subroutine
@@ -32,7 +32,7 @@
 
         i = int(v%f)
       #:if test_coverage
-        assign_i_d_counter = assign_i_d_counter + 1
+        assign__i_d_counter = assign__i_d_counter + 1
       #:endif
 
     end subroutine
@@ -42,7 +42,7 @@
 
         r = v%f
       #:if test_coverage
-        assign_r_d_counter = assign_r_d_counter + 1
+        assign__r_d_counter = assign__r_d_counter + 1
       #:endif
 
     end subroutine
@@ -62,7 +62,7 @@
         u%d%g = 0.0_${real_kind}$
         u%h = 0.0_${real_kind}$
       #:if test_coverage
-        assign_hd_i_counter = assign_hd_i_counter + 1
+        assign__hd_i_counter = assign__hd_i_counter + 1
       #:endif
 
     end subroutine
@@ -74,7 +74,7 @@
         u%d%g = 0.0_${real_kind}$
         u%h = 0.0_${real_kind}$
       #:if test_coverage
-        assign_hd_r_counter = assign_hd_r_counter + 1
+        assign__hd_r_counter = assign__hd_r_counter + 1
       #:endif
 
     end subroutine
@@ -84,7 +84,7 @@
 
         i = int(v%d%f)
       #:if test_coverage
-        assign_i_hd_counter = assign_i_hd_counter + 1
+        assign__i_hd_counter = assign__i_hd_counter + 1
       #:endif
 
     end subroutine
@@ -94,7 +94,7 @@
 
         r = v%d%f
       #:if test_coverage
-        assign_r_hd_counter = assign_r_hd_counter + 1
+        assign__r_hd_counter = assign__r_hd_counter + 1
       #:endif
 
     end subroutine

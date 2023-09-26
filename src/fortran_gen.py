@@ -42,7 +42,7 @@ _binary_fun_d_template = '''
         {{f_assign}}
         {{g_assign}}
       #:if test_coverage
-        {{interface_name}}_{{usnc}}_{{vsnc}}_counter = {{interface_name}}_{{usnc}}_{{vsnc}}_counter + 1
+        {{interface_name}}__{{usnc}}_{{vsnc}}_counter = {{interface_name}}__{{usnc}}_{{vsnc}}_counter + 1
       #:endif
     end function'''
 
@@ -60,7 +60,7 @@ _unary_fun_d_template = '''
         {{f_assign}}
         {{g_assign}}
       #:if test_coverage
-        {{interface_name}}_{{usnc}}_counter = {{interface_name}}_{{usnc}}_counter + 1
+        {{interface_name}}__{{usnc}}_counter = {{interface_name}}__{{usnc}}_counter + 1
       #:endif
     end function'''
 
@@ -87,7 +87,7 @@ _binary_fun_hd_template = '''
             end do
         end do
       #:if test_coverage
-        {{interface_name}}_{{usnc}}_{{vsnc}}_counter = {{interface_name}}_{{usnc}}_{{vsnc}}_counter + 1
+        {{interface_name}}__{{usnc}}_{{vsnc}}_counter = {{interface_name}}__{{usnc}}_{{vsnc}}_counter + 1
       #:endif
     end function'''
 
@@ -113,7 +113,7 @@ _unary_fun_hd_template = '''
             end do
         end do
       #:if test_coverage
-        {{interface_name}}_{{usnc}}_counter = {{interface_name}}_{{usnc}}_counter + 1
+        {{interface_name}}__{{usnc}}_counter = {{interface_name}}__{{usnc}}_counter + 1
       #:endif
     end function'''
 
@@ -134,7 +134,7 @@ _binary_fun_hd_noloop_template = '''
         {{g_assign}}
         {{h_assign}}
       #:if test_coverage
-        {{interface_name}}_{{usnc}}_{{vsnc}}_counter = {{interface_name}}_{{usnc}}_{{vsnc}}_counter + 1
+        {{interface_name}}__{{usnc}}_{{vsnc}}_counter = {{interface_name}}__{{usnc}}_{{vsnc}}_counter + 1
       #:endif
     end function'''
 
@@ -154,15 +154,15 @@ _unary_fun_hd_noloop_template = '''
         {{g_assign}}
         {{h_assign}}
       #:if test_coverage
-        {{interface_name}}_{{usnc}}_counter = {{interface_name}}_{{usnc}}_counter + 1
+        {{interface_name}}__{{usnc}}_counter = {{interface_name}}__{{usnc}}_counter + 1
       #:endif
     end function'''
 
 def generate_macros():
 
-    def unary_add(u):
+    def add_unary(u):
         return u
-    def unary_minus(u):
+    def minus_unary(u):
         return -u
     def add(u, v):
         return u + v
@@ -186,11 +186,11 @@ def generate_macros():
 
             if fun.__name__ == 'add':
                 funs_code = 6*[None]
-                funs_code[0] = unary_overload(unary_add, is_hyper_dual=is_hyper_dual, u_class='dual')
+                funs_code[0] = unary_overload(add_unary, is_hyper_dual=is_hyper_dual, u_class='dual')
                 i0 = 0
             elif fun.__name__ == 'minus':
                 funs_code = 6*[None]
-                funs_code[0] = unary_overload(unary_minus, is_hyper_dual=is_hyper_dual, u_class='dual')
+                funs_code[0] = unary_overload(minus_unary, is_hyper_dual=is_hyper_dual, u_class='dual')
                 i0 = 0
             else:
                 funs_code = 5*[None]
@@ -592,6 +592,12 @@ def unary_overload(fun, is_hyper_dual=True, u_class='dual'):
     u = Symbol('u_x', **u_assumption)
 
     f = fun(u)
+    if fun.__name__ == "add_unary":
+        fun_name = "add"
+    elif fun.__name__ == "minus_unary":
+        fun_name = "minus"
+    else:
+        fun_name = fun.__name__
 
     ignore = []
     if u_class == 'dual':
@@ -650,7 +656,7 @@ def unary_overload(fun, is_hyper_dual=True, u_class='dual'):
     if is_hyper_dual:
         if has_loop:
             code = Template(_unary_fun_hd_template).render(
-                interface_name = fun.__name__,
+                interface_name = fun_name,
                 usn = usn, 
                 usnc = usnc,
                 u_type = u_type,
@@ -662,7 +668,7 @@ def unary_overload(fun, is_hyper_dual=True, u_class='dual'):
                 h_assign = h_assign)
         else:
             code = Template(_unary_fun_hd_noloop_template).render(
-                interface_name = fun.__name__,
+                interface_name = fun_name,
                 usn = usn,
                 usnc = usnc,
                 u_type = u_type,
@@ -674,7 +680,7 @@ def unary_overload(fun, is_hyper_dual=True, u_class='dual'):
                 h_assign = h_assign)
     else:
         code = Template(_unary_fun_d_template).render(
-            interface_name = fun.__name__,
+            interface_name = fun_name,
             usn = usn,
             usnc = usnc,
             u_type = u_type,

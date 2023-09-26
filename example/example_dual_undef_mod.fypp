@@ -38,7 +38,7 @@ module example_dual_undef_mod
     #! Inject interfaces
     #!  Note: Calling a macro with $ will send in python variables as arguments
     $:dnad_initialize_interface(["uvw"])
-    $:dnad_overload_interfaces(selected_interfaces, dual_shortnames = ['d'])
+    $:dnad_overload_interfaces(["uvw"], selected_interfaces)
     
 contains
 
@@ -71,9 +71,7 @@ contains
     #! Inject overloaded function implementations
     $:dnad_getter_implementations(["uvw"], "dp")
     $:dnad_initialize_implementations(["uvw"], "dp")
-    $:dnad_overload_implementations("dp", &
-            dual_types = ['dual__uvw_t'], dual_shortnames = ['d'], dual_sizes = ['num_deriv'], &
-            selected_interfaces=selected_interfaces, stringent=stringent)
+    $:dnad_overload_implementations(["uvw"], "dp", selected_interfaces=selected_interfaces, stringent=stringent)
     
   #:if stringent
     ! Workaround to make pure functions produce NaN's deliberately:

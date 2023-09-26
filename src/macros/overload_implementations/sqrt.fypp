@@ -1,5 +1,5 @@
 
-#:def sqrt_d(dual_type, dual_sn, real_kind, size_dx, is_pure, test_coverage, stringent)
+#:def sqrt_d(dual_type, dual_sn, real_kind, is_pure, test_coverage, stringent)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
@@ -31,7 +31,7 @@
         res%g = 0.5_${real_kind}$*u%g/t0
       #:endif
       #:if test_coverage
-        sqrt_d_counter = sqrt_d_counter + 1
+        sqrt__d_counter = sqrt__d_counter + 1
       #:endif
     end function
 
@@ -56,14 +56,14 @@
         if (res%d%f /= 0) then
             res%d%g = 0.5_${real_kind}$*t1*u%d%g
             k = 0
-            do j = 1, size(u%d%g)
-                do i = j, size(u%d%g)
+            do j = 1, size(res%d%g)
+                do i = j, size(res%d%g)
                     k = k + 1
                     res%h(k) = (0.25_${real_kind}$)*t1*(2*u%h(k) - u%d%g(i)*u%d%g(j)/u%d%f)
                 end do
             end do
         else
-            do i = 1, size(u%d%g)
+            do i = 1, size(res%d%g)
                 if (u%d%g(i) == 0) then
                     res%d%g(i) = 0
                 else
@@ -75,15 +75,15 @@
       #:else
         res%d%g = 0.5_${real_kind}$*t1*u%d%g
         k = 0
-        do j = 1, size(u%d%g)
-            do i = j, size(u%d%g)
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = (0.25_${real_kind}$)*t1*(2*u%h(k) - u%d%g(i)*u%d%g(j)/u%d%f)
             end do
         end do
       #:endif
       #:if test_coverage
-        sqrt_hd_counter = sqrt_hd_counter + 1
+        sqrt__hd_counter = sqrt__hd_counter + 1
       #:endif
     end function
 #:enddef

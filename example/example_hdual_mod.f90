@@ -49,36 +49,56 @@ module example_hdual_mod
         module procedure hessian__hd_uvw
     end interface
     interface assignment (=)
-        module procedure assign_hd_i  ! dual=integer, elemental
-        module procedure assign_hd_r  ! dual=real, elemental
-        module procedure assign_i_hd  ! integer=dual, elemental
-        module procedure assign_r_hd  ! real=dual, elemental
+        module procedure assign__duvw_i  ! dual=integer, elemental
+        module procedure assign__duvw_r  ! dual=real, elemental
+        module procedure assign__i_duvw  ! integer=dual, elemental
+        module procedure assign__r_duvw  ! real=dual, elemental
+        module procedure assign__hduvw_i  ! dual=integer, elemental
+        module procedure assign__hduvw_r  ! dual=real, elemental
+        module procedure assign__i_hduvw  ! integer=dual, elemental
+        module procedure assign__r_hduvw  ! real=dual, elemental
     end interface
     interface operator (+)
-        module procedure unary_add_hd  ! +dual number, elemental
-        module procedure add_hd_hd     ! dual + dual, elemental
-        module procedure add_hd_i      ! dual + integer, elemental
-        module procedure add_hd_r      ! dual + real, elemental
-        module procedure add_i_hd      ! integer + dual, elemental
-        module procedure add_r_hd      ! real + dual, elemental
+        module procedure add__duvw   ! +dual number, elemental
+        module procedure add__duvw_duvw       ! dual + dual, elemental
+        module procedure add__duvw_i       ! dual + integer, elemental
+        module procedure add__duvw_r       ! dual + real, elemental
+        module procedure add__i_duvw       ! integer + dual, elemental
+        module procedure add__r_duvw       ! real + dual, elemental
+        module procedure add__hduvw  ! +dual number, elemental
+        module procedure add__hduvw_hduvw     ! dual + dual, elemental
+        module procedure add__hduvw_i      ! dual + integer, elemental
+        module procedure add__hduvw_r      ! dual + real, elemental
+        module procedure add__i_hduvw      ! integer + dual, elemental
+        module procedure add__r_hduvw      ! real + dual, elemental
     end interface
     interface operator (*)
-        module procedure mult_hd_hd  ! dual*dual, elemental
-        module procedure mult_hd_i   ! dual*integer,elemental
-        module procedure mult_hd_r   ! dual*real,elemental
-        module procedure mult_i_hd   ! integer*dual,elemental
-        module procedure mult_r_hd   ! real*dual,elemental
+        module procedure mult__duvw_duvw    ! dual*dual, elemental
+        module procedure mult__duvw_i    ! dual*integer,elemental
+        module procedure mult__duvw_r    ! dual*real,elemental
+        module procedure mult__i_duvw    ! integer*dual,elemental
+        module procedure mult__r_duvw    ! real*dual,elemental
+        module procedure mult__hduvw_hduvw  ! dual*dual, elemental
+        module procedure mult__hduvw_i   ! dual*integer,elemental
+        module procedure mult__hduvw_r   ! dual*real,elemental
+        module procedure mult__i_hduvw   ! integer*dual,elemental
+        module procedure mult__r_hduvw   ! real*dual,elemental
     end interface
     interface operator (**)
-        module procedure pow_hd_i ! hdual number to an integer power,elemental
-        module procedure pow_hd_r ! hdual number to a real power, elemental
-        module procedure pow_hd_hd ! hdual number to a hdual power, elemental
+        module procedure pow__duvw_i ! dual number to an integer power,elemental
+        module procedure pow__duvw_r ! dual number to a real power, elemental
+        module procedure pow__duvw_duvw ! dual number to a dual power, elemental
+        module procedure pow__hduvw_i ! hdual number to an integer power,elemental
+        module procedure pow__hduvw_r ! hdual number to a real power, elemental
+        module procedure pow__hduvw_hduvw ! hdual number to a hdual power, elemental
     end interface
     interface log
-        module procedure log_hd ! log of a dual number, elemental
+        module procedure log__duvw ! log of a dual number, elemental
+        module procedure log__hduvw ! log of a dual number, elemental
     end interface
     interface sqrt
-        module procedure sqrt_hd ! obtain the sqrt of a dual number, elemental
+        module procedure sqrt__duvw ! obtain the sqrt of a dual number, elemental
+        module procedure sqrt__hduvw ! obtain the sqrt of a dual number, elemental
     end interface
     
 contains
@@ -258,7 +278,37 @@ contains
         end do
 
     end function
-    elemental subroutine assign_hd_i(u, i)
+    elemental subroutine assign__duvw_i(u, i)
+        type(dual__uvw_t), intent(out) :: u
+        integer, intent(in) :: i
+
+        u%f = real(i, dp)  ! This is faster than direct assignment
+        u%g = 0.0_dp
+
+    end subroutine
+    elemental subroutine assign__duvw_r(u, r)
+        type(dual__uvw_t), intent(out) :: u
+        real(dp), intent(in) :: r
+
+        u%f = r
+        u%g = 0.0_dp
+
+    end subroutine
+    elemental subroutine assign__i_duvw(i, v)
+        type(dual__uvw_t), intent(in) :: v
+        integer, intent(out) :: i
+
+        i = int(v%f)
+
+    end subroutine
+    elemental subroutine assign__r_duvw(r, v)
+        type(dual__uvw_t), intent(in) :: v
+        real(dp), intent(out) :: r
+
+        r = v%f
+
+    end subroutine
+    elemental subroutine assign__hduvw_i(u, i)
         type(hdual__uvw_t), intent(out) :: u
         integer, intent(in) :: i
 
@@ -267,7 +317,7 @@ contains
         u%h = 0.0_dp
 
     end subroutine
-    elemental subroutine assign_hd_r(u, r)
+    elemental subroutine assign__hduvw_r(u, r)
         type(hdual__uvw_t), intent(out) :: u
         real(dp), intent(in) :: r
 
@@ -276,21 +326,68 @@ contains
         u%h = 0.0_dp
 
     end subroutine
-    elemental subroutine assign_i_hd(i, v)
+    elemental subroutine assign__i_hduvw(i, v)
         type(hdual__uvw_t), intent(in) :: v
         integer, intent(out) :: i
 
         i = int(v%d%f)
 
     end subroutine
-    elemental subroutine assign_r_hd(r, v)
+    elemental subroutine assign__r_hduvw(r, v)
         type(hdual__uvw_t), intent(in) :: v
         real(dp), intent(out) :: r
 
         r = v%d%f
 
     end subroutine
-    elemental function unary_add_hd(u) result(res)
+    elemental function add__duvw(u) result(res)
+        type(dual__uvw_t), intent(in) :: u
+        type(dual__uvw_t) :: res
+        
+        res%f = u%f
+        res%g = u%g
+    end function
+    elemental function add__duvw_duvw(u, v) result(res)
+        type(dual__uvw_t), intent(in) :: u
+        type(dual__uvw_t), intent(in) :: v
+        type(dual__uvw_t) :: res
+        
+        res%f = u%f + v%f
+        res%g = u%g + v%g
+    end function
+    elemental function add__duvw_r(u, v) result(res)
+        type(dual__uvw_t), intent(in) :: u
+        real(dp), intent(in) :: v
+        type(dual__uvw_t) :: res
+        
+        res%f = u%f + v
+        res%g = u%g
+    end function
+    elemental function add__r_duvw(u, v) result(res)
+        real(dp), intent(in) :: u
+        type(dual__uvw_t), intent(in) :: v
+        type(dual__uvw_t) :: res
+        
+        res%f = u + v%f
+        res%g = v%g
+    end function
+    elemental function add__duvw_i(u, v) result(res)
+        type(dual__uvw_t), intent(in) :: u
+        integer, intent(in) :: v
+        type(dual__uvw_t) :: res
+        
+        res%f = u%f + v
+        res%g = u%g
+    end function
+    elemental function add__i_duvw(u, v) result(res)
+        integer, intent(in) :: u
+        type(dual__uvw_t), intent(in) :: v
+        type(dual__uvw_t) :: res
+        
+        res%f = u + v%f
+        res%g = v%g
+    end function
+    elemental function add__hduvw(u) result(res)
         type(hdual__uvw_t), intent(in) :: u
         type(hdual__uvw_t) :: res
         
@@ -298,7 +395,7 @@ contains
         res%d%g = u%d%g
         res%h = u%h
     end function
-    elemental function add_hd_hd(u, v) result(res)
+    elemental function add__hduvw_hduvw(u, v) result(res)
         type(hdual__uvw_t), intent(in) :: u
         type(hdual__uvw_t), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -307,7 +404,7 @@ contains
         res%d%g = u%d%g + v%d%g
         res%h = u%h + v%h
     end function
-    elemental function add_hd_r(u, v) result(res)
+    elemental function add__hduvw_r(u, v) result(res)
         type(hdual__uvw_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -316,7 +413,7 @@ contains
         res%d%g = u%d%g
         res%h = u%h
     end function
-    elemental function add_r_hd(u, v) result(res)
+    elemental function add__r_hduvw(u, v) result(res)
         real(dp), intent(in) :: u
         type(hdual__uvw_t), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -325,7 +422,7 @@ contains
         res%d%g = v%d%g
         res%h = v%h
     end function
-    elemental function add_hd_i(u, v) result(res)
+    elemental function add__hduvw_i(u, v) result(res)
         type(hdual__uvw_t), intent(in) :: u
         integer, intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -334,7 +431,7 @@ contains
         res%d%g = u%d%g
         res%h = u%h
     end function
-    elemental function add_i_hd(u, v) result(res)
+    elemental function add__i_hduvw(u, v) result(res)
         integer, intent(in) :: u
         type(hdual__uvw_t), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -343,7 +440,47 @@ contains
         res%d%g = v%d%g
         res%h = v%h
     end function
-    elemental function mult_hd_hd(u, v) result(res)
+    elemental function mult__duvw_duvw(u, v) result(res)
+        type(dual__uvw_t), intent(in) :: u
+        type(dual__uvw_t), intent(in) :: v
+        type(dual__uvw_t) :: res
+        
+        res%f = u%f*v%f
+        res%g = u%g*v%f + u%f*v%g
+    end function
+    elemental function mult__duvw_r(u, v) result(res)
+        type(dual__uvw_t), intent(in) :: u
+        real(dp), intent(in) :: v
+        type(dual__uvw_t) :: res
+        
+        res%f = u%f*v
+        res%g = u%g*v
+    end function
+    elemental function mult__r_duvw(u, v) result(res)
+        real(dp), intent(in) :: u
+        type(dual__uvw_t), intent(in) :: v
+        type(dual__uvw_t) :: res
+        
+        res%f = u*v%f
+        res%g = u*v%g
+    end function
+    elemental function mult__duvw_i(u, v) result(res)
+        type(dual__uvw_t), intent(in) :: u
+        integer, intent(in) :: v
+        type(dual__uvw_t) :: res
+        
+        res%f = u%f*v
+        res%g = u%g*v
+    end function
+    elemental function mult__i_duvw(u, v) result(res)
+        integer, intent(in) :: u
+        type(dual__uvw_t), intent(in) :: v
+        type(dual__uvw_t) :: res
+        
+        res%f = u*v%f
+        res%g = u*v%g
+    end function
+    elemental function mult__hduvw_hduvw(u, v) result(res)
         type(hdual__uvw_t), intent(in) :: u
         type(hdual__uvw_t), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -352,14 +489,14 @@ contains
         res%d%f = u%d%f*v%d%f
         res%d%g = u%d%g*v%d%f + u%d%f*v%d%g
         k = 0
-        do j = 1, num_deriv
-            do i = j, num_deriv
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = u%h(k)*v%d%f + u%d%g(i)*v%d%g(j) + u%d%g(j)*v%d%g(i) + u%d%f*v%h(k)
             end do
         end do
     end function
-    elemental function mult_hd_r(u, v) result(res)
+    elemental function mult__hduvw_r(u, v) result(res)
         type(hdual__uvw_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -368,7 +505,7 @@ contains
         res%d%g = u%d%g*v
         res%h = u%h*v
     end function
-    elemental function mult_r_hd(u, v) result(res)
+    elemental function mult__r_hduvw(u, v) result(res)
         real(dp), intent(in) :: u
         type(hdual__uvw_t), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -377,7 +514,7 @@ contains
         res%d%g = u*v%d%g
         res%h = u*v%h
     end function
-    elemental function mult_hd_i(u, v) result(res)
+    elemental function mult__hduvw_i(u, v) result(res)
         type(hdual__uvw_t), intent(in) :: u
         integer, intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -386,7 +523,7 @@ contains
         res%d%g = u%d%g*v
         res%h = u%h*v
     end function
-    elemental function mult_i_hd(u, v) result(res)
+    elemental function mult__i_hduvw(u, v) result(res)
         integer, intent(in) :: u
         type(hdual__uvw_t), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -395,7 +532,34 @@ contains
         res%d%g = u*v%d%g
         res%h = u*v%h
     end function
-    elemental function pow_hd_i(u, v) result(res)
+    elemental function pow__duvw_i(u, v) result(res)
+        type(dual__uvw_t), intent(in) :: u
+        integer, intent(in) :: v
+        type(dual__uvw_t) :: res
+        
+        res%f = u%f**v
+        res%g = u%f**(v - 1)*u%g*v
+    end function
+    elemental function pow__duvw_r(u, v) result(res)
+        type(dual__uvw_t), intent(in) :: u
+        real(dp), intent(in) :: v
+        type(dual__uvw_t) :: res
+        
+        res%f = u%f**v
+        res%g = u%f**(v - 1)*u%g*v
+    end function
+    elemental function pow__duvw_duvw(u, v) result(res)
+        type(dual__uvw_t), intent(in) :: u
+        type(dual__uvw_t), intent(in) :: v
+        type(dual__uvw_t) :: res
+        real(dp) :: t0
+        
+        t0 = u%f**v%f
+        res%f = t0
+        res%g = t0*(u%g*v%f/u%f + v%g*log(u%f))
+
+    end function
+    elemental function pow__hduvw_i(u, v) result(res)
         type(hdual__uvw_t), intent(in) :: u
         integer, intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -404,14 +568,14 @@ contains
         res%d%f = u%d%f**v
         res%d%g = u%d%f**(v - 1)*v*u%d%g
         k = 0
-        do j = 1, num_deriv
-            do i = j, num_deriv
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = v*(u%d%g(i)*u%d%g(j)*(v - 1)*u%d%f**(v-2) + u%h(k)*u%d%f**(v-1))
             end do
         end do
     end function
-    elemental function pow_hd_r(u, v) result(res)
+    elemental function pow__hduvw_r(u, v) result(res)
         type(hdual__uvw_t), intent(in) :: u
         real(dp), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -420,14 +584,14 @@ contains
         res%d%f = u%d%f**v
         res%d%g = u%d%f**(v - 1)*v*u%d%g
         k = 0
-        do j = 1, num_deriv
-            do i = j, num_deriv
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = v*(u%d%g(i)*u%d%g(j)*(v - 1)*u%d%f**(v-2) + u%h(k)*u%d%f**(v-1))
             end do
         end do
     end function
-    elemental function pow_hd_hd(u, v) result(res)
+    elemental function pow__hduvw_hduvw(u, v) result(res)
         type(hdual__uvw_t), intent(in) :: u
         type(hdual__uvw_t), intent(in) :: v
         type(hdual__uvw_t) :: res
@@ -441,15 +605,22 @@ contains
         res%d%f = t0
         res%d%g = t0*(t1*v%d%g + t2*u%d%g*v%d%f)
         k = 0
-        do j = 1, num_deriv
-            do i = j, num_deriv
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = t0*(t1*v%h(k) + t2*u%h(k)*v%d%f + t2*u%d%g(j)*(t2*u%d%g(i)*v%d%f*(v%d%f - &
       1) + t3*v%d%g(i)) + v%d%g(j)*(t1**2*v%d%g(i) + t2*t3*u%d%g(i)))
             end do
         end do
     end function
-    elemental function log_hd(u) result(res)
+    elemental function log__duvw(u) result(res)
+        type(dual__uvw_t), intent(in) :: u
+        type(dual__uvw_t) :: res
+        
+        res%f = log(u%f)
+        res%g = u%g/u%f
+    end function
+    elemental function log__hduvw(u) result(res)
         type(hdual__uvw_t), intent(in) :: u
         type(hdual__uvw_t) :: res
         integer :: i, j, k
@@ -459,14 +630,24 @@ contains
         res%d%f = log(u%d%f)
         res%d%g = t0*u%d%g
         k = 0
-        do j = 1, num_deriv
-            do i = j, num_deriv
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = t0*(-t0*u%d%g(i)*u%d%g(j) + u%h(k))
             end do
         end do
     end function
-    elemental function sqrt_hd(u) result(res)
+    elemental function sqrt__duvw(u) result(res)
+        type(dual__uvw_t), intent(in) :: u
+        type(dual__uvw_t) :: res
+        real(dp) :: t0
+        
+        t0 = sqrt(u%f)
+        res%f = t0
+        res%g = 0.5_dp*u%g/t0
+    end function
+
+    elemental function sqrt__hduvw(u) result(res)
         type(hdual__uvw_t), intent(in) :: u
         type(hdual__uvw_t) :: res
         integer :: i, j, k
@@ -477,8 +658,8 @@ contains
         res%d%f = t0
         res%d%g = 0.5_dp*t1*u%d%g
         k = 0
-        do j = 1, num_deriv
-            do i = j, num_deriv
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 res%h(k) = (0.25_dp)*t1*(2*u%h(k) - u%d%g(i)*u%d%g(j)/u%d%f)
             end do

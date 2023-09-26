@@ -15,7 +15,7 @@
         res%f = t0
         res%g = t0*u%g*v/u%f
       #:if test_coverage
-        pow_d_i_counter = pow_d_i_counter + 1
+        pow__d_i_counter = pow__d_i_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function pow__${dual_sn}$_r(u, v) result(res)
@@ -28,7 +28,7 @@
         res%f = t0
         res%g = t0*u%g*v/u%f
       #:if test_coverage
-        pow_d_r_counter = pow_d_r_counter + 1
+        pow__d_r_counter = pow__d_r_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function pow__${dual_sn}$_${dual_sn}$(u, v) result(res)
@@ -41,7 +41,7 @@
         res%f = t0
         res%g = t0*(u%g*v%f/u%f + v%g*log(u%f))
       #:if test_coverage
-        pow_d_d_counter = pow_d_d_counter + 1
+        pow__d_d_counter = pow__d_d_counter + 1
       #:endif
     end function
 #:enddef
@@ -72,7 +72,7 @@
             end do
         end do
       #:if test_coverage
-        pow_hd_i_counter = pow_hd_i_counter + 1
+        pow__hd_i_counter = pow__hd_i_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function pow__${dual_sn}$_r(u, v) result(res)
@@ -95,7 +95,7 @@
             end do
         end do
       #:if test_coverage
-        pow_hd_r_counter = pow_hd_r_counter + 1
+        pow__hd_r_counter = pow__hd_r_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function pow__${dual_sn}$_${dual_sn}$(u, v) result(res)
@@ -120,7 +120,7 @@
             end do
         end do
       #:if test_coverage
-        pow_hd_hd_counter = pow_hd_hd_counter + 1
+        pow__hd_hd_counter = pow__hd_hd_counter + 1
       #:endif
     end function
 #:enddef

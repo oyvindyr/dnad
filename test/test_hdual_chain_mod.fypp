@@ -44,13 +44,13 @@ module test_hdual_chain_mod
         module procedure f_of_y__y ! Function of y, with derivatives wrt y
     end interface
 
-    $:dnad_initialize_interface(["x:h", "y:h"])
-    $:dnad_display_interface(["x:h", "y:h"])
-    $:dnad_getter_interfaces(["x:h", "y:h"])
-    $:dnad_jacobi_tr_interface(["x:h", "y:h"])
+    #:set dual_type_specs = ['x:h', 'y:h']
+    $:dnad_initialize_interface(dual_type_specs)
+    $:dnad_display_interface(dual_type_specs)
+    $:dnad_getter_interfaces(dual_type_specs)
+    $:dnad_jacobi_tr_interface(dual_type_specs)
     $:dnad_chain_duals_interface(["y->x:h"])
-    $:dnad_overload_interfaces(selected_interfaces, &
-            dual_shortnames = ['dualx', 'dualy'], hdual_shortnames=['hdualx', 'hdualy'])
+    $:dnad_overload_interfaces(dual_type_specs, selected_interfaces)
     
 contains
 
@@ -144,15 +144,12 @@ contains
         f = f_of_y(y_of_x(x))
     end function
 
-    $:dnad_initialize_implementations(["x:h", "y:h"], "dp")
-    $:dnad_display_implementations(["x:h", "y:h"])
-    $:dnad_getter_implementations(["x:h", "y:h"], "dp")
-    $:dnad_jacobi_tr_implementations(["x:h", "y:h"], "dp")
+    $:dnad_initialize_implementations(dual_type_specs, "dp")
+    $:dnad_display_implementations(dual_type_specs)
+    $:dnad_getter_implementations(dual_type_specs, "dp")
+    $:dnad_jacobi_tr_implementations(dual_type_specs, "dp")
     $:dnad_chain_duals_implementations(["y->x:h"], "dp")
-    $:dnad_overload_implementations("dp", &
-            dual_types = ['dual_x_t', 'dual_y_t'], dual_shortnames = ['dualx', 'dualy'], dual_sizes = ['nx', 'ny'], &
-            hdual_types = ['hdual__x_t', 'hdual__y_t'], hdual_shortnames = ['hdualx', 'hdualy'], hdual_sizes = ['nx', 'ny'], &
-            selected_interfaces=selected_interfaces, stringent=stringent)
+    $:dnad_overload_implementations(dual_type_specs, "dp", selected_interfaces=selected_interfaces, stringent=stringent)
     
   #:if stringent
     ! Workaround to make pure functions produce NaN's deliberately:
