@@ -19,18 +19,10 @@
 
 #!
 #!
-#:def dnad_overload_implementations(real_kind, &
-        dual_types = [], dual_shortnames = [], dual_sizes = [], &
-        hdual_types = [], hdual_shortnames = [], hdual_sizes = [], &
-        selected_interfaces="--all", stringent=True, is_pure=True, test_coverage=False) 
-#!
-#:assert len(dual_types) > 0 or len(hdual_types) > 0
-#:assert len(dual_types) == len(dual_shortnames)
-#:assert len(dual_types) == len(dual_sizes)
-#:assert len(hdual_types) == len(hdual_shortnames)
-#:assert len(hdual_types) == len(hdual_sizes)
+#:def dnad_overload_implementations(type_specs, real_kind, selected_interfaces="--all", stringent=True, is_pure=True, test_coverage=False) 
 #! 
 #:set interface_list = dnad.select_interfaces(selected_interfaces)
+#:set dual_type, dual_sn, hdual_type, hdual_sn = dnad.decode_type_specs(type_specs)
 #!
 #:if is_pure and not test_coverage
     #:set elemental_purity = "elemental"
@@ -52,51 +44,51 @@
 #!
 #!
 #:if "+" in interface_list
-  #:for dual_type, dual_sn, dual_size in zip(dual_types, dual_shortnames, dual_sizes)
-    $:add_d( dual_type, dual_sn, real_kind, dual_size, is_pure, test_coverage)
+  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
+    $:add_d( dual_type, dual_sn, real_kind, is_pure, test_coverage)
   #:endfor
-  #:for hdual_type, hdual_sn, hdual_size in zip(hdual_types, hdual_shortnames, hdual_sizes)
-    $:add_hd(hdual_type, hdual_sn, real_kind, hdual_size, is_pure, test_coverage)
+  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
+    $:add_hd(hdual_type, hdual_sn, real_kind, is_pure, test_coverage)
   #:endfor
 #:endif
 #!
 #! 
 #:if "-" in interface_list 
-  #:for dual_type, dual_sn, dual_size in zip(dual_types, dual_shortnames, dual_sizes)
-    $:minus_d( dual_type, dual_sn, real_kind, dual_size, is_pure, test_coverage)
+  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
+    $:minus_d( dual_type, dual_sn, real_kind, is_pure, test_coverage)
   #:endfor
-  #:for hdual_type, hdual_sn, hdual_size in zip(hdual_types, hdual_shortnames, hdual_sizes)
-    $:minus_hd(hdual_type, hdual_sn, real_kind, hdual_size, is_pure, test_coverage)
+  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
+    $:minus_hd(hdual_type, hdual_sn, real_kind, is_pure, test_coverage)
   #:endfor
 #:endif 
 #!
 #! 
 #:if "*" in interface_list 
-  #:for dual_type, dual_sn, dual_size in zip(dual_types, dual_shortnames, dual_sizes)
-    $:mult_d(dual_type, dual_sn, real_kind, dual_size, is_pure, test_coverage)
+  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
+    $:mult_d(dual_type, dual_sn, real_kind, is_pure, test_coverage)
   #:endfor
-  #:for hdual_type, hdual_sn, hdual_size in zip(hdual_types, hdual_shortnames, hdual_sizes)
-    $:mult_hd(hdual_type, hdual_sn, real_kind, hdual_size, is_pure, test_coverage)
+  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
+    $:mult_hd(hdual_type, hdual_sn, real_kind, is_pure, test_coverage)
   #:endfor
 #:endif 
 #!
 #! 
 #:if "/" in interface_list 
-  #:for dual_type, dual_sn, dual_size in zip(dual_types, dual_shortnames, dual_sizes)
-    $:div_d(dual_type, dual_sn, real_kind, dual_size, is_pure, test_coverage)
+  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
+    $:div_d(dual_type, dual_sn, real_kind, is_pure, test_coverage)
   #:endfor
-  #:for hdual_type, hdual_sn, hdual_size in zip(hdual_types, hdual_shortnames, hdual_sizes)
-    $:div_hd(hdual_type, hdual_sn, real_kind, hdual_size, is_pure, test_coverage)
+  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
+    $:div_hd(hdual_type, hdual_sn, real_kind, is_pure, test_coverage)
   #:endfor
 #:endif 
 #!
 #! 
 #:if "**" in interface_list 
-  #:for dual_type, dual_sn, dual_size in zip(dual_types, dual_shortnames, dual_sizes)
-    $:pow_d(dual_type, dual_sn, real_kind, dual_size, is_pure, test_coverage)
+  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
+    $:pow_d(dual_type, dual_sn, real_kind, is_pure, test_coverage)
   #:endfor
-  #:for hdual_type, hdual_sn, hdual_size in zip(hdual_types, hdual_shortnames, hdual_sizes)
-    $:pow_hd(hdual_type, hdual_sn, real_kind, hdual_size, is_pure, test_coverage)
+  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
+    $:pow_hd(hdual_type, hdual_sn, real_kind, is_pure, test_coverage)
   #:endfor
 #:endif 
 #!
@@ -150,8 +142,8 @@
   #:endfor
 #:endif 
 #:if "abs" in interface_list or "dabs" in interface_list
-  #:for dual_type, dual_sn, dual_size in zip(dual_types, dual_shortnames, dual_sizes)
-    ${elemental_purity}$  function abs_${dual_sn}$(u) result(res)
+  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
+    ${elemental_purity}$  function abs__${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
         integer :: i
@@ -160,7 +152,7 @@
       #:if stringent == True
         if (u%f == 0) then
             res%f = 0.0_${real_kind}$
-            do i = 1, ${dual_size}$
+            do i = 1, size(u%g)
                 if (u%g(i) .eq. 0.0_${real_kind}$) then
                     res%g(i) = 0.0_${real_kind}$
                 else
@@ -181,7 +173,7 @@
 #:endif 
 #:if "acos" in interface_list 
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    ${elemental_purity}$  function acos_${dual_sn}$(u) result(res)
+    ${elemental_purity}$  function acos__${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
 
@@ -202,7 +194,7 @@
 #:endif 
 #:if "asin" in interface_list 
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    ${elemental_purity}$  function asin_${dual_sn}$(u) result(res)
+    ${elemental_purity}$  function asin__${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
 
@@ -222,7 +214,7 @@
 #:endif 
 #:if "atan" in interface_list 
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    ${elemental_purity}$  function atan_${dual_sn}$(u) result(res)
+    ${elemental_purity}$  function atan__${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
 
@@ -234,7 +226,7 @@
 #:endif 
 #:if "atan2" in interface_list 
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    ${elemental_purity}$  function atan2_${dual_sn}$(u, v) result(res)
+    ${elemental_purity}$  function atan2__${dual_sn}$(u, v) result(res)
         type(${dual_type}$), intent(in) :: u, v
         type(${dual_type}$) :: res
 
@@ -250,7 +242,7 @@
 #:endif 
 #:if "cos" in interface_list or "dcos" in interface_list
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    ${elemental_purity}$  function cos_${dual_sn}$(u) result(res)
+    ${elemental_purity}$  function cos__${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
 
@@ -261,15 +253,15 @@
   #:endfor
 #:endif 
 #:if "dot_product" in interface_list 
-  #:for dual_type, dual_sn, dual_size in zip(dual_types, dual_shortnames, dual_sizes)
-    ${purity}$  function dot_product_${dual_sn}$_${dual_sn}$(u, v) result(res)
+  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
+    ${purity}$  function dot_product__${dual_sn}$_${dual_sn}$(u, v) result(res)
         type(${dual_type}$), intent(in) :: u(:), v(:)
         type(${dual_type}$) :: res
 
         integer :: i
 
         res%f = dot_product(u%f, v%f)
-        do i = 1, ${dual_size}$
+        do i = 1, size(u%g)
             res%g(i) = dot_product(u%f, v%g(i)) + dot_product(v%f, u%g(i))
         end do
 
@@ -278,7 +270,7 @@
 #:endif 
 #:if "exp" in interface_list 
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    ${elemental_purity}$  function exp_${dual_sn}$(u) result(res)
+    ${elemental_purity}$  function exp__${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
 
@@ -293,7 +285,7 @@
 #:endif 
 #:if "int" in interface_list 
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    ${elemental_purity}$  function int_${dual_sn}$(u) result(res)
+    ${elemental_purity}$  function int__${dual_sn}$(u) result(res)
          type(${dual_type}$), intent(in) :: u
          integer :: res
 
@@ -303,16 +295,16 @@
   #:endfor
 #:endif 
 #:if "log" in interface_list
-  #:for dual_type, dual_sn, dual_size in zip(dual_types, dual_shortnames, dual_sizes)
-    $:log_d(dual_type, dual_sn, real_kind, dual_size, is_pure, test_coverage)
+  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
+    $:log_d(dual_type, dual_sn, real_kind, is_pure, test_coverage)
   #:endfor
-  #:for hdual_type, hdual_sn, hdual_size in zip(hdual_types, hdual_shortnames, hdual_sizes)
-    $:log_hd(hdual_type, hdual_sn, real_kind, hdual_size, is_pure, test_coverage)
+  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
+    $:log_hd(hdual_type, hdual_sn, real_kind, is_pure, test_coverage)
   #:endfor
 #:endif 
 #:if "log10" in interface_list
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    ${elemental_purity}$  function log10_${dual_sn}$(u) result(res)
+    ${elemental_purity}$  function log10__${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
 
@@ -326,37 +318,37 @@
   #:endfor
 #:endif 
 #:if "matmul" in interface_list 
-  #:for dual_type, dual_sn, dual_size in zip(dual_types, dual_shortnames, dual_sizes)
-    ${purity}$  function matmul_${dual_sn}$_${dual_sn}$(u,v) result(res)
+  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
+    ${purity}$  function matmul__${dual_sn}$_${dual_sn}$(u,v) result(res)
         type(${dual_type}$), intent(in) :: u(:,:), v(:,:)
         type(${dual_type}$) :: res(size(u,1), size(v,2))
 
         integer :: i
 
         res%f = matmul(u%f, v%f)
-        do i = 1, ${dual_size}$
+        do i = 1, size(res%g)
             res%g(i) = matmul(u%g(i), v%f) + matmul(u%f, v%g(i))
         end do
 
     end function
-    ${purity}$  function matmul_${dual_sn}$_v(u, v) result(res)
+    ${purity}$  function matmul__${dual_sn}$_v(u, v) result(res)
         type(${dual_type}$), intent(in) :: u(:,:), v(:)
         type(${dual_type}$) :: res(size(u,1))
         integer :: i
 
         res%f = matmul(u%f, v%f)
-        do i = 1, ${dual_size}$
+        do i = 1, size(res%g)
             res%g(i) = matmul(u%g(i), v%f) + matmul(u%f, v%g(i))
         end do
 
     end function
-    ${purity}$  function matmul_v_${dual_sn}$(u, v) result(res)
+    ${purity}$  function matmul__v_${dual_sn}$(u, v) result(res)
         type(${dual_type}$), intent(in) :: u(:), v(:,:)
         type(${dual_type}$) :: res(size(v, 2))
         integer::i
 
         res%f = matmul(u%f, v%f)
-        do i = 1, ${dual_size}$
+        do i = 1, size(res%g)
             res%g(i) = matmul(u%g(i), v%f) + matmul(u%f, v%g(i))
         end do
 
@@ -365,7 +357,7 @@
 #:endif 
 #:if "max" in interface_list
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    ${elemental_purity}$  function max_${dual_sn}$_${dual_sn}$(val1, val2) result(res)
+    ${elemental_purity}$  function max__${dual_sn}$_${dual_sn}$(val1, val2) result(res)
         type(${dual_type}$), intent(in) :: val1, val2
         type(${dual_type}$) :: res
 
@@ -376,7 +368,7 @@
         endif
 
     end function
-    ${elemental_purity}$  function max_${dual_sn}$_i(u, i) result(res)
+    ${elemental_purity}$  function max__${dual_sn}$_i(u, i) result(res)
         type(${dual_type}$), intent(in) :: u
         integer, intent(in) :: i
         type(${dual_type}$) :: res
@@ -388,7 +380,7 @@
         endif
 
     end function
-    ${elemental_purity}$  function max_${dual_sn}$_r(u, r) result(res)
+    ${elemental_purity}$  function max__${dual_sn}$_r(u, r) result(res)
         type(${dual_type}$), intent(in) :: u
         real(${real_kind}$), intent(in) :: r
         type(${dual_type}$) :: res
@@ -400,7 +392,7 @@
         endif
 
     end function
-     ${elemental_purity}$  function max_r_${dual_sn}$(n, u) result(res)
+     ${elemental_purity}$  function max__r_${dual_sn}$(n, u) result(res)
         real(${real_kind}$), intent(in) :: n
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
@@ -416,7 +408,7 @@
 #:endif 
 #:if "dmax1" in interface_list 
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    ${elemental_purity}$  function dmax1_${dual_sn}$_${dual_sn}$(val1, val2, val3, val4,val5) result(res)
+    ${elemental_purity}$  function dmax1__${dual_sn}$_${dual_sn}$(val1, val2, val3, val4,val5) result(res)
         type(${dual_type}$), intent(in) :: val1, val2
         type(${dual_type}$), intent(in), optional :: val3, val4,val5
         type(${dual_type}$) :: res
@@ -441,7 +433,7 @@
 #:endif 
 #:if "maxval" in interface_list 
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    ${purity}$  function maxval_${dual_sn}$(u) result(res)
+    ${purity}$  function maxval__${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u(:)
         integer :: iloc(1)
         type(${dual_type}$) :: res
@@ -454,7 +446,7 @@
 #:endif 
 #:if "min" in interface_list 
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    ${elemental_purity}$  function min_${dual_sn}$_${dual_sn}$(val1, val2) result(res)
+    ${elemental_purity}$  function min__${dual_sn}$_${dual_sn}$(val1, val2) result(res)
         type(${dual_type}$), intent(in) :: val1, val2
         type(${dual_type}$) :: res
 
@@ -465,7 +457,7 @@
         endif
 
     end function
-    ${elemental_purity}$  function min_${dual_sn}$_r(u, r) result(res)
+    ${elemental_purity}$  function min__${dual_sn}$_r(u, r) result(res)
         type(${dual_type}$), intent(in) :: u
         real(${real_kind}$), intent(in) :: r
         type(${dual_type}$) :: res
@@ -481,7 +473,7 @@
 #:endif 
 #:if "dmin1" in interface_list 
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    ${elemental_purity}$  function dmin1_${dual_sn}$_${dual_sn}$(val1, val2, val3, val4) result(res)
+    ${elemental_purity}$  function dmin1__${dual_sn}$_${dual_sn}$(val1, val2, val3, val4) result(res)
         type(${dual_type}$), intent(in) :: val1, val2
         type(${dual_type}$), intent(in), optional :: val3, val4
         type(${dual_type}$) :: res
@@ -503,7 +495,7 @@
 #:endif 
 #:if "minval" in interface_list 
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    ${purity}$  function minval_${dual_sn}$(u) result(res)
+    ${purity}$  function minval__${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u(:)
         integer :: iloc(1)
         type(${dual_type}$) :: res
@@ -516,7 +508,7 @@
 #:endif 
 #:if "nint" in interface_list 
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    ${elemental_purity}$  function nint_${dual_sn}$(u) result(res)
+    ${elemental_purity}$  function nint__${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u
         integer :: res
 
@@ -527,7 +519,7 @@
 #:endif 
 #:if "sign" in interface_list 
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    ${elemental_purity}$  function sign_${dual_sn}$_${dual_sn}$(val1, val2) result(res)
+    ${elemental_purity}$  function sign__${dual_sn}$_${dual_sn}$(val1, val2) result(res)
         type(${dual_type}$), intent(in) :: val1, val2
         type(${dual_type}$) :: res
 
@@ -538,7 +530,7 @@
         endif
 
      end function
-    ${elemental_purity}$  function sign_r_${dual_sn}$(val1, val2) result(res)
+    ${elemental_purity}$  function sign__r_${dual_sn}$(val1, val2) result(res)
         real(${real_kind}$), intent(in) :: val1
         type(${dual_type}$), intent(in) :: val2
         type(${dual_type}$) :: res
@@ -554,7 +546,7 @@
 #:endif 
 #:if "sin" in interface_list or "dsin" in interface_list
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    ${elemental_purity}$  function sin_${dual_sn}$(u) result(res)
+    ${elemental_purity}$  function sin__${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
 
@@ -566,7 +558,7 @@
 #:endif 
 #:if "tan" in interface_list or "dtan" in interface_list
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    ${elemental_purity}$  function tan_${dual_sn}$(u) result(res)
+    ${elemental_purity}$  function tan__${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
 
@@ -577,22 +569,22 @@
   #:endfor
 #:endif 
 #:if "sqrt" in interface_list
-  #:for dual_type, dual_sn, dual_size in zip(dual_types, dual_shortnames, dual_sizes)
-    $:sqrt_d(dual_type, dual_sn, real_kind, dual_size, is_pure, test_coverage, stringent)
+  #:for dual_type, dual_sn, in zip(dual_types, dual_shortnames)
+    $:sqrt_d(dual_type, dual_sn, real_kind, is_pure, test_coverage, stringent)
   #:endfor
-  #:for hdual_type, hdual_sn, hdual_size in zip(hdual_types, hdual_shortnames, hdual_sizes)
-    $:sqrt_hd(hdual_type, hdual_sn, real_kind, hdual_size, is_pure, test_coverage, stringent)
+  #:for hdual_type, hdual_sn, in zip(hdual_types, hdual_shortnames)
+    $:sqrt_hd(hdual_type, hdual_sn, real_kind, is_pure, test_coverage, stringent)
   #:endfor
 #:endif 
 #:if "sum" in interface_list 
-  #:for dual_type, dual_sn, dual_size in zip(dual_types, dual_shortnames, dual_sizes)
-    ${purity}$  function sum_${dual_sn}$(u) result(res)
+  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
+    ${purity}$  function sum__${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u(:)
         type(${dual_type}$) :: res
         integer :: i
 
         res%f = sum(u%f)
-        do i = 1, ${dual_size}$
+        do i = 1, size(u%g)
             res%g(i) = sum(u%g(i))
         end do
 
@@ -601,7 +593,7 @@
 #:endif 
 #:if "maxloc" in interface_list 
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    ${purity}$  function maxloc_${dual_sn}$(array) result(ind)
+    ${purity}$  function maxloc__${dual_sn}$(array) result(ind)
         type(${dual_type}$), intent(in) :: array(:)
         integer :: ind(1)
 

@@ -1,436 +1,435 @@
-#:def dnad_overload_interfaces(selected_interfaces, dual_shortnames=[], hdual_shortnames=[]) 
-    #!
-    #:assert len(dual_shortnames) > 0 or len(hdual_shortnames) > 0
+#:def dnad_overload_interfaces(type_specs, selected_interfaces) 
     #!
     #:set interface_list = dnad.select_interfaces(selected_interfaces)
+    #:set dual_type, dual_sn, hdual_type, hdual_sn = dnad.decode_type_specs(type_specs)
     #!
   #:if "=" in interface_list 
     interface assignment (=)
       #:for dual_sn in dual_shortnames
-        module procedure assign_${dual_sn}$_i  ! dual=integer, elemental
-        module procedure assign_${dual_sn}$_r  ! dual=real, elemental
-        module procedure assign_i_${dual_sn}$  ! integer=dual, elemental
-        module procedure assign_r_${dual_sn}$  ! real=dual, elemental
+        module procedure assign__${dual_sn}$_i  ! dual=integer, elemental
+        module procedure assign__${dual_sn}$_r  ! dual=real, elemental
+        module procedure assign__i_${dual_sn}$  ! integer=dual, elemental
+        module procedure assign__r_${dual_sn}$  ! real=dual, elemental
       #:endfor
       #:for hdual_sn in hdual_shortnames
-        module procedure assign_${hdual_sn}$_i  ! dual=integer, elemental
-        module procedure assign_${hdual_sn}$_r  ! dual=real, elemental
-        module procedure assign_i_${hdual_sn}$  ! integer=dual, elemental
-        module procedure assign_r_${hdual_sn}$  ! real=dual, elemental
+        module procedure assign__${hdual_sn}$_i  ! dual=integer, elemental
+        module procedure assign__${hdual_sn}$_r  ! dual=real, elemental
+        module procedure assign__i_${hdual_sn}$  ! integer=dual, elemental
+        module procedure assign__r_${hdual_sn}$  ! real=dual, elemental
       #:endfor
     end interface
   #:endif 
   #:if "+" in interface_list 
     interface operator (+)
       #:for dual_sn in dual_shortnames
-        module procedure unary_add_${dual_sn}$   ! +dual number, elemental
-        module procedure add_${dual_sn}$_${dual_sn}$       ! dual + dual, elemental
-        module procedure add_${dual_sn}$_i       ! dual + integer, elemental
-        module procedure add_${dual_sn}$_r       ! dual + real, elemental
-        module procedure add_i_${dual_sn}$       ! integer + dual, elemental
-        module procedure add_r_${dual_sn}$       ! real + dual, elemental
+        module procedure add__unary_${dual_sn}$   ! +dual number, elemental
+        module procedure add__${dual_sn}$_${dual_sn}$       ! dual + dual, elemental
+        module procedure add__${dual_sn}$_i       ! dual + integer, elemental
+        module procedure add__${dual_sn}$_r       ! dual + real, elemental
+        module procedure add__i_${dual_sn}$       ! integer + dual, elemental
+        module procedure add__r_${dual_sn}$       ! real + dual, elemental
       #:endfor
       #:for hdual_sn in hdual_shortnames
-        module procedure unary_add_${hdual_sn}$  ! +dual number, elemental
-        module procedure add_${hdual_sn}$_${hdual_sn}$     ! dual + dual, elemental
-        module procedure add_${hdual_sn}$_i      ! dual + integer, elemental
-        module procedure add_${hdual_sn}$_r      ! dual + real, elemental
-        module procedure add_i_${hdual_sn}$      ! integer + dual, elemental
-        module procedure add_r_${hdual_sn}$      ! real + dual, elemental
+        module procedure add__unary_${hdual_sn}$  ! +dual number, elemental
+        module procedure add__${hdual_sn}$_${hdual_sn}$     ! dual + dual, elemental
+        module procedure add__${hdual_sn}$_i      ! dual + integer, elemental
+        module procedure add__${hdual_sn}$_r      ! dual + real, elemental
+        module procedure add__i_${hdual_sn}$      ! integer + dual, elemental
+        module procedure add__r_${hdual_sn}$      ! real + dual, elemental
       #:endfor
     end interface
   #:endif 
   #:if "-" in interface_list 
     interface operator (-)
       #:for dual_sn in dual_shortnames
-        module procedure unary_minus_${dual_sn}$  ! negate a dual number,elemental
-        module procedure minus_${dual_sn}$_${dual_sn}$      ! dual -dual,elemental
-        module procedure minus_${dual_sn}$_i      ! dual-integer,elemental
-        module procedure minus_${dual_sn}$_r      ! dual-real,elemental
-        module procedure minus_i_${dual_sn}$      ! integer-dual,elemental
-        module procedure minus_r_${dual_sn}$      ! real-dual,elemental
+        module procedure minus__unary_${dual_sn}$  ! negate a dual number,elemental
+        module procedure minus__${dual_sn}$_${dual_sn}$      ! dual -dual,elemental
+        module procedure minus__${dual_sn}$_i      ! dual-integer,elemental
+        module procedure minus__${dual_sn}$_r      ! dual-real,elemental
+        module procedure minus__i_${dual_sn}$      ! integer-dual,elemental
+        module procedure minus__r_${dual_sn}$      ! real-dual,elemental
       #:endfor
       #:for hdual_sn in hdual_shortnames
-        module procedure unary_minus_${hdual_sn}$ ! negate a dual number,elemental
-        module procedure minus_${hdual_sn}$_${hdual_sn}$    ! dual -dual,elemental
-        module procedure minus_${hdual_sn}$_i     ! dual-integer,elemental
-        module procedure minus_${hdual_sn}$_r     ! dual-real,elemental
-        module procedure minus_i_${hdual_sn}$     ! integer-dual,elemental
-        module procedure minus_r_${hdual_sn}$     ! real-dual,elemental
+        module procedure minus__unary_${hdual_sn}$ ! negate a dual number,elemental
+        module procedure minus__${hdual_sn}$_${hdual_sn}$    ! dual -dual,elemental
+        module procedure minus__${hdual_sn}$_i     ! dual-integer,elemental
+        module procedure minus__${hdual_sn}$_r     ! dual-real,elemental
+        module procedure minus__i_${hdual_sn}$     ! integer-dual,elemental
+        module procedure minus__r_${hdual_sn}$     ! real-dual,elemental
       #:endfor
     end interface
   #:endif 
   #:if "*" in interface_list 
     interface operator (*)
-      #:for dual_sn in dual_shortnames 
-        module procedure mult_${dual_sn}$_${dual_sn}$    ! dual*dual, elemental
-        module procedure mult_${dual_sn}$_i    ! dual*integer,elemental
-        module procedure mult_${dual_sn}$_r    ! dual*real,elemental
-        module procedure mult_i_${dual_sn}$    ! integer*dual,elemental
-        module procedure mult_r_${dual_sn}$    ! real*dual,elemental
+      #:for dual_sn in dual_shortnames
+        module procedure mult__${dual_sn}$_${dual_sn}$    ! dual*dual, elemental
+        module procedure mult__${dual_sn}$_i    ! dual*integer,elemental
+        module procedure mult__${dual_sn}$_r    ! dual*real,elemental
+        module procedure mult__i_${dual_sn}$    ! integer*dual,elemental
+        module procedure mult__r_${dual_sn}$    ! real*dual,elemental
       #:endfor
       #:for hdual_sn in hdual_shortnames
-        module procedure mult_${hdual_sn}$_${hdual_sn}$  ! dual*dual, elemental
-        module procedure mult_${hdual_sn}$_i   ! dual*integer,elemental
-        module procedure mult_${hdual_sn}$_r   ! dual*real,elemental
-        module procedure mult_i_${hdual_sn}$   ! integer*dual,elemental
-        module procedure mult_r_${hdual_sn}$   ! real*dual,elemental
+        module procedure mult__${hdual_sn}$_${hdual_sn}$  ! dual*dual, elemental
+        module procedure mult__${hdual_sn}$_i   ! dual*integer,elemental
+        module procedure mult__${hdual_sn}$_r   ! dual*real,elemental
+        module procedure mult__i_${hdual_sn}$   ! integer*dual,elemental
+        module procedure mult__r_${hdual_sn}$   ! real*dual,elemental
       #:endfor
     end interface
   #:endif 
   #:if "/" in interface_list 
     interface operator (/)
       #:for dual_sn in dual_shortnames
-        module procedure div_${dual_sn}$_${dual_sn}$    ! dual/dual, elemental
-        module procedure div_${dual_sn}$_r    ! dual/real, elemental
-        module procedure div_r_${dual_sn}$    ! real/dual, elemental
-        module procedure div_${dual_sn}$_i    ! dual/integer, elemental
-        module procedure div_i_${dual_sn}$    ! integer/dual, elemental
+        module procedure div__${dual_sn}$_${dual_sn}$    ! dual/dual, elemental
+        module procedure div__${dual_sn}$_r    ! dual/real, elemental
+        module procedure div__r_${dual_sn}$    ! real/dual, elemental
+        module procedure div__${dual_sn}$_i    ! dual/integer, elemental
+        module procedure div__i_${dual_sn}$    ! integer/dual, elemental
       #:endfor
       #:for hdual_sn in hdual_shortnames
-        module procedure div_${hdual_sn}$_${hdual_sn}$  ! hdual/hdual, elemental
-        module procedure div_${hdual_sn}$_r   ! hdual/real, elemental
-        module procedure div_r_${hdual_sn}$   ! real/hdual, elemental
-        module procedure div_${hdual_sn}$_i   ! hdual/integer, elemental
-        module procedure div_i_${hdual_sn}$   ! integer/hdual, elemental
+        module procedure div__${hdual_sn}$_${hdual_sn}$  ! hdual/hdual, elemental
+        module procedure div__${hdual_sn}$_r   ! hdual/real, elemental
+        module procedure div__r_${hdual_sn}$   ! real/hdual, elemental
+        module procedure div__${hdual_sn}$_i   ! hdual/integer, elemental
+        module procedure div__i_${hdual_sn}$   ! integer/hdual, elemental
       #:endfor
     end interface
   #:endif 
   #:if "**" in interface_list 
     interface operator (**)
       #:for dual_sn in dual_shortnames
-        module procedure pow_${dual_sn}$_i ! dual number to an integer power,elemental
-        module procedure pow_${dual_sn}$_r ! dual number to a real power, elemental
-        module procedure pow_${dual_sn}$_${dual_sn}$ ! dual number to a dual power, elemental
+        module procedure pow__${dual_sn}$_i ! dual number to an integer power,elemental
+        module procedure pow__${dual_sn}$_r ! dual number to a real power, elemental
+        module procedure pow__${dual_sn}$_${dual_sn}$ ! dual number to a dual power, elemental
       #:endfor
       #:for hdual_sn in hdual_shortnames
-        module procedure pow_${hdual_sn}$_i ! hdual number to an integer power,elemental
-        module procedure pow_${hdual_sn}$_r ! hdual number to a real power, elemental
-        module procedure pow_${hdual_sn}$_${hdual_sn}$ ! hdual number to a hdual power, elemental
+        module procedure pow__${hdual_sn}$_i ! hdual number to an integer power,elemental
+        module procedure pow__${hdual_sn}$_r ! hdual number to a real power, elemental
+        module procedure pow__${hdual_sn}$_${hdual_sn}$ ! hdual number to a hdual power, elemental
       #:endfor
     end interface
   #:endif 
   #:if "==" in interface_list 
     interface operator (==)
       #:for dual_sn in dual_shortnames
-        module procedure eq_${dual_sn}$_${dual_sn}$ ! compare two dual numbers, elemental
-        module procedure eq_${dual_sn}$_i ! compare a dual and an integer, elemental
-        module procedure eq_${dual_sn}$_r ! compare a dual and a real, elemental
-        module procedure eq_i_${dual_sn}$ ! compare integer with a dual number, elemental
-        module procedure eq_r_${dual_sn}$ ! compare a real with a dual number, elemental
+        module procedure eq__${dual_sn}$_${dual_sn}$ ! compare two dual numbers, elemental
+        module procedure eq__${dual_sn}$_i ! compare a dual and an integer, elemental
+        module procedure eq__${dual_sn}$_r ! compare a dual and a real, elemental
+        module procedure eq__i_${dual_sn}$ ! compare integer with a dual number, elemental
+        module procedure eq__r_${dual_sn}$ ! compare a real with a dual number, elemental
       #:endfor
       #:for hdual_sn in hdual_shortnames
-        module procedure eq_${hdual_sn}$_${hdual_sn}$ ! compare two hdual numbers, elemental
-        module procedure eq_${hdual_sn}$_i ! compare a hdual and an integer, elemental
-        module procedure eq_${hdual_sn}$_r ! compare a hdual and a real, elemental
-        module procedure eq_i_${hdual_sn}$ ! compare integer with a hdual number, elemental
-        module procedure eq_r_${hdual_sn}$ ! compare a real with a hdual number, elemental
+        module procedure eq__${hdual_sn}$_${hdual_sn}$ ! compare two hdual numbers, elemental
+        module procedure eq__${hdual_sn}$_i ! compare a hdual and an integer, elemental
+        module procedure eq__${hdual_sn}$_r ! compare a hdual and a real, elemental
+        module procedure eq__i_${hdual_sn}$ ! compare integer with a hdual number, elemental
+        module procedure eq__r_${hdual_sn}$ ! compare a real with a hdual number, elemental
       #:endfor
     end interface
   #:endif 
   #:if "<=" in interface_list 
     interface operator (<=)
       #:for dual_sn in dual_shortnames
-        module procedure le_${dual_sn}$_${dual_sn}$ ! compare two dual numbers, elemental
-        module procedure le_${dual_sn}$_i ! compare a dual and an integer, elemental
-        module procedure le_${dual_sn}$_r ! compare a dual and a real, elemental
-        module procedure le_i_${dual_sn}$ ! compare integer with a dual number, elemental
-        module procedure le_r_${dual_sn}$ ! compare a real with a dual number, elemental
+        module procedure le__${dual_sn}$_${dual_sn}$ ! compare two dual numbers, elemental
+        module procedure le__${dual_sn}$_i ! compare a dual and an integer, elemental
+        module procedure le__${dual_sn}$_r ! compare a dual and a real, elemental
+        module procedure le__i_${dual_sn}$ ! compare integer with a dual number, elemental
+        module procedure le__r_${dual_sn}$ ! compare a real with a dual number, elemental
       #:endfor
       #:for hdual_sn in hdual_shortnames
-        module procedure le_${hdual_sn}$_${hdual_sn}$ ! compare two hdual numbers, elemental
-        module procedure le_${hdual_sn}$_i ! compare a hdual and an integer, elemental
-        module procedure le_${hdual_sn}$_r ! compare a hdual and a real, elemental
-        module procedure le_i_${hdual_sn}$ ! compare integer with a hdual number, elemental
-        module procedure le_r_${hdual_sn}$ ! compare a real with a hdual number, elemental
+        module procedure le__${hdual_sn}$_${hdual_sn}$ ! compare two hdual numbers, elemental
+        module procedure le__${hdual_sn}$_i ! compare a hdual and an integer, elemental
+        module procedure le__${hdual_sn}$_r ! compare a hdual and a real, elemental
+        module procedure le__i_${hdual_sn}$ ! compare integer with a hdual number, elemental
+        module procedure le__r_${hdual_sn}$ ! compare a real with a hdual number, elemental
       #:endfor
     end interface
   #:endif 
   #:if "<" in interface_list 
     interface operator (<)
       #:for dual_sn in dual_shortnames
-        module procedure lt_${dual_sn}$_${dual_sn}$ ! compare two dual numbers, elemental
-        module procedure lt_${dual_sn}$_i ! compare a dual and an integer, elemental
-        module procedure lt_${dual_sn}$_r ! compare a dual and a real, elemental
-        module procedure lt_i_${dual_sn}$ ! compare integer with a dual number, elemental
-        module procedure lt_r_${dual_sn}$ ! compare a real with a dual number, elemental
+        module procedure lt__${dual_sn}$_${dual_sn}$ ! compare two dual numbers, elemental
+        module procedure lt__${dual_sn}$_i ! compare a dual and an integer, elemental
+        module procedure lt__${dual_sn}$_r ! compare a dual and a real, elemental
+        module procedure lt__i_${dual_sn}$ ! compare integer with a dual number, elemental
+        module procedure lt__r_${dual_sn}$ ! compare a real with a dual number, elemental
       #:endfor
       #:for hdual_sn in hdual_shortnames
-        module procedure lt_${hdual_sn}$_${hdual_sn}$ ! compare two hdual numbers, elemental
-        module procedure lt_${hdual_sn}$_i ! compare a hdual and an integer, elemental
-        module procedure lt_${hdual_sn}$_r ! compare a hdual and a real, elemental
-        module procedure lt_i_${hdual_sn}$ ! compare integer with a hdual number, elemental
-        module procedure lt_r_${hdual_sn}$ ! compare a real with a hdual number, elemental
+        module procedure lt__${hdual_sn}$_${hdual_sn}$ ! compare two hdual numbers, elemental
+        module procedure lt__${hdual_sn}$_i ! compare a hdual and an integer, elemental
+        module procedure lt__${hdual_sn}$_r ! compare a hdual and a real, elemental
+        module procedure lt__i_${hdual_sn}$ ! compare integer with a hdual number, elemental
+        module procedure lt__r_${hdual_sn}$ ! compare a real with a hdual number, elemental
       #:endfor
     end interface
   #:endif 
   #:if ">=" in interface_list 
     interface operator (>=)
       #:for dual_sn in dual_shortnames
-        module procedure ge_${dual_sn}$_${dual_sn}$ ! compare two dual numbers, elemental
-        module procedure ge_${dual_sn}$_i ! compare a dual and an integer, elemental
-        module procedure ge_${dual_sn}$_r ! compare a dual and a real, elemental
-        module procedure ge_i_${dual_sn}$ ! compare integer with a dual number, elemental
-        module procedure ge_r_${dual_sn}$ ! compare a real with a dual number, elemental
+        module procedure ge__${dual_sn}$_${dual_sn}$ ! compare two dual numbers, elemental
+        module procedure ge__${dual_sn}$_i ! compare a dual and an integer, elemental
+        module procedure ge__${dual_sn}$_r ! compare a dual and a real, elemental
+        module procedure ge__i_${dual_sn}$ ! compare integer with a dual number, elemental
+        module procedure ge__r_${dual_sn}$ ! compare a real with a dual number, elemental
       #:endfor
       #:for hdual_sn in hdual_shortnames
-        module procedure ge_${hdual_sn}$_${hdual_sn}$ ! compare two hdual numbers, elemental
-        module procedure ge_${hdual_sn}$_i ! compare a hdual and an integer, elemental
-        module procedure ge_${hdual_sn}$_r ! compare a hdual and a real, elemental
-        module procedure ge_i_${hdual_sn}$ ! compare integer with a hdual number, elemental
-        module procedure ge_r_${hdual_sn}$ ! compare a real with a hdual number, elemental
+        module procedure ge__${hdual_sn}$_${hdual_sn}$ ! compare two hdual numbers, elemental
+        module procedure ge__${hdual_sn}$_i ! compare a hdual and an integer, elemental
+        module procedure ge__${hdual_sn}$_r ! compare a hdual and a real, elemental
+        module procedure ge__i_${hdual_sn}$ ! compare integer with a hdual number, elemental
+        module procedure ge__r_${hdual_sn}$ ! compare a real with a hdual number, elemental
       #:endfor
     end interface
   #:endif 
   #:if ">" in interface_list 
     interface operator (>)
       #:for dual_sn in dual_shortnames
-        module procedure gt_${dual_sn}$_${dual_sn}$ ! compare two dual numbers, elemental
-        module procedure gt_${dual_sn}$_i ! compare a dual and an integer, elemental
-        module procedure gt_${dual_sn}$_r ! compare a dual and a real, elemental
-        module procedure gt_i_${dual_sn}$ ! compare integer with a dual number, elemental
-        module procedure gt_r_${dual_sn}$ ! compare a real with a dual number, elemental
+        module procedure gt__${dual_sn}$_${dual_sn}$ ! compare two dual numbers, elemental
+        module procedure gt__${dual_sn}$_i ! compare a dual and an integer, elemental
+        module procedure gt__${dual_sn}$_r ! compare a dual and a real, elemental
+        module procedure gt__i_${dual_sn}$ ! compare integer with a dual number, elemental
+        module procedure gt__r_${dual_sn}$ ! compare a real with a dual number, elemental
       #:endfor
       #:for hdual_sn in hdual_shortnames
-        module procedure gt_${hdual_sn}$_${hdual_sn}$ ! compare two hdual numbers, elemental
-        module procedure gt_${hdual_sn}$_i ! compare a hdual and an integer, elemental
-        module procedure gt_${hdual_sn}$_r ! compare a hdual and a real, elemental
-        module procedure gt_i_${hdual_sn}$ ! compare integer with a hdual number, elemental
-        module procedure gt_r_${hdual_sn}$ ! compare a real with a hdual number, elemental
+        module procedure gt__${hdual_sn}$_${hdual_sn}$ ! compare two hdual numbers, elemental
+        module procedure gt__${hdual_sn}$_i ! compare a hdual and an integer, elemental
+        module procedure gt__${hdual_sn}$_r ! compare a hdual and a real, elemental
+        module procedure gt__i_${hdual_sn}$ ! compare integer with a hdual number, elemental
+        module procedure gt__r_${hdual_sn}$ ! compare a real with a hdual number, elemental
       #:endfor
     end interface
   #:endif 
   #:if "/=" in interface_list 
     interface operator (/=)
       #:for dual_sn in dual_shortnames
-        module procedure ne_${dual_sn}$_${dual_sn}$ ! compare two dual numbers, elemental
-        module procedure ne_${dual_sn}$_i ! compare a dual and an integer, elemental
-        module procedure ne_${dual_sn}$_r ! compare a dual and a real, elemental
-        module procedure ne_i_${dual_sn}$ ! compare integer with a dual number, elemental
-        module procedure ne_r_${dual_sn}$ ! compare a real with a dual number, elemental
+        module procedure ne__${dual_sn}$_${dual_sn}$ ! compare two dual numbers, elemental
+        module procedure ne__${dual_sn}$_i ! compare a dual and an integer, elemental
+        module procedure ne__${dual_sn}$_r ! compare a dual and a real, elemental
+        module procedure ne__i_${dual_sn}$ ! compare integer with a dual number, elemental
+        module procedure ne__r_${dual_sn}$ ! compare a real with a dual number, elemental
       #:endfor
       #:for hdual_sn in hdual_shortnames
-        module procedure ne_${hdual_sn}$_${hdual_sn}$ ! compare two hdual numbers, elemental
-        module procedure ne_${hdual_sn}$_i ! compare a hdual and an integer, elemental
-        module procedure ne_${hdual_sn}$_r ! compare a hdual and a real, elemental
-        module procedure ne_i_${hdual_sn}$ ! compare integer with a hdual number, elemental
-        module procedure ne_r_${hdual_sn}$ ! compare a real with a hdual number, elemental
+        module procedure ne__${hdual_sn}$_${hdual_sn}$ ! compare two hdual numbers, elemental
+        module procedure ne__${hdual_sn}$_i ! compare a hdual and an integer, elemental
+        module procedure ne__${hdual_sn}$_r ! compare a hdual and a real, elemental
+        module procedure ne__i_${hdual_sn}$ ! compare integer with a hdual number, elemental
+        module procedure ne__r_${hdual_sn}$ ! compare a real with a hdual number, elemental
       #:endfor
     end interface
   #:endif 
   #:if "abs" in interface_list 
     interface abs
       #:for dual_sn in dual_shortnames
-        module procedure abs_${dual_sn}$  ! absolute value of a dual number, elemental
+        module procedure abs__${dual_sn}$  ! absolute value of a dual number, elemental
       #:endfor
     end interface
   #:endif 
   #:if "dabs" in interface_list 
     interface dabs
       #:for dual_sn in dual_shortnames
-        module procedure abs_${dual_sn}$ ! same as abs, used for some old fortran commands
+        module procedure abs__${dual_sn}$ ! same as abs, used for some old fortran commands
       #:endfor
     end interface
   #:endif 
   #:if "acos" in interface_list 
     interface acos
       #:for dual_sn in dual_shortnames
-        module procedure acos_${dual_sn}$ ! arccosine of a dual number, elemental
+        module procedure acos__${dual_sn}$ ! arccosine of a dual number, elemental
       #:endfor
     end interface
   #:endif 
   #:if "asin" in interface_list 
     interface asin
       #:for dual_sn in dual_shortnames
-        module procedure asin_${dual_sn}$ ! arcsine of a dual number, elemental
+        module procedure asin__${dual_sn}$ ! arcsine of a dual number, elemental
       #:endfor
     end interface
   #:endif 
   #:if "atan" in interface_list 
     interface atan
       #:for dual_sn in dual_shortnames
-        module procedure atan_${dual_sn}$ ! arctan of a dual number, elemental
+        module procedure atan__${dual_sn}$ ! arctan of a dual number, elemental
       #:endfor
     end interface
   #:endif 
   #:if "atan2" in interface_list 
     interface atan2
       #:for dual_sn in dual_shortnames
-        module procedure atan2_${dual_sn}$ ! arctan of a dual number, elemental
+        module procedure atan2__${dual_sn}$ ! arctan of a dual number, elemental
       #:endfor
     end interface
   #:endif 
   #:if "cos" in interface_list 
     interface cos
       #:for dual_sn in dual_shortnames
-        module procedure cos_${dual_sn}$ ! cosine of a dual number, elemental
+        module procedure cos__${dual_sn}$ ! cosine of a dual number, elemental
       #:endfor
     end interface
   #:endif 
   #:if "dcos" in interface_list 
     interface dcos
       #:for dual_sn in dual_shortnames
-        module procedure cos_${dual_sn}$ ! cosine of a dual number, elemental
+        module procedure cos__${dual_sn}$ ! cosine of a dual number, elemental
       #:endfor
     end interface
   #:endif 
   #:if "dot_product" in interface_list 
     interface dot_product
       #:for dual_sn in dual_shortnames
-        module procedure dot_product_${dual_sn}$_${dual_sn}$ ! dot product two dual number vectors
+        module procedure dot_product__${dual_sn}$_${dual_sn}$ ! dot product two dual number vectors
       #:endfor
     end interface
   #:endif 
   #:if "exp" in interface_list 
     interface exp
       #:for dual_sn in dual_shortnames
-        module procedure exp_${dual_sn}$ ! exponential of a dual number, elemental
+        module procedure exp__${dual_sn}$ ! exponential of a dual number, elemental
       #:endfor
     end interface
   #:endif 
   #:if "int" in interface_list 
     interface int
       #:for dual_sn in dual_shortnames
-        module procedure int_${dual_sn}$ ! integer part of a dual number, elemental
+        module procedure int__${dual_sn}$ ! integer part of a dual number, elemental
       #:endfor
     end interface
   #:endif 
   #:if "log" in interface_list 
     interface log
       #:for dual_sn in dual_shortnames
-        module procedure log_${dual_sn}$ ! log of a dual number, elemental
+        module procedure log__${dual_sn}$ ! log of a dual number, elemental
       #:endfor
       #:for hdual_sn in hdual_shortnames
-        module procedure log_${hdual_sn}$ ! log of a dual number, elemental
+        module procedure log__${hdual_sn}$ ! log of a dual number, elemental
       #:endfor
     end interface
   #:endif 
   #:if "log10" in interface_list 
     interface log10
       #:for dual_sn in dual_shortnames
-        module procedure log10_${dual_sn}$ ! log of a dual number, elemental
+        module procedure log10__${dual_sn}$ ! log of a dual number, elemental
       #:endfor
     end interface
   #:endif 
   #:if "matmul" in interface_list 
     interface matmul
       #:for dual_sn in dual_shortnames
-        module procedure matmul_${dual_sn}$_${dual_sn}$ ! multiply two dual matrices
-        module procedure matmul_${dual_sn}$_v ! multiply a dual matrix with a dual vector
-        module procedure matmul_v_${dual_sn}$ ! multiply a dual vector with a dual matrix
+        module procedure matmul__${dual_sn}$_${dual_sn}$ ! multiply two dual matrices
+        module procedure matmul__${dual_sn}$_v ! multiply a dual matrix with a dual vector
+        module procedure matmul__v_${dual_sn}$ ! multiply a dual vector with a dual matrix
       #:endfor
     end interface
   #:endif 
   #:if "max" in interface_list 
     interface max
       #:for dual_sn in dual_shortnames
-        module procedure max_${dual_sn}$_${dual_sn}$ ! max of two dual numbers, elemental
-        module procedure max_${dual_sn}$_i ! max of a dual number and an integer, elemental
-        module procedure max_${dual_sn}$_r ! max of a dual number and a real, elemental
-        module procedure max_r_${dual_sn}$ ! max of a real,and a dual number,  elemental
+        module procedure max__${dual_sn}$_${dual_sn}$ ! max of two dual numbers, elemental
+        module procedure max__${dual_sn}$_i ! max of a dual number and an integer, elemental
+        module procedure max__${dual_sn}$_r ! max of a dual number and a real, elemental
+        module procedure max__r_${dual_sn}$ ! max of a real,and a dual number,  elemental
       #:endfor
     end interface
   #:endif 
   #:if "dmax1" in interface_list 
     interface dmax1
       #:for dual_sn in dual_shortnames
-        module procedure dmax1_${dual_sn}$_${dual_sn}$ ! max of from two to four dual numbers, elemental
+        module procedure dmax1__${dual_sn}$_${dual_sn}$ ! max of from two to four dual numbers, elemental
       #:endfor
     end interface
   #:endif 
   #:if "maxval" in interface_list 
     interface maxval
       #:for dual_sn in dual_shortnames
-        module procedure maxval_${dual_sn}$ ! maxval of a dual number vector
+        module procedure maxval__${dual_sn}$ ! maxval of a dual number vector
       #:endfor
     end interface
   #:endif 
   #:if "min" in interface_list 
     interface min
       #:for dual_sn in dual_shortnames
-        module procedure min_${dual_sn}$_${dual_sn}$ ! min of from two to four dual numbers, elemental
-        module procedure min_${dual_sn}$_r ! min of a dual and a real, elemental
+        module procedure min__${dual_sn}$_${dual_sn}$ ! min of from two to four dual numbers, elemental
+        module procedure min__${dual_sn}$_r ! min of a dual and a real, elemental
       #:endfor
     end interface
   #:endif 
   #:if "dmin1" in interface_list 
     interface dmin1
       #:for dual_sn in dual_shortnames
-        module procedure dmin1_${dual_sn}$_${dual_sn}$ ! min of from two to four dual numbers, elemental
+        module procedure dmin1__${dual_sn}$_${dual_sn}$ ! min of from two to four dual numbers, elemental
       #:endfor
     end interface
   #:endif 
   #:if "minval" in interface_list 
     interface minval
       #:for dual_sn in dual_shortnames
-        module procedure minval_${dual_sn}$ ! obtain the maxval  of a dual number vectgor
+        module procedure minval__${dual_sn}$ ! obtain the maxval  of a dual number vectgor
       #:endfor
     end interface
   #:endif 
   #:if "nint" in interface_list 
     interface nint
       #:for dual_sn in dual_shortnames
-        module procedure nint_${dual_sn}$ ! nearest integer to the argument, elemental
+        module procedure nint__${dual_sn}$ ! nearest integer to the argument, elemental
       #:endfor
     end interface
   #:endif 
   #:if "sign" in interface_list 
     interface  sign
       #:for dual_sn in dual_shortnames
-        module procedure  sign_${dual_sn}$_${dual_sn}$ ! sign(a,b) with two dual numbers, elemental
-        module procedure  sign_r_${dual_sn}$ ! sign(a,b) with a real and a dual, elemental
+        module procedure  sign__${dual_sn}$_${dual_sn}$ ! sign(a,b) with two dual numbers, elemental
+        module procedure  sign__r_${dual_sn}$ ! sign(a,b) with a real and a dual, elemental
       #:endfor
     end interface
   #:endif 
   #:if "sin" in interface_list 
     interface sin
       #:for dual_sn in dual_shortnames
-        module procedure sin_${dual_sn}$ ! obtain sine of a dual number, elemental
+        module procedure sin__${dual_sn}$ ! obtain sine of a dual number, elemental
       #:endfor
     end interface
   #:endif 
   #:if "dsin" in interface_list 
     interface dsin
       #:for dual_sn in dual_shortnames
-        module procedure sin_${dual_sn}$ ! obtain sine of a dual number, elemental
+        module procedure sin__${dual_sn}$ ! obtain sine of a dual number, elemental
       #:endfor
     end interface
   #:endif 
   #:if "tan" in interface_list 
     interface tan
       #:for dual_sn in dual_shortnames
-        module procedure tan_${dual_sn}$ ! obtain sine of a dual number, elemental
+        module procedure tan__${dual_sn}$ ! obtain sine of a dual number, elemental
       #:endfor
     end interface
   #:endif 
   #:if "dtan" in interface_list 
     interface dtan
       #:for dual_sn in dual_shortnames
-        module procedure tan_${dual_sn}$ ! obtain sine of a dual number, elemental
+        module procedure tan__${dual_sn}$ ! obtain sine of a dual number, elemental
       #:endfor
     end interface
   #:endif 
   #:if "sqrt" in interface_list 
     interface sqrt
       #:for dual_sn in dual_shortnames
-        module procedure sqrt_${dual_sn}$ ! obtain the sqrt of a dual number, elemental
+        module procedure sqrt__${dual_sn}$ ! obtain the sqrt of a dual number, elemental
       #:endfor
       #:for hdual_sn in hdual_shortnames
-        module procedure sqrt_${hdual_sn}$ ! obtain the sqrt of a dual number, elemental
+        module procedure sqrt__${hdual_sn}$ ! obtain the sqrt of a dual number, elemental
       #:endfor
     end interface
   #:endif 
   #:if "sum" in interface_list 
     interface sum
       #:for dual_sn in dual_shortnames
-        module procedure sum_${dual_sn}$ ! sum a dual array
+        module procedure sum__${dual_sn}$ ! sum a dual array
       #:endfor
     end interface
   #:endif 
   #:if "maxloc" in interface_list 
     interface maxloc
       #:for dual_sn in dual_shortnames
-        module procedure maxloc_${dual_sn}$ ! location of max in a dual array
+        module procedure maxloc__${dual_sn}$ ! location of max in a dual array
       #:endfor
     end interface
   #:endif 

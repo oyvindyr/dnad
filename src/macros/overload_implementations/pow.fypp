@@ -5,7 +5,7 @@
     #:else
         #:set elemental_purity = "impure elemental"
     #:endif
-    ${elemental_purity}$ function pow_${dual_sn}$_i(u, v) result(res)
+    ${elemental_purity}$ function pow__${dual_sn}$_i(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
         integer, intent(in) :: v
         type(${dual_type}$) :: res
@@ -16,7 +16,7 @@
         pow_d_i_counter = pow_d_i_counter + 1
       #:endif
     end function
-    ${elemental_purity}$ function pow_${dual_sn}$_r(u, v) result(res)
+    ${elemental_purity}$ function pow__${dual_sn}$_r(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
         real(${real_kind}$), intent(in) :: v
         type(${dual_type}$) :: res
@@ -27,7 +27,7 @@
         pow_d_r_counter = pow_d_r_counter + 1
       #:endif
     end function
-    ${elemental_purity}$ function pow_${dual_sn}$_${dual_sn}$(u, v) result(res)
+    ${elemental_purity}$ function pow__${dual_sn}$_${dual_sn}$(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
@@ -49,63 +49,63 @@
     #:else
         #:set elemental_purity = "impure elemental"
     #:endif
-    ${elemental_purity}$ function pow_${dual_sn}$_i(u, v) result(res)
+    ${elemental_purity}$ function pow__${dual_sn}$_i(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
         integer, intent(in) :: v
         type(${dual_type}$) :: res
         integer :: i, j, k
         
-        res%f = u%f**v
-        res%g = u%f**(v - 1)*v*u%g
+        res%d%f = u%d%f**v
+        res%d%g = u%d%f**(v - 1)*v*u%d%g
         k = 0
         do j = 1, ${size_dx}$
             do i = j, ${size_dx}$
                 k = k + 1
-                res%h(k) = v*(u%g(i)*u%g(j)*(v - 1)*u%f**(v-2) + u%h(k)*u%f**(v-1))
+                res%h(k) = v*(u%d%g(i)*u%d%g(j)*(v - 1)*u%d%f**(v-2) + u%h(k)*u%d%f**(v-1))
             end do
         end do
       #:if test_coverage
         pow_hd_i_counter = pow_hd_i_counter + 1
       #:endif
     end function
-    ${elemental_purity}$ function pow_${dual_sn}$_r(u, v) result(res)
+    ${elemental_purity}$ function pow__${dual_sn}$_r(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
         real(${real_kind}$), intent(in) :: v
         type(${dual_type}$) :: res
         integer :: i, j, k
         
-        res%f = u%f**v
-        res%g = u%f**(v - 1)*v*u%g
+        res%d%f = u%d%f**v
+        res%d%g = u%d%f**(v - 1)*v*u%d%g
         k = 0
         do j = 1, ${size_dx}$
             do i = j, ${size_dx}$
                 k = k + 1
-                res%h(k) = v*(u%g(i)*u%g(j)*(v - 1)*u%f**(v-2) + u%h(k)*u%f**(v-1))
+                res%h(k) = v*(u%d%g(i)*u%d%g(j)*(v - 1)*u%d%f**(v-2) + u%h(k)*u%d%f**(v-1))
             end do
         end do
       #:if test_coverage
         pow_hd_r_counter = pow_hd_r_counter + 1
       #:endif
     end function
-    ${elemental_purity}$ function pow_${dual_sn}$_${dual_sn}$(u, v) result(res)
+    ${elemental_purity}$ function pow__${dual_sn}$_${dual_sn}$(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
         integer :: i, j, k
         real(${real_kind}$) :: t0,t1,t2,t3
         
-        t0 = u%f**v%f
-        t1 = log(u%f)
-        t2 = 1.0_${real_kind}$/u%f
-        t3 = t1*v%f + 1
-        res%f = t0
-        res%g = t0*(t1*v%g + t2*u%g*v%f)
+        t0 = u%d%f**v%d%f
+        t1 = log(u%d%f)
+        t2 = 1.0_${real_kind}$/u%d%f
+        t3 = t1*v%d%f + 1
+        res%d%f = t0
+        res%d%g = t0*(t1*v%d%g + t2*u%d%g*v%d%f)
         k = 0
         do j = 1, ${size_dx}$
             do i = j, ${size_dx}$
                 k = k + 1
-                res%h(k) = t0*(t1*v%h(k) + t2*u%h(k)*v%f + t2*u%g(j)*(t2*u%g(i)*v%f*(v%f - &
-      1) + t3*v%g(i)) + v%g(j)*(t1**2*v%g(i) + t2*t3*u%g(i)))
+                res%h(k) = t0*(t1*v%h(k) + t2*u%h(k)*v%d%f + t2*u%d%g(j)*(t2*u%d%g(i)*v%d%f*(v%d%f - &
+      1) + t3*v%d%g(i)) + v%d%g(j)*(t1**2*v%d%g(i) + t2*t3*u%d%g(i)))
             end do
         end do
       #:if test_coverage

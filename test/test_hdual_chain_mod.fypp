@@ -4,7 +4,7 @@
 #:include '../src/macros/dnad_overload_interfaces.fypp'
 #:include '../src/macros/dnad_overload_implementations.fypp'
 #:include '../src/macros/dnad_initialize.fypp'
-#:include '../src/macros/dnad_hessian.fypp'
+#:include '../src/macros/dnad_getters.fypp'
 #:include '../src/macros/dnad_jacobi_tr.fypp'
 #:include '../src/macros/dnad_chain_duals.fypp'
 #:include '../src/macros/dnad_display.fypp'
@@ -36,21 +36,19 @@ module test_hdual_chain_mod
     real(dp) :: negative_one = -1.0_dp
   #:endif
     
-    @:dnad_dual_type(dual_y_t, dp, ny, sequence)
-    @:dnad_dual_type(dual_x_t, dp, nx, sequence)
-    @:dnad_hdual_type(hdual_y_t, dp, ny, sequence)
-    @:dnad_hdual_type(hdual_x_t, dp, nx, sequence)
+    @:dnad_dual_type(y:h, dp, ny, sequence)
+    @:dnad_dual_type(x:h, dp, nx, sequence)
 
     interface  f_of_y
         module procedure f_of_y__x ! Function of y, with derivatives wrt x
         module procedure f_of_y__y ! Function of y, with derivatives wrt y
     end interface
 
-    $:dnad_initialize_interface(dual_shortnames = ['dualx', 'dualy'], hdual_shortnames=['hdualx', 'hdualy'])
-    $:dnad_display_interface(dual_shortnames = ['dualx', 'dualy'], hdual_shortnames=['hdualx', 'hdualy'])
-    $:dnad_hessian_interface(hdual_shortnames=['hdualx', 'hdualy'])
-    $:dnad_jacobi_tr_interface(dual_shortnames = ['dualx', 'dualy'], hdual_shortnames=['hdualx', 'hdualy'])
-    $:dnad_chain_duals_interface(dual_y_shortnames = ['dualy', 'hdualy'], dual_x_shortnames = ['dualx', 'hdualx'])
+    $:dnad_initialize_interface(["x:h", "y:h"])
+    $:dnad_display_interface(["x:h", "y:h"])
+    $:dnad_getter_interfaces(["x:h", "y:h"])
+    $:dnad_jacobi_tr_interface(["x:h", "y:h"])
+    $:dnad_chain_duals_interface(["y->x:h"])
     $:dnad_overload_interfaces(selected_interfaces, &
             dual_shortnames = ['dualx', 'dualy'], hdual_shortnames=['hdualx', 'hdualy'])
     
@@ -65,14 +63,14 @@ contains
 
         real(dp) :: x(nx)
 
-        type(hdual_y_t) :: fy
-        type(hdual_y_t) :: yy(ny)
+        type(hdual__y_t) :: fy
+        type(hdual__y_t) :: yy(ny)
 
-        type(hdual_x_t) :: fx
-        type(hdual_x_t) :: yx(ny)
-        type(hdual_x_t) :: xx(nx)
+        type(hdual__x_t) :: fx
+        type(hdual__x_t) :: yx(ny)
+        type(hdual__x_t) :: xx(nx)
 
-        type(hdual_x_t) :: fx_chain
+        type(hdual__x_t) :: fx_chain
 
         ! random x
         call random_number(x)
@@ -85,7 +83,7 @@ contains
         yx = y_of_x(xx)
 
         ! y as a function of y, with derivatives wrt y
-        call initialize(yy, yx(:)%f)
+        call initialize(yy, fvalue(yx))
 
         ! f as a function of y, with derivatives wrt y
         fy = f_of_y(yy)
@@ -110,10 +108,10 @@ contains
         call display(jacobi_tr(yx), "yxjt")
 
         is_ok = .true.
-        if (abs(fx_chain%f - fx%f) > abs_tol) then
+        if (abs(fvalue(fx_chain) - fvalue(fx)) > abs_tol) then
             is_ok = .false.
         end if
-        if (maxval(abs(fx_chain%g - fx%g)) > abs_tol) then
+        if (maxval(abs(gradient(fx_chain) - gradient(fx))) > abs_tol) then
             is_ok = .false.
         end if
         if (maxval(abs(fx_chain%h - fx%h)) > abs_tol) then
@@ -127,43 +125,33 @@ contains
 
   #:for vd in ['x', 'y']
     function f_of_y__${vd}$(y) result(f)
-        type(hdual_${vd}$_t), intent(in) :: y(ny)
-        type(hdual_${vd}$_t) :: f
+        type(hdual__${vd}$_t), intent(in) :: y(ny)
+        type(hdual__${vd}$_t) :: f
         f = sqrt(y(1))*log(y(2))
     end function
   #:endfor
 
     function y_of_x(x) result(y)
-        type(hdual_x_t), intent(in) :: x(nx)
-        type(hdual_x_t) :: y(ny)
+        type(hdual__x_t), intent(in) :: x(nx)
+        type(hdual__x_t) :: y(ny)
         y(1) = sqrt(x(1)**2 + x(2)**2)
         y(2) = x(3)
     end function
 
     function f_of_x(x) result(f)
-        type(hdual_x_t), intent(in) :: x(nx)
-        type(hdual_x_t) :: f
+        type(hdual__x_t), intent(in) :: x(nx)
+        type(hdual__x_t) :: f
         f = f_of_y(y_of_x(x))
     end function
 
-    $:dnad_initialize_implementations("dp", &
-            dual_types = ['dual_x_t', 'dual_y_t'], dual_shortnames = ['dualx', 'dualy'], &
-            hdual_types = ['hdual_x_t', 'hdual_y_t'], hdual_shortnames = ['hdualx', 'hdualy'])
-    $:dnad_display_implementations(&
-            dual_types = ['dual_x_t', 'dual_y_t'], dual_shortnames = ['dualx', 'dualy'], &
-            hdual_types = ['hdual_x_t', 'hdual_y_t'], hdual_shortnames = ['hdualx', 'hdualy'])
-    $:dnad_hessian_implementations("dp", &
-            hdual_types = ['hdual_x_t', 'hdual_y_t'], hdual_shortnames = ['hdualx', 'hdualy'])
-    $:dnad_jacobi_tr_implementations_hdual("dp", &
-            hdual_types = ['hdual_x_t', 'hdual_y_t'], hdual_shortnames = ['hdualx', 'hdualy'], &
-            dual_types  = ['dual_x_t', 'dual_y_t'])
-    $:dnad_jacobi_tr_implementations_dual("dp", &
-            dual_types = ['dual_x_t', 'dual_y_t'], dual_shortnames = ['dualx', 'dualy'])
-    $:dnad_chain_duals_implementation('dual_y_t', 'dualy', 'dual_x_t', 'dualx', is_hyper_dual = False)
-    $:dnad_chain_duals_implementation('hdual_y_t', 'hdualy', 'hdual_x_t', 'hdualx', is_hyper_dual = True)
+    $:dnad_initialize_implementations(["x:h", "y:h"], "dp")
+    $:dnad_display_implementations(["x:h", "y:h"])
+    $:dnad_getter_implementations(["x:h", "y:h"], "dp")
+    $:dnad_jacobi_tr_implementations(["x:h", "y:h"], "dp")
+    $:dnad_chain_duals_implementations(["y->x:h"], "dp")
     $:dnad_overload_implementations("dp", &
             dual_types = ['dual_x_t', 'dual_y_t'], dual_shortnames = ['dualx', 'dualy'], dual_sizes = ['nx', 'ny'], &
-            hdual_types = ['hdual_x_t', 'hdual_y_t'], hdual_shortnames = ['hdualx', 'hdualy'], hdual_sizes = ['nx', 'ny'], &
+            hdual_types = ['hdual__x_t', 'hdual__y_t'], hdual_shortnames = ['hdualx', 'hdualy'], hdual_sizes = ['nx', 'ny'], &
             selected_interfaces=selected_interfaces, stringent=stringent)
     
   #:if stringent

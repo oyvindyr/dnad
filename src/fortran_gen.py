@@ -16,7 +16,7 @@ _literal_replacements = {
 
 # Jinja2 template for a fypp macro
 _macro_template = '''
-#:def {{interface_name}}_{{sn}}(dual_type, dual_sn, real_kind, size_dx, is_pure, test_coverage)
+#:def {{interface_name}}_{{sn}}(dual_type, dual_sn, real_kind, is_pure, test_coverage)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
@@ -29,7 +29,7 @@ _macro_template = '''
 
 # Jinja2 template for binary function for dual numbers inside a fypp macro
 _binary_fun_d_template = '''
-    ${elemental_purity}$ function {{interface_name}}_{{usn}}_{{vsn}}(u, v) result(res)
+    ${elemental_purity}$ function {{interface_name}}__{{usn}}_{{vsn}}(u, v) result(res)
         {{u_type}}, intent(in) :: u
         {{v_type}}, intent(in) :: v
         {{res_type}} :: res
@@ -48,7 +48,7 @@ _binary_fun_d_template = '''
 
 # Jinja2 template for binary function for dual numbers inside a fypp macro
 _unary_fun_d_template = '''
-    ${elemental_purity}$ function {{interface_name}}_{{usn}}(u) result(res)
+    ${elemental_purity}$ function {{interface_name}}__{{usn}}(u) result(res)
         {{u_type}}, intent(in) :: u
         {{res_type}} :: res
         {% if temp_assigns|length > 0 -%}
@@ -66,7 +66,7 @@ _unary_fun_d_template = '''
 
 # Jinja2 template for a binary function for hyper-dual numbers inside a fypp macro
 _binary_fun_hd_template = '''
-    ${elemental_purity}$ function {{interface_name}}_{{usn}}_{{vsn}}(u, v) result(res)
+    ${elemental_purity}$ function {{interface_name}}__{{usn}}_{{vsn}}(u, v) result(res)
         {{u_type}}, intent(in) :: u
         {{v_type}}, intent(in) :: v
         {{res_type}} :: res
@@ -80,8 +80,8 @@ _binary_fun_hd_template = '''
         {{f_assign}}
         {{g_assign}}
         k = 0
-        do j = 1, ${size_dx}$
-            do i = j, ${size_dx}$
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 {{h_assign}}
             end do
@@ -93,7 +93,7 @@ _binary_fun_hd_template = '''
 
 # Jinja2 template for a unary function for hyper-dual numbers inside a fypp macro
 _unary_fun_hd_template = '''
-    ${elemental_purity}$ function {{interface_name}}_{{usn}}(u) result(res)
+    ${elemental_purity}$ function {{interface_name}}__{{usn}}(u) result(res)
         {{u_type}}, intent(in) :: u
         {{res_type}} :: res
         integer :: i, j, k
@@ -106,8 +106,8 @@ _unary_fun_hd_template = '''
         {{f_assign}}
         {{g_assign}}
         k = 0
-        do j = 1, ${size_dx}$
-            do i = j, ${size_dx}$
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
                 {{h_assign}}
             end do
@@ -120,7 +120,7 @@ _unary_fun_hd_template = '''
 # Jinja2 template for a binary function for hyper-dual numbers inside a fypp macro
 #  Version without loop. Applies when ddx is not dependent on dx(i) and dx(j)
 _binary_fun_hd_noloop_template = '''
-    ${elemental_purity}$ function {{interface_name}}_{{usn}}_{{vsn}}(u, v) result(res)
+    ${elemental_purity}$ function {{interface_name}}__{{usn}}_{{vsn}}(u, v) result(res)
         {{u_type}}, intent(in) :: u
         {{v_type}}, intent(in) :: v
         {{res_type}} :: res
@@ -141,7 +141,7 @@ _binary_fun_hd_noloop_template = '''
 # Jinja2 template for a unary function for hyper-dual numbers inside a fypp macro
 #  Version without loop. Applies when ddx is not dependent on dx(i) and dx(j)
 _unary_fun_hd_noloop_template = '''
-    ${elemental_purity}$ function {{interface_name}}_{{usn}}(u) result(res)
+    ${elemental_purity}$ function {{interface_name}}__{{usn}}(u) result(res)
         {{u_type}}, intent(in) :: u
         {{res_type}} :: res
         {% if temp_assigns|length > 0 -%}
@@ -253,30 +253,46 @@ def replace_literals(code):
         code = code.replace(k, v)
     return code
 
-def replacements_x(c, u_type, v_type=None):
+def replacements_x(c, u_type, v_type=None, is_hyper_dual=False):
+    if is_hyper_dual:
+        uf = f'u%d%f'
+        vf = f'v%d%f'
+    else:
+        uf = f'u%f'
+        vf = f'v%f'
     if u_type == 'dual':
-        c = c.replace('u_x', f'u%f')
+        c = c.replace('u_x', uf)
     else:
         c = c.replace('u_x', 'u')
 
     if v_type is not None:
         if v_type == 'dual':
-            c = c.replace('v_x', f'v%f')
+            c = c.replace('v_x', vf)
         else:
             c = c.replace('v_x', 'v')
     return c
 
-def replacements_dx(c, u_type, v_type=None):
+def replacements_dx(c, u_type, v_type=None, is_hyper_dual=False):
+    if is_hyper_dual:
+        uf = f'u%d%f'
+        ug = f'u%d%g'
+        vf = f'v%d%f'
+        vg = f'v%d%g'
+    else:
+        uf = f'u%f'
+        ug = f'u%g'
+        vf = f'v%f'
+        vg = f'v%g'
     if u_type == 'dual':
-        c = c.replace('u_x', f'u%f')
-        c = c.replace('u_dx1', f'u%g') # Vector
+        c = c.replace('u_x', uf)
+        c = c.replace('u_dx1', ug) # Vector
     else:
         c = c.replace('u_x', 'u')
 
     if v_type is not None:
         if v_type == 'dual':
-            c = c.replace('v_x', f'v%f')
-            c = c.replace('v_dx1', f'v%g') # Vector
+            c = c.replace('v_x', vf)
+            c = c.replace('v_dx1', vg) # Vector
         else:
             c = c.replace('v_x', 'v')
     return c
@@ -291,34 +307,34 @@ def replacements_ddx(c, u_type, v_type=None):
 
 def replacements_ddx_with_loop(c, u_type, v_type):
     if u_type == 'dual':
-        c = c.replace('u_x', f'u%f')
-        c = c.replace('u_dx1', f'u%g(i)')
+        c = c.replace('u_x', f'u%d%f')
+        c = c.replace('u_dx1', f'u%d%g(i)')
     else:
         c = c.replace('u_x', 'u')
 
     if v_type is not None:
         if v_type == 'dual':
-            c = c.replace('v_x', f'v%f')
-            c = c.replace('v_dx1', f'v%g(i)')
+            c = c.replace('v_x', f'v%d%f')
+            c = c.replace('v_dx1', f'v%d%g(i)')
         else:
             c = c.replace('v_x', 'v')
 
-    c = c.replace('u_dx2', f'u%g(j)')
+    c = c.replace('u_dx2', f'u%d%g(j)')
     c = c.replace('u_ddx', f'u%h(k)')
     if v_type is not None:
-        c = c.replace('v_dx2', f'v%g(j)')
+        c = c.replace('v_dx2', f'v%d%g(j)')
         c = c.replace('v_ddx', f'v%h(k)')
     return c
 
 def replacements_ddx_no_loop(c, u_type, v_type):
     if u_type == 'dual':
-        c = c.replace('u_x', f'u%f')
+        c = c.replace('u_x', f'u%d%f')
     else:
         c = c.replace('u_x', 'u')
 
     if v_type is not None:
         if v_type == 'dual':
-            c = c.replace('v_x', f'v%f')
+            c = c.replace('v_x', f'v%d%f')
         else:
             c = c.replace('v_x', 'v')
 
@@ -454,7 +470,7 @@ def binary_overload(fun, is_hyper_dual=True, arg_class=('dual','dual')):
 
     if is_hyper_dual:
         expr = (f, df1, ddf)
-        assign_to = (f'res%f', f'res%g', f'res%h(k)')
+        assign_to = (f'res%d%f', f'res%d%g', f'res%h(k)')
     else:
         expr = (f, df1)
         assign_to = (f'res%f', f'res%g')
@@ -474,10 +490,10 @@ def binary_overload(fun, is_hyper_dual=True, arg_class=('dual','dual')):
     # Set temporary variables
     temp_assigns = []
     for var, var_expr in rvar:
-        temp_assigns.append(replacements_x(fcode(var_expr,assign_to=var,source_format='free',standard=95), u_class, v_class))
+        temp_assigns.append(replacements_x(fcode(var_expr,assign_to=var,source_format='free',standard=95), u_class, v_class, is_hyper_dual))
 
-    f_assign = replacements_x(fcode(rexpr[0], assign_to=assign_to[0], source_format='free',standard=95), u_class, v_class)
-    g_assign = replacements_dx(fcode(rexpr[1], assign_to=assign_to[1], source_format='free',standard=95), u_class, v_class)
+    f_assign = replacements_x(fcode(rexpr[0], assign_to=assign_to[0], source_format='free',standard=95), u_class, v_class, is_hyper_dual)
+    g_assign = replacements_dx(fcode(rexpr[1], assign_to=assign_to[1], source_format='free',standard=95), u_class, v_class, is_hyper_dual)
     if is_hyper_dual:
         has_loop, h_assign = replacements_ddx(fcode(rexpr[2], assign_to=assign_to[2], source_format='free',standard=95), u_class, v_class)
         if not has_loop:
@@ -604,7 +620,7 @@ def unary_overload(fun, is_hyper_dual=True, u_class='dual'):
 
     if is_hyper_dual:
         expr = (f, df1, ddf)
-        assign_to = (f'res%f', f'res%g', f'res%h(k)')
+        assign_to = (f'res%d%f', f'res%d%g', f'res%h(k)')
     else:
         expr = (f, df1)
         assign_to = (f'res%f', f'res%g')
@@ -622,10 +638,10 @@ def unary_overload(fun, is_hyper_dual=True, u_class='dual'):
     # Set temporary variables
     temp_assigns = []
     for var, var_expr in rvar:
-        temp_assigns.append(replacements_x(fcode(var_expr,assign_to=var,source_format='free',standard=95), u_class))
+        temp_assigns.append(replacements_x(fcode(var_expr,assign_to=var,source_format='free',standard=95), u_class, None, is_hyper_dual))
 
-    f_assign = replacements_x(fcode(rexpr[0], assign_to=assign_to[0], source_format='free',standard=95), u_class)
-    g_assign = replacements_dx(fcode(rexpr[1], assign_to=assign_to[1], source_format='free',standard=95), u_class)
+    f_assign = replacements_x(fcode(rexpr[0], assign_to=assign_to[0], source_format='free',standard=95), u_class, None, is_hyper_dual)
+    g_assign = replacements_dx(fcode(rexpr[1], assign_to=assign_to[1], source_format='free',standard=95), u_class, None, is_hyper_dual)
     if is_hyper_dual:
         has_loop, h_assign = replacements_ddx(fcode(rexpr[2], assign_to=assign_to[2], source_format='free',standard=95), u_class)
         if not has_loop:

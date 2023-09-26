@@ -1,11 +1,11 @@
 
-#:def log_d(dual_type, dual_sn, real_kind, size_dx, is_pure, test_coverage)
+#:def log_d(dual_type, dual_sn, real_kind, is_pure, test_coverage)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"
     #:endif
-    ${elemental_purity}$ function log_${dual_sn}$(u) result(res)
+    ${elemental_purity}$ function log__${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
         
@@ -17,26 +17,26 @@
     end function
 #:enddef
 
-#:def log_hd(dual_type, dual_sn, real_kind, size_dx, is_pure, test_coverage)
+#:def log_hd(dual_type, dual_sn, real_kind, is_pure, test_coverage)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"
     #:endif
-    ${elemental_purity}$ function log_${dual_sn}$(u) result(res)
+    ${elemental_purity}$ function log__${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
         integer :: i, j, k
         real(${real_kind}$) :: t0
         
-        t0 = 1.0_${real_kind}$/u%f
-        res%f = log(u%f)
-        res%g = t0*u%g
+        t0 = 1.0_${real_kind}$/u%d%f
+        res%d%f = log(u%d%f)
+        res%d%g = t0*u%d%g
         k = 0
-        do j = 1, ${size_dx}$
-            do i = j, ${size_dx}$
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
-                res%h(k) = t0*(-t0*u%g(i)*u%g(j) + u%h(k))
+                res%h(k) = t0*(-t0*u%d%g(i)*u%d%g(j) + u%h(k))
             end do
         end do
       #:if test_coverage

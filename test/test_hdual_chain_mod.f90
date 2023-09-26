@@ -9,30 +9,28 @@ module test_hdual_chain_mod
     integer, parameter :: nx = 3
 
     
-    type :: dual_y_t
+    type :: dual__y_t
         !! dual number type
         sequence
         real(dp) :: f = 0  ! functional value
         real(dp) :: g(ny) = 0  ! derivatives
     end type
-    type :: dual_x_t
-        !! dual number type
-        sequence
-        real(dp) :: f = 0  ! functional value
-        real(dp) :: g(nx) = 0  ! derivatives
-    end type
-    type :: hdual_y_t
+    type :: hdual__y_t
         !! hyper-dual number type
         sequence
-        real(dp) :: f = 0  ! functional value
-        real(dp) :: g(ny) = 0  ! derivatives
+        type(dual__y_t) :: d  ! dual number
         real(dp) :: h(ny*(ny + 1)/2) = 0  ! Lower triangular of Hessian
     end type
-    type :: hdual_x_t
-        !! hyper-dual number type
+    type :: dual__x_t
+        !! dual number type
         sequence
         real(dp) :: f = 0  ! functional value
         real(dp) :: g(nx) = 0  ! derivatives
+    end type
+    type :: hdual__x_t
+        !! hyper-dual number type
+        sequence
+        type(dual__x_t) :: d  ! dual number
         real(dp) :: h(nx*(nx + 1)/2) = 0  ! Lower triangular of Hessian
     end type
 
@@ -43,50 +41,74 @@ module test_hdual_chain_mod
 
     interface initialize 
         !! Initialize a dual or hyper dual number
-        module procedure initialize_dualx_scalar
-        module procedure initialize_dualx_vector
-        module procedure initialize_dualy_scalar
-        module procedure initialize_dualy_vector
-        module procedure initialize_hdualx_scalar
-        module procedure initialize_hdualx_vector
-        module procedure initialize_hdualy_scalar
-        module procedure initialize_hdualy_vector
+        module procedure initialize__d_x_scalar
+        module procedure initialize__d_x_vector
+        module procedure initialize__hd_x_scalar
+        module procedure initialize__hd_x_vector
+        module procedure initialize__d_y_scalar
+        module procedure initialize__d_y_vector
+        module procedure initialize__hd_y_scalar
+        module procedure initialize__hd_y_vector
     end interface
     interface display
         !! Pretty-print one or more dual or hyper dual numbers
-        module procedure display__dualx_1input
-        module procedure display__dualx_1input_vec
-        module procedure display__dualx_1input_mat
-        module procedure display__dualx_2input
-        module procedure display__dualy_1input
-        module procedure display__dualy_1input_vec
-        module procedure display__dualy_1input_mat
-        module procedure display__dualy_2input
-        module procedure display__hdualx_1input
-        module procedure display__hdualx_1input_vec
-        module procedure display__hdualx_2input
-        module procedure display__hdualy_1input
-        module procedure display__hdualy_1input_vec
-        module procedure display__hdualy_2input
+        module procedure display__d_x_1input
+        module procedure display__d_x_1input_vec
+        module procedure display__d_x_1input_mat
+        module procedure display__d_x_2input
+        module procedure display__hd_x_1input
+        module procedure display__hd_x_1input_vec
+        module procedure display__hd_x_2input
+        module procedure display__d_y_1input
+        module procedure display__d_y_1input_vec
+        module procedure display__d_y_1input_mat
+        module procedure display__d_y_2input
+        module procedure display__hd_y_1input
+        module procedure display__hd_y_1input_vec
+        module procedure display__hd_y_2input
     end interface
+    interface fvalue
+        !! Extract function value from a dual or hyper-dual number
+        module procedure fvalue__d_x
+        module procedure fvalue__d_x_r1
+        module procedure fvalue__d_x_r2
+        module procedure fvalue__hd_x
+        module procedure fvalue__hd_x_r1
+        module procedure fvalue__hd_x_r2
+        module procedure fvalue__d_y
+        module procedure fvalue__d_y_r1
+        module procedure fvalue__d_y_r2
+        module procedure fvalue__hd_y
+        module procedure fvalue__hd_y_r1
+        module procedure fvalue__hd_y_r2
+    end interface
+
+    interface gradient
+        !! Extract gradient from a dual or hyper-dual number
+        module procedure gradient__d_x
+        module procedure gradient__hd_x
+        module procedure gradient__d_y
+        module procedure gradient__hd_y
+    end interface
+
     interface hessian 
         !! Extract Hessian from a hyper-dual number
-        module procedure hessian_hdualx
-        module procedure hessian_hdualy
+        module procedure hessian__hd_x
+        module procedure hessian__hd_y
     end interface
     interface jacobi_tr
         !! Extract transpose of Jacobi matrix from a vector of dual or hyper-dual numbers.
         !! - A hyper-dual vector results in a dual matrix.
         !! - A dual vector results in a real matrix.
-        module procedure jacobi_tr__dualx
-        module procedure jacobi_tr__dualy
-        module procedure jacobi_tr__hdualx
-        module procedure jacobi_tr__hdualy
+        module procedure jacobi_tr__d_x
+        module procedure jacobi_tr__hd_x
+        module procedure jacobi_tr__d_y
+        module procedure jacobi_tr__hd_y
     end interface
     interface chain_duals
         !! Generic function for converting a dual or hyper-dual number from one dual-type to another by applying the chain rule of derivation
-        module procedure chain_duals__dualy_dualx
-        module procedure chain_duals__hdualy_hdualx
+        module procedure chain_duals__d_y_x
+        module procedure chain_duals__hd_y_x
     end interface
     interface assignment (=)
         module procedure assign_dualx_i  ! dual=integer, elemental
@@ -218,14 +240,14 @@ contains
 
         real(dp) :: x(nx)
 
-        type(hdual_y_t) :: fy
-        type(hdual_y_t) :: yy(ny)
+        type(hdual__y_t) :: fy
+        type(hdual__y_t) :: yy(ny)
 
-        type(hdual_x_t) :: fx
-        type(hdual_x_t) :: yx(ny)
-        type(hdual_x_t) :: xx(nx)
+        type(hdual__x_t) :: fx
+        type(hdual__x_t) :: yx(ny)
+        type(hdual__x_t) :: xx(nx)
 
-        type(hdual_x_t) :: fx_chain
+        type(hdual__x_t) :: fx_chain
 
         ! random x
         call random_number(x)
@@ -238,7 +260,7 @@ contains
         yx = y_of_x(xx)
 
         ! y as a function of y, with derivatives wrt y
-        call initialize(yy, yx(:)%f)
+        call initialize(yy, fvalue(yx))
 
         ! f as a function of y, with derivatives wrt y
         fy = f_of_y(yy)
@@ -263,10 +285,10 @@ contains
         call display(jacobi_tr(yx), "yxjt")
 
         is_ok = .true.
-        if (abs(fx_chain%f - fx%f) > abs_tol) then
+        if (abs(fvalue(fx_chain) - fvalue(fx)) > abs_tol) then
             is_ok = .false.
         end if
-        if (maxval(abs(fx_chain%g - fx%g)) > abs_tol) then
+        if (maxval(abs(gradient(fx_chain) - gradient(fx))) > abs_tol) then
             is_ok = .false.
         end if
         if (maxval(abs(fx_chain%h - fx%h)) > abs_tol) then
@@ -279,32 +301,32 @@ contains
     end function
 
     function f_of_y__x(y) result(f)
-        type(hdual_x_t), intent(in) :: y(ny)
-        type(hdual_x_t) :: f
+        type(hdual__x_t), intent(in) :: y(ny)
+        type(hdual__x_t) :: f
         f = sqrt(y(1))*log(y(2))
     end function
     function f_of_y__y(y) result(f)
-        type(hdual_y_t), intent(in) :: y(ny)
-        type(hdual_y_t) :: f
+        type(hdual__y_t), intent(in) :: y(ny)
+        type(hdual__y_t) :: f
         f = sqrt(y(1))*log(y(2))
     end function
 
     function y_of_x(x) result(y)
-        type(hdual_x_t), intent(in) :: x(nx)
-        type(hdual_x_t) :: y(ny)
+        type(hdual__x_t), intent(in) :: x(nx)
+        type(hdual__x_t) :: y(ny)
         y(1) = sqrt(x(1)**2 + x(2)**2)
         y(2) = x(3)
     end function
 
     function f_of_x(x) result(f)
-        type(hdual_x_t), intent(in) :: x(nx)
-        type(hdual_x_t) :: f
+        type(hdual__x_t), intent(in) :: x(nx)
+        type(hdual__x_t) :: f
         f = f_of_y(y_of_x(x))
     end function
 
-    pure subroutine initialize_dualx_scalar(dual, val, idiff)
+    pure subroutine initialize__d_x_scalar(dual, val, idiff)
         !! Initialize a single dual number, whose derivative with respect to design variable 'idiff' is 1
-        type(dual_x_t), intent(out) :: dual
+        type(dual__x_t), intent(out) :: dual
         real(dp), intent(in) :: val
         integer, intent(in) :: idiff
         
@@ -313,10 +335,10 @@ contains
         dual%g(idiff) = 1
 
     end subroutine
-    pure subroutine initialize_dualx_vector(dual, val)
+    pure subroutine initialize__d_x_vector(dual, val)
         !! Initialize a vector of dual numbers, where the derivative of 
         !! number i with respect to design variable i is 1
-        type(dual_x_t), intent(out) :: dual(:)
+        type(dual__x_t), intent(out) :: dual(:)
         real(dp), intent(in) :: val(:)
 
         integer :: i
@@ -328,9 +350,37 @@ contains
         end do
 
     end subroutine
-    pure subroutine initialize_dualy_scalar(dual, val, idiff)
+    pure subroutine initialize__hd_x_scalar(hdual, val, idiff)
+        !! Initialize a single hyper-dual number, whose derivative with respect to design variable 'idiff' is 1
+        type(hdual__x_t), intent(out) :: hdual
+        real(dp), intent(in) :: val
+        integer, intent(in) :: idiff
+        
+        hdual%d%f = val
+        hdual%d%g = 0
+        hdual%h = 0
+        hdual%d%g(idiff) = 1
+
+    end subroutine
+    pure subroutine initialize__hd_x_vector(hdual, val)
+        !! Initialize a vector of hyper-dual numbers, where the derivative of 
+        !! number i with respect to design variable i is 1
+        type(hdual__x_t), intent(out) :: hdual(:)
+        real(dp), intent(in) :: val(:)
+
+        integer :: i
+        
+        do i = 1, size(hdual)
+            hdual(i)%d%f = val(i)
+            hdual(i)%d%g = 0
+            hdual(i)%h = 0
+            hdual(i)%d%g(i) = 1
+        end do
+
+    end subroutine
+    pure subroutine initialize__d_y_scalar(dual, val, idiff)
         !! Initialize a single dual number, whose derivative with respect to design variable 'idiff' is 1
-        type(dual_y_t), intent(out) :: dual
+        type(dual__y_t), intent(out) :: dual
         real(dp), intent(in) :: val
         integer, intent(in) :: idiff
         
@@ -339,10 +389,10 @@ contains
         dual%g(idiff) = 1
 
     end subroutine
-    pure subroutine initialize_dualy_vector(dual, val)
+    pure subroutine initialize__d_y_vector(dual, val)
         !! Initialize a vector of dual numbers, where the derivative of 
         !! number i with respect to design variable i is 1
-        type(dual_y_t), intent(out) :: dual(:)
+        type(dual__y_t), intent(out) :: dual(:)
         real(dp), intent(in) :: val(:)
 
         integer :: i
@@ -354,64 +404,36 @@ contains
         end do
 
     end subroutine
-    pure subroutine initialize_hdualx_scalar(hdual, val, idiff)
+    pure subroutine initialize__hd_y_scalar(hdual, val, idiff)
         !! Initialize a single hyper-dual number, whose derivative with respect to design variable 'idiff' is 1
-        type(hdual_x_t), intent(out) :: hdual
+        type(hdual__y_t), intent(out) :: hdual
         real(dp), intent(in) :: val
         integer, intent(in) :: idiff
         
-        hdual%f = val
-        hdual%g = 0
+        hdual%d%f = val
+        hdual%d%g = 0
         hdual%h = 0
-        hdual%g(idiff) = 1
+        hdual%d%g(idiff) = 1
 
     end subroutine
-    pure subroutine initialize_hdualx_vector(hdual, val)
+    pure subroutine initialize__hd_y_vector(hdual, val)
         !! Initialize a vector of hyper-dual numbers, where the derivative of 
         !! number i with respect to design variable i is 1
-        type(hdual_x_t), intent(out) :: hdual(:)
+        type(hdual__y_t), intent(out) :: hdual(:)
         real(dp), intent(in) :: val(:)
 
         integer :: i
         
         do i = 1, size(hdual)
-            hdual(i)%f = val(i)
-            hdual(i)%g = 0
+            hdual(i)%d%f = val(i)
+            hdual(i)%d%g = 0
             hdual(i)%h = 0
-            hdual(i)%g(i) = 1
+            hdual(i)%d%g(i) = 1
         end do
 
     end subroutine
-    pure subroutine initialize_hdualy_scalar(hdual, val, idiff)
-        !! Initialize a single hyper-dual number, whose derivative with respect to design variable 'idiff' is 1
-        type(hdual_y_t), intent(out) :: hdual
-        real(dp), intent(in) :: val
-        integer, intent(in) :: idiff
-        
-        hdual%f = val
-        hdual%g = 0
-        hdual%h = 0
-        hdual%g(idiff) = 1
-
-    end subroutine
-    pure subroutine initialize_hdualy_vector(hdual, val)
-        !! Initialize a vector of hyper-dual numbers, where the derivative of 
-        !! number i with respect to design variable i is 1
-        type(hdual_y_t), intent(out) :: hdual(:)
-        real(dp), intent(in) :: val(:)
-
-        integer :: i
-        
-        do i = 1, size(hdual)
-            hdual(i)%f = val(i)
-            hdual(i)%g = 0
-            hdual(i)%h = 0
-            hdual(i)%g(i) = 1
-        end do
-
-    end subroutine
-    subroutine display__dualx_1input(d, name)
-        type(dual_x_t), intent(in) :: d
+    subroutine display__d_x_1input(d, name)
+        type(dual__x_t), intent(in) :: d
         character(len=*), intent(in) :: name
         integer :: i
 
@@ -425,8 +447,8 @@ contains
             print '(I3, ES22.14)' , i, d%g(i)
         end do
     end subroutine
-    subroutine display__dualx_1input_vec(d, name)
-        type(dual_x_t), intent(in) :: d(:)
+    subroutine display__d_x_1input_vec(d, name)
+        type(dual__x_t), intent(in) :: d(:)
         character(len=*), intent(in) :: name
         integer :: i, p
 
@@ -444,8 +466,8 @@ contains
             end do
         end do
     end subroutine
-    subroutine display__dualx_1input_mat(d, name)
-        type(dual_x_t), intent(in) :: d(:, :)
+    subroutine display__d_x_1input_mat(d, name)
+        type(dual__x_t), intent(in) :: d(:, :)
         character(len=*), intent(in) :: name
         integer :: i, p, q
 
@@ -467,9 +489,9 @@ contains
             end do
         end do
     end subroutine
-    subroutine display__dualx_2input(d1, d2, name1, name2)
-        type(dual_x_t), intent(in) :: d1
-        type(dual_x_t), intent(in) :: d2
+    subroutine display__d_x_2input(d1, d2, name1, name2)
+        type(dual__x_t), intent(in) :: d1
+        type(dual__x_t), intent(in) :: d2
         character(len=*), intent(in) :: name1
         character(len=*), intent(in) :: name2
         integer :: i
@@ -484,8 +506,94 @@ contains
             print '(I3, ES22.14, ES22.14)' , i, d1%g(i), d2%g(i)
         end do
     end subroutine
-    subroutine display__dualy_1input(d, name)
-        type(dual_y_t), intent(in) :: d
+    subroutine display__hd_x_1input(d, name)
+        type(hdual__x_t), intent(in) :: d
+        character(len=*), intent(in) :: name
+        integer :: i, j, k
+
+        print*, "Function values:"
+        print*, " ",name,"%d%f"
+        print '(ES22.14)', d%d%f
+
+        print*, "Derivatives:"
+        print*, " i    ", name, "%d%g(i)"
+        do i = 1, size(d%d%g)
+            print '(I3, ES22.14)' , i, d%d%g(i)
+        end do
+
+        print*, "Lower triangular of Hessian matrix, h(i,j)"
+        print*, " k  i  j   ", name, "%h(k)"
+        k = 0
+        do j = 1, size(d%d%g)
+            do i = j, size(d%d%g)
+                k = k + 1
+                print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d%h(k)
+            end do
+        end do
+
+    end subroutine
+    subroutine display__hd_x_1input_vec(d, name)
+        type(hdual__x_t), intent(in) :: d(:)
+        character(len=*), intent(in) :: name
+        integer :: i, j, k, p
+
+        print*, "Function values:"
+        print*, " ",name,"(p)%d%f"
+        do p = 1, size(d)
+            print '(I3, ES22.14)', p, d(p)%d%f
+        end do
+
+        print*, "Derivatives:"
+        print*, " p   i    ", name, "(p)%d%g(i)"
+        do p = 1, size(d)
+            do i = 1, size(d(1)%d%g)
+                print '(I3, I3, ES22.14)', p, i, d(p)%d%g(i)
+            end do
+        end do
+
+        print*, "Lower triangular of Hessian matrix, h(i,j)"
+        print*, " p  k  i  j   ", name, "(p)%h(k)"
+        do p = 1, size(d)
+            k = 0
+            do j = 1, size(d(1)%d%g)
+                do i = j, size(d(1)%d%g)
+                    k = k + 1
+                    print '(I3, I3, I3, I3, ES22.14, ES22.14)', p, k, i, j, d(p)%h(k)
+                end do
+            end do
+        end do
+
+    end subroutine
+    subroutine display__hd_x_2input(d1, d2, name1, name2)
+      type(hdual__x_t), intent(in) :: d1
+      type(hdual__x_t), intent(in) :: d2
+      character(len=*), intent(in) :: name1
+      character(len=*), intent(in) :: name2
+      integer :: i, j, k
+
+        print*, "Function values:"
+        print*, " ",name1, "%d%f                  ", name2, "%d%f"
+        print '(ES22.14, ES22.14)', d1%d%f, d2%d%f
+
+        print*, "Derivatives:"
+        print*, " i    ", name1, "%d%g(i)                ", name2, "%d%g(i)"
+        do i = 1, size(d1%d%g)
+            print '(I3, ES22.14, ES22.14)' , i, d1%d%g(i), d2%d%g(i)
+        end do
+
+      print*, "Lower triangular of Hessian matrix, h(i,j)"
+      print*, " k  i  j   ", name1, "%h(k)            ", name2, "%h(k)"
+      k = 0
+      do j = 1, size(d1%d%g)
+          do i = j, size(d1%d%g)
+              k = k + 1
+              print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d1%h(k), d2%h(k)
+          end do
+      end do
+
+    end subroutine
+    subroutine display__d_y_1input(d, name)
+        type(dual__y_t), intent(in) :: d
         character(len=*), intent(in) :: name
         integer :: i
 
@@ -499,8 +607,8 @@ contains
             print '(I3, ES22.14)' , i, d%g(i)
         end do
     end subroutine
-    subroutine display__dualy_1input_vec(d, name)
-        type(dual_y_t), intent(in) :: d(:)
+    subroutine display__d_y_1input_vec(d, name)
+        type(dual__y_t), intent(in) :: d(:)
         character(len=*), intent(in) :: name
         integer :: i, p
 
@@ -518,8 +626,8 @@ contains
             end do
         end do
     end subroutine
-    subroutine display__dualy_1input_mat(d, name)
-        type(dual_y_t), intent(in) :: d(:, :)
+    subroutine display__d_y_1input_mat(d, name)
+        type(dual__y_t), intent(in) :: d(:, :)
         character(len=*), intent(in) :: name
         integer :: i, p, q
 
@@ -541,9 +649,9 @@ contains
             end do
         end do
     end subroutine
-    subroutine display__dualy_2input(d1, d2, name1, name2)
-        type(dual_y_t), intent(in) :: d1
-        type(dual_y_t), intent(in) :: d2
+    subroutine display__d_y_2input(d1, d2, name1, name2)
+        type(dual__y_t), intent(in) :: d1
+        type(dual__y_t), intent(in) :: d2
         character(len=*), intent(in) :: name1
         character(len=*), intent(in) :: name2
         integer :: i
@@ -558,49 +666,48 @@ contains
             print '(I3, ES22.14, ES22.14)' , i, d1%g(i), d2%g(i)
         end do
     end subroutine
-
-    subroutine display__hdualx_1input(d, name)
-        type(hdual_x_t), intent(in) :: d
+    subroutine display__hd_y_1input(d, name)
+        type(hdual__y_t), intent(in) :: d
         character(len=*), intent(in) :: name
         integer :: i, j, k
 
         print*, "Function values:"
-        print*, " ",name,"%f"
-        print '(ES22.14)', d%f
+        print*, " ",name,"%d%f"
+        print '(ES22.14)', d%d%f
 
         print*, "Derivatives:"
-        print*, " i    ", name, "%g(i)"
-        do i = 1, size(d%g)
-            print '(I3, ES22.14)' , i, d%g(i)
+        print*, " i    ", name, "%d%g(i)"
+        do i = 1, size(d%d%g)
+            print '(I3, ES22.14)' , i, d%d%g(i)
         end do
 
         print*, "Lower triangular of Hessian matrix, h(i,j)"
         print*, " k  i  j   ", name, "%h(k)"
         k = 0
-        do j = 1, size(d%g)
-            do i = j, size(d%g)
+        do j = 1, size(d%d%g)
+            do i = j, size(d%d%g)
                 k = k + 1
                 print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d%h(k)
             end do
         end do
 
     end subroutine
-    subroutine display__hdualx_1input_vec(d, name)
-        type(hdual_x_t), intent(in) :: d(:)
+    subroutine display__hd_y_1input_vec(d, name)
+        type(hdual__y_t), intent(in) :: d(:)
         character(len=*), intent(in) :: name
         integer :: i, j, k, p
 
         print*, "Function values:"
-        print*, " ",name,"(p)%f"
+        print*, " ",name,"(p)%d%f"
         do p = 1, size(d)
-            print '(I3, ES22.14)', p, d(p)%f
+            print '(I3, ES22.14)', p, d(p)%d%f
         end do
 
         print*, "Derivatives:"
-        print*, " p   i    ", name, "(p)%g(i)"
+        print*, " p   i    ", name, "(p)%d%g(i)"
         do p = 1, size(d)
-            do i = 1, size(d(1)%g)
-                print '(I3, I3, ES22.14)', p, i, d(p)%g(i)
+            do i = 1, size(d(1)%d%g)
+                print '(I3, I3, ES22.14)', p, i, d(p)%d%g(i)
             end do
         end do
 
@@ -608,8 +715,8 @@ contains
         print*, " p  k  i  j   ", name, "(p)%h(k)"
         do p = 1, size(d)
             k = 0
-            do j = 1, size(d(1)%g)
-                do i = j, size(d(1)%g)
+            do j = 1, size(d(1)%d%g)
+                do i = j, size(d(1)%d%g)
                     k = k + 1
                     print '(I3, I3, I3, I3, ES22.14, ES22.14)', p, k, i, j, d(p)%h(k)
                 end do
@@ -617,114 +724,28 @@ contains
         end do
 
     end subroutine
-    subroutine display__hdualx_2input(d1, d2, name1, name2)
-      type(hdual_x_t), intent(in) :: d1
-      type(hdual_x_t), intent(in) :: d2
+    subroutine display__hd_y_2input(d1, d2, name1, name2)
+      type(hdual__y_t), intent(in) :: d1
+      type(hdual__y_t), intent(in) :: d2
       character(len=*), intent(in) :: name1
       character(len=*), intent(in) :: name2
       integer :: i, j, k
 
         print*, "Function values:"
-        print*, " ",name1, "%f                  ", name2, "%f"
-        print '(ES22.14, ES22.14)', d1%f, d2%f
+        print*, " ",name1, "%d%f                  ", name2, "%d%f"
+        print '(ES22.14, ES22.14)', d1%d%f, d2%d%f
 
         print*, "Derivatives:"
-        print*, " i    ", name1, "%g(i)                ", name2, "%g(i)"
-        do i = 1, size(d1%g)
-            print '(I3, ES22.14, ES22.14)' , i, d1%g(i), d2%g(i)
+        print*, " i    ", name1, "%d%g(i)                ", name2, "%d%g(i)"
+        do i = 1, size(d1%d%g)
+            print '(I3, ES22.14, ES22.14)' , i, d1%d%g(i), d2%d%g(i)
         end do
 
       print*, "Lower triangular of Hessian matrix, h(i,j)"
       print*, " k  i  j   ", name1, "%h(k)            ", name2, "%h(k)"
       k = 0
-      do j = 1, size(d1%g)
-          do i = j, size(d1%g)
-              k = k + 1
-              print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d1%h(k), d2%h(k)
-          end do
-      end do
-
-    end subroutine
-    subroutine display__hdualy_1input(d, name)
-        type(hdual_y_t), intent(in) :: d
-        character(len=*), intent(in) :: name
-        integer :: i, j, k
-
-        print*, "Function values:"
-        print*, " ",name,"%f"
-        print '(ES22.14)', d%f
-
-        print*, "Derivatives:"
-        print*, " i    ", name, "%g(i)"
-        do i = 1, size(d%g)
-            print '(I3, ES22.14)' , i, d%g(i)
-        end do
-
-        print*, "Lower triangular of Hessian matrix, h(i,j)"
-        print*, " k  i  j   ", name, "%h(k)"
-        k = 0
-        do j = 1, size(d%g)
-            do i = j, size(d%g)
-                k = k + 1
-                print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d%h(k)
-            end do
-        end do
-
-    end subroutine
-    subroutine display__hdualy_1input_vec(d, name)
-        type(hdual_y_t), intent(in) :: d(:)
-        character(len=*), intent(in) :: name
-        integer :: i, j, k, p
-
-        print*, "Function values:"
-        print*, " ",name,"(p)%f"
-        do p = 1, size(d)
-            print '(I3, ES22.14)', p, d(p)%f
-        end do
-
-        print*, "Derivatives:"
-        print*, " p   i    ", name, "(p)%g(i)"
-        do p = 1, size(d)
-            do i = 1, size(d(1)%g)
-                print '(I3, I3, ES22.14)', p, i, d(p)%g(i)
-            end do
-        end do
-
-        print*, "Lower triangular of Hessian matrix, h(i,j)"
-        print*, " p  k  i  j   ", name, "(p)%h(k)"
-        do p = 1, size(d)
-            k = 0
-            do j = 1, size(d(1)%g)
-                do i = j, size(d(1)%g)
-                    k = k + 1
-                    print '(I3, I3, I3, I3, ES22.14, ES22.14)', p, k, i, j, d(p)%h(k)
-                end do
-            end do
-        end do
-
-    end subroutine
-    subroutine display__hdualy_2input(d1, d2, name1, name2)
-      type(hdual_y_t), intent(in) :: d1
-      type(hdual_y_t), intent(in) :: d2
-      character(len=*), intent(in) :: name1
-      character(len=*), intent(in) :: name2
-      integer :: i, j, k
-
-        print*, "Function values:"
-        print*, " ",name1, "%f                  ", name2, "%f"
-        print '(ES22.14, ES22.14)', d1%f, d2%f
-
-        print*, "Derivatives:"
-        print*, " i    ", name1, "%g(i)                ", name2, "%g(i)"
-        do i = 1, size(d1%g)
-            print '(I3, ES22.14, ES22.14)' , i, d1%g(i), d2%g(i)
-        end do
-
-      print*, "Lower triangular of Hessian matrix, h(i,j)"
-      print*, " k  i  j   ", name1, "%h(k)            ", name2, "%h(k)"
-      k = 0
-      do j = 1, size(d1%g)
-          do i = j, size(d1%g)
+      do j = 1, size(d1%d%g)
+          do i = j, size(d1%d%g)
               k = k + 1
               print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d1%h(k), d2%h(k)
           end do
@@ -732,76 +753,127 @@ contains
 
     end subroutine
 
-    pure function hessian_hdualx(d) result(m)
-        type(hdual_x_t), intent(in) :: d
-        real(dp) :: m(size(d%g), size(d%g))
+
+    pure function fvalue__d_x(d) result(f)
+        type(dual__x_t), intent(in) :: d
+        real(dp) :: f
+        f = d%f
+    end function
+    pure function fvalue__d_x_r1(d) result(f)
+        type(dual__x_t), intent(in) :: d(:)
+        real(dp) :: f(size(d))
+        f = d%f
+    end function
+    pure function fvalue__d_x_r2(d) result(f)
+        type(dual__x_t), intent(in) :: d(:,:)
+        real(dp) :: f(size(d,1),size(d,2))
+        f = d%f
+    end function
+    pure function fvalue__hd_x(hd) result(f)
+        type(hdual__x_t), intent(in) :: hd
+        real(dp) :: f
+        f = hd%d%f
+    end function
+    pure function fvalue__hd_x_r1(hd) result(f)
+        type(hdual__x_t), intent(in) :: hd(:)
+        real(dp) :: f(size(hd))
+        f = hd%d%f
+    end function
+    pure function fvalue__hd_x_r2(hd) result(f)
+        type(hdual__x_t), intent(in) :: hd(:,:)
+        real(dp) :: f(size(hd,1),size(hd,2))
+        f = hd%d%f
+    end function
+    pure function fvalue__d_y(d) result(f)
+        type(dual__y_t), intent(in) :: d
+        real(dp) :: f
+        f = d%f
+    end function
+    pure function fvalue__d_y_r1(d) result(f)
+        type(dual__y_t), intent(in) :: d(:)
+        real(dp) :: f(size(d))
+        f = d%f
+    end function
+    pure function fvalue__d_y_r2(d) result(f)
+        type(dual__y_t), intent(in) :: d(:,:)
+        real(dp) :: f(size(d,1),size(d,2))
+        f = d%f
+    end function
+    pure function fvalue__hd_y(hd) result(f)
+        type(hdual__y_t), intent(in) :: hd
+        real(dp) :: f
+        f = hd%d%f
+    end function
+    pure function fvalue__hd_y_r1(hd) result(f)
+        type(hdual__y_t), intent(in) :: hd(:)
+        real(dp) :: f(size(hd))
+        f = hd%d%f
+    end function
+    pure function fvalue__hd_y_r2(hd) result(f)
+        type(hdual__y_t), intent(in) :: hd(:,:)
+        real(dp) :: f(size(hd,1),size(hd,2))
+        f = hd%d%f
+    end function
+
+    pure function gradient__d_x(d) result(g)
+        type(dual__x_t), intent(in) :: d
+        real(dp) :: g(size(d%g))
+        g = d%g
+    end function
+    pure function gradient__hd_x(hd) result(g)
+        type(hdual__x_t), intent(in) :: hd
+        real(dp) :: g(size(hd%d%g))
+        g = hd%d%g
+    end function
+    pure function gradient__d_y(d) result(g)
+        type(dual__y_t), intent(in) :: d
+        real(dp) :: g(size(d%g))
+        g = d%g
+    end function
+    pure function gradient__hd_y(hd) result(g)
+        type(hdual__y_t), intent(in) :: hd
+        real(dp) :: g(size(hd%d%g))
+        g = hd%d%g
+    end function
+
+    pure function hessian__hd_x(hd) result(m)
+        type(hdual__x_t), intent(in) :: hd
+        real(dp) :: m(size(hd%d%g), size(hd%d%g))
         
         integer i, j, k
 
         k = 0
-        do j = 1, size(d%g)
+        do j = 1, size(hd%d%g)
             k = k + 1
-            m(j, j) = d%h(k)
-            do i = j+1, size(d%g)
+            m(j, j) = hd%h(k)
+            do i = j+1, size(hd%d%g)
                 k = k + 1
-                m(i, j) = d%h(k)
-                m(j, i) = d%h(k)
+                m(i, j) = hd%h(k)
+                m(j, i) = hd%h(k)
             end do
         end do
 
     end function
-    pure function hessian_hdualy(d) result(m)
-        type(hdual_y_t), intent(in) :: d
-        real(dp) :: m(size(d%g), size(d%g))
+    pure function hessian__hd_y(hd) result(m)
+        type(hdual__y_t), intent(in) :: hd
+        real(dp) :: m(size(hd%d%g), size(hd%d%g))
         
         integer i, j, k
 
         k = 0
-        do j = 1, size(d%g)
+        do j = 1, size(hd%d%g)
             k = k + 1
-            m(j, j) = d%h(k)
-            do i = j+1, size(d%g)
+            m(j, j) = hd%h(k)
+            do i = j+1, size(hd%d%g)
                 k = k + 1
-                m(i, j) = d%h(k)
-                m(j, i) = d%h(k)
+                m(i, j) = hd%h(k)
+                m(j, i) = hd%h(k)
             end do
         end do
 
     end function
-    pure function jacobi_tr__hdualx(x) result(y)
-        type(hdual_x_t), intent(in) :: x(:)
-        type(dual_x_t) :: y(size(x(1)%g),size(x))
-
-        real(dp) :: hess(size(x(1)%g), size(x(1)%g))
-        integer :: i, j
-
-        do j = 1, size(x)
-            hess = hessian(x(j))
-            do i = 1, size(x(1)%g)
-                y(i,j)%f = x(j)%g(i)
-                y(i,j)%g = hess(:,i)
-            end do
-        end do
-
-    end function
-    pure function jacobi_tr__hdualy(x) result(y)
-        type(hdual_y_t), intent(in) :: x(:)
-        type(dual_y_t) :: y(size(x(1)%g),size(x))
-
-        real(dp) :: hess(size(x(1)%g), size(x(1)%g))
-        integer :: i, j
-
-        do j = 1, size(x)
-            hess = hessian(x(j))
-            do i = 1, size(x(1)%g)
-                y(i,j)%f = x(j)%g(i)
-                y(i,j)%g = hess(:,i)
-            end do
-        end do
-
-    end function
-    pure function jacobi_tr__dualx(x) result(y)
-        type(dual_x_t), intent(in) :: x(:)
+    pure function jacobi_tr__d_x(x) result(y)
+        type(dual__x_t), intent(in) :: x(:)
         real(dp) :: y(size(x(1)%g),size(x))
 
         integer :: j
@@ -811,8 +883,24 @@ contains
         end do
 
     end function
-    pure function jacobi_tr__dualy(x) result(y)
-        type(dual_y_t), intent(in) :: x(:)
+    pure function jacobi_tr__hd_x(x) result(y)
+        type(hdual__x_t), intent(in) :: x(:)
+        type(dual__x_t) :: y(size(x(1)%d%g),size(x))
+
+        real(dp) :: hess(size(x(1)%d%g), size(x(1)%d%g))
+        integer :: i, j
+
+        do j = 1, size(x)
+            hess = hessian(x(j))
+            do i = 1, size(x(1)%d%g)
+                y(i,j)%f = x(j)%d%g(i)
+                y(i,j)%g = hess(:,i)
+            end do
+        end do
+
+    end function
+    pure function jacobi_tr__d_y(x) result(y)
+        type(dual__y_t), intent(in) :: x(:)
         real(dp) :: y(size(x(1)%g),size(x))
 
         integer :: j
@@ -822,16 +910,32 @@ contains
         end do
 
     end function
-    pure function chain_duals__dualy_dualx(fy, yx) result(fx)
-        !! Convert a function value from type(dual_y_t) to type(dual_x_t)
-        !! by applying the chain rule of derivation. Second input yx(:) has type(dual_x_t)
+    pure function jacobi_tr__hd_y(x) result(y)
+        type(hdual__y_t), intent(in) :: x(:)
+        type(dual__y_t) :: y(size(x(1)%d%g),size(x))
+
+        real(dp) :: hess(size(x(1)%d%g), size(x(1)%d%g))
+        integer :: i, j
+
+        do j = 1, size(x)
+            hess = hessian(x(j))
+            do i = 1, size(x(1)%d%g)
+                y(i,j)%f = x(j)%d%g(i)
+                y(i,j)%g = hess(:,i)
+            end do
+        end do
+
+    end function
+    pure function chain_duals__d_y_x(fy, yx) result(fx)
+        !! Convert a function value from type(dual__y_t) to type(dual__x_t)
+        !! by applying the chain rule of derivation. Second input yx(:) has type(dual__x_t)
         !! and represents the design variables by which the derivatives of fy is taken with respect to.
         !! Thus, size(yx) needs to be equal to size(fy%g) (size known at compile time).
          
         ! This function has been automatically generated by dnad_chain_duals.fypp
-        type(dual_y_t), intent(in) :: fy
-        type(dual_x_t), intent(in) :: yx(size(fy%g))
-        type(dual_x_t) :: fx
+        type(dual__y_t), intent(in) :: fy
+        type(dual__x_t), intent(in) :: yx(size(fy%g))
+        type(dual__x_t) :: fx
         
         integer :: p, j
 
@@ -845,46 +949,46 @@ contains
 
 
     end function
-    pure function chain_duals__hdualy_hdualx(fy, yx) result(fx)
-        !! Convert a function value from type(hdual_y_t) to type(hdual_x_t)
-        !! by applying the chain rule of derivation. Second input yx(:) has type(hdual_x_t)
+    pure function chain_duals__hd_y_x(fy, yx) result(fx)
+        !! Convert a function value from type(hdual__y_t) to type(hdual__x_t)
+        !! by applying the chain rule of derivation. Second input yx(:) has type(hdual__x_t)
         !! and represents the design variables by which the derivatives of fy is taken with respect to.
         !! Thus, size(yx) needs to be equal to size(fy%g) (size known at compile time).
          
         ! This function has been automatically generated by dnad_chain_duals.fypp
-        type(hdual_y_t), intent(in) :: fy
-        type(hdual_x_t), intent(in) :: yx(size(fy%g))
-        type(hdual_x_t) :: fx
+        type(hdual__y_t), intent(in) :: fy
+        type(hdual__x_t), intent(in) :: yx(size(fy%d%g))
+        type(hdual__x_t) :: fx
         
         integer :: p, j
         integer :: i, q, k, nk
-        real(dp) :: hfy(size(fy%g), size(fy%g))
+        real(dp) :: hfy(size(fy%d%g), size(fy%d%g))
         real(dp) :: tmp
 
-        fx%f = fy%f
-        fx%g = 0
-        do p = 1, size(fy%g)
-            do j = 1, size(fx%g)
-                fx%g(j) = fx%g(j) + fy%g(p)*yx(p)%g(j)
+        fx%d%f = fy%d%f
+        fx%d%g = 0
+        do p = 1, size(fy%d%g)
+            do j = 1, size(fx%d%g)
+                fx%d%g(j) = fx%d%g(j) + fy%d%g(p)*yx(p)%d%g(j)
             end do
         end do
 
-        nk = size(fx%g)*(size(fx%g)+1)/2
+        nk = size(fx%d%g)*(size(fx%d%g)+1)/2
         fx%h = 0
-        do p = 1, size(fy%g)
+        do p = 1, size(fy%d%g)
             do k = 1, nk
-                fx%h(k) = fx%h(k) + fy%g(p)*yx(p)%h(k)
+                fx%h(k) = fx%h(k) + fy%d%g(p)*yx(p)%h(k)
             end do
         end do
         hfy = hessian(fy)
-        do q = 1, size(fy%g)
-            do p = 1, size(fy%g)
+        do q = 1, size(fy%d%g)
+            do p = 1, size(fy%d%g)
                 k = 0
-                do j = 1, size(fx%g)
-                    tmp = hfy(p,q)*yx(q)%g(j)
-                    do i = j, size(fx%g)
+                do j = 1, size(fx%d%g)
+                    tmp = hfy(p,q)*yx(q)%d%g(j)
+                    do i = j, size(fx%d%g)
                         k = k + 1
-                        fx%h(k) = fx%h(k) + tmp*yx(p)%g(i)
+                        fx%h(k) = fx%h(k) + tmp*yx(p)%d%g(i)
                     end do
                 end do
             end do
@@ -952,67 +1056,67 @@ contains
 
     end subroutine
     elemental subroutine assign_hdualx_i(u, i)
-        type(hdual_x_t), intent(out) :: u
+        type(hdual__x_t), intent(out) :: u
         integer, intent(in) :: i
 
-        u%f = real(i, dp)  ! This is faster than direct assignment
-        u%g = 0.0_dp
+        u%d%f = real(i, dp)  ! This is faster than direct assignment
+        u%d%g = 0.0_dp
         u%h = 0.0_dp
 
     end subroutine
     elemental subroutine assign_hdualx_r(u, r)
-        type(hdual_x_t), intent(out) :: u
+        type(hdual__x_t), intent(out) :: u
         real(dp), intent(in) :: r
 
-        u%f = r
-        u%g = 0.0_dp
+        u%d%f = r
+        u%d%g = 0.0_dp
         u%h = 0.0_dp
 
     end subroutine
     elemental subroutine assign_i_hdualx(i, v)
-        type(hdual_x_t), intent(in) :: v
+        type(hdual__x_t), intent(in) :: v
         integer, intent(out) :: i
 
-        i = int(v%f)
+        i = int(v%d%f)
 
     end subroutine
     elemental subroutine assign_r_hdualx(r, v)
-        type(hdual_x_t), intent(in) :: v
+        type(hdual__x_t), intent(in) :: v
         real(dp), intent(out) :: r
 
-        r = v%f
+        r = v%d%f
 
     end subroutine
     elemental subroutine assign_hdualy_i(u, i)
-        type(hdual_y_t), intent(out) :: u
+        type(hdual__y_t), intent(out) :: u
         integer, intent(in) :: i
 
-        u%f = real(i, dp)  ! This is faster than direct assignment
-        u%g = 0.0_dp
+        u%d%f = real(i, dp)  ! This is faster than direct assignment
+        u%d%g = 0.0_dp
         u%h = 0.0_dp
 
     end subroutine
     elemental subroutine assign_hdualy_r(u, r)
-        type(hdual_y_t), intent(out) :: u
+        type(hdual__y_t), intent(out) :: u
         real(dp), intent(in) :: r
 
-        u%f = r
-        u%g = 0.0_dp
+        u%d%f = r
+        u%d%g = 0.0_dp
         u%h = 0.0_dp
 
     end subroutine
     elemental subroutine assign_i_hdualy(i, v)
-        type(hdual_y_t), intent(in) :: v
+        type(hdual__y_t), intent(in) :: v
         integer, intent(out) :: i
 
-        i = int(v%f)
+        i = int(v%d%f)
 
     end subroutine
     elemental subroutine assign_r_hdualy(r, v)
-        type(hdual_y_t), intent(in) :: v
+        type(hdual__y_t), intent(in) :: v
         real(dp), intent(out) :: r
 
-        r = v%f
+        r = v%d%f
 
     end subroutine
     elemental function unary_add_dualx(u) result(res)
@@ -1110,109 +1214,109 @@ contains
         res%g = v%g
     end function
     elemental function unary_add_hdualx(u) result(res)
-        type(hdual_x_t), intent(in) :: u
-        type(hdual_x_t) :: res
+        type(hdual__x_t), intent(in) :: u
+        type(hdual__x_t) :: res
         
-        res%f = u%f
-        res%g = u%g
+        res%d%f = u%d%f
+        res%d%g = u%d%g
         res%h = u%h
     end function
     elemental function add_hdualx_hdualx(u, v) result(res)
-        type(hdual_x_t), intent(in) :: u
-        type(hdual_x_t), intent(in) :: v
-        type(hdual_x_t) :: res
+        type(hdual__x_t), intent(in) :: u
+        type(hdual__x_t), intent(in) :: v
+        type(hdual__x_t) :: res
         
-        res%f = u%f + v%f
-        res%g = u%g + v%g
+        res%d%f = u%d%f + v%d%f
+        res%d%g = u%d%g + v%d%g
         res%h = u%h + v%h
     end function
     elemental function add_hdualx_r(u, v) result(res)
-        type(hdual_x_t), intent(in) :: u
+        type(hdual__x_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(hdual_x_t) :: res
+        type(hdual__x_t) :: res
         
-        res%f = u%f + v
-        res%g = u%g
+        res%d%f = u%d%f + v
+        res%d%g = u%d%g
         res%h = u%h
     end function
     elemental function add_r_hdualx(u, v) result(res)
         real(dp), intent(in) :: u
-        type(hdual_x_t), intent(in) :: v
-        type(hdual_x_t) :: res
+        type(hdual__x_t), intent(in) :: v
+        type(hdual__x_t) :: res
         
-        res%f = u + v%f
-        res%g = v%g
+        res%d%f = u + v%d%f
+        res%d%g = v%d%g
         res%h = v%h
     end function
     elemental function add_hdualx_i(u, v) result(res)
-        type(hdual_x_t), intent(in) :: u
+        type(hdual__x_t), intent(in) :: u
         integer, intent(in) :: v
-        type(hdual_x_t) :: res
+        type(hdual__x_t) :: res
         
-        res%f = u%f + v
-        res%g = u%g
+        res%d%f = u%d%f + v
+        res%d%g = u%d%g
         res%h = u%h
     end function
     elemental function add_i_hdualx(u, v) result(res)
         integer, intent(in) :: u
-        type(hdual_x_t), intent(in) :: v
-        type(hdual_x_t) :: res
+        type(hdual__x_t), intent(in) :: v
+        type(hdual__x_t) :: res
         
-        res%f = u + v%f
-        res%g = v%g
+        res%d%f = u + v%d%f
+        res%d%g = v%d%g
         res%h = v%h
     end function
     elemental function unary_add_hdualy(u) result(res)
-        type(hdual_y_t), intent(in) :: u
-        type(hdual_y_t) :: res
+        type(hdual__y_t), intent(in) :: u
+        type(hdual__y_t) :: res
         
-        res%f = u%f
-        res%g = u%g
+        res%d%f = u%d%f
+        res%d%g = u%d%g
         res%h = u%h
     end function
     elemental function add_hdualy_hdualy(u, v) result(res)
-        type(hdual_y_t), intent(in) :: u
-        type(hdual_y_t), intent(in) :: v
-        type(hdual_y_t) :: res
+        type(hdual__y_t), intent(in) :: u
+        type(hdual__y_t), intent(in) :: v
+        type(hdual__y_t) :: res
         
-        res%f = u%f + v%f
-        res%g = u%g + v%g
+        res%d%f = u%d%f + v%d%f
+        res%d%g = u%d%g + v%d%g
         res%h = u%h + v%h
     end function
     elemental function add_hdualy_r(u, v) result(res)
-        type(hdual_y_t), intent(in) :: u
+        type(hdual__y_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(hdual_y_t) :: res
+        type(hdual__y_t) :: res
         
-        res%f = u%f + v
-        res%g = u%g
+        res%d%f = u%d%f + v
+        res%d%g = u%d%g
         res%h = u%h
     end function
     elemental function add_r_hdualy(u, v) result(res)
         real(dp), intent(in) :: u
-        type(hdual_y_t), intent(in) :: v
-        type(hdual_y_t) :: res
+        type(hdual__y_t), intent(in) :: v
+        type(hdual__y_t) :: res
         
-        res%f = u + v%f
-        res%g = v%g
+        res%d%f = u + v%d%f
+        res%d%g = v%d%g
         res%h = v%h
     end function
     elemental function add_hdualy_i(u, v) result(res)
-        type(hdual_y_t), intent(in) :: u
+        type(hdual__y_t), intent(in) :: u
         integer, intent(in) :: v
-        type(hdual_y_t) :: res
+        type(hdual__y_t) :: res
         
-        res%f = u%f + v
-        res%g = u%g
+        res%d%f = u%d%f + v
+        res%d%g = u%d%g
         res%h = u%h
     end function
     elemental function add_i_hdualy(u, v) result(res)
         integer, intent(in) :: u
-        type(hdual_y_t), intent(in) :: v
-        type(hdual_y_t) :: res
+        type(hdual__y_t), intent(in) :: v
+        type(hdual__y_t) :: res
         
-        res%f = u + v%f
-        res%g = v%g
+        res%d%f = u + v%d%f
+        res%d%g = v%d%g
         res%h = v%h
     end function
     elemental function unary_minus_dualx(u) result(res)
@@ -1310,109 +1414,109 @@ contains
         res%g = -v%g
     end function
     elemental function unary_minus_hdualx(u) result(res)
-        type(hdual_x_t), intent(in) :: u
-        type(hdual_x_t) :: res
+        type(hdual__x_t), intent(in) :: u
+        type(hdual__x_t) :: res
         
-        res%f = -u%f
-        res%g = -u%g
+        res%d%f = -u%d%f
+        res%d%g = -u%d%g
         res%h = -u%h
     end function
     elemental function minus_hdualx_hdualx(u, v) result(res)
-        type(hdual_x_t), intent(in) :: u
-        type(hdual_x_t), intent(in) :: v
-        type(hdual_x_t) :: res
+        type(hdual__x_t), intent(in) :: u
+        type(hdual__x_t), intent(in) :: v
+        type(hdual__x_t) :: res
         
-        res%f = u%f - v%f
-        res%g = u%g - v%g
+        res%d%f = u%d%f - v%d%f
+        res%d%g = u%d%g - v%d%g
         res%h = u%h - v%h
     end function
     elemental function minus_hdualx_r(u, v) result(res)
-        type(hdual_x_t), intent(in) :: u
+        type(hdual__x_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(hdual_x_t) :: res
+        type(hdual__x_t) :: res
         
-        res%f = u%f - v
-        res%g = u%g
+        res%d%f = u%d%f - v
+        res%d%g = u%d%g
         res%h = u%h
     end function
     elemental function minus_r_hdualx(u, v) result(res)
         real(dp), intent(in) :: u
-        type(hdual_x_t), intent(in) :: v
-        type(hdual_x_t) :: res
+        type(hdual__x_t), intent(in) :: v
+        type(hdual__x_t) :: res
         
-        res%f = u - v%f
-        res%g = -v%g
+        res%d%f = u - v%d%f
+        res%d%g = -v%d%g
         res%h = -v%h
     end function
     elemental function minus_hdualx_i(u, v) result(res)
-        type(hdual_x_t), intent(in) :: u
+        type(hdual__x_t), intent(in) :: u
         integer, intent(in) :: v
-        type(hdual_x_t) :: res
+        type(hdual__x_t) :: res
         
-        res%f = u%f - v
-        res%g = u%g
+        res%d%f = u%d%f - v
+        res%d%g = u%d%g
         res%h = u%h
     end function
     elemental function minus_i_hdualx(u, v) result(res)
         integer, intent(in) :: u
-        type(hdual_x_t), intent(in) :: v
-        type(hdual_x_t) :: res
+        type(hdual__x_t), intent(in) :: v
+        type(hdual__x_t) :: res
         
-        res%f = u - v%f
-        res%g = -v%g
+        res%d%f = u - v%d%f
+        res%d%g = -v%d%g
         res%h = -v%h
     end function
     elemental function unary_minus_hdualy(u) result(res)
-        type(hdual_y_t), intent(in) :: u
-        type(hdual_y_t) :: res
+        type(hdual__y_t), intent(in) :: u
+        type(hdual__y_t) :: res
         
-        res%f = -u%f
-        res%g = -u%g
+        res%d%f = -u%d%f
+        res%d%g = -u%d%g
         res%h = -u%h
     end function
     elemental function minus_hdualy_hdualy(u, v) result(res)
-        type(hdual_y_t), intent(in) :: u
-        type(hdual_y_t), intent(in) :: v
-        type(hdual_y_t) :: res
+        type(hdual__y_t), intent(in) :: u
+        type(hdual__y_t), intent(in) :: v
+        type(hdual__y_t) :: res
         
-        res%f = u%f - v%f
-        res%g = u%g - v%g
+        res%d%f = u%d%f - v%d%f
+        res%d%g = u%d%g - v%d%g
         res%h = u%h - v%h
     end function
     elemental function minus_hdualy_r(u, v) result(res)
-        type(hdual_y_t), intent(in) :: u
+        type(hdual__y_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(hdual_y_t) :: res
+        type(hdual__y_t) :: res
         
-        res%f = u%f - v
-        res%g = u%g
+        res%d%f = u%d%f - v
+        res%d%g = u%d%g
         res%h = u%h
     end function
     elemental function minus_r_hdualy(u, v) result(res)
         real(dp), intent(in) :: u
-        type(hdual_y_t), intent(in) :: v
-        type(hdual_y_t) :: res
+        type(hdual__y_t), intent(in) :: v
+        type(hdual__y_t) :: res
         
-        res%f = u - v%f
-        res%g = -v%g
+        res%d%f = u - v%d%f
+        res%d%g = -v%d%g
         res%h = -v%h
     end function
     elemental function minus_hdualy_i(u, v) result(res)
-        type(hdual_y_t), intent(in) :: u
+        type(hdual__y_t), intent(in) :: u
         integer, intent(in) :: v
-        type(hdual_y_t) :: res
+        type(hdual__y_t) :: res
         
-        res%f = u%f - v
-        res%g = u%g
+        res%d%f = u%d%f - v
+        res%d%g = u%d%g
         res%h = u%h
     end function
     elemental function minus_i_hdualy(u, v) result(res)
         integer, intent(in) :: u
-        type(hdual_y_t), intent(in) :: v
-        type(hdual_y_t) :: res
+        type(hdual__y_t), intent(in) :: v
+        type(hdual__y_t) :: res
         
-        res%f = u - v%f
-        res%g = -v%g
+        res%d%f = u - v%d%f
+        res%d%g = -v%d%g
         res%h = -v%h
     end function
     elemental function mult_dualx_dualx(u, v) result(res)
@@ -1496,107 +1600,107 @@ contains
         res%g = u*v%g
     end function
     elemental function mult_hdualx_hdualx(u, v) result(res)
-        type(hdual_x_t), intent(in) :: u
-        type(hdual_x_t), intent(in) :: v
-        type(hdual_x_t) :: res
+        type(hdual__x_t), intent(in) :: u
+        type(hdual__x_t), intent(in) :: v
+        type(hdual__x_t) :: res
         integer :: i, j, k
         
-        res%f = u%f*v%f
-        res%g = u%g*v%f + u%f*v%g
+        res%d%f = u%d%f*v%d%f
+        res%d%g = u%d%g*v%d%f + u%d%f*v%d%g
         k = 0
         do j = 1, nx
             do i = j, nx
                 k = k + 1
-                res%h(k) = u%h(k)*v%f + u%g(i)*v%g(j) + u%g(j)*v%g(i) + u%f*v%h(k)
+                res%h(k) = u%h(k)*v%d%f + u%d%g(i)*v%d%g(j) + u%d%g(j)*v%d%g(i) + u%d%f*v%h(k)
             end do
         end do
     end function
     elemental function mult_hdualx_r(u, v) result(res)
-        type(hdual_x_t), intent(in) :: u
+        type(hdual__x_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(hdual_x_t) :: res
+        type(hdual__x_t) :: res
         
-        res%f = u%f*v
-        res%g = u%g*v
+        res%d%f = u%d%f*v
+        res%d%g = u%d%g*v
         res%h = u%h*v
     end function
     elemental function mult_r_hdualx(u, v) result(res)
         real(dp), intent(in) :: u
-        type(hdual_x_t), intent(in) :: v
-        type(hdual_x_t) :: res
+        type(hdual__x_t), intent(in) :: v
+        type(hdual__x_t) :: res
         
-        res%f = u*v%f
-        res%g = u*v%g
+        res%d%f = u*v%d%f
+        res%d%g = u*v%d%g
         res%h = u*v%h
     end function
     elemental function mult_hdualx_i(u, v) result(res)
-        type(hdual_x_t), intent(in) :: u
+        type(hdual__x_t), intent(in) :: u
         integer, intent(in) :: v
-        type(hdual_x_t) :: res
+        type(hdual__x_t) :: res
         
-        res%f = u%f*v
-        res%g = u%g*v
+        res%d%f = u%d%f*v
+        res%d%g = u%d%g*v
         res%h = u%h*v
     end function
     elemental function mult_i_hdualx(u, v) result(res)
         integer, intent(in) :: u
-        type(hdual_x_t), intent(in) :: v
-        type(hdual_x_t) :: res
+        type(hdual__x_t), intent(in) :: v
+        type(hdual__x_t) :: res
         
-        res%f = u*v%f
-        res%g = u*v%g
+        res%d%f = u*v%d%f
+        res%d%g = u*v%d%g
         res%h = u*v%h
     end function
     elemental function mult_hdualy_hdualy(u, v) result(res)
-        type(hdual_y_t), intent(in) :: u
-        type(hdual_y_t), intent(in) :: v
-        type(hdual_y_t) :: res
+        type(hdual__y_t), intent(in) :: u
+        type(hdual__y_t), intent(in) :: v
+        type(hdual__y_t) :: res
         integer :: i, j, k
         
-        res%f = u%f*v%f
-        res%g = u%g*v%f + u%f*v%g
+        res%d%f = u%d%f*v%d%f
+        res%d%g = u%d%g*v%d%f + u%d%f*v%d%g
         k = 0
         do j = 1, ny
             do i = j, ny
                 k = k + 1
-                res%h(k) = u%h(k)*v%f + u%g(i)*v%g(j) + u%g(j)*v%g(i) + u%f*v%h(k)
+                res%h(k) = u%h(k)*v%d%f + u%d%g(i)*v%d%g(j) + u%d%g(j)*v%d%g(i) + u%d%f*v%h(k)
             end do
         end do
     end function
     elemental function mult_hdualy_r(u, v) result(res)
-        type(hdual_y_t), intent(in) :: u
+        type(hdual__y_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(hdual_y_t) :: res
+        type(hdual__y_t) :: res
         
-        res%f = u%f*v
-        res%g = u%g*v
+        res%d%f = u%d%f*v
+        res%d%g = u%d%g*v
         res%h = u%h*v
     end function
     elemental function mult_r_hdualy(u, v) result(res)
         real(dp), intent(in) :: u
-        type(hdual_y_t), intent(in) :: v
-        type(hdual_y_t) :: res
+        type(hdual__y_t), intent(in) :: v
+        type(hdual__y_t) :: res
         
-        res%f = u*v%f
-        res%g = u*v%g
+        res%d%f = u*v%d%f
+        res%d%g = u*v%d%g
         res%h = u*v%h
     end function
     elemental function mult_hdualy_i(u, v) result(res)
-        type(hdual_y_t), intent(in) :: u
+        type(hdual__y_t), intent(in) :: u
         integer, intent(in) :: v
-        type(hdual_y_t) :: res
+        type(hdual__y_t) :: res
         
-        res%f = u%f*v
-        res%g = u%g*v
+        res%d%f = u%d%f*v
+        res%d%g = u%d%g*v
         res%h = u%h*v
     end function
     elemental function mult_i_hdualy(u, v) result(res)
         integer, intent(in) :: u
-        type(hdual_y_t), intent(in) :: v
-        type(hdual_y_t) :: res
+        type(hdual__y_t), intent(in) :: v
+        type(hdual__y_t) :: res
         
-        res%f = u*v%f
-        res%g = u*v%g
+        res%d%f = u*v%d%f
+        res%d%g = u*v%d%g
         res%h = u*v%h
     end function
     elemental function pow_dualx_i(u, v) result(res)
@@ -1654,110 +1758,110 @@ contains
 
     end function
     elemental function pow_hdualx_i(u, v) result(res)
-        type(hdual_x_t), intent(in) :: u
+        type(hdual__x_t), intent(in) :: u
         integer, intent(in) :: v
-        type(hdual_x_t) :: res
+        type(hdual__x_t) :: res
         integer :: i, j, k
         
-        res%f = u%f**v
-        res%g = u%f**(v - 1)*v*u%g
+        res%d%f = u%d%f**v
+        res%d%g = u%d%f**(v - 1)*v*u%d%g
         k = 0
         do j = 1, nx
             do i = j, nx
                 k = k + 1
-                res%h(k) = v*(u%g(i)*u%g(j)*(v - 1)*u%f**(v-2) + u%h(k)*u%f**(v-1))
+                res%h(k) = v*(u%d%g(i)*u%d%g(j)*(v - 1)*u%d%f**(v-2) + u%h(k)*u%d%f**(v-1))
             end do
         end do
     end function
     elemental function pow_hdualx_r(u, v) result(res)
-        type(hdual_x_t), intent(in) :: u
+        type(hdual__x_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(hdual_x_t) :: res
+        type(hdual__x_t) :: res
         integer :: i, j, k
         
-        res%f = u%f**v
-        res%g = u%f**(v - 1)*v*u%g
+        res%d%f = u%d%f**v
+        res%d%g = u%d%f**(v - 1)*v*u%d%g
         k = 0
         do j = 1, nx
             do i = j, nx
                 k = k + 1
-                res%h(k) = v*(u%g(i)*u%g(j)*(v - 1)*u%f**(v-2) + u%h(k)*u%f**(v-1))
+                res%h(k) = v*(u%d%g(i)*u%d%g(j)*(v - 1)*u%d%f**(v-2) + u%h(k)*u%d%f**(v-1))
             end do
         end do
     end function
     elemental function pow_hdualx_hdualx(u, v) result(res)
-        type(hdual_x_t), intent(in) :: u
-        type(hdual_x_t), intent(in) :: v
-        type(hdual_x_t) :: res
+        type(hdual__x_t), intent(in) :: u
+        type(hdual__x_t), intent(in) :: v
+        type(hdual__x_t) :: res
         integer :: i, j, k
         real(dp) :: t0,t1,t2,t3
         
-        t0 = u%f**v%f
-        t1 = log(u%f)
-        t2 = 1.0_dp/u%f
-        t3 = t1*v%f + 1
-        res%f = t0
-        res%g = t0*(t1*v%g + t2*u%g*v%f)
+        t0 = u%d%f**v%d%f
+        t1 = log(u%d%f)
+        t2 = 1.0_dp/u%d%f
+        t3 = t1*v%d%f + 1
+        res%d%f = t0
+        res%d%g = t0*(t1*v%d%g + t2*u%d%g*v%d%f)
         k = 0
         do j = 1, nx
             do i = j, nx
                 k = k + 1
-                res%h(k) = t0*(t1*v%h(k) + t2*u%h(k)*v%f + t2*u%g(j)*(t2*u%g(i)*v%f*(v%f - &
-      1) + t3*v%g(i)) + v%g(j)*(t1**2*v%g(i) + t2*t3*u%g(i)))
+                res%h(k) = t0*(t1*v%h(k) + t2*u%h(k)*v%d%f + t2*u%d%g(j)*(t2*u%d%g(i)*v%d%f*(v%d%f - &
+      1) + t3*v%d%g(i)) + v%d%g(j)*(t1**2*v%d%g(i) + t2*t3*u%d%g(i)))
             end do
         end do
     end function
     elemental function pow_hdualy_i(u, v) result(res)
-        type(hdual_y_t), intent(in) :: u
+        type(hdual__y_t), intent(in) :: u
         integer, intent(in) :: v
-        type(hdual_y_t) :: res
+        type(hdual__y_t) :: res
         integer :: i, j, k
         
-        res%f = u%f**v
-        res%g = u%f**(v - 1)*v*u%g
+        res%d%f = u%d%f**v
+        res%d%g = u%d%f**(v - 1)*v*u%d%g
         k = 0
         do j = 1, ny
             do i = j, ny
                 k = k + 1
-                res%h(k) = v*(u%g(i)*u%g(j)*(v - 1)*u%f**(v-2) + u%h(k)*u%f**(v-1))
+                res%h(k) = v*(u%d%g(i)*u%d%g(j)*(v - 1)*u%d%f**(v-2) + u%h(k)*u%d%f**(v-1))
             end do
         end do
     end function
     elemental function pow_hdualy_r(u, v) result(res)
-        type(hdual_y_t), intent(in) :: u
+        type(hdual__y_t), intent(in) :: u
         real(dp), intent(in) :: v
-        type(hdual_y_t) :: res
+        type(hdual__y_t) :: res
         integer :: i, j, k
         
-        res%f = u%f**v
-        res%g = u%f**(v - 1)*v*u%g
+        res%d%f = u%d%f**v
+        res%d%g = u%d%f**(v - 1)*v*u%d%g
         k = 0
         do j = 1, ny
             do i = j, ny
                 k = k + 1
-                res%h(k) = v*(u%g(i)*u%g(j)*(v - 1)*u%f**(v-2) + u%h(k)*u%f**(v-1))
+                res%h(k) = v*(u%d%g(i)*u%d%g(j)*(v - 1)*u%d%f**(v-2) + u%h(k)*u%d%f**(v-1))
             end do
         end do
     end function
     elemental function pow_hdualy_hdualy(u, v) result(res)
-        type(hdual_y_t), intent(in) :: u
-        type(hdual_y_t), intent(in) :: v
-        type(hdual_y_t) :: res
+        type(hdual__y_t), intent(in) :: u
+        type(hdual__y_t), intent(in) :: v
+        type(hdual__y_t) :: res
         integer :: i, j, k
         real(dp) :: t0,t1,t2,t3
         
-        t0 = u%f**v%f
-        t1 = log(u%f)
-        t2 = 1.0_dp/u%f
-        t3 = t1*v%f + 1
-        res%f = t0
-        res%g = t0*(t1*v%g + t2*u%g*v%f)
+        t0 = u%d%f**v%d%f
+        t1 = log(u%d%f)
+        t2 = 1.0_dp/u%d%f
+        t3 = t1*v%d%f + 1
+        res%d%f = t0
+        res%d%g = t0*(t1*v%d%g + t2*u%d%g*v%d%f)
         k = 0
         do j = 1, ny
             do i = j, ny
                 k = k + 1
-                res%h(k) = t0*(t1*v%h(k) + t2*u%h(k)*v%f + t2*u%g(j)*(t2*u%g(i)*v%f*(v%f - &
-      1) + t3*v%g(i)) + v%g(j)*(t1**2*v%g(i) + t2*t3*u%g(i)))
+                res%h(k) = t0*(t1*v%h(k) + t2*u%h(k)*v%d%f + t2*u%d%g(j)*(t2*u%d%g(i)*v%d%f*(v%d%f - &
+      1) + t3*v%d%g(i)) + v%d%g(j)*(t1**2*v%d%g(i) + t2*t3*u%d%g(i)))
             end do
         end do
     end function
@@ -1776,36 +1880,36 @@ contains
         res%g = u%g/u%f
     end function
     elemental function log_hdualx(u) result(res)
-        type(hdual_x_t), intent(in) :: u
-        type(hdual_x_t) :: res
+        type(hdual__x_t), intent(in) :: u
+        type(hdual__x_t) :: res
         integer :: i, j, k
         real(dp) :: t0
         
-        t0 = 1.0_dp/u%f
-        res%f = log(u%f)
-        res%g = t0*u%g
+        t0 = 1.0_dp/u%d%f
+        res%d%f = log(u%d%f)
+        res%d%g = t0*u%d%g
         k = 0
         do j = 1, nx
             do i = j, nx
                 k = k + 1
-                res%h(k) = t0*(-t0*u%g(i)*u%g(j) + u%h(k))
+                res%h(k) = t0*(-t0*u%d%g(i)*u%d%g(j) + u%h(k))
             end do
         end do
     end function
     elemental function log_hdualy(u) result(res)
-        type(hdual_y_t), intent(in) :: u
-        type(hdual_y_t) :: res
+        type(hdual__y_t), intent(in) :: u
+        type(hdual__y_t) :: res
         integer :: i, j, k
         real(dp) :: t0
         
-        t0 = 1.0_dp/u%f
-        res%f = log(u%f)
-        res%g = t0*u%g
+        t0 = 1.0_dp/u%d%f
+        res%d%f = log(u%d%f)
+        res%d%g = t0*u%d%g
         k = 0
         do j = 1, ny
             do i = j, ny
                 k = k + 1
-                res%h(k) = t0*(-t0*u%g(i)*u%g(j) + u%h(k))
+                res%h(k) = t0*(-t0*u%d%g(i)*u%d%g(j) + u%h(k))
             end do
         end do
     end function
@@ -1830,38 +1934,38 @@ contains
     end function
 
     elemental function sqrt_hdualx(u) result(res)
-        type(hdual_x_t), intent(in) :: u
-        type(hdual_x_t) :: res
+        type(hdual__x_t), intent(in) :: u
+        type(hdual__x_t) :: res
         integer :: i, j, k
         real(dp) :: t0,t1
         
-        t0 = sqrt(u%f)
+        t0 = sqrt(u%d%f)
         t1 = 1.0_dp/t0
-        res%f = t0
-        res%g = 0.5_dp*t1*u%g
+        res%d%f = t0
+        res%d%g = 0.5_dp*t1*u%d%g
         k = 0
         do j = 1, nx
             do i = j, nx
                 k = k + 1
-                res%h(k) = (0.25_dp)*t1*(2*u%h(k) - u%g(i)*u%g(j)/u%f)
+                res%h(k) = (0.25_dp)*t1*(2*u%h(k) - u%d%g(i)*u%d%g(j)/u%d%f)
             end do
         end do
     end function
     elemental function sqrt_hdualy(u) result(res)
-        type(hdual_y_t), intent(in) :: u
-        type(hdual_y_t) :: res
+        type(hdual__y_t), intent(in) :: u
+        type(hdual__y_t) :: res
         integer :: i, j, k
         real(dp) :: t0,t1
         
-        t0 = sqrt(u%f)
+        t0 = sqrt(u%d%f)
         t1 = 1.0_dp/t0
-        res%f = t0
-        res%g = 0.5_dp*t1*u%g
+        res%d%f = t0
+        res%d%g = 0.5_dp*t1*u%d%g
         k = 0
         do j = 1, ny
             do i = j, ny
                 k = k + 1
-                res%h(k) = (0.25_dp)*t1*(2*u%h(k) - u%g(i)*u%g(j)/u%f)
+                res%h(k) = (0.25_dp)*t1*(2*u%h(k) - u%d%g(i)*u%d%g(j)/u%d%f)
             end do
         end do
     end function

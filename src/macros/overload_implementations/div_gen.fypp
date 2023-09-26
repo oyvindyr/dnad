@@ -1,11 +1,11 @@
 
-#:def div_d(dual_type, dual_sn, real_kind, size_dx, is_pure, test_coverage)
+#:def div_d(dual_type, dual_sn, real_kind, is_pure, test_coverage)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"
     #:endif
-    ${elemental_purity}$ function div_${dual_sn}$_${dual_sn}$(u, v) result(res)
+    ${elemental_purity}$ function div__${dual_sn}$_${dual_sn}$(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
@@ -19,7 +19,7 @@
         div_d_d_counter = div_d_d_counter + 1
       #:endif
     end function
-    ${elemental_purity}$ function div_${dual_sn}$_r(u, v) result(res)
+    ${elemental_purity}$ function div__${dual_sn}$_r(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
         real(${real_kind}$), intent(in) :: v
         type(${dual_type}$) :: res
@@ -32,7 +32,7 @@
         div_d_r_counter = div_d_r_counter + 1
       #:endif
     end function
-    ${elemental_purity}$ function div_r_${dual_sn}$(u, v) result(res)
+    ${elemental_purity}$ function div__r_${dual_sn}$(u, v) result(res)
         real(${real_kind}$), intent(in) :: u
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
@@ -43,7 +43,7 @@
         div_r_d_counter = div_r_d_counter + 1
       #:endif
     end function
-    ${elemental_purity}$ function div_${dual_sn}$_i(u, v) result(res)
+    ${elemental_purity}$ function div__${dual_sn}$_i(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
         integer, intent(in) :: v
         type(${dual_type}$) :: res
@@ -56,7 +56,7 @@
         div_d_i_counter = div_d_i_counter + 1
       #:endif
     end function
-    ${elemental_purity}$ function div_i_${dual_sn}$(u, v) result(res)
+    ${elemental_purity}$ function div__i_${dual_sn}$(u, v) result(res)
         integer, intent(in) :: u
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
@@ -69,28 +69,28 @@
     end function
 #:enddef
 
-#:def div_hd(dual_type, dual_sn, real_kind, size_dx, is_pure, test_coverage)
+#:def div_hd(dual_type, dual_sn, real_kind, is_pure, test_coverage)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"
     #:endif
-    ${elemental_purity}$ function div_${dual_sn}$_${dual_sn}$(u, v) result(res)
+    ${elemental_purity}$ function div__${dual_sn}$_${dual_sn}$(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
         integer :: i, j, k
         real(${real_kind}$) :: t0,t1
         
-        t0 = 1.0_${real_kind}$/v%f
-        t1 = t0*u%f
-        res%f = t1
-        res%g = t0*(-t1*v%g + u%g)
+        t0 = 1.0_${real_kind}$/v%d%f
+        t1 = t0*u%d%f
+        res%d%f = t1
+        res%d%g = t0*(-t1*v%d%g + u%d%g)
         k = 0
-        do j = 1, ${size_dx}$
-            do i = j, ${size_dx}$
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
-                res%h(k) = t0*(-t0*u%g(j)*v%g(i) - t0*v%g(j)*(-2*t1*v%g(i) + u%g(i)) - t1* &
+                res%h(k) = t0*(-t0*u%d%g(j)*v%d%g(i) - t0*v%d%g(j)*(-2*t1*v%d%g(i) + u%d%g(i)) - t1* &
       v%h(k) + u%h(k))
             end do
         end do
@@ -98,72 +98,72 @@
         div_hd_hd_counter = div_hd_hd_counter + 1
       #:endif
     end function
-    ${elemental_purity}$ function div_${dual_sn}$_r(u, v) result(res)
+    ${elemental_purity}$ function div__${dual_sn}$_r(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
         real(${real_kind}$), intent(in) :: v
         type(${dual_type}$) :: res
         real(${real_kind}$) :: t0
         
         t0 = 1.0_${real_kind}$/v
-        res%f = t0*u%f
-        res%g = t0*u%g
+        res%d%f = t0*u%d%f
+        res%d%g = t0*u%d%g
         res%h = t0*u%h
       #:if test_coverage
         div_hd_r_counter = div_hd_r_counter + 1
       #:endif
     end function
-    ${elemental_purity}$ function div_r_${dual_sn}$(u, v) result(res)
+    ${elemental_purity}$ function div__r_${dual_sn}$(u, v) result(res)
         real(${real_kind}$), intent(in) :: u
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
         integer :: i, j, k
         real(${real_kind}$) :: t0,t1
         
-        t0 = 1.0_${real_kind}$/v%f
-        t1 = u/v%f**2
-        res%f = t0*u
-        res%g = -t1*v%g
+        t0 = 1.0_${real_kind}$/v%d%f
+        t1 = u/v%d%f**2
+        res%d%f = t0*u
+        res%d%g = -t1*v%d%g
         k = 0
-        do j = 1, ${size_dx}$
-            do i = j, ${size_dx}$
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
-                res%h(k) = t1*(2*t0*v%g(i)*v%g(j) - v%h(k))
+                res%h(k) = t1*(2*t0*v%d%g(i)*v%d%g(j) - v%h(k))
             end do
         end do
       #:if test_coverage
         div_r_hd_counter = div_r_hd_counter + 1
       #:endif
     end function
-    ${elemental_purity}$ function div_${dual_sn}$_i(u, v) result(res)
+    ${elemental_purity}$ function div__${dual_sn}$_i(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
         integer, intent(in) :: v
         type(${dual_type}$) :: res
         real(${real_kind}$) :: t0
         
         t0 = 1.0_${real_kind}$/v
-        res%f = t0*u%f
-        res%g = t0*u%g
+        res%d%f = t0*u%d%f
+        res%d%g = t0*u%d%g
         res%h = t0*u%h
       #:if test_coverage
         div_hd_i_counter = div_hd_i_counter + 1
       #:endif
     end function
-    ${elemental_purity}$ function div_i_${dual_sn}$(u, v) result(res)
+    ${elemental_purity}$ function div__i_${dual_sn}$(u, v) result(res)
         integer, intent(in) :: u
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
         integer :: i, j, k
         real(${real_kind}$) :: t0,t1
         
-        t0 = 1.0_${real_kind}$/v%f
-        t1 = u/v%f**2
-        res%f = t0*u
-        res%g = -t1*v%g
+        t0 = 1.0_${real_kind}$/v%d%f
+        t1 = u/v%d%f**2
+        res%d%f = t0*u
+        res%d%g = -t1*v%d%g
         k = 0
-        do j = 1, ${size_dx}$
-            do i = j, ${size_dx}$
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
-                res%h(k) = t1*(2*t0*v%g(i)*v%g(j) - v%h(k))
+                res%h(k) = t1*(2*t0*v%d%g(i)*v%d%g(j) - v%h(k))
             end do
         end do
       #:if test_coverage

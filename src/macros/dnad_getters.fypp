@@ -1,0 +1,116 @@
+#:def dnad_getter_interfaces(type_specs)
+    interface fvalue
+        !! Extract function value from a dual or hyper-dual number
+      #:for type_spec in type_specs
+        #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)
+        module procedure fvalue__d_${type_suffix}$
+        module procedure fvalue__d_${type_suffix}$_r1
+        module procedure fvalue__d_${type_suffix}$_r2
+       #:if has_hdual
+        module procedure fvalue__hd_${type_suffix}$
+        module procedure fvalue__hd_${type_suffix}$_r1
+        module procedure fvalue__hd_${type_suffix}$_r2
+       #:endif
+      #:endfor
+    end interface
+
+    interface gradient
+        !! Extract gradient from a dual or hyper-dual number
+      #:for type_spec in type_specs
+        #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)
+        module procedure gradient__d_${type_suffix}$
+       #:if has_hdual
+        module procedure gradient__hd_${type_suffix}$
+       #:endif
+      #:endfor
+    end interface
+
+    interface hessian 
+        !! Extract Hessian from a hyper-dual number
+      #:for type_spec in type_specs
+        #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)
+       #:if has_hdual
+        module procedure hessian__hd_${type_suffix}$
+       #:endif
+      #:endfor
+    end interface
+#:enddef
+
+#:def dnad_getter_implementations(type_specs, real_kind)
+
+  #:for type_spec in type_specs
+    #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)
+    pure function fvalue__d_${type_suffix}$(d) result(f)
+        type(dual__${type_suffix}$_t), intent(in) :: d
+        real(${real_kind}$) :: f
+        f = d%f
+    end function
+    pure function fvalue__d_${type_suffix}$_r1(d) result(f)
+        type(dual__${type_suffix}$_t), intent(in) :: d(:)
+        real(${real_kind}$) :: f(size(d))
+        f = d%f
+    end function
+    pure function fvalue__d_${type_suffix}$_r2(d) result(f)
+        type(dual__${type_suffix}$_t), intent(in) :: d(:,:)
+        real(${real_kind}$) :: f(size(d,1),size(d,2))
+        f = d%f
+    end function
+   #:if has_hdual
+    pure function fvalue__hd_${type_suffix}$(hd) result(f)
+        type(hdual__${type_suffix}$_t), intent(in) :: hd
+        real(${real_kind}$) :: f
+        f = hd%d%f
+    end function
+    pure function fvalue__hd_${type_suffix}$_r1(hd) result(f)
+        type(hdual__${type_suffix}$_t), intent(in) :: hd(:)
+        real(${real_kind}$) :: f(size(hd))
+        f = hd%d%f
+    end function
+    pure function fvalue__hd_${type_suffix}$_r2(hd) result(f)
+        type(hdual__${type_suffix}$_t), intent(in) :: hd(:,:)
+        real(${real_kind}$) :: f(size(hd,1),size(hd,2))
+        f = hd%d%f
+    end function
+   #:endif
+  #:endfor
+
+  #:for type_spec in type_specs
+    #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)
+    pure function gradient__d_${type_suffix}$(d) result(g)
+        type(dual__${type_suffix}$_t), intent(in) :: d
+        real(${real_kind}$) :: g(size(d%g))
+        g = d%g
+    end function
+   #:if has_hdual
+    pure function gradient__hd_${type_suffix}$(hd) result(g)
+        type(hdual__${type_suffix}$_t), intent(in) :: hd
+        real(${real_kind}$) :: g(size(hd%d%g))
+        g = hd%d%g
+    end function
+   #:endif
+  #:endfor
+
+  #:for type_spec in type_specs
+    #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)
+   #:if has_hdual
+    pure function hessian__hd_${type_suffix}$(hd) result(m)
+        type(hdual__${type_suffix}$_t), intent(in) :: hd
+        real(${real_kind}$) :: m(size(hd%d%g), size(hd%d%g))
+        
+        integer i, j, k
+
+        k = 0
+        do j = 1, size(hd%d%g)
+            k = k + 1
+            m(j, j) = hd%h(k)
+            do i = j+1, size(hd%d%g)
+                k = k + 1
+                m(i, j) = hd%h(k)
+                m(j, i) = hd%h(k)
+            end do
+        end do
+
+    end function
+   #:endif
+  #:endfor
+#:enddef

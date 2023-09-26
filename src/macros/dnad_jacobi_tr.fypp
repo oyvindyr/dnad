@@ -1,45 +1,23 @@
-#:def dnad_jacobi_tr_interface(dual_shortnames = [], hdual_shortnames = [])
+#:def dnad_jacobi_tr_interface(type_specs)
     interface jacobi_tr
         !! Extract transpose of Jacobi matrix from a vector of dual or hyper-dual numbers.
         !! - A hyper-dual vector results in a dual matrix.
         !! - A dual vector results in a real matrix.
-      #:for dual_sn in dual_shortnames
-        module procedure jacobi_tr__${dual_sn}$
-      #:endfor
-      #:for hdual_sn in hdual_shortnames
-        module procedure jacobi_tr__${hdual_sn}$
+      #:for type_spec in type_specs
+        #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)
+        module procedure jacobi_tr__d_${type_suffix}$
+       #:if has_hdual
+        module procedure jacobi_tr__hd_${type_suffix}$
+       #:endif
       #:endfor
     end interface
 #:enddef
 
-#:def dnad_jacobi_tr_implementations_hdual(real_kind, &
-        hdual_types, hdual_shortnames, dual_types)
-  #:assert len(hdual_types) == len(hdual_shortnames) == len(dual_types)
-  #:for hdual_type, hdual_sn, dual_type in zip(hdual_types, hdual_shortnames, dual_types)
-    pure function jacobi_tr__${hdual_sn}$(x) result(y)
-        type(${hdual_type}$), intent(in) :: x(:)
-        type(${dual_type}$) :: y(size(x(1)%g),size(x))
-
-        real(${real_kind}$) :: hess(size(x(1)%g), size(x(1)%g))
-        integer :: i, j
-
-        do j = 1, size(x)
-            hess = hessian(x(j))
-            do i = 1, size(x(1)%g)
-                y(i,j)%f = x(j)%g(i)
-                y(i,j)%g = hess(:,i)
-            end do
-        end do
-
-    end function
-  #:endfor
-#:enddef
-
-#:def dnad_jacobi_tr_implementations_dual(real_kind, &
-        dual_types, dual_shortnames)
-  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    pure function jacobi_tr__${dual_sn}$(x) result(y)
-        type(${dual_type}$), intent(in) :: x(:)
+#:def dnad_jacobi_tr_implementations(type_specs, real_kind)
+  #:for type_spec in type_specs
+    #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)
+    pure function jacobi_tr__d_${type_suffix}$(x) result(y)
+        type(dual__${type_suffix}$_t), intent(in) :: x(:)
         real(${real_kind}$) :: y(size(x(1)%g),size(x))
 
         integer :: j
@@ -49,5 +27,23 @@
         end do
 
     end function
+   #:if has_hdual
+    pure function jacobi_tr__hd_${type_suffix}$(x) result(y)
+        type(hdual__${type_suffix}$_t), intent(in) :: x(:)
+        type(dual__${type_suffix}$_t) :: y(size(x(1)%d%g),size(x))
+
+        real(${real_kind}$) :: hess(size(x(1)%d%g), size(x(1)%d%g))
+        integer :: i, j
+
+        do j = 1, size(x)
+            hess = hessian(x(j))
+            do i = 1, size(x(1)%d%g)
+                y(i,j)%f = x(j)%d%g(i)
+                y(i,j)%g = hess(:,i)
+            end do
+        end do
+
+    end function
+   #:endif
   #:endfor
 #:enddef

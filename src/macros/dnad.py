@@ -47,3 +47,35 @@ def select_interfaces(selected_interfaces):
     else:
         # Convert comma-separated string to list
         return selected_interfaces.replace(" ","").split(",")
+    
+def decode_type_spec(type_spec):
+    if len(type_spec) > 2 and type_spec[-2:] == ":h":
+        type_suffix = type_spec[0:-2]
+        has_hdual = True
+    else:
+        type_suffix = type_spec
+        has_hdual = False
+    return type_suffix, has_hdual
+
+def decode_type_specs(type_specs):
+    dual_type = []
+    dual_sn = []
+    hdual_type = []
+    hdual_sn = []
+    for type_spec in type_specs:
+        type_suffix, has_hdual = decode_type_spec(type_spec)
+        dual_sn.append("d" + type_suffix)
+        dual_type.append("dual__" + type_suffix + "_t")
+        if has_hdual:
+            hdual_sn.append("hd" + type_suffix)
+            hdual_type.append("hdual__" + type_suffix + "_t")
+    return dual_type, dual_sn, hdual_type, hdual_sn
+
+def decode_chain_types_spec(str):
+    s, has_hdual = decode_type_spec(str)
+    if "->" not in s:
+        raise ValueError("Missing '->' in chain_types string representation")
+    lst = s.split("->")
+    if len(lst) != 2:
+        raise ValueError("Too many '->' in chain_types string representation")
+    return lst[0], lst[1], has_hdual

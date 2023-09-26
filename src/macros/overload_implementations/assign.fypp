@@ -4,7 +4,7 @@
     #:else
         #:set elemental_purity = "impure elemental"
     #:endif
-    ${elemental_purity}$ subroutine assign_${dual_sn}$_i(u, i)
+    ${elemental_purity}$ subroutine assign__${dual_sn}$_i(u, i)
         type(${dual_type}$), intent(out) :: u
         integer, intent(in) :: i
 
@@ -15,7 +15,7 @@
       #:endif
 
     end subroutine
-    ${elemental_purity}$ subroutine assign_${dual_sn}$_r(u, r)
+    ${elemental_purity}$ subroutine assign__${dual_sn}$_r(u, r)
         type(${dual_type}$), intent(out) :: u
         real(${real_kind}$), intent(in) :: r
 
@@ -26,7 +26,7 @@
       #:endif
 
     end subroutine
-    ${elemental_purity}$ subroutine assign_i_${dual_sn}$(i, v)
+    ${elemental_purity}$ subroutine assign__i_${dual_sn}$(i, v)
         type(${dual_type}$), intent(in) :: v
         integer, intent(out) :: i
 
@@ -36,7 +36,7 @@
       #:endif
 
     end subroutine
-    ${elemental_purity}$ subroutine assign_r_${dual_sn}$(r, v)
+    ${elemental_purity}$ subroutine assign__r_${dual_sn}$(r, v)
         type(${dual_type}$), intent(in) :: v
         real(${real_kind}$), intent(out) :: r
 
@@ -54,45 +54,45 @@
     #:else
         #:set elemental_purity = "impure elemental"
     #:endif
-    ${elemental_purity}$ subroutine assign_${dual_sn}$_i(u, i)
+    ${elemental_purity}$ subroutine assign__${dual_sn}$_i(u, i)
         type(${dual_type}$), intent(out) :: u
         integer, intent(in) :: i
 
-        u%f = real(i, ${real_kind}$)  ! This is faster than direct assignment
-        u%g = 0.0_${real_kind}$
+        u%d%f = real(i, ${real_kind}$)  ! This is faster than direct assignment
+        u%d%g = 0.0_${real_kind}$
         u%h = 0.0_${real_kind}$
       #:if test_coverage
         assign_hd_i_counter = assign_hd_i_counter + 1
       #:endif
 
     end subroutine
-    ${elemental_purity}$ subroutine assign_${dual_sn}$_r(u, r)
+    ${elemental_purity}$ subroutine assign__${dual_sn}$_r(u, r)
         type(${dual_type}$), intent(out) :: u
         real(${real_kind}$), intent(in) :: r
 
-        u%f = r
-        u%g = 0.0_${real_kind}$
+        u%d%f = r
+        u%d%g = 0.0_${real_kind}$
         u%h = 0.0_${real_kind}$
       #:if test_coverage
         assign_hd_r_counter = assign_hd_r_counter + 1
       #:endif
 
     end subroutine
-    ${elemental_purity}$ subroutine assign_i_${dual_sn}$(i, v)
+    ${elemental_purity}$ subroutine assign__i_${dual_sn}$(i, v)
         type(${dual_type}$), intent(in) :: v
         integer, intent(out) :: i
 
-        i = int(v%f)
+        i = int(v%d%f)
       #:if test_coverage
         assign_i_hd_counter = assign_i_hd_counter + 1
       #:endif
 
     end subroutine
-    ${elemental_purity}$ subroutine assign_r_${dual_sn}$(r, v)
+    ${elemental_purity}$ subroutine assign__r_${dual_sn}$(r, v)
         type(${dual_type}$), intent(in) :: v
         real(${real_kind}$), intent(out) :: r
 
-        r = v%f
+        r = v%d%f
       #:if test_coverage
         assign_r_hd_counter = assign_r_hd_counter + 1
       #:endif

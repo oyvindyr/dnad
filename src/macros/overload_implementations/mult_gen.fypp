@@ -1,11 +1,11 @@
 
-#:def mult_d(dual_type, dual_sn, real_kind, size_dx, is_pure, test_coverage)
+#:def mult_d(dual_type, dual_sn, real_kind, is_pure, test_coverage)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"
     #:endif
-    ${elemental_purity}$ function mult_${dual_sn}$_${dual_sn}$(u, v) result(res)
+    ${elemental_purity}$ function mult__${dual_sn}$_${dual_sn}$(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
@@ -16,7 +16,7 @@
         mult_d_d_counter = mult_d_d_counter + 1
       #:endif
     end function
-    ${elemental_purity}$ function mult_${dual_sn}$_r(u, v) result(res)
+    ${elemental_purity}$ function mult__${dual_sn}$_r(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
         real(${real_kind}$), intent(in) :: v
         type(${dual_type}$) :: res
@@ -27,7 +27,7 @@
         mult_d_r_counter = mult_d_r_counter + 1
       #:endif
     end function
-    ${elemental_purity}$ function mult_r_${dual_sn}$(u, v) result(res)
+    ${elemental_purity}$ function mult__r_${dual_sn}$(u, v) result(res)
         real(${real_kind}$), intent(in) :: u
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
@@ -38,7 +38,7 @@
         mult_r_d_counter = mult_r_d_counter + 1
       #:endif
     end function
-    ${elemental_purity}$ function mult_${dual_sn}$_i(u, v) result(res)
+    ${elemental_purity}$ function mult__${dual_sn}$_i(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
         integer, intent(in) :: v
         type(${dual_type}$) :: res
@@ -49,7 +49,7 @@
         mult_d_i_counter = mult_d_i_counter + 1
       #:endif
     end function
-    ${elemental_purity}$ function mult_i_${dual_sn}$(u, v) result(res)
+    ${elemental_purity}$ function mult__i_${dual_sn}$(u, v) result(res)
         integer, intent(in) :: u
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
@@ -62,74 +62,74 @@
     end function
 #:enddef
 
-#:def mult_hd(dual_type, dual_sn, real_kind, size_dx, is_pure, test_coverage)
+#:def mult_hd(dual_type, dual_sn, real_kind, is_pure, test_coverage)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"
     #:endif
-    ${elemental_purity}$ function mult_${dual_sn}$_${dual_sn}$(u, v) result(res)
+    ${elemental_purity}$ function mult__${dual_sn}$_${dual_sn}$(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
         integer :: i, j, k
         
-        res%f = u%f*v%f
-        res%g = u%g*v%f + u%f*v%g
+        res%d%f = u%d%f*v%d%f
+        res%d%g = u%d%g*v%d%f + u%d%f*v%d%g
         k = 0
-        do j = 1, ${size_dx}$
-            do i = j, ${size_dx}$
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
                 k = k + 1
-                res%h(k) = u%h(k)*v%f + u%g(i)*v%g(j) + u%g(j)*v%g(i) + u%f*v%h(k)
+                res%h(k) = u%h(k)*v%d%f + u%d%g(i)*v%d%g(j) + u%d%g(j)*v%d%g(i) + u%d%f*v%h(k)
             end do
         end do
       #:if test_coverage
         mult_hd_hd_counter = mult_hd_hd_counter + 1
       #:endif
     end function
-    ${elemental_purity}$ function mult_${dual_sn}$_r(u, v) result(res)
+    ${elemental_purity}$ function mult__${dual_sn}$_r(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
         real(${real_kind}$), intent(in) :: v
         type(${dual_type}$) :: res
         
-        res%f = u%f*v
-        res%g = u%g*v
+        res%d%f = u%d%f*v
+        res%d%g = u%d%g*v
         res%h = u%h*v
       #:if test_coverage
         mult_hd_r_counter = mult_hd_r_counter + 1
       #:endif
     end function
-    ${elemental_purity}$ function mult_r_${dual_sn}$(u, v) result(res)
+    ${elemental_purity}$ function mult__r_${dual_sn}$(u, v) result(res)
         real(${real_kind}$), intent(in) :: u
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
         
-        res%f = u*v%f
-        res%g = u*v%g
+        res%d%f = u*v%d%f
+        res%d%g = u*v%d%g
         res%h = u*v%h
       #:if test_coverage
         mult_r_hd_counter = mult_r_hd_counter + 1
       #:endif
     end function
-    ${elemental_purity}$ function mult_${dual_sn}$_i(u, v) result(res)
+    ${elemental_purity}$ function mult__${dual_sn}$_i(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
         integer, intent(in) :: v
         type(${dual_type}$) :: res
         
-        res%f = u%f*v
-        res%g = u%g*v
+        res%d%f = u%d%f*v
+        res%d%g = u%d%g*v
         res%h = u%h*v
       #:if test_coverage
         mult_hd_i_counter = mult_hd_i_counter + 1
       #:endif
     end function
-    ${elemental_purity}$ function mult_i_${dual_sn}$(u, v) result(res)
+    ${elemental_purity}$ function mult__i_${dual_sn}$(u, v) result(res)
         integer, intent(in) :: u
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
         
-        res%f = u*v%f
-        res%g = u*v%g
+        res%d%f = u*v%d%f
+        res%d%g = u*v%d%g
         res%h = u*v%h
       #:if test_coverage
         mult_i_hd_counter = mult_i_hd_counter + 1

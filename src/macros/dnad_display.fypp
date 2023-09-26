@@ -1,93 +1,88 @@
-#:def dnad_display_interface(dual_shortnames = [], hdual_shortnames = [])
+#:def dnad_display_interface(type_specs)
     interface display
         !! Pretty-print one or more dual or hyper dual numbers
-      #:for dual_sn in dual_shortnames
-        module procedure display__${dual_sn}$_1input
-        module procedure display__${dual_sn}$_1input_vec
-        module procedure display__${dual_sn}$_1input_mat
-        module procedure display__${dual_sn}$_2input
-      #:endfor
-      #:for hdual_sn in hdual_shortnames
-        module procedure display__${hdual_sn}$_1input
-        module procedure display__${hdual_sn}$_1input_vec
-        module procedure display__${hdual_sn}$_2input
+      #:for type_spec in type_specs
+       #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)
+        module procedure display__d_${type_suffix}$_1input
+        module procedure display__d_${type_suffix}$_1input_vec
+        module procedure display__d_${type_suffix}$_1input_mat
+        module procedure display__d_${type_suffix}$_2input
+       #:if has_hdual
+        module procedure display__hd_${type_suffix}$_1input
+        module procedure display__hd_${type_suffix}$_1input_vec
+        module procedure display__hd_${type_suffix}$_2input
+       #:endif
       #:endfor
     end interface
 #:enddef
 
-#:def dnad_display_implementations(&
-        dual_types = [], dual_shortnames = [], &
-        hdual_types = [], hdual_shortnames = [])
-  #!
-  #:assert len(dual_types) > 0 or len(hdual_types) > 0
-  #:assert len(dual_types) == len(dual_shortnames)
-  #:assert len(hdual_types) == len(hdual_shortnames)
-  #!
-  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    subroutine display__${dual_sn}$_1input(d, name)
+#:def dnad_display_implementations(type_specs)
+  #:for type_spec in type_specs
+    #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)
+    #:set dual_type = "dual__" + type_suffix + "_t"
+    #:set hdual_type = "hdual__" + type_suffix + "_t"
+    subroutine display__d_${type_suffix}$_1input(d, name)
         type(${dual_type}$), intent(in) :: d
         character(len=*), intent(in) :: name
         integer :: i
 
-        $:print_dpart_1input(dual_type)
+        $:print_dpart_1input(dual_type, False)
     end subroutine
-    subroutine display__${dual_sn}$_1input_vec(d, name)
+    subroutine display__d_${type_suffix}$_1input_vec(d, name)
         type(${dual_type}$), intent(in) :: d(:)
         character(len=*), intent(in) :: name
         integer :: i, p
 
-        $:print_dpart_1input_vec(dual_type)
+        $:print_dpart_1input_vec(dual_type, False)
     end subroutine
-    subroutine display__${dual_sn}$_1input_mat(d, name)
+    subroutine display__d_${type_suffix}$_1input_mat(d, name)
         type(${dual_type}$), intent(in) :: d(:, :)
         character(len=*), intent(in) :: name
         integer :: i, p, q
 
-        $:print_dpart_1input_mat(dual_type)
+        $:print_dpart_1input_mat(dual_type, False)
     end subroutine
-    subroutine display__${dual_sn}$_2input(d1, d2, name1, name2)
+    subroutine display__d_${type_suffix}$_2input(d1, d2, name1, name2)
         type(${dual_type}$), intent(in) :: d1
         type(${dual_type}$), intent(in) :: d2
         character(len=*), intent(in) :: name1
         character(len=*), intent(in) :: name2
         integer :: i
 
-        $:print_dpart_2input(dual_type)
+        $:print_dpart_2input(dual_type, False)
     end subroutine
-  #:endfor
-
-  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
-    subroutine display__${hdual_sn}$_1input(d, name)
+   #:if has_hdual
+    subroutine display__hd_${type_suffix}$_1input(d, name)
         type(${hdual_type}$), intent(in) :: d
         character(len=*), intent(in) :: name
         integer :: i, j, k
 
-        $:print_dpart_1input(hdual_type)
+        $:print_dpart_1input(hdual_type, True)
 
         print*, "Lower triangular of Hessian matrix, h(i,j)"
         print*, " k  i  j   ", name, "%h(k)"
         k = 0
-        do j = 1, size(d%g)
-            do i = j, size(d%g)
+        do j = 1, size(d%d%g)
+            do i = j, size(d%d%g)
                 k = k + 1
                 print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d%h(k)
             end do
         end do
 
     end subroutine
-    subroutine display__${hdual_sn}$_1input_vec(d, name)
+    subroutine display__hd_${type_suffix}$_1input_vec(d, name)
         type(${hdual_type}$), intent(in) :: d(:)
         character(len=*), intent(in) :: name
         integer :: i, j, k, p
 
-        $:print_dpart_1input_vec(hdual_type)
+        $:print_dpart_1input_vec(hdual_type, True)
 
         print*, "Lower triangular of Hessian matrix, h(i,j)"
         print*, " p  k  i  j   ", name, "(p)%h(k)"
         do p = 1, size(d)
             k = 0
-            do j = 1, size(d(1)%g)
-                do i = j, size(d(1)%g)
+            do j = 1, size(d(1)%d%g)
+                do i = j, size(d(1)%d%g)
                     k = k + 1
                     print '(I3, I3, I3, I3, ES22.14, ES22.14)', p, k, i, j, d(p)%h(k)
                 end do
@@ -95,87 +90,116 @@
         end do
 
     end subroutine
-    subroutine display__${hdual_sn}$_2input(d1, d2, name1, name2)
+    subroutine display__hd_${type_suffix}$_2input(d1, d2, name1, name2)
       type(${hdual_type}$), intent(in) :: d1
       type(${hdual_type}$), intent(in) :: d2
       character(len=*), intent(in) :: name1
       character(len=*), intent(in) :: name2
       integer :: i, j, k
 
-      $:print_dpart_2input(hdual_type)
+      $:print_dpart_2input(hdual_type, True)
 
       print*, "Lower triangular of Hessian matrix, h(i,j)"
       print*, " k  i  j   ", name1, "%h(k)            ", name2, "%h(k)"
       k = 0
-      do j = 1, size(d1%g)
-          do i = j, size(d1%g)
+      do j = 1, size(d1%d%g)
+          do i = j, size(d1%d%g)
               k = k + 1
               print '(I3, I3, I3, ES22.14, ES22.14)', k, i, j, d1%h(k), d2%h(k)
           end do
       end do
 
     end subroutine
+   #:endif
   #:endfor
 
 #:enddef
 
-#:def print_dpart_1input(dual_type)
+#:def print_dpart_1input(dual_type, is_hyperdual)
+    #:if is_hyperdual
+        #:set f = "d%f"
+        #:set g = "d%g"
+    #:else
+        #:set f = "f"
+        #:set g = "g"
+    #:endif
         print*, "Function values:"
-        print*, " ",name,"%f"
-        print '(ES22.14)', d%f
+        print*, " ",name,"%${f}$"
+        print '(ES22.14)', d%${f}$
 
         print*, "Derivatives:"
-        print*, " i    ", name, "%g(i)"
-        do i = 1, size(d%g)
-            print '(I3, ES22.14)' , i, d%g(i)
+        print*, " i    ", name, "%${g}$(i)"
+        do i = 1, size(d%${g}$)
+            print '(I3, ES22.14)' , i, d%${g}$(i)
         end do
 #:enddef
 
-#:def print_dpart_1input_vec(dual_type)
+#:def print_dpart_1input_vec(dual_type, is_hyperdual)
+    #:if is_hyperdual
+        #:set f = "d%f"
+        #:set g = "d%g"
+    #:else
+        #:set f = "f"
+        #:set g = "g"
+    #:endif
         print*, "Function values:"
-        print*, " ",name,"(p)%f"
+        print*, " ",name,"(p)%${f}$"
         do p = 1, size(d)
-            print '(I3, ES22.14)', p, d(p)%f
+            print '(I3, ES22.14)', p, d(p)%${f}$
         end do
 
         print*, "Derivatives:"
-        print*, " p   i    ", name, "(p)%g(i)"
+        print*, " p   i    ", name, "(p)%${g}$(i)"
         do p = 1, size(d)
-            do i = 1, size(d(1)%g)
-                print '(I3, I3, ES22.14)', p, i, d(p)%g(i)
+            do i = 1, size(d(1)%${g}$)
+                print '(I3, I3, ES22.14)', p, i, d(p)%${g}$(i)
             end do
         end do
 #:enddef
 
-#:def print_dpart_1input_mat(dual_type)
+#:def print_dpart_1input_mat(dual_type, is_hyperdual)
+    #:if is_hyperdual
+        #:set f = "d%f"
+        #:set g = "d%g"
+    #:else
+        #:set f = "f"
+        #:set g = "g"
+    #:endif
         print*, "Function values:"
-        print*, " ",name,"(p,q)%f"
+        print*, " ",name,"(p,q)%${f}$"
         do q = 1, size(d, 2)
             do p = 1, size(d, 1)
-                print '(I3, I3, ES22.14)', p, q, d(p, q)%f
+                print '(I3, I3, ES22.14)', p, q, d(p, q)%${f}$
             end do
         end do
 
         print*, "Derivatives:"
-        print*, " p  q  i    ", name, "(p)%g(i)"
+        print*, " p  q  i    ", name, "(p)%${g}$(i)"
         do q = 1, size(d, 2)
             do p = 1, size(d, 1)
-                do i = 1, size(d(1, 1)%g)
-                    print '(I3, I3, I3, ES22.14)', p, q, i, d(p,q)%g(i)
+                do i = 1, size(d(1, 1)%${g}$)
+                    print '(I3, I3, I3, ES22.14)', p, q, i, d(p,q)%${g}$(i)
                 end do
             end do
         end do
 #:enddef
 
-#:def print_dpart_2input(dual_type)
+#:def print_dpart_2input(dual_type, is_hyperdual)
+    #:if is_hyperdual
+        #:set f = "d%f"
+        #:set g = "d%g"
+    #:else
+        #:set f = "f"
+        #:set g = "g"
+    #:endif
         print*, "Function values:"
-        print*, " ",name1, "%f                  ", name2, "%f"
-        print '(ES22.14, ES22.14)', d1%f, d2%f
+        print*, " ",name1, "%${f}$                  ", name2, "%${f}$"
+        print '(ES22.14, ES22.14)', d1%${f}$, d2%${f}$
 
         print*, "Derivatives:"
-        print*, " i    ", name1, "%g(i)                ", name2, "%g(i)"
-        do i = 1, size(d1%g)
-            print '(I3, ES22.14, ES22.14)' , i, d1%g(i), d2%g(i)
+        print*, " i    ", name1, "%${g}$(i)                ", name2, "%${g}$(i)"
+        do i = 1, size(d1%${g}$)
+            print '(I3, ES22.14, ES22.14)' , i, d1%${g}$(i), d2%${g}$(i)
         end do
 #:enddef
 

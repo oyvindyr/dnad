@@ -1,22 +1,17 @@
-#:def dnad_dual_type(dual_type, real_kind, size_dx, statement)
-    type :: ${dual_type}$
+#:def dnad_dual_type(type_spec, real_kind, size_dx, statement = "")
+    #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)
+    type :: dual__${type_suffix}$_t
         !! dual number type
-        #! statement can for instance be 'sequence' or nothing
-        #!   the original dnad code had 'sequence' here, but I dont know what it is good for...
         ${statement}$
         real(${real_kind}$) :: f = 0  ! functional value
         real(${real_kind}$) :: g(${size_dx}$) = 0  ! derivatives
     end type
-#:enddef
-
-#:def dnad_hdual_type(dual_type, real_kind, size_dx, statement)
-    type :: ${dual_type}$
+  #:if has_hdual
+    type :: hdual__${type_suffix}$_t
         !! hyper-dual number type
-        #! statement can for instance be 'sequence' or nothing
-        #!   the original dnad code had 'sequence' here, but I dont know what it is good for...
         ${statement}$
-        real(${real_kind}$) :: f = 0  ! functional value
-        real(${real_kind}$) :: g(${size_dx}$) = 0  ! derivatives
+        type(dual__${type_suffix}$_t) :: d  ! dual number
         real(${real_kind}$) :: h(${size_dx}$*(${size_dx}$ + 1)/2) = 0  ! Lower triangular of Hessian
     end type
+  #:endif
 #:enddef

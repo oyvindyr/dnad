@@ -5,7 +5,7 @@
     #:else
         #:set elemental_purity = "impure elemental"
     #:endif
-    ${elemental_purity}$ function sqrt_${dual_sn}$(u) result(res)
+    ${elemental_purity}$ function sqrt__${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
         real(${real_kind}$) :: t0
@@ -19,7 +19,7 @@
         if (res%f /= 0) then
             res%g = 0.5_${real_kind}$*u%g/t0
         else
-            do i = 1, ${size_dx}$
+            do i = 1, size(u%g)
                 if (u%g(i) == 0) then
                     res%g(i) = 0
                 else
@@ -37,48 +37,48 @@
 
 #:enddef
 
-#:def sqrt_hd(dual_type, dual_sn, real_kind, size_dx, is_pure, test_coverage, stringent)
+#:def sqrt_hd(dual_type, dual_sn, real_kind, is_pure, test_coverage, stringent)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"
     #:endif
-    ${elemental_purity}$ function sqrt_${dual_sn}$(u) result(res)
+    ${elemental_purity}$ function sqrt__${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
         integer :: i, j, k
         real(${real_kind}$) :: t0,t1
         
-        t0 = sqrt(u%f)
+        t0 = sqrt(u%d%f)
         t1 = 1.0_${real_kind}$/t0
-        res%f = t0
+        res%d%f = t0
       #:if stringent
-        if (res%f /= 0) then
-            res%g = 0.5_${real_kind}$*t1*u%g
+        if (res%d%f /= 0) then
+            res%d%g = 0.5_${real_kind}$*t1*u%d%g
             k = 0
-            do j = 1, ${size_dx}$
-                do i = j, ${size_dx}$
+            do j = 1, size(u%d%g)
+                do i = j, size(u%d%g)
                     k = k + 1
-                    res%h(k) = (0.25_${real_kind}$)*t1*(2*u%h(k) - u%g(i)*u%g(j)/u%f)
+                    res%h(k) = (0.25_${real_kind}$)*t1*(2*u%h(k) - u%d%g(i)*u%d%g(j)/u%d%f)
                 end do
             end do
         else
-            do i = 1, ${size_dx}$
-                if (u%g(i) == 0) then
-                    res%g(i) = 0
+            do i = 1, size(u%d%g)
+                if (u%d%g(i) == 0) then
+                    res%d%g(i) = 0
                 else
-                    res%g(i) = set_NaN()
+                    res%d%g(i) = set_NaN()
                 end if
             end do
             res%h = set_NaN() ! Not sure if this is correct..
         end if
       #:else
-        res%g = 0.5_${real_kind}$*t1*u%g
+        res%d%g = 0.5_${real_kind}$*t1*u%d%g
         k = 0
-        do j = 1, ${size_dx}$
-            do i = j, ${size_dx}$
+        do j = 1, size(u%d%g)
+            do i = j, size(u%d%g)
                 k = k + 1
-                res%h(k) = (0.25_${real_kind}$)*t1*(2*u%h(k) - u%g(i)*u%g(j)/u%f)
+                res%h(k) = (0.25_${real_kind}$)*t1*(2*u%h(k) - u%d%g(i)*u%d%g(j)/u%d%f)
             end do
         end do
       #:endif

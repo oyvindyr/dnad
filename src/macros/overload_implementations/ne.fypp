@@ -5,14 +5,14 @@
     #:else
         #:set elemental_purity = "impure elemental"
     #:endif
-    ${elemental_purity}$  function ne_${dual_sn}$_${dual_sn}$(lhs, rhs) result(res)
+    ${elemental_purity}$  function ne__${dual_sn}$_${dual_sn}$(lhs, rhs) result(res)
          type(${dual_type}$), intent(in) :: lhs, rhs
          logical :: res
 
          res = (lhs%f /= rhs%f)
 
     end function
-    ${elemental_purity}$  function ne_${dual_sn}$_i(lhs, rhs) result(res)
+    ${elemental_purity}$  function ne__${dual_sn}$_i(lhs, rhs) result(res)
          type(${dual_type}$), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
@@ -20,7 +20,7 @@
          res = (lhs%f /= rhs)
 
     end function
-    ${elemental_purity}$  function ne_${dual_sn}$_r(lhs, rhs) result(res)
+    ${elemental_purity}$  function ne__${dual_sn}$_r(lhs, rhs) result(res)
          type(${dual_type}$), intent(in) :: lhs
          real(${real_kind}$), intent(in) :: rhs
          logical :: res
@@ -28,7 +28,7 @@
          res = (lhs%f /= rhs)
 
     end function
-    ${elemental_purity}$  function ne_i_${dual_sn}$(lhs, rhs) result(res)
+    ${elemental_purity}$  function ne__i_${dual_sn}$(lhs, rhs) result(res)
          integer, intent(in) :: lhs
          type(${dual_type}$), intent(in) :: rhs
          logical :: res
@@ -36,7 +36,7 @@
          res = (lhs /= rhs%f)
 
     end function
-    ${elemental_purity}$  function ne_r_${dual_sn}$(lhs, rhs) result(res)
+    ${elemental_purity}$  function ne__r_${dual_sn}$(lhs, rhs) result(res)
          real(${real_kind}$), intent(in) :: lhs
          type(${dual_type}$), intent(in) :: rhs
          logical :: res

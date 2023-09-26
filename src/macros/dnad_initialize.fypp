@@ -1,30 +1,25 @@
     
-#:def dnad_initialize_interface(dual_shortnames = [], hdual_shortnames = [])
+#:def dnad_initialize_interface(type_specs)
     interface initialize 
         !! Initialize a dual or hyper dual number
-      #:for dual_sn in dual_shortnames
-        module procedure initialize_${dual_sn}$_scalar
-        module procedure initialize_${dual_sn}$_vector
-      #:endfor
-      #:for hdual_sn in hdual_shortnames
-        module procedure initialize_${hdual_sn}$_scalar
-        module procedure initialize_${hdual_sn}$_vector
+      #:for type_spec in type_specs
+        #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)
+        module procedure initialize__d_${type_suffix}$_scalar
+        module procedure initialize__d_${type_suffix}$_vector
+       #:if has_hdual
+        module procedure initialize__hd_${type_suffix}$_scalar
+        module procedure initialize__hd_${type_suffix}$_vector
+       #:endif
       #:endfor
     end interface
 #:enddef
 
-#:def dnad_initialize_implementations(real_kind, &
-        dual_types = [], dual_shortnames = [], &
-        hdual_types = [], hdual_shortnames = [])
-  #!
-  #:assert len(dual_types) > 0 or len(hdual_types) > 0
-  #:assert len(dual_types) == len(dual_shortnames)
-  #:assert len(hdual_types) == len(hdual_shortnames)
-  #!
-  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
-    pure subroutine initialize_${dual_sn}$_scalar(dual, val, idiff)
+#:def dnad_initialize_implementations(type_specs, real_kind)
+  #:for type_spec in type_specs
+    #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)
+    pure subroutine initialize__d_${type_suffix}$_scalar(dual, val, idiff)
         !! Initialize a single dual number, whose derivative with respect to design variable 'idiff' is 1
-        type(${dual_type}$), intent(out) :: dual
+        type(dual__${type_suffix}$_t), intent(out) :: dual
         real(${real_kind}$), intent(in) :: val
         integer, intent(in) :: idiff
         
@@ -33,10 +28,10 @@
         dual%g(idiff) = 1
 
     end subroutine
-    pure subroutine initialize_${dual_sn}$_vector(dual, val)
+    pure subroutine initialize__d_${type_suffix}$_vector(dual, val)
         !! Initialize a vector of dual numbers, where the derivative of 
         !! number i with respect to design variable i is 1
-        type(${dual_type}$), intent(out) :: dual(:)
+        type(dual__${type_suffix}$_t), intent(out) :: dual(:)
         real(${real_kind}$), intent(in) :: val(:)
 
         integer :: i
@@ -48,35 +43,35 @@
         end do
 
     end subroutine
-  #:endfor
-  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
-    pure subroutine initialize_${hdual_sn}$_scalar(hdual, val, idiff)
+   #:if has_hdual
+    pure subroutine initialize__hd_${type_suffix}$_scalar(hdual, val, idiff)
         !! Initialize a single hyper-dual number, whose derivative with respect to design variable 'idiff' is 1
-        type(${hdual_type}$), intent(out) :: hdual
+        type(hdual__${type_suffix}$_t), intent(out) :: hdual
         real(${real_kind}$), intent(in) :: val
         integer, intent(in) :: idiff
         
-        hdual%f = val
-        hdual%g = 0
+        hdual%d%f = val
+        hdual%d%g = 0
         hdual%h = 0
-        hdual%g(idiff) = 1
+        hdual%d%g(idiff) = 1
 
     end subroutine
-    pure subroutine initialize_${hdual_sn}$_vector(hdual, val)
+    pure subroutine initialize__hd_${type_suffix}$_vector(hdual, val)
         !! Initialize a vector of hyper-dual numbers, where the derivative of 
         !! number i with respect to design variable i is 1
-        type(${hdual_type}$), intent(out) :: hdual(:)
+        type(hdual__${type_suffix}$_t), intent(out) :: hdual(:)
         real(${real_kind}$), intent(in) :: val(:)
 
         integer :: i
         
         do i = 1, size(hdual)
-            hdual(i)%f = val(i)
-            hdual(i)%g = 0
+            hdual(i)%d%f = val(i)
+            hdual(i)%d%g = 0
             hdual(i)%h = 0
-            hdual(i)%g(i) = 1
+            hdual(i)%d%g(i) = 1
         end do
 
     end subroutine
+   #:endif
   #:endfor
 #:enddef
