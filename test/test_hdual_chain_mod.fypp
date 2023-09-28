@@ -5,7 +5,7 @@
 #:include '../src/macros/dnad_overload_implementations.fypp'
 #:include '../src/macros/dnad_initialize.fypp'
 #:include '../src/macros/dnad_getters.fypp'
-#:include '../src/macros/dnad_jacobi_tr.fypp'
+#:include '../src/macros/dnad_jacobi.fypp'
 #:include '../src/macros/dnad_chain_duals.fypp'
 #:include '../src/macros/dnad_display.fypp'
 
@@ -48,7 +48,7 @@ module test_hdual_chain_mod
     $:dnad_initialize_interface(dual_type_specs)
     $:dnad_display_interface(dual_type_specs)
     $:dnad_getter_interfaces(dual_type_specs)
-    $:dnad_jacobi_tr_interface(dual_type_specs)
+    $:dnad_jacobi_interfaces(dual_type_specs)
     $:dnad_chain_duals_interface(["y->x:h"])
     $:dnad_overload_interfaces(dual_type_specs, selected_interfaces)
     
@@ -105,7 +105,7 @@ contains
         print*," "
         call display(yx, "yx")
         print*," "
-        call display(jacobi_tr(yx), "yxjt")
+        call display(jacobi_tr_d(yx), "yxjt")
 
         is_ok = .true.
         if (abs(fvalue(fx_chain) - fvalue(fx)) > abs_tol) then
@@ -147,7 +147,7 @@ contains
     $:dnad_initialize_implementations(dual_type_specs, "dp")
     $:dnad_display_implementations(dual_type_specs)
     $:dnad_getter_implementations(dual_type_specs, "dp")
-    $:dnad_jacobi_tr_implementations(dual_type_specs, "dp")
+    $:dnad_jacobi_implementations(dual_type_specs, "dp")
     $:dnad_chain_duals_implementations(["y->x:h"], "dp")
     $:dnad_overload_implementations(dual_type_specs, "dp", selected_interfaces=selected_interfaces, stringent=stringent)
     

@@ -96,14 +96,37 @@ module test_hdual_chain_mod
         module procedure hessian__hd_x
         module procedure hessian__hd_y
     end interface
+    interface jacobi
+        !! Extract Jacobi matrix from a vector of dual or hyper-dual numbers.
+        module procedure jacobi__dx
+        module procedure jacobi__hdx
+        module procedure jacobi__dy
+        module procedure jacobi__hdy
+    end interface
     interface jacobi_tr
         !! Extract transpose of Jacobi matrix from a vector of dual or hyper-dual numbers.
-        !! - A hyper-dual vector results in a dual matrix.
-        !! - A dual vector results in a real matrix.
-        module procedure jacobi_tr__d_x
-        module procedure jacobi_tr__hd_x
-        module procedure jacobi_tr__d_y
-        module procedure jacobi_tr__hd_y
+        module procedure jacobi_tr__dx
+        module procedure jacobi_tr__hdx
+        module procedure jacobi_tr__dy
+        module procedure jacobi_tr__hdy
+    end interface
+    interface jacobi_d
+        !! Extract Jacobi matrix from a vector of dual or hyper-dual numbers.
+        !! - A hyper-dual vector results in a dual matrix
+        !! - A dual vector results in a real matrix (same as jacobi)
+        module procedure jacobi__dx
+        module procedure jacobi_d__hdx
+        module procedure jacobi__dy
+        module procedure jacobi_d__hdy
+    end interface
+    interface jacobi_tr_d
+        !! Extract transpose of Jacobi matrix from a vector of dual or hyper-dual numbers.
+        !! - A hyper-dual vector results in a dual matrix
+        !! - A dual vector results in a real matrix (same as jacobi_tr)
+        module procedure jacobi_tr__dx
+        module procedure jacobi_tr_d__hdx
+        module procedure jacobi_tr__dy
+        module procedure jacobi_tr_d__hdy
     end interface
     interface chain_duals
         !! Generic function for converting a dual or hyper-dual number from one dual-type to another by applying the chain rule of derivation
@@ -282,7 +305,7 @@ contains
         print*," "
         call display(yx, "yx")
         print*," "
-        call display(jacobi_tr(yx), "yxjt")
+        call display(jacobi_tr_d(yx), "yxjt")
 
         is_ok = .true.
         if (abs(fvalue(fx_chain) - fvalue(fx)) > abs_tol) then
@@ -872,7 +895,18 @@ contains
         end do
 
     end function
-    pure function jacobi_tr__d_x(x) result(y)
+    pure function jacobi__dx(x) result(y)
+        type(dual__x_t), intent(in) :: x(:)
+        real(dp) :: y(size(x),size(x(1)%g))
+
+        integer :: j
+
+        do j = 1, size(x)
+            y(j,:) = x(j)%g
+        end do
+
+    end function
+    pure function jacobi_tr__dx(x) result(y)
         type(dual__x_t), intent(in) :: x(:)
         real(dp) :: y(size(x(1)%g),size(x))
 
@@ -883,7 +917,45 @@ contains
         end do
 
     end function
-    pure function jacobi_tr__hd_x(x) result(y)
+    pure function jacobi__hdx(x) result(y)
+        type(hdual__x_t), intent(in) :: x(:)
+        real(dp) :: y(size(x),size(x(1)%d%g))
+
+        integer :: j
+
+        do j = 1, size(x)
+            y(j,:) = x(j)%d%g
+        end do
+
+    end function
+    pure function jacobi_d__hdx(x) result(y)
+        type(hdual__x_t), intent(in) :: x(:)
+        type(dual__x_t) :: y(size(x),size(x(1)%d%g))
+
+        real(dp) :: hess(size(x(1)%d%g), size(x(1)%d%g))
+        integer :: i, j
+
+        do j = 1, size(x)
+            hess = hessian(x(j))
+            do i = 1, size(x(1)%d%g)
+                y(j,i)%f = x(j)%d%g(i)
+                y(j,i)%g = hess(:,i)
+            end do
+        end do
+
+    end function
+    pure function jacobi_tr__hdx(x) result(y)
+        type(hdual__x_t), intent(in) :: x(:)
+        real(dp) :: y(size(x(1)%d%g),size(x))
+
+        integer :: j
+
+        do j = 1, size(x)
+            y(:,j) = x(j)%d%g
+        end do
+
+    end function
+    pure function jacobi_tr_d__hdx(x) result(y)
         type(hdual__x_t), intent(in) :: x(:)
         type(dual__x_t) :: y(size(x(1)%d%g),size(x))
 
@@ -899,7 +971,18 @@ contains
         end do
 
     end function
-    pure function jacobi_tr__d_y(x) result(y)
+    pure function jacobi__dy(x) result(y)
+        type(dual__y_t), intent(in) :: x(:)
+        real(dp) :: y(size(x),size(x(1)%g))
+
+        integer :: j
+
+        do j = 1, size(x)
+            y(j,:) = x(j)%g
+        end do
+
+    end function
+    pure function jacobi_tr__dy(x) result(y)
         type(dual__y_t), intent(in) :: x(:)
         real(dp) :: y(size(x(1)%g),size(x))
 
@@ -910,7 +993,45 @@ contains
         end do
 
     end function
-    pure function jacobi_tr__hd_y(x) result(y)
+    pure function jacobi__hdy(x) result(y)
+        type(hdual__y_t), intent(in) :: x(:)
+        real(dp) :: y(size(x),size(x(1)%d%g))
+
+        integer :: j
+
+        do j = 1, size(x)
+            y(j,:) = x(j)%d%g
+        end do
+
+    end function
+    pure function jacobi_d__hdy(x) result(y)
+        type(hdual__y_t), intent(in) :: x(:)
+        type(dual__y_t) :: y(size(x),size(x(1)%d%g))
+
+        real(dp) :: hess(size(x(1)%d%g), size(x(1)%d%g))
+        integer :: i, j
+
+        do j = 1, size(x)
+            hess = hessian(x(j))
+            do i = 1, size(x(1)%d%g)
+                y(j,i)%f = x(j)%d%g(i)
+                y(j,i)%g = hess(:,i)
+            end do
+        end do
+
+    end function
+    pure function jacobi_tr__hdy(x) result(y)
+        type(hdual__y_t), intent(in) :: x(:)
+        real(dp) :: y(size(x(1)%d%g),size(x))
+
+        integer :: j
+
+        do j = 1, size(x)
+            y(:,j) = x(j)%d%g
+        end do
+
+    end function
+    pure function jacobi_tr_d__hdy(x) result(y)
         type(hdual__y_t), intent(in) :: x(:)
         type(dual__y_t) :: y(size(x(1)%d%g),size(x))
 
