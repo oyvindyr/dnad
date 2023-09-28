@@ -1086,7 +1086,13 @@ contains
         real(dp) :: tmp
 
         ! Calculate dual part
-        fx%d = chain_duals__d_y_x(fy%d, yx%d)
+        fx%d%f = fy%d%f
+        fx%d%g = 0
+        do p = 1, size(fy%d%g)
+            do j = 1, size(fx%d%g)
+                fx%d%g(j) = fx%d%g(j) + fy%d%g(p)*yx(p)%d%g(j)
+            end do
+        end do
 
         ! Calculate hessian part
         nk = size(fx%d%g)*(size(fx%d%g)+1)/2
