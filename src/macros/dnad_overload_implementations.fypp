@@ -148,9 +148,15 @@
         type(${dual_type}$) :: res
         integer :: i
 
-        ! We need this!
       #:if stringent == True
-        if (u%f == 0) then
+        ! We need this!
+        if (u%f > 0) then
+            res%f = u%f
+            res%g = u%g
+        else if (u%f < 0) then
+            res%f = -u%f
+            res%g = -u%g
+        else
             res%f = 0.0_${real_kind}$
             do i = 1, size(u%g)
                 if (u%g(i) .eq. 0.0_${real_kind}$) then
@@ -159,13 +165,15 @@
                     res%g(i) = set_NaN()
                 end if
             end do
-        else 
-            res%f = abs(u%f)
-            res%g = abs(u%g)
         end if
       #:else 
-        res%f = abs(u%f)
-        res%g = abs(u%g)
+        if (u%f >= 0) then
+            res%f = u%f
+            res%g = u%g
+        else
+            res%f = -u%f
+            res%g = -u%g
+        end if
       #:endif
 
     end function

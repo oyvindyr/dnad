@@ -1952,9 +1952,13 @@ contains
         type(dual__uvw_t) :: res
         integer :: i
 
-        ! We need this!
-        res%f = abs(u%f)
-        res%g = abs(u%g)
+        if (u%f >= 0) then
+            res%f = u%f
+            res%g = u%g
+        else
+            res%f = -u%f
+            res%g = -u%g
+        end if
 
     end function
     impure elemental  function acos__duvw(u) result(res)
