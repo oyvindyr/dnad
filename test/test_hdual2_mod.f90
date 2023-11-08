@@ -1953,7 +1953,7 @@ contains
         integer :: i
 
         res%f = abs(u%f)
-        res%g = sign(u%g, u%f)
+        res%g = sign(1.0_dp, u%f)*u%g
 
     end function
     impure elemental  function acos__duvw(u) result(res)
