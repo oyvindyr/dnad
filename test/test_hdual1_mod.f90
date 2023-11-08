@@ -1913,13 +1913,8 @@ contains
         type(dual__xy_t) :: res
         integer :: i
 
-        if (u%f >= 0) then
-            res%f = u%f
-            res%g = u%g
-        else
-            res%f = -u%f
-            res%g = -u%g
-        end if
+        res%f = abs(u%f)
+        res%g = sign(u%g, u%f)
 
     end function
     impure elemental  function acos__dxy(u) result(res)
