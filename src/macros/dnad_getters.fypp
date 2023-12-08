@@ -1,6 +1,9 @@
 #:def dnad_getter_interfaces(type_specs)
     interface fvalue
-        !! Extract function value from a dual or hyper-dual number
+        !! Extract function value from a real, dual or hyper-dual number
+        module procedure fvalue__r
+        module procedure fvalue__r1
+        module procedure fvalue__r2
       #:for type_spec in type_specs
         #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)
         module procedure fvalue__d_${type_suffix}$
@@ -25,6 +28,17 @@
       #:endfor
     end interface
 
+    interface gradient_d
+        !! Extract gradient from a dual or hyper-dual number. In the hyper-dual case, the gradient is dual valued.
+      #:for type_spec in type_specs
+        #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)
+        module procedure gradient__d_${type_suffix}$ ! Same implementations as gradient()
+       #:if has_hdual
+        module procedure gradient_d__hd_${type_suffix}$
+       #:endif
+      #:endfor
+    end interface
+
     interface hessian 
         !! Extract Hessian from a hyper-dual number
       #:for type_spec in type_specs
@@ -38,6 +52,21 @@
 
 #:def dnad_getter_implementations(type_specs, real_kind)
 
+    pure function fvalue__r(fi) result(f)
+        real(${real_kind}$), intent(in) :: fi
+        real(${real_kind}$) :: f
+        f = fi
+    end function
+    pure function fvalue__r1(fi) result(f)
+        real(${real_kind}$), intent(in) :: fi(:)
+        real(${real_kind}$) :: f(size(fi))
+        f = fi
+    end function
+    pure function fvalue__r2(fi) result(f)
+        real(${real_kind}$), intent(in) :: fi(:,:)
+        real(${real_kind}$) :: f(size(fi, 1), size(fi, 2))
+        f = fi
+    end function
   #:for type_spec in type_specs
     #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)
     pure function fvalue__d_${type_suffix}$(d) result(f)
@@ -86,6 +115,19 @@
         type(hdual__${type_suffix}$_t), intent(in) :: hd
         real(${real_kind}$) :: g(size(hd%d%g))
         g = hd%d%g
+    end function
+    pure function gradient_d__hd_${type_suffix}$(hd) result(g)
+        type(hdual__${type_suffix}$_t), intent(in) :: hd
+        type(dual__${type_suffix}$_t) :: g(size(hd%d%g))
+
+        real(dp) :: hess(size(hd%d%g), size(hd%d%g))
+        integer :: i
+
+        hess = hessian(hd)
+        do i = 1, size(hd%d%g)
+            g(i)%f = hd%d%g(i)
+            g(i)%g = hess(:,i)
+        end do
     end function
    #:endif
   #:endfor
