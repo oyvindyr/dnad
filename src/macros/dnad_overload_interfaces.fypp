@@ -109,6 +109,20 @@
       #:endfor
     end interface
   #:endif 
+  #:if "hypot" in interface_list 
+    interface hypot
+      #:for dual_sn in dual_shortnames
+        module procedure hypot__${dual_sn}$_${dual_sn}$
+        module procedure hypot__${dual_sn}$_r
+        module procedure hypot__r_${dual_sn}$
+      #:endfor
+      #:for hdual_sn in hdual_shortnames
+        module procedure hypot__${hdual_sn}$_${hdual_sn}$
+        module procedure hypot__${hdual_sn}$_r
+        module procedure hypot__r_${hdual_sn}$
+      #:endfor
+    end interface
+  #:endif 
   #:if "==" in interface_list 
     interface operator (==)
       #:for dual_sn in dual_shortnames

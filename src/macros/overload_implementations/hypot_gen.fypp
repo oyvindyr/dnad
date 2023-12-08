@@ -1,0 +1,131 @@
+
+#:def hypot_d(dual_type, dual_sn, real_kind, is_pure, test_coverage)
+    #:if is_pure and not test_coverage
+        #:set elemental_purity = "elemental"
+    #:else
+        #:set elemental_purity = "impure elemental"
+    #:endif
+    ${elemental_purity}$ function hypot__${dual_sn}$_${dual_sn}$(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        real(${real_kind}$) :: t0
+        
+        t0 = sqrt(u%f**2 + v%f**2)
+        res%f = t0
+        res%g = (u%g*u%f + v%g*v%f)/t0
+      #:if test_coverage
+        hypot__d_d_counter = hypot__d_d_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function hypot__${dual_sn}$_r(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        real(${real_kind}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        real(${real_kind}$) :: t0
+        
+        t0 = sqrt(u%f**2 + v**2)
+        res%f = t0
+        res%g = u%g*u%f/t0
+      #:if test_coverage
+        hypot__d_r_counter = hypot__d_r_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function hypot__r_${dual_sn}$(u, v) result(res)
+        real(${real_kind}$), intent(in) :: u
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        real(${real_kind}$) :: t0
+        
+        t0 = sqrt(u**2 + v%f**2)
+        res%f = t0
+        res%g = v%g*v%f/t0
+      #:if test_coverage
+        hypot__r_d_counter = hypot__r_d_counter + 1
+      #:endif
+    end function
+#:enddef
+
+#:def hypot_hd(dual_type, dual_sn, real_kind, is_pure, test_coverage)
+    #:if is_pure and not test_coverage
+        #:set elemental_purity = "elemental"
+    #:else
+        #:set elemental_purity = "impure elemental"
+    #:endif
+    ${elemental_purity}$ function hypot__${dual_sn}$_${dual_sn}$(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        integer :: i, j, k
+        real(${real_kind}$) :: t0,t1,t2,t3,t4,t5
+        
+        t0 = u%d%f**2
+        t1 = v%d%f**2
+        t2 = t0 + t1
+        t3 = sqrt(t2)
+        t4 = 1.0_${real_kind}$/t3
+        t5 = 1.0_${real_kind}$/t2
+        res%d%f = t3
+        res%d%g = t4*(u%d%g*u%d%f + v%d%g*v%d%f)
+        k = 0
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
+                k = k + 1
+                res%h(k) = t4*(u%h(k)*u%d%f - u%d%g(j)*(t5*u%d%f*v%d%g(i)*v%d%f + u%d%g(i)*(t0*t5 - 1)) &
+      + v%h(k)*v%d%f - v%d%g(j)*(t5*u%d%g(i)*u%d%f*v%d%f + v%d%g(i)*(t1*t5 - 1)))
+            end do
+        end do
+      #:if test_coverage
+        hypot__hd_hd_counter = hypot__hd_hd_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function hypot__${dual_sn}$_r(u, v) result(res)
+        type(${dual_type}$), intent(in) :: u
+        real(${real_kind}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        integer :: i, j, k
+        real(${real_kind}$) :: t0,t1,t2,t3
+        
+        t0 = u%d%f**2
+        t1 = t0 + v**2
+        t2 = sqrt(t1)
+        t3 = 1.0_${real_kind}$/t2
+        res%d%f = t2
+        res%d%g = t3*u%d%g*u%d%f
+        k = 0
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
+                k = k + 1
+                res%h(k) = t3*(u%h(k)*u%d%f - u%d%g(i)*u%d%g(j)*(t0/t1 - 1))
+            end do
+        end do
+      #:if test_coverage
+        hypot__hd_r_counter = hypot__hd_r_counter + 1
+      #:endif
+    end function
+    ${elemental_purity}$ function hypot__r_${dual_sn}$(u, v) result(res)
+        real(${real_kind}$), intent(in) :: u
+        type(${dual_type}$), intent(in) :: v
+        type(${dual_type}$) :: res
+        integer :: i, j, k
+        real(${real_kind}$) :: t0,t1,t2,t3
+        
+        t0 = v%d%f**2
+        t1 = t0 + u**2
+        t2 = sqrt(t1)
+        t3 = 1.0_${real_kind}$/t2
+        res%d%f = t2
+        res%d%g = t3*v%d%g*v%d%f
+        k = 0
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
+                k = k + 1
+                res%h(k) = t3*(v%h(k)*v%d%f - v%d%g(i)*v%d%g(j)*(t0/t1 - 1))
+            end do
+        end do
+      #:if test_coverage
+        hypot__r_hd_counter = hypot__r_hd_counter + 1
+      #:endif
+    end function
+#:enddef
+

@@ -7,6 +7,7 @@
 #:include 'mult_gen.fypp'
 #:include 'div_gen.fypp'
 #:include 'pow.fypp'
+#:include 'hypot.fypp'
 #:include 'eq.fypp'
 #:include 'le.fypp'
 #:include 'lt.fypp'
@@ -89,6 +90,16 @@
   #:endfor
   #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
     $:pow_hd(hdual_type, hdual_sn, real_kind, is_pure, test_coverage)
+  #:endfor
+#:endif 
+#!
+#! 
+#:if "hypot" in interface_list 
+  #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
+    $:hypot_d(dual_type, dual_sn, real_kind, is_pure, test_coverage)
+  #:endfor
+  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
+    $:hypot_hd(hdual_type, hdual_sn, real_kind, is_pure, test_coverage)
   #:endfor
 #:endif 
 #!

@@ -174,6 +174,8 @@ def generate_macros():
         return u/v
     def pow(u, v):
         return u**v
+    def hypot(u, v):
+        return sp.sqrt(u**2 + v**2)
     
     is_hyper_dual_v = [False, True]
     dual_type_short_name_v = ['d', 'hd']
@@ -215,6 +217,21 @@ def generate_macros():
         funs_code[0] = binary_overload(fun, is_hyper_dual=is_hyper_dual, arg_class=('dual','integer'))
         funs_code[1] = binary_overload(fun, is_hyper_dual=is_hyper_dual, arg_class=('dual','real'))
         funs_code[2] = binary_overload(fun, is_hyper_dual=is_hyper_dual, arg_class=('dual','dual'))
+
+        macro_code += Template(_macro_template).render(
+            interface_name=fun.__name__,
+            sn=sn,
+            funs=funs_code) + '\n'
+
+    finish_and_write_macro(fun.__name__, macro_code)
+
+    fun = hypot
+    macro_code = ''
+    for is_hyper_dual, sn in zip(is_hyper_dual_v, dual_type_short_name_v):
+        funs_code = 3*[None]
+        funs_code[0] = binary_overload(fun, is_hyper_dual=is_hyper_dual, arg_class=('dual','dual'))
+        funs_code[1] = binary_overload(fun, is_hyper_dual=is_hyper_dual, arg_class=('dual','real'))
+        funs_code[2] = binary_overload(fun, is_hyper_dual=is_hyper_dual, arg_class=('real','dual'))
 
         macro_code += Template(_macro_template).render(
             interface_name=fun.__name__,
