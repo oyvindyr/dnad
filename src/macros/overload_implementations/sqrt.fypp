@@ -37,7 +37,7 @@
 
 #:enddef
 
-#:def sqrt_hd(dual_type, dual_sn, real_kind, is_pure, test_coverage, stringent)
+#:def sqrt_hd(dual_type, dual_sn, real_kind, is_pure, test_coverage, stringent, gdim = None)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
@@ -46,7 +46,9 @@
     ${elemental_purity}$ function sqrt__${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
+      #:if gdim is None
         integer :: i, j, k
+      #:endif
         real(${real_kind}$) :: t0,t1
         
         t0 = sqrt(u%d%f)
@@ -55,6 +57,18 @@
       #:if stringent
         if (res%d%f /= 0) then
             res%d%g = 0.5_${real_kind}$*t1*u%d%g
+          #:if gdim == 2
+            res%h(1) = (0.25_${real_kind})*t1*(2*u%h(1) - u%d%g(1)*u%d%g(1)/u%d%f)
+            res%h(2) = (0.25_${real_kind})*t1*(2*u%h(2) - u%d%g(2)*u%d%g(1)/u%d%f)
+            res%h(3) = (0.25_${real_kind})*t1*(2*u%h(3) - u%d%g(2)*u%d%g(2)/u%d%f)
+          #:elif gdim == 3
+            res%h(1) = (0.25_${real_kind})*t1*(2*u%h(1) - u%d%g(1)*u%d%g(1)/u%d%f)
+            res%h(2) = (0.25_${real_kind})*t1*(2*u%h(2) - u%d%g(2)*u%d%g(1)/u%d%f)
+            res%h(3) = (0.25_${real_kind})*t1*(2*u%h(3) - u%d%g(3)*u%d%g(1)/u%d%f)
+            res%h(4) = (0.25_${real_kind})*t1*(2*u%h(4) - u%d%g(2)*u%d%g(2)/u%d%f)
+            res%h(5) = (0.25_${real_kind})*t1*(2*u%h(5) - u%d%g(3)*u%d%g(2)/u%d%f)
+            res%h(6) = (0.25_${real_kind})*t1*(2*u%h(6) - u%d%g(3)*u%d%g(3)/u%d%f)
+          #:else
             k = 0
             do j = 1, size(res%d%g)
                 do i = j, size(res%d%g)
@@ -62,6 +76,7 @@
                     res%h(k) = (0.25_${real_kind}$)*t1*(2*u%h(k) - u%d%g(i)*u%d%g(j)/u%d%f)
                 end do
             end do
+          #:endif
         else
             do i = 1, size(res%d%g)
                 if (u%d%g(i) == 0) then
@@ -74,6 +89,18 @@
         end if
       #:else
         res%d%g = 0.5_${real_kind}$*t1*u%d%g
+      #:if gdim == 2
+        res%h(1) = (0.25_${real_kind})*t1*(2*u%h(1) - u%d%g(1)*u%d%g(1)/u%d%f)
+        res%h(2) = (0.25_${real_kind})*t1*(2*u%h(2) - u%d%g(2)*u%d%g(1)/u%d%f)
+        res%h(3) = (0.25_${real_kind})*t1*(2*u%h(3) - u%d%g(2)*u%d%g(2)/u%d%f)
+      #:elif gdim == 3
+        res%h(1) = (0.25_${real_kind})*t1*(2*u%h(1) - u%d%g(1)*u%d%g(1)/u%d%f)
+        res%h(2) = (0.25_${real_kind})*t1*(2*u%h(2) - u%d%g(2)*u%d%g(1)/u%d%f)
+        res%h(3) = (0.25_${real_kind})*t1*(2*u%h(3) - u%d%g(3)*u%d%g(1)/u%d%f)
+        res%h(4) = (0.25_${real_kind})*t1*(2*u%h(4) - u%d%g(2)*u%d%g(2)/u%d%f)
+        res%h(5) = (0.25_${real_kind})*t1*(2*u%h(5) - u%d%g(3)*u%d%g(2)/u%d%f)
+        res%h(6) = (0.25_${real_kind})*t1*(2*u%h(6) - u%d%g(3)*u%d%g(3)/u%d%f)
+      #:else
         k = 0
         do j = 1, size(res%d%g)
             do i = j, size(res%d%g)
@@ -81,6 +108,7 @@
                 res%h(k) = (0.25_${real_kind}$)*t1*(2*u%h(k) - u%d%g(i)*u%d%g(j)/u%d%f)
             end do
         end do
+      #:endif
       #:endif
       #:if test_coverage
         sqrt__hd_counter = sqrt__hd_counter + 1

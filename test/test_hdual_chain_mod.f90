@@ -68,7 +68,10 @@ module test_hdual_chain_mod
         module procedure display__hd_y_2input
     end interface
     interface fvalue
-        !! Extract function value from a dual or hyper-dual number
+        !! Extract function value from a real, dual or hyper-dual number
+        module procedure fvalue__r
+        module procedure fvalue__r1
+        module procedure fvalue__r2
         module procedure fvalue__d_x
         module procedure fvalue__d_x_r1
         module procedure fvalue__d_x_r2
@@ -89,6 +92,14 @@ module test_hdual_chain_mod
         module procedure gradient__hd_x
         module procedure gradient__d_y
         module procedure gradient__hd_y
+    end interface
+
+    interface gradient_d
+        !! Extract gradient from a dual or hyper-dual number. In the hyper-dual case, the gradient is dual valued.
+        module procedure gradient__d_x ! Same implementations as gradient()
+        module procedure gradient_d__hd_x
+        module procedure gradient__d_y ! Same implementations as gradient()
+        module procedure gradient_d__hd_y
     end interface
 
     interface hessian 
@@ -777,6 +788,21 @@ contains
     end subroutine
 
 
+    pure function fvalue__r(fi) result(f)
+        real(dp), intent(in) :: fi
+        real(dp) :: f
+        f = fi
+    end function
+    pure function fvalue__r1(fi) result(f)
+        real(dp), intent(in) :: fi(:)
+        real(dp) :: f(size(fi))
+        f = fi
+    end function
+    pure function fvalue__r2(fi) result(f)
+        real(dp), intent(in) :: fi(:,:)
+        real(dp) :: f(size(fi, 1), size(fi, 2))
+        f = fi
+    end function
     pure function fvalue__d_x(d) result(f)
         type(dual__x_t), intent(in) :: d
         real(dp) :: f
@@ -848,6 +874,19 @@ contains
         real(dp) :: g(size(hd%d%g))
         g = hd%d%g
     end function
+    pure function gradient_d__hd_x(hd) result(g)
+        type(hdual__x_t), intent(in) :: hd
+        type(dual__x_t) :: g(size(hd%d%g))
+
+        real(dp) :: hess(size(hd%d%g), size(hd%d%g))
+        integer :: i
+
+        hess = hessian(hd)
+        do i = 1, size(hd%d%g)
+            g(i)%f = hd%d%g(i)
+            g(i)%g = hess(:,i)
+        end do
+    end function
     pure function gradient__d_y(d) result(g)
         type(dual__y_t), intent(in) :: d
         real(dp) :: g(size(d%g))
@@ -857,6 +896,19 @@ contains
         type(hdual__y_t), intent(in) :: hd
         real(dp) :: g(size(hd%d%g))
         g = hd%d%g
+    end function
+    pure function gradient_d__hd_y(hd) result(g)
+        type(hdual__y_t), intent(in) :: hd
+        type(dual__y_t) :: g(size(hd%d%g))
+
+        real(dp) :: hess(size(hd%d%g), size(hd%d%g))
+        integer :: i
+
+        hess = hessian(hd)
+        do i = 1, size(hd%d%g)
+            g(i)%f = hd%d%g(i)
+            g(i)%g = hess(:,i)
+        end do
     end function
 
     pure function hessian__hd_x(hd) result(m)
@@ -1924,6 +1976,7 @@ contains
         t3 = t1*v%d%f + 1
         res%d%f = t0
         res%d%g = t0*(t1*v%d%g + t2*u%d%g*v%d%f)
+
         k = 0
         do j = 1, size(res%d%g)
             do i = j, size(res%d%g)
@@ -1978,6 +2031,7 @@ contains
         t3 = t1*v%d%f + 1
         res%d%f = t0
         res%d%g = t0*(t1*v%d%g + t2*u%d%g*v%d%f)
+
         k = 0
         do j = 1, size(res%d%g)
             do i = j, size(res%d%g)

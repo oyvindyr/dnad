@@ -1,7 +1,7 @@
 #:def dnad_overload_interfaces(type_specs, selected_interfaces) 
     #!
     #:set interface_list = dnad.select_interfaces(selected_interfaces)
-    #:set dual_types, dual_shortnames, hdual_types, hdual_shortnames = dnad.decode_type_specs(type_specs)
+    #:set dual_types, dual_shortnames, dual_gdims, hdual_types, hdual_shortnames, hdual_gdims = dnad.decode_type_specs(type_specs)
     #!
   #:if "=" in interface_list 
     interface assignment (=)

@@ -26,6 +26,17 @@ _macro_template = '''
         {{fun}}
     {%- endfor %}
 #:enddef'''
+_macro_template_with_gdim = '''
+#:def {{interface_name}}_{{sn}}(dual_type, dual_sn, real_kind, is_pure, test_coverage, gdim=None)
+    #:if is_pure and not test_coverage
+        #:set elemental_purity = "elemental"
+    #:else
+        #:set elemental_purity = "impure elemental"
+    #:endif
+    {%- for fun in funs -%}
+        {{fun}}
+    {%- endfor %}
+#:enddef'''
 
 # Jinja2 template for binary function for dual numbers inside a fypp macro
 _binary_fun_d_template = '''
@@ -91,6 +102,67 @@ _binary_fun_hd_template = '''
       #:endif
     end function'''
 
+# Jinja2 template for a binary function for hyper-dual numbers inside a fypp macro
+#  Version with unrolled loop options for small sizes
+_binary_fun_hd_unroll_template = '''
+    ${elemental_purity}$ function {{interface_name}}__{{usn}}_{{vsn}}(u, v) result(res)
+        {{u_type}}, intent(in) :: u
+        {{v_type}}, intent(in) :: v
+        {{res_type}} :: res
+      #:if gdim is None
+        integer :: i, j, k
+      #:endif
+        {% if temp_assigns|length > 0 -%}
+        {{temp_decl}}
+        {% for temp_assign in temp_assigns %}
+        {{temp_assign}}
+        {%- endfor -%}
+        {%- endif %}
+        {{f_assign}}
+        {{g_assign}}
+      #:if gdim == 2
+        {% for ha in h_assigns2 %}
+        {{ha}}
+        {%- endfor %}
+      #:elif gdim == 3
+        {% for ha in h_assigns3 %}
+        {{ha}}
+        {%- endfor %}
+      #:else
+        k = 0
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
+                k = k + 1
+                {{h_assign}}
+            end do
+        end do
+      #:endif
+      #:if test_coverage
+        {{interface_name}}__{{usnc}}_{{vsnc}}_counter = {{interface_name}}__{{usnc}}_{{vsnc}}_counter + 1
+      #:endif
+    end function'''
+
+# Jinja2 template for a binary function for hyper-dual numbers inside a fypp macro
+#  Version without loop. Applies when ddx is not dependent on dx(i) and dx(j)
+_binary_fun_hd_noloop_template = '''
+    ${elemental_purity}$ function {{interface_name}}__{{usn}}_{{vsn}}(u, v) result(res)
+        {{u_type}}, intent(in) :: u
+        {{v_type}}, intent(in) :: v
+        {{res_type}} :: res
+        {% if temp_assigns|length > 0 -%}
+        {{temp_decl}}
+        {% for temp_assign in temp_assigns %}
+        {{temp_assign}}
+        {%- endfor -%}
+        {%- endif %}
+        {{f_assign}}
+        {{g_assign}}
+        {{h_assign}}
+      #:if test_coverage
+        {{interface_name}}__{{usnc}}_{{vsnc}}_counter = {{interface_name}}__{{usnc}}_{{vsnc}}_counter + 1
+      #:endif
+    end function'''
+
 # Jinja2 template for a unary function for hyper-dual numbers inside a fypp macro
 _unary_fun_hd_template = '''
     ${elemental_purity}$ function {{interface_name}}__{{usn}}(u) result(res)
@@ -117,13 +189,15 @@ _unary_fun_hd_template = '''
       #:endif
     end function'''
 
-# Jinja2 template for a binary function for hyper-dual numbers inside a fypp macro
-#  Version without loop. Applies when ddx is not dependent on dx(i) and dx(j)
-_binary_fun_hd_noloop_template = '''
-    ${elemental_purity}$ function {{interface_name}}__{{usn}}_{{vsn}}(u, v) result(res)
+# Jinja2 template for a unary function for hyper-dual numbers inside a fypp macro
+#  Version with unrolled loop options for small sizes
+_unary_fun_hd_unroll_template = '''
+    ${elemental_purity}$ function {{interface_name}}__{{usn}}(u) result(res)
         {{u_type}}, intent(in) :: u
-        {{v_type}}, intent(in) :: v
         {{res_type}} :: res
+      #:if gdim is None
+        integer :: i, j, k
+      #:endif
         {% if temp_assigns|length > 0 -%}
         {{temp_decl}}
         {% for temp_assign in temp_assigns %}
@@ -132,9 +206,25 @@ _binary_fun_hd_noloop_template = '''
         {%- endif %}
         {{f_assign}}
         {{g_assign}}
-        {{h_assign}}
+      #:if gdim == 2
+        {% for ha in h_assigns2 %}
+        {{ha}}
+        {%- endfor %}
+      #:elif gdim == 3
+        {% for ha in h_assigns3 %}
+        {{ha}}
+        {%- endfor %}
+      #:else
+        k = 0
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
+                k = k + 1
+                {{h_assign}}
+            end do
+        end do
+      #:endif
       #:if test_coverage
-        {{interface_name}}__{{usnc}}_{{vsnc}}_counter = {{interface_name}}__{{usnc}}_{{vsnc}}_counter + 1
+        {{interface_name}}__{{usnc}}_counter = {{interface_name}}__{{usnc}}_counter + 1
       #:endif
     end function'''
 
@@ -181,29 +271,30 @@ def generate_macros():
     dual_type_short_name_v = ['d', 'hd']
 
     funs = add, minus, mult, div
+    unrolls = [False, False, True, True]
 
-    for fun in funs:
+    for fun, unroll in zip(funs, unrolls):
         macro_code = ''
         for is_hyper_dual, sn in zip(is_hyper_dual_v, dual_type_short_name_v):
 
+            funs_code = []
             if fun.__name__ == 'add':
-                funs_code = 6*[None]
-                funs_code[0] = unary_overload(add_unary, is_hyper_dual=is_hyper_dual, u_class='dual')
-                i0 = 0
+                funs_code.append(unary_overload(add_unary, is_hyper_dual=is_hyper_dual, u_class='dual'))
             elif fun.__name__ == 'minus':
-                funs_code = 6*[None]
-                funs_code[0] = unary_overload(minus_unary, is_hyper_dual=is_hyper_dual, u_class='dual')
-                i0 = 0
-            else:
-                funs_code = 5*[None]
-                i0 = -1
-            funs_code[i0+1] = binary_overload(fun, is_hyper_dual=is_hyper_dual, arg_class=('dual','dual'))
-            funs_code[i0+2] = binary_overload(fun, is_hyper_dual=is_hyper_dual, arg_class=('dual','real'))
-            funs_code[i0+3] = binary_overload(fun, is_hyper_dual=is_hyper_dual, arg_class=('real','dual'))
-            funs_code[i0+4] = binary_overload(fun, is_hyper_dual=is_hyper_dual, arg_class=('dual','integer'))
-            funs_code[i0+5] = binary_overload(fun, is_hyper_dual=is_hyper_dual, arg_class=('integer','dual'))
+                funs_code.append(unary_overload(minus_unary, is_hyper_dual=is_hyper_dual, u_class='dual'))
 
-            macro_code += Template(_macro_template).render(
+            funs_code.append(binary_overload(fun, is_hyper_dual=is_hyper_dual, arg_class=('dual','dual'), unroll_hessian=unroll))
+            funs_code.append(binary_overload(fun, is_hyper_dual=is_hyper_dual, arg_class=('dual','real'), unroll_hessian=unroll))
+            funs_code.append(binary_overload(fun, is_hyper_dual=is_hyper_dual, arg_class=('real','dual'), unroll_hessian=unroll))
+            funs_code.append(binary_overload(fun, is_hyper_dual=is_hyper_dual, arg_class=('dual','integer'), unroll_hessian=unroll))
+            funs_code.append(binary_overload(fun, is_hyper_dual=is_hyper_dual, arg_class=('integer','dual'), unroll_hessian=unroll))
+
+            if unroll and is_hyper_dual:
+                tmpl = _macro_template_with_gdim
+            else:
+                tmpl = _macro_template
+
+            macro_code += Template(tmpl).render(
                 interface_name=fun.__name__,
                 sn=sn,
                 funs=funs_code) + '\n'
@@ -242,15 +333,20 @@ def generate_macros():
 
     
     unary_overload_and_write(sp.sqrt, is_hyper_dual_v, dual_type_short_name_v)
-    unary_overload_and_write(sp.log , is_hyper_dual_v, dual_type_short_name_v)
+    unary_overload_and_write(sp.log , is_hyper_dual_v, dual_type_short_name_v, unroll_hessian=True)
 
-def unary_overload_and_write(fun, is_hyper_dual_v, dual_type_short_name_v):
+def unary_overload_and_write(fun, is_hyper_dual_v, dual_type_short_name_v, unroll_hessian=False):
     macro_code = ''
     for is_hyper_dual, sn in zip(is_hyper_dual_v, dual_type_short_name_v):
         funs_code = 1*[None]
-        funs_code[0] = unary_overload(fun, is_hyper_dual=is_hyper_dual, u_class='dual')
+        funs_code[0] = unary_overload(fun, is_hyper_dual=is_hyper_dual, u_class='dual', unroll_hessian=unroll_hessian)
 
-        macro_code += Template(_macro_template).render(
+        if unroll_hessian and is_hyper_dual:
+            tmpl = _macro_template_with_gdim
+        else:
+            tmpl = _macro_template
+
+        macro_code += Template(tmpl).render(
             interface_name=fun.__name__,
             sn=sn,
             funs=funs_code) + '\n'
@@ -394,7 +490,7 @@ def uv_types(num_types, is_hyper_dual):
         vtsc = 'i'
     return ut, uts, utsc, vt, vts, vtsc
 
-def binary_overload(fun, is_hyper_dual=True, arg_class=('dual','dual')):
+def binary_overload(fun, is_hyper_dual=True, arg_class=('dual','dual'), unroll_hessian=False):
     """Generate Fortran code for hyper-dual-number overloads of binary functions
 
     Parameters
@@ -518,20 +614,41 @@ def binary_overload(fun, is_hyper_dual=True, arg_class=('dual','dual')):
 
     if is_hyper_dual:
         if has_loop:
-            code = Template(_binary_fun_hd_template).render(
-                interface_name = fun.__name__,
-                usn = usn,
-                usnc = usnc,
-                vsn = vsn,
-                vsnc = vsnc,
-                u_type = u_type,
-                v_type = v_type,
-                res_type = res_type,
-                temp_decl = temp_decl,
-                temp_assigns = temp_assigns,
-                f_assign = f_assign,
-                g_assign = g_assign,
-                h_assign = h_assign)
+            if unroll_hessian:
+                h_assigns2 = flatten_hessian_assignment(h_assign, 2)
+                h_assigns3 = flatten_hessian_assignment(h_assign, 3)
+                code = Template(_binary_fun_hd_unroll_template).render(
+                    interface_name = fun.__name__,
+                    usn = usn,
+                    usnc = usnc,
+                    vsn = vsn,
+                    vsnc = vsnc,
+                    u_type = u_type,
+                    v_type = v_type,
+                    res_type = res_type,
+                    temp_decl = temp_decl,
+                    temp_assigns = temp_assigns,
+                    f_assign = f_assign,
+                    g_assign = g_assign,
+                    h_assign = h_assign,
+                    h_assigns2 = h_assigns2,
+                    h_assigns3 = h_assigns3
+                    )
+            else:
+                code = Template(_binary_fun_hd_template).render(
+                    interface_name = fun.__name__,
+                    usn = usn,
+                    usnc = usnc,
+                    vsn = vsn,
+                    vsnc = vsnc,
+                    u_type = u_type,
+                    v_type = v_type,
+                    res_type = res_type,
+                    temp_decl = temp_decl,
+                    temp_assigns = temp_assigns,
+                    f_assign = f_assign,
+                    g_assign = g_assign,
+                    h_assign = h_assign)
         else:
             code = Template(_binary_fun_hd_noloop_template).render(
                 interface_name = fun.__name__,
@@ -565,7 +682,29 @@ def binary_overload(fun, is_hyper_dual=True, arg_class=('dual','dual')):
 
     return code
 
-def unary_overload(fun, is_hyper_dual=True, u_class='dual'):
+def flatten_hessian_assignment(h_assign, nvars):
+    """Convert a Hessian assignment with loops to a flattened version without loops
+
+    Parameters
+    ------------
+        h_assign: str
+            The Fortran code for the Hessian assignment with loops
+        nvars: int
+            The number of variables (size of the dual vectors)
+    Returns
+    ------------
+        h_assigns: list of str
+            The Fortran code for the Hessian assignment without loops, flattened into individual assignments
+    """
+    h_assigns = []
+    k = 0
+    for j in range(1, nvars+1):
+        for i in range(j, nvars+1):
+            k = k + 1
+            h_assigns.append(h_assign.replace('(i)', f"({i})").replace('(j)', f"({j})").replace('(k)', f"({k})"))
+    return h_assigns
+
+def unary_overload(fun, is_hyper_dual=True, u_class='dual', unroll_hessian=False):
     """Generate Fortran code for hyper-dual-number overloads of unary functions
 
     Parameters
@@ -672,17 +811,34 @@ def unary_overload(fun, is_hyper_dual=True, u_class='dual'):
 
     if is_hyper_dual:
         if has_loop:
-            code = Template(_unary_fun_hd_template).render(
-                interface_name = fun_name,
-                usn = usn, 
-                usnc = usnc,
-                u_type = u_type,
-                res_type = res_type,
-                temp_decl = temp_decl,
-                temp_assigns = temp_assigns,
-                f_assign = f_assign,
-                g_assign = g_assign,
-                h_assign = h_assign)
+            if unroll_hessian:
+                h_assigns2 = flatten_hessian_assignment(h_assign, 2)
+                h_assigns3 = flatten_hessian_assignment(h_assign, 3)
+                code = Template(_unary_fun_hd_unroll_template).render(
+                    interface_name = fun_name,
+                    usn = usn, 
+                    usnc = usnc,
+                    u_type = u_type,
+                    res_type = res_type,
+                    temp_decl = temp_decl,
+                    temp_assigns = temp_assigns,
+                    f_assign = f_assign,
+                    g_assign = g_assign,
+                    h_assign = h_assign,
+                    h_assigns2 = h_assigns2,
+                    h_assigns3 = h_assigns3)
+            else:
+                code = Template(_unary_fun_hd_template).render(
+                    interface_name = fun_name,
+                    usn = usn, 
+                    usnc = usnc,
+                    u_type = u_type,
+                    res_type = res_type,
+                    temp_decl = temp_decl,
+                    temp_assigns = temp_assigns,
+                    f_assign = f_assign,
+                    g_assign = g_assign,
+                    h_assign = h_assign)
         else:
             code = Template(_unary_fun_hd_noloop_template).render(
                 interface_name = fun_name,

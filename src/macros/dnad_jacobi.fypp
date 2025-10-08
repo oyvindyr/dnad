@@ -2,7 +2,7 @@
     interface jacobi
         !! Extract Jacobi matrix from a vector of dual or hyper-dual numbers.
       #:for type_spec in type_specs
-        #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)
+        #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)[0:2]
         module procedure jacobi__d${type_suffix}$
        #:if has_hdual
         module procedure jacobi__hd${type_suffix}$
@@ -12,7 +12,7 @@
     interface jacobi_tr
         !! Extract transpose of Jacobi matrix from a vector of dual or hyper-dual numbers.
       #:for type_spec in type_specs
-        #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)
+        #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)[0:2]
         module procedure jacobi_tr__d${type_suffix}$
        #:if has_hdual
         module procedure jacobi_tr__hd${type_suffix}$
@@ -24,7 +24,7 @@
         !! - A hyper-dual vector results in a dual matrix
         !! - A dual vector results in a real matrix (same as jacobi)
       #:for type_spec in type_specs
-        #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)
+        #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)[0:2]
         module procedure jacobi__d${type_suffix}$
        #:if has_hdual
         module procedure jacobi_d__hd${type_suffix}$
@@ -36,7 +36,7 @@
         !! - A hyper-dual vector results in a dual matrix
         !! - A dual vector results in a real matrix (same as jacobi_tr)
       #:for type_spec in type_specs
-        #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)
+        #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)[0:2]
         module procedure jacobi_tr__d${type_suffix}$
        #:if has_hdual
         module procedure jacobi_tr_d__hd${type_suffix}$
@@ -47,7 +47,7 @@
 
 #:def dnad_jacobi_implementations(type_specs, real_kind)
   #:for type_spec in type_specs
-    #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)
+    #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)[0:2]
     pure function jacobi__d${type_suffix}$(x) result(y)
         type(dual__${type_suffix}$_t), intent(in) :: x(:)
         real(${real_kind}$) :: y(size(x),size(x(1)%g))

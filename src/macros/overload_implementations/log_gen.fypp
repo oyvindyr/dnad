@@ -17,7 +17,7 @@
     end function
 #:enddef
 
-#:def log_hd(dual_type, dual_sn, real_kind, is_pure, test_coverage)
+#:def log_hd(dual_type, dual_sn, real_kind, is_pure, test_coverage, gdim=None)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
@@ -26,12 +26,28 @@
     ${elemental_purity}$ function log__${dual_sn}$(u) result(res)
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$) :: res
+      #:if gdim is None
         integer :: i, j, k
+      #:endif
         real(${real_kind}$) :: t0
         
         t0 = 1.0_${real_kind}$/u%d%f
         res%d%f = log(u%d%f)
         res%d%g = t0*u%d%g
+      #:if gdim == 2
+        
+        res%h(1) = t0*(-t0*u%d%g(1)*u%d%g(1) + u%h(1))
+        res%h(2) = t0*(-t0*u%d%g(2)*u%d%g(1) + u%h(2))
+        res%h(3) = t0*(-t0*u%d%g(2)*u%d%g(2) + u%h(3))
+      #:elif gdim == 3
+        
+        res%h(1) = t0*(-t0*u%d%g(1)*u%d%g(1) + u%h(1))
+        res%h(2) = t0*(-t0*u%d%g(2)*u%d%g(1) + u%h(2))
+        res%h(3) = t0*(-t0*u%d%g(3)*u%d%g(1) + u%h(3))
+        res%h(4) = t0*(-t0*u%d%g(2)*u%d%g(2) + u%h(4))
+        res%h(5) = t0*(-t0*u%d%g(3)*u%d%g(2) + u%h(5))
+        res%h(6) = t0*(-t0*u%d%g(3)*u%d%g(3) + u%h(6))
+      #:else
         k = 0
         do j = 1, size(res%d%g)
             do i = j, size(res%d%g)
@@ -39,6 +55,7 @@
                 res%h(k) = t0*(-t0*u%d%g(i)*u%d%g(j) + u%h(k))
             end do
         end do
+      #:endif
       #:if test_coverage
         log__hd_counter = log__hd_counter + 1
       #:endif

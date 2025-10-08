@@ -46,7 +46,7 @@
     end function
 #:enddef
 
-#:def hypot_hd(dual_type, dual_sn, real_kind, is_pure, test_coverage)
+#:def hypot_hd(dual_type, dual_sn, real_kind, is_pure, test_coverage, gdim = None)
     #:if is_pure and not test_coverage
         #:set elemental_purity = "elemental"
     #:else
@@ -56,7 +56,9 @@
         type(${dual_type}$), intent(in) :: u
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
+      #:if gdim is None
         integer :: i, j, k
+      #:endif
         real(${real_kind}$) :: t0,t1,t2,t3,t4,t5
         
         t0 = u%d%f**2
@@ -67,6 +69,28 @@
         t5 = 1.0_${real_kind}$/t2
         res%d%f = t3
         res%d%g = t4*(u%d%g*u%d%f + v%d%g*v%d%f)
+
+      #:if gdim == 2
+        res%h(1) = t4*(u%h(1)*u%d%f - u%d%g(1)*(t5*u%d%f*v%d%g(1)*v%d%f + u%d%g(1)*(t0*t5 - 1)) + v%h(1)*v%d%f - &
+          v%d%g(1)*(t5*u%d%g(1)*u%d%f*v%d%f + v%d%g(1)*(t1*t5 - 1)))
+        res%h(2) = t4*(u%h(2)*u%d%f - u%d%g(1)*(t5*u%d%f*v%d%g(2)*v%d%f + u%d%g(2)*(t0*t5 - 1)) + v%h(2)*v%d%f - &
+          v%d%g(1)*(t5*u%d%g(2)*u%d%f*v%d%f + v%d%g(2)*(t1*t5 - 1)))
+        res%h(3) = t4*(u%h(3)*u%d%f - u%d%g(2)*(t5*u%d%f*v%d%g(2)*v%d%f + u%d%g(2)*(t0*t5 - 1)) + v%h(3)*v%d%f - &
+          v%d%g(2)*(t5*u%d%g(2)*u%d%f*v%d%f + v%d%g(2)*(t1*t5 - 1)))
+      #:elif gdim == 3
+        res%h(1) = t4*(u%h(1)*u%d%f - u%d%g(1)*(t5*u%d%f*v%d%g(1)*v%d%f + u%d%g(1)*(t0*t5 - 1)) + v%h(1)*v%d%f - &
+          v%d%g(1)*(t5*u%d%g(1)*u%d%f*v%d%f + v%d%g(1)*(t1*t5 - 1)))
+        res%h(2) = t4*(u%h(2)*u%d%f - u%d%g(1)*(t5*u%d%f*v%d%g(2)*v%d%f + u%d%g(2)*(t0*t5 - 1)) + v%h(2)*v%d%f - &
+          v%d%g(1)*(t5*u%d%g(2)*u%d%f*v%d%f + v%d%g(2)*(t1*t5 - 1)))
+        res%h(3) = t4*(u%h(3)*u%d%f - u%d%g(1)*(t5*u%d%f*v%d%g(3)*v%d%f + u%d%g(3)*(t0*t5 - 1)) + v%h(3)*v%d%f - &
+          v%d%g(1)*(t5*u%d%g(3)*u%d%f*v%d%f + v%d%g(3)*(t1*t5 - 1)))
+        res%h(4) = t4*(u%h(4)*u%d%f - u%d%g(2)*(t5*u%d%f*v%d%g(2)*v%d%f + u%d%g(2)*(t0*t5 - 1)) + v%h(4)*v%d%f - &
+          v%d%g(2)*(t5*u%d%g(2)*u%d%f*v%d%f + v%d%g(2)*(t1*t5 - 1)))
+        res%h(5) = t4*(u%h(5)*u%d%f - u%d%g(2)*(t5*u%d%f*v%d%g(3)*v%d%f + u%d%g(3)*(t0*t5 - 1)) + v%h(5)*v%d%f - &
+          v%d%g(2)*(t5*u%d%g(3)*u%d%f*v%d%f + v%d%g(3)*(t1*t5 - 1)))
+        res%h(6) = t4*(u%h(6)*u%d%f - u%d%g(3)*(t5*u%d%f*v%d%g(3)*v%d%f + u%d%g(3)*(t0*t5 - 1)) + v%h(6)*v%d%f - &
+          v%d%g(3)*(t5*u%d%g(3)*u%d%f*v%d%f + v%d%g(3)*(t1*t5 - 1)))
+      #:else
         k = 0
         do j = 1, size(res%d%g)
             do i = j, size(res%d%g)
@@ -75,6 +99,7 @@
       + v%h(k)*v%d%f - v%d%g(j)*(t5*u%d%g(i)*u%d%f*v%d%f + v%d%g(i)*(t1*t5 - 1)))
             end do
         end do
+      #:endif
       #:if test_coverage
         hypot__hd_hd_counter = hypot__hd_hd_counter + 1
       #:endif
@@ -83,7 +108,9 @@
         type(${dual_type}$), intent(in) :: u
         real(${real_kind}$), intent(in) :: v
         type(${dual_type}$) :: res
+      #:if gdim is None
         integer :: i, j, k
+      #:endif
         real(${real_kind}$) :: t0,t1,t2,t3
         
         t0 = u%d%f**2
@@ -92,6 +119,18 @@
         t3 = 1.0_${real_kind}$/t2
         res%d%f = t2
         res%d%g = t3*u%d%g*u%d%f
+      #:if gdim == 2
+        res%h(1) = t3*(u%h(1)*u%d%f - u%d%g(1)*u%d%g(1)*(t0/t1 - 1))
+        res%h(2) = t3*(u%h(2)*u%d%f - u%d%g(2)*u%d%g(1)*(t0/t1 - 1))
+        res%h(3) = t3*(u%h(3)*u%d%f - u%d%g(2)*u%d%g(2)*(t0/t1 - 1))
+      #:elif gdim == 3
+        res%h(1) = t3*(u%h(1)*u%d%f - u%d%g(1)*u%d%g(1)*(t0/t1 - 1))
+        res%h(2) = t3*(u%h(2)*u%d%f - u%d%g(2)*u%d%g(1)*(t0/t1 - 1))
+        res%h(3) = t3*(u%h(3)*u%d%f - u%d%g(3)*u%d%g(1)*(t0/t1 - 1))
+        res%h(4) = t3*(u%h(4)*u%d%f - u%d%g(2)*u%d%g(2)*(t0/t1 - 1))
+        res%h(5) = t3*(u%h(5)*u%d%f - u%d%g(3)*u%d%g(2)*(t0/t1 - 1))
+        res%h(6) = t3*(u%h(6)*u%d%f - u%d%g(3)*u%d%g(3)*(t0/t1 - 1))
+      #:else
         k = 0
         do j = 1, size(res%d%g)
             do i = j, size(res%d%g)
@@ -99,6 +138,7 @@
                 res%h(k) = t3*(u%h(k)*u%d%f - u%d%g(i)*u%d%g(j)*(t0/t1 - 1))
             end do
         end do
+      #:endif
       #:if test_coverage
         hypot__hd_r_counter = hypot__hd_r_counter + 1
       #:endif
@@ -107,7 +147,9 @@
         real(${real_kind}$), intent(in) :: u
         type(${dual_type}$), intent(in) :: v
         type(${dual_type}$) :: res
+      #:if gdim is None
         integer :: i, j, k
+      #:endif
         real(${real_kind}$) :: t0,t1,t2,t3
         
         t0 = v%d%f**2
@@ -116,6 +158,19 @@
         t3 = 1.0_${real_kind}$/t2
         res%d%f = t2
         res%d%g = t3*v%d%g*v%d%f
+
+      #:if gdim == 2
+        res%h(1) = t3*(v%h(1)*v%d%f - v%d%g(1)*v%d%g(1)*(t0/t1 - 1))
+        res%h(2) = t3*(v%h(2)*v%d%f - v%d%g(2)*v%d%g(1)*(t0/t1 - 1))
+        res%h(3) = t3*(v%h(3)*v%d%f - v%d%g(2)*v%d%g(2)*(t0/t1 - 1))
+      #:elif gdim == 3
+        res%h(1) = t3*(v%h(1)*v%d%f - v%d%g(1)*v%d%g(1)*(t0/t1 - 1))
+        res%h(2) = t3*(v%h(2)*v%d%f - v%d%g(2)*v%d%g(1)*(t0/t1 - 1))
+        res%h(3) = t3*(v%h(3)*v%d%f - v%d%g(3)*v%d%g(1)*(t0/t1 - 1))
+        res%h(4) = t3*(v%h(4)*v%d%f - v%d%g(2)*v%d%g(2)*(t0/t1 - 1))
+        res%h(5) = t3*(v%h(5)*v%d%f - v%d%g(3)*v%d%g(2)*(t0/t1 - 1))
+        res%h(6) = t3*(v%h(6)*v%d%f - v%d%g(3)*v%d%g(3)*(t0/t1 - 1))
+      #:else
         k = 0
         do j = 1, size(res%d%g)
             do i = j, size(res%d%g)
@@ -123,6 +178,7 @@
                 res%h(k) = t3*(v%h(k)*v%d%f - v%d%g(i)*v%d%g(j)*(t0/t1 - 1))
             end do
         end do
+      #:endif
       #:if test_coverage
         hypot__r_hd_counter = hypot__r_hd_counter + 1
       #:endif

@@ -1,3 +1,5 @@
+import re
+
 all_interfaces =   ['=', '+', '-', '*', '/', '**', '==', '<=', '<', '>=', '>', '/=', 'abs', 'dabs', 'acos', 'asin', 'atan', 'atan2', 'cos', 'dcos',
        'dot_product', 'exp', 'int', 'log', 'log10', 'matmul', 'max', 'dmax1', 'maxval', 'min', 'dmin1', 'minval', 'nint', 'sign',
        'sin', 'dsin', 'tan', 'dtan', 'sqrt', 'sum', 'maxloc']
@@ -54,30 +56,43 @@ def select_interfaces(selected_interfaces):
         return selected_interfaces.replace(" ","").split(",")
     
 def decode_type_spec(type_spec):
-    if len(type_spec) > 2 and type_spec[-2:] == ":h":
-        type_suffix = type_spec[0:-2]
+    lst = type_spec.split(":")
+    if ":h" in type_spec:
+        type_suffix = lst[0]
         has_hdual = True
     else:
-        type_suffix = type_spec
+        type_suffix = lst[0]
         has_hdual = False
-    return type_suffix, has_hdual
+    gdim = extract_gdim(type_spec)
+
+    return type_suffix, has_hdual, gdim
+
+def extract_gdim(type_spec):
+    match = re.search(r"gdim\((\d+)\)", type_spec)
+    if match:
+        return int(match.group(1))
+    return None
 
 def decode_type_specs(type_specs):
     dual_types = []
     dual_shortnames = []
+    dual_gdims = []
     hdual_types = []
     hdual_shortnames = []
+    hdual_gdims = []
     for type_spec in type_specs:
-        type_suffix, has_hdual = decode_type_spec(type_spec)
+        type_suffix, has_hdual, gdim = decode_type_spec(type_spec)
         dual_shortnames.append("d" + type_suffix)
         dual_types.append("dual__" + type_suffix + "_t")
+        dual_gdims.append(gdim)
         if has_hdual:
             hdual_shortnames.append("hd" + type_suffix)
             hdual_types.append("hdual__" + type_suffix + "_t")
-    return dual_types, dual_shortnames, hdual_types, hdual_shortnames
+            hdual_gdims.append(gdim)
+    return dual_types, dual_shortnames, dual_gdims, hdual_types, hdual_shortnames, hdual_gdims
 
 def decode_chain_types_spec(str):
-    s, has_hdual = decode_type_spec(str)
+    s, has_hdual = decode_type_spec(str)[0:2]
     if "->" not in s:
         raise ValueError("Missing '->' in chain_types string representation")
     lst = s.split("->")

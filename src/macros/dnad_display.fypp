@@ -2,7 +2,7 @@
     interface display
         !! Pretty-print one or more dual or hyper dual numbers
       #:for type_spec in type_specs
-       #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)
+       #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)[0:2]
         module procedure display__d_${type_suffix}$_1input
         module procedure display__d_${type_suffix}$_1input_vec
         module procedure display__d_${type_suffix}$_1input_mat
@@ -18,7 +18,7 @@
 
 #:def dnad_display_implementations(type_specs)
   #:for type_spec in type_specs
-    #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)
+    #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)[0:2]
     #:set dual_type = "dual__" + type_suffix + "_t"
     #:set hdual_type = "hdual__" + type_suffix + "_t"
     subroutine display__d_${type_suffix}$_1input(d, name)

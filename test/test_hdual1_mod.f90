@@ -178,7 +178,10 @@ module test_hdual1_mod
         module procedure initialize__hd_xy_vector
     end interface
     interface fvalue
-        !! Extract function value from a dual or hyper-dual number
+        !! Extract function value from a real, dual or hyper-dual number
+        module procedure fvalue__r
+        module procedure fvalue__r1
+        module procedure fvalue__r2
         module procedure fvalue__d_xy
         module procedure fvalue__d_xy_r1
         module procedure fvalue__d_xy_r2
@@ -191,6 +194,12 @@ module test_hdual1_mod
         !! Extract gradient from a dual or hyper-dual number
         module procedure gradient__d_xy
         module procedure gradient__hd_xy
+    end interface
+
+    interface gradient_d
+        !! Extract gradient from a dual or hyper-dual number. In the hyper-dual case, the gradient is dual valued.
+        module procedure gradient__d_xy ! Same implementations as gradient()
+        module procedure gradient_d__hd_xy
     end interface
 
     interface hessian 
@@ -760,6 +769,21 @@ contains
 
     end subroutine
 
+    pure function fvalue__r(fi) result(f)
+        real(dp), intent(in) :: fi
+        real(dp) :: f
+        f = fi
+    end function
+    pure function fvalue__r1(fi) result(f)
+        real(dp), intent(in) :: fi(:)
+        real(dp) :: f(size(fi))
+        f = fi
+    end function
+    pure function fvalue__r2(fi) result(f)
+        real(dp), intent(in) :: fi(:,:)
+        real(dp) :: f(size(fi, 1), size(fi, 2))
+        f = fi
+    end function
     pure function fvalue__d_xy(d) result(f)
         type(dual__xy_t), intent(in) :: d
         real(dp) :: f
@@ -800,6 +824,19 @@ contains
         type(hdual__xy_t), intent(in) :: hd
         real(dp) :: g(size(hd%d%g))
         g = hd%d%g
+    end function
+    pure function gradient_d__hd_xy(hd) result(g)
+        type(hdual__xy_t), intent(in) :: hd
+        type(dual__xy_t) :: g(size(hd%d%g))
+
+        real(dp) :: hess(size(hd%d%g), size(hd%d%g))
+        integer :: i
+
+        hess = hessian(hd)
+        do i = 1, size(hd%d%g)
+            g(i)%f = hd%d%g(i)
+            g(i)%g = hess(:,i)
+        end do
     end function
 
     pure function hessian__hd_xy(hd) result(m)
@@ -1430,6 +1467,7 @@ contains
         t3 = t1*v%d%f + 1
         res%d%f = t0
         res%d%g = t0*(t1*v%d%g + t2*u%d%g*v%d%f)
+
         k = 0
         do j = 1, size(res%d%g)
             do i = j, size(res%d%g)

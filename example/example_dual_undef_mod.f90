@@ -17,7 +17,10 @@ module example_dual_undef_mod
         real(dp) :: g(num_deriv) = 0  ! derivatives
     end type
     interface fvalue
-        !! Extract function value from a dual or hyper-dual number
+        !! Extract function value from a real, dual or hyper-dual number
+        module procedure fvalue__r
+        module procedure fvalue__r1
+        module procedure fvalue__r2
         module procedure fvalue__d_uvw
         module procedure fvalue__d_uvw_r1
         module procedure fvalue__d_uvw_r2
@@ -26,6 +29,11 @@ module example_dual_undef_mod
     interface gradient
         !! Extract gradient from a dual or hyper-dual number
         module procedure gradient__d_uvw
+    end interface
+
+    interface gradient_d
+        !! Extract gradient from a dual or hyper-dual number. In the hyper-dual case, the gradient is dual valued.
+        module procedure gradient__d_uvw ! Same implementations as gradient()
     end interface
 
     interface hessian 
@@ -84,6 +92,21 @@ contains
     end function
 
 
+    pure function fvalue__r(fi) result(f)
+        real(dp), intent(in) :: fi
+        real(dp) :: f
+        f = fi
+    end function
+    pure function fvalue__r1(fi) result(f)
+        real(dp), intent(in) :: fi(:)
+        real(dp) :: f(size(fi))
+        f = fi
+    end function
+    pure function fvalue__r2(fi) result(f)
+        real(dp), intent(in) :: fi(:,:)
+        real(dp) :: f(size(fi, 1), size(fi, 2))
+        f = fi
+    end function
     pure function fvalue__d_uvw(d) result(f)
         type(dual__uvw_t), intent(in) :: d
         real(dp) :: f

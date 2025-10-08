@@ -23,7 +23,7 @@
 #:def dnad_overload_implementations(type_specs, real_kind, selected_interfaces="--all", stringent=True, is_pure=True, test_coverage=False) 
 #! 
 #:set interface_list = dnad.select_interfaces(selected_interfaces)
-#:set dual_types, dual_shortnames, hdual_types, hdual_shortnames = dnad.decode_type_specs(type_specs)
+#:set dual_types, dual_shortnames, dual_gdims, hdual_types, hdual_shortnames, hdual_gdims = dnad.decode_type_specs(type_specs)
 #!
 #:if is_pure and not test_coverage
     #:set elemental_purity = "elemental"
@@ -68,8 +68,8 @@
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
     $:mult_d(dual_type, dual_sn, real_kind, is_pure, test_coverage)
   #:endfor
-  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
-    $:mult_hd(hdual_type, hdual_sn, real_kind, is_pure, test_coverage)
+  #:for hdual_type, hdual_sn, gdim in zip(hdual_types, hdual_shortnames, hdual_gdims)
+    $:mult_hd(hdual_type, hdual_sn, real_kind, is_pure, test_coverage, gdim)
   #:endfor
 #:endif 
 #!
@@ -78,8 +78,8 @@
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
     $:div_d(dual_type, dual_sn, real_kind, is_pure, test_coverage)
   #:endfor
-  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
-    $:div_hd(hdual_type, hdual_sn, real_kind, is_pure, test_coverage)
+  #:for hdual_type, hdual_sn, gdim in zip(hdual_types, hdual_shortnames, hdual_gdims)
+    $:div_hd(hdual_type, hdual_sn, real_kind, is_pure, test_coverage, gdim)
   #:endfor
 #:endif 
 #!
@@ -88,8 +88,8 @@
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
     $:pow_d(dual_type, dual_sn, real_kind, is_pure, test_coverage)
   #:endfor
-  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
-    $:pow_hd(hdual_type, hdual_sn, real_kind, is_pure, test_coverage)
+  #:for hdual_type, hdual_sn, gdim in zip(hdual_types, hdual_shortnames, hdual_gdims)
+    $:pow_hd(hdual_type, hdual_sn, real_kind, is_pure, test_coverage, gdim)
   #:endfor
 #:endif 
 #!
@@ -98,8 +98,8 @@
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
     $:hypot_d(dual_type, dual_sn, real_kind, is_pure, test_coverage)
   #:endfor
-  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
-    $:hypot_hd(hdual_type, hdual_sn, real_kind, is_pure, test_coverage)
+  #:for hdual_type, hdual_sn, gdim in zip(hdual_types, hdual_shortnames, hdual_gdims)
+    $:hypot_hd(hdual_type, hdual_sn, real_kind, is_pure, test_coverage, gdim)
   #:endfor
 #:endif 
 #!
