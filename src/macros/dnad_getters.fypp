@@ -17,6 +17,22 @@
       #:endfor
     end interface
 
+    interface downgrade
+        !! Downgrade a hyper-dual number to a dual number, a dual number to a real, or a real to itself.
+        module procedure fvalue__r   ! Real to real
+        module procedure fvalue__r1  ! Real to real (rank-1)
+        module procedure fvalue__r2  ! Real to real (rank-2)
+      #:for type_spec in type_specs
+        #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)[0:2]
+        module procedure fvalue__d_${type_suffix}$    ! Dual to real
+        module procedure fvalue__d_${type_suffix}$_r1 ! Dual to real (rank-1)
+        module procedure fvalue__d_${type_suffix}$_r2 ! Dual to real (rank-2)
+       #:if has_hdual
+        module procedure downgrade__hd_${type_suffix}$ ! Hyper-dual to dual
+       #:endif
+      #:endfor        
+    end interface
+
     interface gradient
         !! Extract gradient from a dual or hyper-dual number
       #:for type_spec in type_specs
@@ -99,6 +115,17 @@
         type(hdual__${type_suffix}$_t), intent(in) :: hd(:,:)
         real(${real_kind}$) :: f(size(hd,1),size(hd,2))
         f = hd%d%f
+    end function
+   #:endif
+  #:endfor
+
+  #:for type_spec in type_specs
+   #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)[0:2]
+   #:if has_hdual
+    pure function downgrade__hd_${type_suffix}$(hd) result(d)
+        type(hdual__${type_suffix}$_t), intent(in) :: hd
+        type(dual__${type_suffix}$_t) :: d
+        d = hd%d
     end function
    #:endif
   #:endfor
