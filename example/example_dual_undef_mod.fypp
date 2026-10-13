@@ -1,10 +1,10 @@
 #:mute
 
-#:include '../src/macros/dnad_dual_types.fypp'
-#:include '../src/macros/dnad_getters.fypp'
-#:include '../src/macros/dnad_overload_interfaces.fypp'
-#:include '../src/macros/dnad_overload_implementations.fypp'
-#:include '../src/macros/dnad_initialize.fypp'
+#:include '../src/dnad/dnad_dual_types.fypp'
+#:include '../src/dnad/dnad_getters.fypp'
+#:include '../src/dnad/dnad_overload_interfaces.fypp'
+#:include '../src/dnad/dnad_overload_implementations.fypp'
+#:include '../src/dnad/dnad_initialize.fypp'
 
 #! When stringent = False, the dnad functions assume that the derivative exists. It is does not exist (for instance for abs(0.0))
 #! the result will be undefined. When stringent = True (or not defined) some logic is included in the mathematical functions to

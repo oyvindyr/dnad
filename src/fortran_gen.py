@@ -357,7 +357,7 @@ def finish_and_write_macro(name, macro_code):
     
     macro_code = replace_literals(macro_code)
 
-    fid = open(os.path.dirname(os.path.abspath(__file__)) + f'\\macros\\overload_implementations\\{name}_gen.fypp', 'w')
+    fid = open(os.path.dirname(os.path.abspath(__file__)) + f'\\dnad\\overload_implementations\\{name}_gen.fypp', 'w')
     fid.write(macro_code + '\n')
     fid.close()
 
