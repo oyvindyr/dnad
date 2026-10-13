@@ -1,0 +1,17 @@
+[project]
+name = "dnad"
+version = "0.1.0"
+description = "Dual-number automatic differentiation for Fortran, as fypp macros"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["fypp>=3.2,<4"]
+
+[dependency-groups]
+dev = ["sympy", "jinja2"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/dnad"]

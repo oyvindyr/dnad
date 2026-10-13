@@ -1,3 +1,4 @@
+import os
 import re
 
 all_interfaces =   ['=', '+', '-', '*', '/', '**', '==', '<=', '<', '>=', '>', '/=', 'abs', 'dabs', 'acos', 'asin', 'atan', 'atan2', 'cos', 'dcos',
@@ -99,3 +100,8 @@ def decode_chain_types_spec(str):
     if len(lst) != 2:
         raise ValueError("Too many '->' in chain_types string representation")
     return lst[0], lst[1], has_hdual
+
+def include_dirs():
+    '''Directories to pass to fypp as include paths (-I).'''
+    here = os.path.dirname(os.path.abspath(__file__))
+    return [here, os.path.join(here, 'overload_implementations')]
