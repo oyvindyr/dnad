@@ -25,7 +25,7 @@
 #:enddef
 
 #:def dnad_chain_duals_implementation_r(real_kind)
-    #:set _THIS_FILE_NAME_ = _THIS_FILE_[max(_THIS_FILE_.rindex('\\'), _THIS_FILE_.rindex('/'))+1:]
+    #:set _THIS_FILE_NAME_ = _THIS_FILE_[max(_THIS_FILE_.rfind('\\'), _THIS_FILE_.rfind('/'))+1:]
     #:set headerlines = [&
         '!! Dummy function acting as a generalization of chain_duals for real numbers.', &
         ' ', &
@@ -48,7 +48,7 @@
     #! Write chain_duals implementation. Note that the hessian function is assumed to be available. This should be inserted into the 
     #! same file as this function by a separate dnad macro
     #!
-    #:set _THIS_FILE_NAME_ = _THIS_FILE_[max(_THIS_FILE_.rindex('\\'), _THIS_FILE_.rindex('/'))+1:]
+    #:set _THIS_FILE_NAME_ = _THIS_FILE_[max(_THIS_FILE_.rfind('\\'), _THIS_FILE_.rfind('/'))+1:]
     #!
     #:set dual_y_type = "dual__" + y_type_suffix + "_t"
     #:set dual_x_type = "dual__" + x_type_suffix + "_t"
@@ -85,7 +85,7 @@
     #! Write chain_duals implementation. Note that the hessian function is assumed to be available. This should be inserted into the 
     #! same file as this function by a separate dnad macro
     #!
-    #:set _THIS_FILE_NAME_ = _THIS_FILE_[max(_THIS_FILE_.rindex('\\'), _THIS_FILE_.rindex('/'))+1:]
+    #:set _THIS_FILE_NAME_ = _THIS_FILE_[max(_THIS_FILE_.rfind('\\'), _THIS_FILE_.rfind('/'))+1:]
     #!
     #:set dual_y_type = "hdual__" + y_type_suffix + "_t"
     #:set dual_x_type = "hdual__" + x_type_suffix + "_t"
