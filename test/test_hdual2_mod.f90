@@ -190,6 +190,17 @@ module test_hdual2_mod
         module procedure fvalue__hd_uvw_r2
     end interface
 
+    interface downgrade
+        !! Downgrade a hyper-dual number to a dual number, a dual number to a real, or a real to itself.
+        module procedure fvalue__r   ! Real to real
+        module procedure fvalue__r1  ! Real to real (rank-1)
+        module procedure fvalue__r2  ! Real to real (rank-2)
+        module procedure fvalue__d_uvw    ! Dual to real
+        module procedure fvalue__d_uvw_r1 ! Dual to real (rank-1)
+        module procedure fvalue__d_uvw_r2 ! Dual to real (rank-2)
+        module procedure downgrade__hd_uvw ! Hyper-dual to dual
+    end interface
+
     interface gradient
         !! Extract gradient from a dual or hyper-dual number
         module procedure gradient__d_uvw
@@ -852,6 +863,12 @@ contains
         type(hdual__uvw_t), intent(in) :: hd(:,:)
         real(dp) :: f(size(hd,1),size(hd,2))
         f = hd%d%f
+    end function
+
+    pure function downgrade__hd_uvw(hd) result(d)
+        type(hdual__uvw_t), intent(in) :: hd
+        type(dual__uvw_t) :: d
+        d = hd%d
     end function
 
     pure function gradient__d_uvw(d) result(g)

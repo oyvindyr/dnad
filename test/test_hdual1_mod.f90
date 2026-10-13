@@ -190,6 +190,17 @@ module test_hdual1_mod
         module procedure fvalue__hd_xy_r2
     end interface
 
+    interface downgrade
+        !! Downgrade a hyper-dual number to a dual number, a dual number to a real, or a real to itself.
+        module procedure fvalue__r   ! Real to real
+        module procedure fvalue__r1  ! Real to real (rank-1)
+        module procedure fvalue__r2  ! Real to real (rank-2)
+        module procedure fvalue__d_xy    ! Dual to real
+        module procedure fvalue__d_xy_r1 ! Dual to real (rank-1)
+        module procedure fvalue__d_xy_r2 ! Dual to real (rank-2)
+        module procedure downgrade__hd_xy ! Hyper-dual to dual
+    end interface
+
     interface gradient
         !! Extract gradient from a dual or hyper-dual number
         module procedure gradient__d_xy
@@ -813,6 +824,12 @@ contains
         type(hdual__xy_t), intent(in) :: hd(:,:)
         real(dp) :: f(size(hd,1),size(hd,2))
         f = hd%d%f
+    end function
+
+    pure function downgrade__hd_xy(hd) result(d)
+        type(hdual__xy_t), intent(in) :: hd
+        type(dual__xy_t) :: d
+        d = hd%d
     end function
 
     pure function gradient__d_xy(d) result(g)
