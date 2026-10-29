@@ -74,6 +74,35 @@ def extract_gdim(type_spec):
         return int(match.group(1))
     return None
 
+def shortname(type_suffix, hyper=False):
+    '''Short name of a dual (dten) or hyper-dual (hdten) type, as used in procedure names'''
+    return ("hd" if hyper else "d") + type_suffix
+
+def type_name(type_suffix, hyper=False):
+    '''Fortran name of a dual (dual__ten_t) or hyper-dual (hdual__ten_t) type'''
+    return ("hdual__" if hyper else "dual__") + type_suffix + "_t"
+
+def group_by_interfaces(type_specs, selected_interfaces):
+    '''Split type_specs into runs of consecutive specs sharing one interface selection.
+
+    selected_interfaces is one selection for all specs, or a dict mapping a type suffix to its selection
+    (suffixes missing from the dict get "--all"). Yields (specs, selection) pairs.
+    '''
+    if not isinstance(selected_interfaces, dict):
+        if type_specs:
+            yield list(type_specs), selected_interfaces
+        return
+    group, current = [], None
+    for spec in type_specs:
+        sel = selected_interfaces.get(decode_type_spec(spec)[0], "--all")
+        if group and sel != current:
+            yield group, current
+            group = []
+        group.append(spec)
+        current = sel
+    if group:
+        yield group, current
+
 def decode_type_specs(type_specs):
     dual_types = []
     dual_shortnames = []
@@ -83,12 +112,12 @@ def decode_type_specs(type_specs):
     hdual_gdims = []
     for type_spec in type_specs:
         type_suffix, has_hdual, gdim = decode_type_spec(type_spec)
-        dual_shortnames.append("d" + type_suffix)
-        dual_types.append("dual__" + type_suffix + "_t")
+        dual_shortnames.append(shortname(type_suffix))
+        dual_types.append(type_name(type_suffix))
         dual_gdims.append(gdim)
         if has_hdual:
-            hdual_shortnames.append("hd" + type_suffix)
-            hdual_types.append("hdual__" + type_suffix + "_t")
+            hdual_shortnames.append(shortname(type_suffix, True))
+            hdual_types.append(type_name(type_suffix, True))
             hdual_gdims.append(gdim)
     return dual_types, dual_shortnames, dual_gdims, hdual_types, hdual_shortnames, hdual_gdims
 
