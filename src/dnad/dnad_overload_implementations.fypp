@@ -312,8 +312,8 @@
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
     $:log_d(dual_type, dual_sn, real_kind, is_pure)
   #:endfor
-  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
-    $:log_hd(hdual_type, hdual_sn, real_kind, is_pure)
+  #:for hdual_type, hdual_sn, gdim in zip(hdual_types, hdual_shortnames, hdual_gdims)
+    $:log_hd(hdual_type, hdual_sn, real_kind, is_pure, gdim)
   #:endfor
 #:endif 
 #:if "log10" in interface_list
@@ -586,8 +586,8 @@
   #:for dual_type, dual_sn in zip(dual_types, dual_shortnames)
     $:sqrt_d(dual_type, dual_sn, real_kind, is_pure, stringent)
   #:endfor
-  #:for hdual_type, hdual_sn in zip(hdual_types, hdual_shortnames)
-    $:sqrt_hd(hdual_type, hdual_sn, real_kind, is_pure, stringent)
+  #:for hdual_type, hdual_sn, gdim in zip(hdual_types, hdual_shortnames, hdual_gdims)
+    $:sqrt_hd(hdual_type, hdual_sn, real_kind, is_pure, stringent, gdim)
   #:endfor
 #:endif 
 #:if "sum" in interface_list 

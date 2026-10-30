@@ -4911,36 +4911,31 @@ contains
     elemental function log__hdb(u) result(res)
         type(hdual__b_t), intent(in) :: u
         type(hdual__b_t) :: res
-        integer :: i, j, k
         real(dp) :: t0
         
         t0 = 1.0_dp/u%d%f
         res%d%f = log(u%d%f)
         res%d%g = t0*u%d%g
-        k = 0
-        do j = 1, size(res%d%g)
-            do i = j, size(res%d%g)
-                k = k + 1
-                res%h(k) = t0*(-t0*u%d%g(i)*u%d%g(j) + u%h(k))
-            end do
-        end do
+        
+        res%h(1) = t0*(-t0*u%d%g(1)*u%d%g(1) + u%h(1))
+        res%h(2) = t0*(-t0*u%d%g(2)*u%d%g(1) + u%h(2))
+        res%h(3) = t0*(-t0*u%d%g(2)*u%d%g(2) + u%h(3))
     end function
     elemental function log__hdc(u) result(res)
         type(hdual__c_t), intent(in) :: u
         type(hdual__c_t) :: res
-        integer :: i, j, k
         real(dp) :: t0
         
         t0 = 1.0_dp/u%d%f
         res%d%f = log(u%d%f)
         res%d%g = t0*u%d%g
-        k = 0
-        do j = 1, size(res%d%g)
-            do i = j, size(res%d%g)
-                k = k + 1
-                res%h(k) = t0*(-t0*u%d%g(i)*u%d%g(j) + u%h(k))
-            end do
-        end do
+        
+        res%h(1) = t0*(-t0*u%d%g(1)*u%d%g(1) + u%h(1))
+        res%h(2) = t0*(-t0*u%d%g(2)*u%d%g(1) + u%h(2))
+        res%h(3) = t0*(-t0*u%d%g(3)*u%d%g(1) + u%h(3))
+        res%h(4) = t0*(-t0*u%d%g(2)*u%d%g(2) + u%h(4))
+        res%h(5) = t0*(-t0*u%d%g(3)*u%d%g(2) + u%h(5))
+        res%h(6) = t0*(-t0*u%d%g(3)*u%d%g(3) + u%h(6))
     end function
     elemental  function log10__da(u) result(res)
         type(dual__a_t), intent(in) :: u
@@ -5691,7 +5686,7 @@ contains
     elemental function sqrt__hdb(u) result(res)
         type(hdual__b_t), intent(in) :: u
         type(hdual__b_t) :: res
-        integer :: i, j, k
+        integer :: i
         real(dp) :: t0,t1
         
         t0 = sqrt(u%d%f)
@@ -5699,13 +5694,9 @@ contains
         res%d%f = t0
         if (res%d%f /= 0) then
             res%d%g = 0.5_dp*t1*u%d%g
-            k = 0
-            do j = 1, size(res%d%g)
-                do i = j, size(res%d%g)
-                    k = k + 1
-                    res%h(k) = (0.25_dp)*t1*(2*u%h(k) - u%d%g(i)*u%d%g(j)/u%d%f)
-                end do
-            end do
+            res%h(1) = (0.25_dp)*t1*(2*u%h(1) - u%d%g(1)*u%d%g(1)/u%d%f)
+            res%h(2) = (0.25_dp)*t1*(2*u%h(2) - u%d%g(2)*u%d%g(1)/u%d%f)
+            res%h(3) = (0.25_dp)*t1*(2*u%h(3) - u%d%g(2)*u%d%g(2)/u%d%f)
         else
             do i = 1, size(res%d%g)
                 if (u%d%g(i) == 0) then
@@ -5720,7 +5711,7 @@ contains
     elemental function sqrt__hdc(u) result(res)
         type(hdual__c_t), intent(in) :: u
         type(hdual__c_t) :: res
-        integer :: i, j, k
+        integer :: i
         real(dp) :: t0,t1
         
         t0 = sqrt(u%d%f)
@@ -5728,13 +5719,12 @@ contains
         res%d%f = t0
         if (res%d%f /= 0) then
             res%d%g = 0.5_dp*t1*u%d%g
-            k = 0
-            do j = 1, size(res%d%g)
-                do i = j, size(res%d%g)
-                    k = k + 1
-                    res%h(k) = (0.25_dp)*t1*(2*u%h(k) - u%d%g(i)*u%d%g(j)/u%d%f)
-                end do
-            end do
+            res%h(1) = (0.25_dp)*t1*(2*u%h(1) - u%d%g(1)*u%d%g(1)/u%d%f)
+            res%h(2) = (0.25_dp)*t1*(2*u%h(2) - u%d%g(2)*u%d%g(1)/u%d%f)
+            res%h(3) = (0.25_dp)*t1*(2*u%h(3) - u%d%g(3)*u%d%g(1)/u%d%f)
+            res%h(4) = (0.25_dp)*t1*(2*u%h(4) - u%d%g(2)*u%d%g(2)/u%d%f)
+            res%h(5) = (0.25_dp)*t1*(2*u%h(5) - u%d%g(3)*u%d%g(2)/u%d%f)
+            res%h(6) = (0.25_dp)*t1*(2*u%h(6) - u%d%g(3)*u%d%g(3)/u%d%f)
         else
             do i = 1, size(res%d%g)
                 if (u%d%g(i) == 0) then
