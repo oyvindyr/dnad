@@ -1,35 +1,30 @@
 
-#:def hypot_d(dual_type, dual_sn, real_kind, is_pure)
-    #:if is_pure
-        #:set elemental_purity = "elemental"
-    #:else
-        #:set elemental_purity = "impure elemental"
-    #:endif
-    ${elemental_purity}$ function hypot__${dual_sn}$_${dual_sn}$(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
-        real(${real_kind}$) :: t0
+#:def hypot_d(i)
+    ${i.elemental}$ function hypot__${i.sn}$_${i.sn}$(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        type(${i.type_name}$), intent(in) :: v
+        type(${i.type_name}$) :: res
+        real(${i.real_kind}$) :: t0
         
         t0 = sqrt(u%f**2 + v%f**2)
         res%f = t0
         res%g = (u%g*u%f + v%g*v%f)/t0
     end function
-    ${elemental_purity}$ function hypot__${dual_sn}$_r(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
-        real(${real_kind}$), intent(in) :: v
-        type(${dual_type}$) :: res
-        real(${real_kind}$) :: t0
+    ${i.elemental}$ function hypot__${i.sn}$_r(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        real(${i.real_kind}$), intent(in) :: v
+        type(${i.type_name}$) :: res
+        real(${i.real_kind}$) :: t0
         
         t0 = sqrt(u%f**2 + v**2)
         res%f = t0
         res%g = u%g*u%f/t0
     end function
-    ${elemental_purity}$ function hypot__r_${dual_sn}$(u, v) result(res)
-        real(${real_kind}$), intent(in) :: u
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
-        real(${real_kind}$) :: t0
+    ${i.elemental}$ function hypot__r_${i.sn}$(u, v) result(res)
+        real(${i.real_kind}$), intent(in) :: u
+        type(${i.type_name}$), intent(in) :: v
+        type(${i.type_name}$) :: res
+        real(${i.real_kind}$) :: t0
         
         t0 = sqrt(u**2 + v%f**2)
         res%f = t0
@@ -37,25 +32,20 @@
     end function
 #:enddef
 
-#:def hypot_hd(dual_type, dual_sn, real_kind, is_pure)
-    #:if is_pure
-        #:set elemental_purity = "elemental"
-    #:else
-        #:set elemental_purity = "impure elemental"
-    #:endif
-    ${elemental_purity}$ function hypot__${dual_sn}$_${dual_sn}$(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
+#:def hypot_hd(i)
+    ${i.elemental}$ function hypot__${i.sn}$_${i.sn}$(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        type(${i.type_name}$), intent(in) :: v
+        type(${i.type_name}$) :: res
         integer :: i, j, k
-        real(${real_kind}$) :: t0,t1,t2,t3,t4,t5
+        real(${i.real_kind}$) :: t0,t1,t2,t3,t4,t5
         
         t0 = u%d%f**2
         t1 = v%d%f**2
         t2 = t0 + t1
         t3 = sqrt(t2)
-        t4 = 1.0_${real_kind}$/t3
-        t5 = 1.0_${real_kind}$/t2
+        t4 = 1.0_${i.real_kind}$/t3
+        t5 = 1.0_${i.real_kind}$/t2
         res%d%f = t3
         res%d%g = t4*(u%d%g*u%d%f + v%d%g*v%d%f)
         k = 0
@@ -67,17 +57,17 @@
             end do
         end do
     end function
-    ${elemental_purity}$ function hypot__${dual_sn}$_r(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
-        real(${real_kind}$), intent(in) :: v
-        type(${dual_type}$) :: res
+    ${i.elemental}$ function hypot__${i.sn}$_r(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        real(${i.real_kind}$), intent(in) :: v
+        type(${i.type_name}$) :: res
         integer :: i, j, k
-        real(${real_kind}$) :: t0,t1,t2,t3
+        real(${i.real_kind}$) :: t0,t1,t2,t3
         
         t0 = u%d%f**2
         t1 = t0 + v**2
         t2 = sqrt(t1)
-        t3 = 1.0_${real_kind}$/t2
+        t3 = 1.0_${i.real_kind}$/t2
         res%d%f = t2
         res%d%g = t3*u%d%g*u%d%f
         k = 0
@@ -88,17 +78,17 @@
             end do
         end do
     end function
-    ${elemental_purity}$ function hypot__r_${dual_sn}$(u, v) result(res)
-        real(${real_kind}$), intent(in) :: u
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
+    ${i.elemental}$ function hypot__r_${i.sn}$(u, v) result(res)
+        real(${i.real_kind}$), intent(in) :: u
+        type(${i.type_name}$), intent(in) :: v
+        type(${i.type_name}$) :: res
         integer :: i, j, k
-        real(${real_kind}$) :: t0,t1,t2,t3
+        real(${i.real_kind}$) :: t0,t1,t2,t3
         
         t0 = v%d%f**2
         t1 = t0 + u**2
         t2 = sqrt(t1)
-        t3 = 1.0_${real_kind}$/t2
+        t3 = 1.0_${i.real_kind}$/t2
         res%d%f = t2
         res%d%g = t3*v%d%g*v%d%f
         k = 0

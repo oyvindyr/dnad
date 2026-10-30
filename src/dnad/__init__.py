@@ -1,134 +1,243 @@
+''' The types the dnad fypp macros take, and the catalog of overloaded operators and functions.
+
+    kinds = [dnad.Kind('xy', 2, hyper=True)]
+    config = dnad.Config('dp', stringent=False)
+    $:dnad_module_spec(kinds, config, ['+', '*', 'sqrt'])
+'''
 import os
-import re
 
-all_interfaces =   ['=', '+', '-', '*', '/', '**', '==', '<=', '<', '>=', '>', '/=', 'abs', 'dabs', 'acos', 'asin', 'atan', 'atan2', 'cos', 'dcos',
-       'dot_product', 'exp', 'int', 'log', 'log10', 'matmul', 'max', 'dmax1', 'maxval', 'min', 'dmin1', 'minval', 'nint', 'sign',
-       'sin', 'dsin', 'tan', 'dtan', 'sqrt', 'sum', 'maxloc']
 
-all_implementations = [
-    'assign__d_i', 'assign__d_r', 'assign__i_d', 'assign__r_d', 'assign__hd_i', 'assign__hd_r', 'assign__i_hd', 'assign__r_hd', 
-    'add__d', 'add__d_d', 'add__d_i', 'add__d_r', 'add__i_d', 'add__r_d', 'add__hd', 'add__hd_hd', 'add__hd_i', 'add__hd_r', 'add__i_hd', 'add__r_hd', 
-    'minus__d', 'minus__d_d', 'minus__d_i', 'minus__d_r', 'minus__i_d', 'minus__r_d', 'minus__hd', 'minus__hd_hd', 'minus__hd_i', 'minus__hd_r', 'minus__i_hd', 'minus__r_hd', 
-    'mult__d_d', 'mult__d_i', 'mult__d_r', 'mult__i_d', 'mult__r_d', 'mult__hd_hd', 'mult__hd_i', 'mult__hd_r', 'mult__i_hd', 'mult__r_hd', 
-    'div__d_d', 'div__d_r', 'div__r_d', 'div__d_i', 'div__i_d', 'div__hd_hd', 'div__hd_r', 'div__r_hd', 'div__hd_i', 'div__i_hd', 
-    'pow__d_i', 'pow__d_r', 'pow__d_d', 'pow__hd_i', 'pow__hd_r', 'pow__hd_hd', 
-    'eq__d_d', 'eq__d_i', 'eq__d_r', 'eq__i_d', 'eq__r_d', 
-    'le__d_d', 'le__d_i', 'le__d_r', 'le__i_d', 'le__r_d', 
-    'lt__d_d', 'lt__d_i', 'lt__d_r', 'lt__i_d', 'lt__r_d', 
-    'ge__d_d', 'ge__d_i', 'ge__d_r', 'ge__i_d', 'ge__r_d', 
-    'gt__d_d', 'gt__d_i', 'gt__d_r', 'gt__i_d', 'gt__r_d', 
-    'ne__d_d', 'ne__d_i', 'ne__d_r', 'ne__i_d', 'ne__r_d', 
-    'eq__hd_hd', 'eq__hd_i', 'eq__hd_r', 'eq__i_hd', 'eq__r_hd', 
-    'le__hd_hd', 'le__hd_i', 'le__hd_r', 'le__i_hd', 'le__r_hd', 
-    'lt__hd_hd', 'lt__hd_i', 'lt__hd_r', 'lt__i_hd', 'lt__r_hd', 
-    'ge__hd_hd', 'ge__hd_i', 'ge__hd_r', 'ge__i_hd', 'ge__r_hd', 
-    'gt__hd_hd', 'gt__hd_i', 'gt__hd_r', 'gt__i_hd', 'gt__r_hd', 
-    'ne__hd_hd', 'ne__hd_i', 'ne__hd_r', 'ne__i_hd', 'ne__r_hd', 
-    'abs__d', 
-    'acos__d', 
-    'asin__d', 
-    'atan__d', 
-    'atan2__d', 
-    'cos__d', 
-    'dot_product__dd', 
-    'exp__d', 
-    'int__d', 
-    'log__d', 'log__hd',
-    'log10__d', 
-    'matmul__dd', 'matmul__dv', 'matmul__vd', 
-    'max__dd', 'max__di', 'max__dr', 'max__rd', 
-    'dmax1__dd', 
-    'maxval__d', 
-    'min__dd', 'min__dr', 
-    'dmin1__dd', 
-    'minval__d', 
-    'nint__d', 
-    'sin__d', 
-    'tan__d', 
-    'sqrt__d', 'sqrt__hd',
-    'sum__d', 
-    'maxloc__d']
+class Kind:
+    ''' One set of independent variables: gives dual__<suffix>_t, and hdual__<suffix>_t if hyper.
+    unroll: write the hessian of the hyper-dual operators out for nderiv instead of looping. '''
 
-def select_interfaces(selected_interfaces):
-    if selected_interfaces == "--all":
-        return all_interfaces
-    else:
-        # Convert comma-separated string to list
-        return selected_interfaces.replace(" ","").split(",")
-    
-def decode_type_spec(type_spec):
-    lst = type_spec.split(":")
-    if ":h" in type_spec:
-        type_suffix = lst[0]
-        has_hdual = True
-    else:
-        type_suffix = lst[0]
-        has_hdual = False
-    gdim = extract_gdim(type_spec)
+    def __init__(self, suffix, nderiv, hyper=False, unroll=False):
+        self.suffix = suffix
+        self.nderiv = nderiv
+        self.hyper = hyper
+        self.unroll = unroll
 
-    return type_suffix, has_hdual, gdim
+    def __repr__(self):
+        return self.suffix
 
-def extract_gdim(type_spec):
-    match = re.search(r"gdim\((\d+)\)", type_spec)
-    if match:
-        return int(match.group(1))
-    return None
 
-def shortname(type_suffix, hyper=False):
-    '''Short name of a dual (dten) or hyper-dual (hdten) type, as used in procedure names'''
-    return ("hd" if hyper else "d") + type_suffix
+class Dual:
+    ''' The dual (hyper=False) or hyper-dual number of a Kind '''
 
-def type_name(type_suffix, hyper=False):
-    '''Fortran name of a dual (dual__ten_t) or hyper-dual (hdual__ten_t) type'''
-    return ("hdual__" if hyper else "dual__") + type_suffix + "_t"
+    def __init__(self, kind, hyper=False):
+        self.kind = kind
+        self.hyper = hyper
 
-def group_by_interfaces(type_specs, selected_interfaces):
-    '''Split type_specs into runs of consecutive specs sharing one interface selection.
+    @property
+    def sn(self):
+        ''' Short name used in procedure names: dten, hdten '''
+        return ('hd' if self.hyper else 'd') + self.kind.suffix
 
-    selected_interfaces is one selection for all specs, or a dict mapping a type suffix to its selection
-    (suffixes missing from the dict get "--all"). Yields (specs, selection) pairs.
-    '''
-    if not isinstance(selected_interfaces, dict):
-        if type_specs:
-            yield list(type_specs), selected_interfaces
-        return
-    group, current = [], None
-    for spec in type_specs:
-        sel = selected_interfaces.get(decode_type_spec(spec)[0], "--all")
-        if group and sel != current:
-            yield group, current
-            group = []
-        group.append(spec)
-        current = sel
-    if group:
-        yield group, current
+    @property
+    def type_name(self):
+        ''' Fortran type name: dual__ten_t, hdual__ten_t '''
+        return ('hdual__' if self.hyper else 'dual__') + self.kind.suffix + '_t'
 
-def decode_type_specs(type_specs):
-    dual_types = []
-    dual_shortnames = []
-    dual_gdims = []
-    hdual_types = []
-    hdual_shortnames = []
-    hdual_gdims = []
-    for type_spec in type_specs:
-        type_suffix, has_hdual, gdim = decode_type_spec(type_spec)
-        dual_shortnames.append(shortname(type_suffix))
-        dual_types.append(type_name(type_suffix))
-        dual_gdims.append(gdim)
-        if has_hdual:
-            hdual_shortnames.append(shortname(type_suffix, True))
-            hdual_types.append(type_name(type_suffix, True))
-            hdual_gdims.append(gdim)
-    return dual_types, dual_shortnames, dual_gdims, hdual_types, hdual_shortnames, hdual_gdims
+    @property
+    def gdim(self):
+        ''' The number of derivatives when the hessian code is unrolled, else None '''
+        return self.kind.nderiv if self.kind.unroll else None
 
-def decode_chain_types_spec(str):
-    s, has_hdual = decode_type_spec(str)[0:2]
-    if "->" not in s:
-        raise ValueError("Missing '->' in chain_types string representation")
-    lst = s.split("->")
-    if len(lst) != 2:
-        raise ValueError("Too many '->' in chain_types string representation")
-    return lst[0], lst[1], has_hdual
+    def __repr__(self):
+        return self.sn
+
+
+def duals(kinds):
+    ''' All dual numbers of the kinds, then all hyper-dual numbers '''
+    return [Dual(k) for k in kinds] + [Dual(k, True) for k in kinds if k.hyper]
+
+
+class Config:
+    ''' Settings shared by all generated procedures.
+    stringent: functions return NaN where the derivative does not exist (slower).
+    pure: False makes the elemental procedures impure, e.g. to print from them while debugging. '''
+
+    def __init__(self, real_kind='dp', stringent=True, pure=True):
+        self.real_kind = real_kind
+        self.stringent = stringent
+        self.pure = pure
+
+    @property
+    def elemental(self):
+        return 'elemental' if self.pure else 'impure elemental'
+
+    @property
+    def purity(self):
+        return 'pure' if self.pure else ''
+
+
+class Op:
+    ''' One overloaded operator or function.
+    key: what a selection names ('+', 'sqrt'); interface: the Fortran generic ('operator (+)', 'sqrt');
+    family: the implementation macros (<family>_d, <family>_hd), shared by aliases such as abs and dabs;
+    signatures: the specifics as argument tokens, 'u' for the dual type, 'r' real, 'i' integer, 'v' a vector
+    of the dual type; hyper: hyper-dual specifics exist. '''
+
+    def __init__(self, key, interface, family, doc, signatures, hyper=False):
+        self.key = key
+        self.interface = interface
+        self.family = family
+        self.doc = [doc]
+        self.signatures = signatures
+        self.hyper = hyper
+
+
+_BINARY = (('u', 'u'), ('u', 'i'), ('u', 'r'), ('i', 'u'), ('r', 'u'))
+_UNARY = (('u',),)
+
+
+def _compare(key, family, what):
+    return Op(key, f'operator ({key})', family, f'{what} of the function values', _BINARY, hyper=True)
+
+
+OPS = [
+    Op('=', 'assignment (=)', 'assign', 'Assign an integer or a real to a dual number, or the function value to them',
+       (('u', 'i'), ('u', 'r'), ('i', 'u'), ('r', 'u')), hyper=True),
+    Op('+', 'operator (+)', 'add', 'Unary plus and addition', _UNARY + _BINARY, hyper=True),
+    Op('-', 'operator (-)', 'minus', 'Negation and subtraction', _UNARY + _BINARY, hyper=True),
+    Op('*', 'operator (*)', 'mult', 'Multiplication', _BINARY, hyper=True),
+    Op('/', 'operator (/)', 'div', 'Division',
+       (('u', 'u'), ('u', 'r'), ('r', 'u'), ('u', 'i'), ('i', 'u')), hyper=True),
+    Op('**', 'operator (**)', 'pow', 'Power', (('u', 'i'), ('u', 'r'), ('u', 'u')), hyper=True),
+    Op('hypot', 'hypot', 'hypot', 'Euclidean distance sqrt(x**2 + y**2)',
+       (('u', 'u'), ('u', 'r'), ('r', 'u')), hyper=True),
+    _compare('==', 'eq', 'Equality'),
+    _compare('<=', 'le', 'Less than or equal'),
+    _compare('<', 'lt', 'Less than'),
+    _compare('>=', 'ge', 'Greater than or equal'),
+    _compare('>', 'gt', 'Greater than'),
+    _compare('/=', 'ne', 'Inequality'),
+    Op('abs', 'abs', 'abs', 'Absolute value', _UNARY),
+    Op('dabs', 'dabs', 'abs', 'Absolute value (old Fortran name)', _UNARY),
+    Op('acos', 'acos', 'acos', 'Arccosine', _UNARY),
+    Op('asin', 'asin', 'asin', 'Arcsine', _UNARY),
+    Op('atan', 'atan', 'atan', 'Arctangent', _UNARY),
+    Op('atan2', 'atan2', 'atan2', 'Arctangent of y/x in the quadrant of (x, y)', _UNARY),
+    Op('cos', 'cos', 'cos', 'Cosine', _UNARY),
+    Op('dcos', 'dcos', 'cos', 'Cosine (old Fortran name)', _UNARY),
+    Op('dot_product', 'dot_product', 'dot_product', 'Dot product of two dual vectors', (('u', 'u'),)),
+    Op('exp', 'exp', 'exp', 'Exponential', _UNARY),
+    Op('int', 'int', 'int', 'Integer part of the function value', _UNARY),
+    Op('log', 'log', 'log', 'Natural logarithm', _UNARY, hyper=True),
+    Op('log10', 'log10', 'log10', 'Base-10 logarithm', _UNARY),
+    Op('matmul', 'matmul', 'matmul', 'Matrix product of dual matrices and vectors',
+       (('u', 'u'), ('u', 'v'), ('v', 'u'))),
+    Op('max', 'max', 'max', 'The larger of two numbers', (('u', 'u'), ('u', 'i'), ('u', 'r'), ('r', 'u'))),
+    Op('dmax1', 'dmax1', 'dmax1', 'The largest of two to five dual numbers', (('u', 'u'),)),
+    Op('maxval', 'maxval', 'maxval', 'The largest element of a dual vector', _UNARY),
+    Op('min', 'min', 'min', 'The smaller of two numbers', (('u', 'u'), ('u', 'r'))),
+    Op('dmin1', 'dmin1', 'dmin1', 'The smallest of two to four dual numbers', (('u', 'u'),)),
+    Op('minval', 'minval', 'minval', 'The smallest element of a dual vector', _UNARY),
+    Op('nint', 'nint', 'nint', 'Nearest integer to the function value', _UNARY),
+    Op('sign', 'sign', 'sign', 'abs(a) with the sign of b', (('u', 'u'), ('r', 'u'))),
+    Op('sin', 'sin', 'sin', 'Sine', _UNARY),
+    Op('dsin', 'dsin', 'sin', 'Sine (old Fortran name)', _UNARY),
+    Op('tan', 'tan', 'tan', 'Tangent', _UNARY),
+    Op('dtan', 'dtan', 'tan', 'Tangent (old Fortran name)', _UNARY),
+    Op('sqrt', 'sqrt', 'sqrt', 'Square root', _UNARY, hyper=True),
+    Op('sum', 'sum', 'sum', 'Sum of a dual vector', _UNARY),
+    Op('maxloc', 'maxloc', 'maxloc', 'Location of the largest element of a dual vector', _UNARY),
+]
+
+all_interfaces = [op.key for op in OPS]
+
+
+class OpInstance:
+    ''' An Op for one dual or hyper-dual number: what generic() and the implementation macros read '''
+
+    def __init__(self, op, num, config):
+        self.op = op
+        self.num = num
+        self.config = config
+
+    @property
+    def interface(self):
+        return self.op.interface
+
+    @property
+    def doc(self):
+        return self.op.doc
+
+    @property
+    def specifics(self):
+        return [f'{self.op.family}__' + '_'.join(self.num.sn if t == 'u' else t for t in sig)
+                for sig in self.op.signatures]
+
+    # What the implementation macros read
+    @property
+    def sn(self):
+        return self.num.sn
+
+    @property
+    def type_name(self):
+        return self.num.type_name
+
+    @property
+    def hyper(self):
+        return self.num.hyper
+
+    @property
+    def gdim(self):
+        return self.num.gdim
+
+    @property
+    def real_kind(self):
+        return self.config.real_kind
+
+    @property
+    def stringent(self):
+        return self.config.stringent
+
+    @property
+    def elemental(self):
+        return self.config.elemental
+
+    @property
+    def purity(self):
+        return self.config.purity
+
+
+def _selected(selection):
+    if selection is None:
+        return OPS
+    unknown = set(selection) - set(all_interfaces)
+    if unknown:
+        raise KeyError(f'dnad has no interface {", ".join(sorted(unknown))}')
+    return [op for op in OPS if op.key in selection]
+
+
+def _instances(op, kinds, config):
+    return [OpInstance(op, num, config) for num in duals(kinds) if op.hyper or not num.hyper]
+
+
+def interfaces(kinds, config, selection=None):
+    ''' One list of OpInstance per selected interface, in catalog order '''
+    return [_instances(op, kinds, config) for op in _selected(selection)]
+
+
+class Family:
+    def __init__(self, d, hd):
+        self.d = d
+        self.hd = hd
+
+
+def implementations(kinds, config, selection=None):
+    ''' family -> Family(d, hd): the OpInstances the family's <family>_d and <family>_hd macros take. A family is
+    implemented once even when several selected interfaces share it. '''
+    selected = {op.family for op in _selected(selection)}
+    out = {}
+    for op in OPS:
+        if op.family in out:
+            continue
+        insts = _instances(op, kinds, config) if op.family in selected else []
+        out[op.family] = Family([i for i in insts if not i.hyper], [i for i in insts if i.hyper])
+    return out
+
 
 def include_dirs():
     '''Directories to pass to fypp as include paths (-I).'''

@@ -1,10 +1,10 @@
 #! Everything a module needs to compute with a set of dual types, in two calls: dnad_module_spec in the
-#! specification part and dnad_module_impl after contains. Arguments shared by both must be equal.
+#! specification part and dnad_module_impl after contains, with the same arguments.
 #!
-#!   type_specs           e.g. ['ten:h', 'tl1']: dual__ten_t, hdual__ten_t and dual__tl1_t
-#!   selected_interfaces  "--all", a comma-separated list, or a dict from type suffix to such a list
-#!   chains               e.g. ['ten->teni:h'] (see dnad_chain_duals.fypp)
-#!   stringent            True: functions return NaN where the derivative does not exist (slower)
+#!   kinds      dnad.Kind objects: dual__<suffix>_t for each, and hdual__<suffix>_t for the hyper ones
+#!   config     dnad.Config: real kind, stringent, pure
+#!   selection  the interface keys to overload (dnad.all_interfaces), or None for all of them
+#!   chains     (y, x) Kind pairs for chain_duals (see dnad_chain_duals.fypp)
 #!
 #:include 'dnad_initialize.fypp'
 #:include 'dnad_getters.fypp'
@@ -13,34 +13,30 @@
 #:include 'dnad_overload_interfaces.fypp'
 #:include 'dnad_overload_implementations.fypp'
 
-#:def dnad_module_spec(type_specs, real_kind, selected_interfaces="--all", chains=(), stringent=True)
-$:dnad_initialize_interface(type_specs)
-$:dnad_getter_interfaces(type_specs)
-$:dnad_jacobi_interfaces(type_specs)
+#:def dnad_module_spec(kinds, config, selection=None, chains=())
+$:dnad_initialize_interface(kinds)
+$:dnad_getter_interfaces(kinds)
+$:dnad_jacobi_interfaces(kinds)
   #:if chains
 $:dnad_chain_duals_interface(chains)
   #:endif
-  #:for specs, interfaces in dnad.group_by_interfaces(type_specs, selected_interfaces)
-$:dnad_overload_interfaces(specs, interfaces)
-  #:endfor
-  #:if stringent
-    real(${real_kind}$) :: negative_one = -1.0_${real_kind}$ ! Lets pure procedures produce NaN deliberately
+$:dnad_overload_interfaces(kinds, config, selection)
+  #:if config.stringent
+    real(${config.real_kind}$) :: negative_one = -1.0_${config.real_kind}$ ! Lets pure procedures produce NaN deliberately
   #:endif
 #:enddef
 
-#:def dnad_module_impl(type_specs, real_kind, selected_interfaces="--all", chains=(), stringent=True)
-$:dnad_initialize_implementations(type_specs, real_kind)
-$:dnad_getter_implementations(type_specs, real_kind)
-$:dnad_jacobi_implementations(type_specs, real_kind)
+#:def dnad_module_impl(kinds, config, selection=None, chains=())
+$:dnad_initialize_implementations(kinds, config)
+$:dnad_getter_implementations(kinds, config)
+$:dnad_jacobi_implementations(kinds, config)
   #:if chains
-$:dnad_chain_duals_implementations(chains, real_kind)
+$:dnad_chain_duals_implementations(chains, config)
   #:endif
-  #:for specs, interfaces in dnad.group_by_interfaces(type_specs, selected_interfaces)
-$:dnad_overload_implementations(specs, real_kind, selected_interfaces=interfaces, stringent=stringent)
-  #:endfor
-  #:if stringent
+$:dnad_overload_implementations(kinds, config, selection)
+  #:if config.stringent
     elemental function set_NaN() result(res)
-        real(${real_kind}$) :: res
+        real(${config.real_kind}$) :: res
         res = sqrt(negative_one)
     end function set_NaN
   #:endif

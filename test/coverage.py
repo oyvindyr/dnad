@@ -48,7 +48,7 @@ def build_and_run():
 
 
 def procedure_spans(lines):
-    spans, name = [], None
+    spans, name, start = [], None, 0
     for i, line in enumerate(lines, 1):
         m = re.match(r'\s*(?:(?:impure\s+|pure\s+)?elemental\s+|pure\s+)?(?:function|subroutine)\s+(\w+)\(', line)
         if m:

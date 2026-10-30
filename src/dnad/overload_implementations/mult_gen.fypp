@@ -1,74 +1,64 @@
 
-#:def mult_d(dual_type, dual_sn, real_kind, is_pure)
-    #:if is_pure
-        #:set elemental_purity = "elemental"
-    #:else
-        #:set elemental_purity = "impure elemental"
-    #:endif
-    ${elemental_purity}$ function mult__${dual_sn}$_${dual_sn}$(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
+#:def mult_d(i)
+    ${i.elemental}$ function mult__${i.sn}$_${i.sn}$(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        type(${i.type_name}$), intent(in) :: v
+        type(${i.type_name}$) :: res
         
         res%f = u%f*v%f
         res%g = u%g*v%f + u%f*v%g
     end function
-    ${elemental_purity}$ function mult__${dual_sn}$_r(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
-        real(${real_kind}$), intent(in) :: v
-        type(${dual_type}$) :: res
+    ${i.elemental}$ function mult__${i.sn}$_r(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        real(${i.real_kind}$), intent(in) :: v
+        type(${i.type_name}$) :: res
         
         res%f = u%f*v
         res%g = u%g*v
     end function
-    ${elemental_purity}$ function mult__r_${dual_sn}$(u, v) result(res)
-        real(${real_kind}$), intent(in) :: u
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
+    ${i.elemental}$ function mult__r_${i.sn}$(u, v) result(res)
+        real(${i.real_kind}$), intent(in) :: u
+        type(${i.type_name}$), intent(in) :: v
+        type(${i.type_name}$) :: res
         
         res%f = u*v%f
         res%g = u*v%g
     end function
-    ${elemental_purity}$ function mult__${dual_sn}$_i(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
+    ${i.elemental}$ function mult__${i.sn}$_i(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
         integer, intent(in) :: v
-        type(${dual_type}$) :: res
+        type(${i.type_name}$) :: res
         
         res%f = u%f*v
         res%g = u%g*v
     end function
-    ${elemental_purity}$ function mult__i_${dual_sn}$(u, v) result(res)
+    ${i.elemental}$ function mult__i_${i.sn}$(u, v) result(res)
         integer, intent(in) :: u
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
+        type(${i.type_name}$), intent(in) :: v
+        type(${i.type_name}$) :: res
         
         res%f = u*v%f
         res%g = u*v%g
     end function
 #:enddef
 
-#:def mult_hd(dual_type, dual_sn, real_kind, is_pure, gdim=None)
-    #:if is_pure
-        #:set elemental_purity = "elemental"
-    #:else
-        #:set elemental_purity = "impure elemental"
-    #:endif
-    ${elemental_purity}$ function mult__${dual_sn}$_${dual_sn}$(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
-      #:if gdim is None
+#:def mult_hd(i)
+    ${i.elemental}$ function mult__${i.sn}$_${i.sn}$(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        type(${i.type_name}$), intent(in) :: v
+        type(${i.type_name}$) :: res
+      #:if i.gdim is None
         integer :: i, j, k
       #:endif
         
         res%d%f = u%d%f*v%d%f
         res%d%g = u%d%g*v%d%f + u%d%f*v%d%g
-      #:if gdim == 2
+      #:if i.gdim == 2
         
         res%h(1) = u%h(1)*v%d%f + u%d%g(1)*v%d%g(1) + u%d%g(1)*v%d%g(1) + u%d%f*v%h(1)
         res%h(2) = u%h(2)*v%d%f + u%d%g(2)*v%d%g(1) + u%d%g(1)*v%d%g(2) + u%d%f*v%h(2)
         res%h(3) = u%h(3)*v%d%f + u%d%g(2)*v%d%g(2) + u%d%g(2)*v%d%g(2) + u%d%f*v%h(3)
-      #:elif gdim == 3
+      #:elif i.gdim == 3
         
         res%h(1) = u%h(1)*v%d%f + u%d%g(1)*v%d%g(1) + u%d%g(1)*v%d%g(1) + u%d%f*v%h(1)
         res%h(2) = u%h(2)*v%d%f + u%d%g(2)*v%d%g(1) + u%d%g(1)*v%d%g(2) + u%d%f*v%h(2)
@@ -86,37 +76,37 @@
         end do
       #:endif
     end function
-    ${elemental_purity}$ function mult__${dual_sn}$_r(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
-        real(${real_kind}$), intent(in) :: v
-        type(${dual_type}$) :: res
+    ${i.elemental}$ function mult__${i.sn}$_r(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        real(${i.real_kind}$), intent(in) :: v
+        type(${i.type_name}$) :: res
         
         res%d%f = u%d%f*v
         res%d%g = u%d%g*v
         res%h = u%h*v
     end function
-    ${elemental_purity}$ function mult__r_${dual_sn}$(u, v) result(res)
-        real(${real_kind}$), intent(in) :: u
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
+    ${i.elemental}$ function mult__r_${i.sn}$(u, v) result(res)
+        real(${i.real_kind}$), intent(in) :: u
+        type(${i.type_name}$), intent(in) :: v
+        type(${i.type_name}$) :: res
         
         res%d%f = u*v%d%f
         res%d%g = u*v%d%g
         res%h = u*v%h
     end function
-    ${elemental_purity}$ function mult__${dual_sn}$_i(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
+    ${i.elemental}$ function mult__${i.sn}$_i(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
         integer, intent(in) :: v
-        type(${dual_type}$) :: res
+        type(${i.type_name}$) :: res
         
         res%d%f = u%d%f*v
         res%d%g = u%d%g*v
         res%h = u%h*v
     end function
-    ${elemental_purity}$ function mult__i_${dual_sn}$(u, v) result(res)
+    ${i.elemental}$ function mult__i_${i.sn}$(u, v) result(res)
         integer, intent(in) :: u
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
+        type(${i.type_name}$), intent(in) :: v
+        type(${i.type_name}$) :: res
         
         res%d%f = u*v%d%f
         res%d%g = u*v%d%g

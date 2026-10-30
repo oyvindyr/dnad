@@ -1,113 +1,103 @@
 
-#:def minus_d(dual_type, dual_sn, real_kind, is_pure)
-    #:if is_pure
-        #:set elemental_purity = "elemental"
-    #:else
-        #:set elemental_purity = "impure elemental"
-    #:endif
-    ${elemental_purity}$ function minus__${dual_sn}$(u) result(res)
-        type(${dual_type}$), intent(in) :: u
-        type(${dual_type}$) :: res
+#:def minus_d(i)
+    ${i.elemental}$ function minus__${i.sn}$(u) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        type(${i.type_name}$) :: res
         
         res%f = -u%f
         res%g = -u%g
     end function
-    ${elemental_purity}$ function minus__${dual_sn}$_${dual_sn}$(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
+    ${i.elemental}$ function minus__${i.sn}$_${i.sn}$(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        type(${i.type_name}$), intent(in) :: v
+        type(${i.type_name}$) :: res
         
         res%f = u%f - v%f
         res%g = u%g - v%g
     end function
-    ${elemental_purity}$ function minus__${dual_sn}$_r(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
-        real(${real_kind}$), intent(in) :: v
-        type(${dual_type}$) :: res
+    ${i.elemental}$ function minus__${i.sn}$_r(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        real(${i.real_kind}$), intent(in) :: v
+        type(${i.type_name}$) :: res
         
         res%f = u%f - v
         res%g = u%g
     end function
-    ${elemental_purity}$ function minus__r_${dual_sn}$(u, v) result(res)
-        real(${real_kind}$), intent(in) :: u
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
+    ${i.elemental}$ function minus__r_${i.sn}$(u, v) result(res)
+        real(${i.real_kind}$), intent(in) :: u
+        type(${i.type_name}$), intent(in) :: v
+        type(${i.type_name}$) :: res
         
         res%f = u - v%f
         res%g = -v%g
     end function
-    ${elemental_purity}$ function minus__${dual_sn}$_i(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
+    ${i.elemental}$ function minus__${i.sn}$_i(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
         integer, intent(in) :: v
-        type(${dual_type}$) :: res
+        type(${i.type_name}$) :: res
         
         res%f = u%f - v
         res%g = u%g
     end function
-    ${elemental_purity}$ function minus__i_${dual_sn}$(u, v) result(res)
+    ${i.elemental}$ function minus__i_${i.sn}$(u, v) result(res)
         integer, intent(in) :: u
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
+        type(${i.type_name}$), intent(in) :: v
+        type(${i.type_name}$) :: res
         
         res%f = u - v%f
         res%g = -v%g
     end function
 #:enddef
 
-#:def minus_hd(dual_type, dual_sn, real_kind, is_pure)
-    #:if is_pure
-        #:set elemental_purity = "elemental"
-    #:else
-        #:set elemental_purity = "impure elemental"
-    #:endif
-    ${elemental_purity}$ function minus__${dual_sn}$(u) result(res)
-        type(${dual_type}$), intent(in) :: u
-        type(${dual_type}$) :: res
+#:def minus_hd(i)
+    ${i.elemental}$ function minus__${i.sn}$(u) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        type(${i.type_name}$) :: res
         
         res%d%f = -u%d%f
         res%d%g = -u%d%g
         res%h = -u%h
     end function
-    ${elemental_purity}$ function minus__${dual_sn}$_${dual_sn}$(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
+    ${i.elemental}$ function minus__${i.sn}$_${i.sn}$(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        type(${i.type_name}$), intent(in) :: v
+        type(${i.type_name}$) :: res
         
         res%d%f = u%d%f - v%d%f
         res%d%g = u%d%g - v%d%g
         res%h = u%h - v%h
     end function
-    ${elemental_purity}$ function minus__${dual_sn}$_r(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
-        real(${real_kind}$), intent(in) :: v
-        type(${dual_type}$) :: res
+    ${i.elemental}$ function minus__${i.sn}$_r(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        real(${i.real_kind}$), intent(in) :: v
+        type(${i.type_name}$) :: res
         
         res%d%f = u%d%f - v
         res%d%g = u%d%g
         res%h = u%h
     end function
-    ${elemental_purity}$ function minus__r_${dual_sn}$(u, v) result(res)
-        real(${real_kind}$), intent(in) :: u
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
+    ${i.elemental}$ function minus__r_${i.sn}$(u, v) result(res)
+        real(${i.real_kind}$), intent(in) :: u
+        type(${i.type_name}$), intent(in) :: v
+        type(${i.type_name}$) :: res
         
         res%d%f = u - v%d%f
         res%d%g = -v%d%g
         res%h = -v%h
     end function
-    ${elemental_purity}$ function minus__${dual_sn}$_i(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
+    ${i.elemental}$ function minus__${i.sn}$_i(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
         integer, intent(in) :: v
-        type(${dual_type}$) :: res
+        type(${i.type_name}$) :: res
         
         res%d%f = u%d%f - v
         res%d%g = u%d%g
         res%h = u%h
     end function
-    ${elemental_purity}$ function minus__i_${dual_sn}$(u, v) result(res)
+    ${i.elemental}$ function minus__i_${i.sn}$(u, v) result(res)
         integer, intent(in) :: u
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
+        type(${i.type_name}$), intent(in) :: v
+        type(${i.type_name}$) :: res
         
         res%d%f = u - v%d%f
         res%d%g = -v%d%g

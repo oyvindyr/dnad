@@ -1,75 +1,65 @@
-#:def assign_d(dual_type, dual_sn, real_kind, is_pure)
-    #:if is_pure
-        #:set elemental_purity = "elemental"
-    #:else
-        #:set elemental_purity = "impure elemental"
-    #:endif
-    ${elemental_purity}$ subroutine assign__${dual_sn}$_i(u, i)
-        type(${dual_type}$), intent(out) :: u
+#:def assign_d(i)
+    ${i.elemental}$ subroutine assign__${i.sn}$_i(u, i)
+        type(${i.type_name}$), intent(out) :: u
         integer, intent(in) :: i
 
-        u%f = real(i, ${real_kind}$)  ! This is faster than direct assignment
-        u%g = 0.0_${real_kind}$
+        u%f = real(i, ${i.real_kind}$)  ! This is faster than direct assignment
+        u%g = 0.0_${i.real_kind}$
 
     end subroutine
-    ${elemental_purity}$ subroutine assign__${dual_sn}$_r(u, r)
-        type(${dual_type}$), intent(out) :: u
-        real(${real_kind}$), intent(in) :: r
+    ${i.elemental}$ subroutine assign__${i.sn}$_r(u, r)
+        type(${i.type_name}$), intent(out) :: u
+        real(${i.real_kind}$), intent(in) :: r
 
         u%f = r
-        u%g = 0.0_${real_kind}$
+        u%g = 0.0_${i.real_kind}$
 
     end subroutine
-    ${elemental_purity}$ subroutine assign__i_${dual_sn}$(i, v)
-        type(${dual_type}$), intent(in) :: v
+    ${i.elemental}$ subroutine assign__i_${i.sn}$(i, v)
+        type(${i.type_name}$), intent(in) :: v
         integer, intent(out) :: i
 
         i = int(v%f)
 
     end subroutine
-    ${elemental_purity}$ subroutine assign__r_${dual_sn}$(r, v)
-        type(${dual_type}$), intent(in) :: v
-        real(${real_kind}$), intent(out) :: r
+    ${i.elemental}$ subroutine assign__r_${i.sn}$(r, v)
+        type(${i.type_name}$), intent(in) :: v
+        real(${i.real_kind}$), intent(out) :: r
 
         r = v%f
 
     end subroutine
 #:enddef
 
-#:def assign_hd(dual_type, dual_sn, real_kind, is_pure)
-    #:if is_pure
-        #:set elemental_purity = "elemental"
-    #:else
-        #:set elemental_purity = "impure elemental"
-    #:endif
-    ${elemental_purity}$ subroutine assign__${dual_sn}$_i(u, i)
-        type(${dual_type}$), intent(out) :: u
+#:def assign_hd(i)
+    ${i.elemental}$ subroutine assign__${i.sn}$_i(u, i)
+        type(${i.type_name}$), intent(out) :: u
         integer, intent(in) :: i
 
-        u%d%f = real(i, ${real_kind}$)  ! This is faster than direct assignment
-        u%d%g = 0.0_${real_kind}$
-        u%h = 0.0_${real_kind}$
+        u%d%f = real(i, ${i.real_kind}$)  ! This is faster than direct assignment
+        u%d%g = 0.0_${i.real_kind}$
+        u%h = 0.0_${i.real_kind}$
 
     end subroutine
-    ${elemental_purity}$ subroutine assign__${dual_sn}$_r(u, r)
-        type(${dual_type}$), intent(out) :: u
-        real(${real_kind}$), intent(in) :: r
+    ${i.elemental}$ subroutine assign__${i.sn}$_r(u, r)
+        type(${i.type_name}$), intent(out) :: u
+        real(${i.real_kind}$), intent(in) :: r
 
         u%d%f = r
-        u%d%g = 0.0_${real_kind}$
-        u%h = 0.0_${real_kind}$
+        u%d%g = 0.0_${i.real_kind}$
+        u%h = 0.0_${i.real_kind}$
 
     end subroutine
-    ${elemental_purity}$ subroutine assign__i_${dual_sn}$(i, v)
-        type(${dual_type}$), intent(in) :: v
+    ${i.elemental}$ subroutine assign__i_${i.sn}$(i, v)
+        type(${i.type_name}$), intent(in) :: v
         integer, intent(out) :: i
 
         i = int(v%d%f)
 
     end subroutine
-    ${elemental_purity}$ subroutine assign__r_${dual_sn}$(r, v)
-        type(${dual_type}$), intent(in) :: v
-        real(${real_kind}$), intent(out) :: r
+    ${i.elemental}$ subroutine assign__r_${i.sn}$(r, v)
+        type(${i.type_name}$), intent(in) :: v
+        real(${i.real_kind}$), intent(out) :: r
 
         r = v%d%f
 

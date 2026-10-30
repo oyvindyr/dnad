@@ -7,32 +7,22 @@ from jinja2 import Template
 import os
 
 _literal_replacements = {
-    '(1.0d0/2.0d0)' : '0.5_${real_kind}$',
-    '1.0d0/4.0d0'   : '0.25_${real_kind}$',
-    '(3.0d0/2.0d0)' : '1.5_${real_kind}$',
-    '1d0'           : '1.0_${real_kind}$',
-    '0d0'           : '0.0_${real_kind}$'
+    '(1.0d0/2.0d0)' : '0.5_${i.real_kind}$',
+    '1.0d0/4.0d0'   : '0.25_${i.real_kind}$',
+    '(3.0d0/2.0d0)' : '1.5_${i.real_kind}$',
+    '1d0'           : '1.0_${i.real_kind}$',
+    '0d0'           : '0.0_${i.real_kind}$'
 }
 
 # Jinja2 template for a fypp macro
 _macro_template = '''
-#:def {{interface_name}}_{{sn}}(dual_type, dual_sn, real_kind, is_pure)
-    #:if is_pure
-        #:set elemental_purity = "elemental"
-    #:else
-        #:set elemental_purity = "impure elemental"
-    #:endif
+#:def {{interface_name}}_{{sn}}(i)
     {%- for fun in funs -%}
         {{fun}}
     {%- endfor %}
 #:enddef'''
 _macro_template_with_gdim = '''
-#:def {{interface_name}}_{{sn}}(dual_type, dual_sn, real_kind, is_pure, gdim=None)
-    #:if is_pure
-        #:set elemental_purity = "elemental"
-    #:else
-        #:set elemental_purity = "impure elemental"
-    #:endif
+#:def {{interface_name}}_{{sn}}(i)
     {%- for fun in funs -%}
         {{fun}}
     {%- endfor %}
@@ -40,7 +30,7 @@ _macro_template_with_gdim = '''
 
 # Jinja2 template for binary function for dual numbers inside a fypp macro
 _binary_fun_d_template = '''
-    ${elemental_purity}$ function {{interface_name}}__{{usn}}_{{vsn}}(u, v) result(res)
+    ${i.elemental}$ function {{interface_name}}__{{usn}}_{{vsn}}(u, v) result(res)
         {{u_type}}, intent(in) :: u
         {{v_type}}, intent(in) :: v
         {{res_type}} :: res
@@ -56,7 +46,7 @@ _binary_fun_d_template = '''
 
 # Jinja2 template for binary function for dual numbers inside a fypp macro
 _unary_fun_d_template = '''
-    ${elemental_purity}$ function {{interface_name}}__{{usn}}(u) result(res)
+    ${i.elemental}$ function {{interface_name}}__{{usn}}(u) result(res)
         {{u_type}}, intent(in) :: u
         {{res_type}} :: res
         {% if temp_assigns|length > 0 -%}
@@ -71,7 +61,7 @@ _unary_fun_d_template = '''
 
 # Jinja2 template for a binary function for hyper-dual numbers inside a fypp macro
 _binary_fun_hd_template = '''
-    ${elemental_purity}$ function {{interface_name}}__{{usn}}_{{vsn}}(u, v) result(res)
+    ${i.elemental}$ function {{interface_name}}__{{usn}}_{{vsn}}(u, v) result(res)
         {{u_type}}, intent(in) :: u
         {{v_type}}, intent(in) :: v
         {{res_type}} :: res
@@ -96,11 +86,11 @@ _binary_fun_hd_template = '''
 # Jinja2 template for a binary function for hyper-dual numbers inside a fypp macro
 #  Version with unrolled loop options for small sizes
 _binary_fun_hd_unroll_template = '''
-    ${elemental_purity}$ function {{interface_name}}__{{usn}}_{{vsn}}(u, v) result(res)
+    ${i.elemental}$ function {{interface_name}}__{{usn}}_{{vsn}}(u, v) result(res)
         {{u_type}}, intent(in) :: u
         {{v_type}}, intent(in) :: v
         {{res_type}} :: res
-      #:if gdim is None
+      #:if i.gdim is None
         integer :: i, j, k
       #:endif
         {% if temp_assigns|length > 0 -%}
@@ -111,11 +101,11 @@ _binary_fun_hd_unroll_template = '''
         {%- endif %}
         {{f_assign}}
         {{g_assign}}
-      #:if gdim == 2
+      #:if i.gdim == 2
         {% for ha in h_assigns2 %}
         {{ha}}
         {%- endfor %}
-      #:elif gdim == 3
+      #:elif i.gdim == 3
         {% for ha in h_assigns3 %}
         {{ha}}
         {%- endfor %}
@@ -133,7 +123,7 @@ _binary_fun_hd_unroll_template = '''
 # Jinja2 template for a binary function for hyper-dual numbers inside a fypp macro
 #  Version without loop. Applies when ddx is not dependent on dx(i) and dx(j)
 _binary_fun_hd_noloop_template = '''
-    ${elemental_purity}$ function {{interface_name}}__{{usn}}_{{vsn}}(u, v) result(res)
+    ${i.elemental}$ function {{interface_name}}__{{usn}}_{{vsn}}(u, v) result(res)
         {{u_type}}, intent(in) :: u
         {{v_type}}, intent(in) :: v
         {{res_type}} :: res
@@ -150,7 +140,7 @@ _binary_fun_hd_noloop_template = '''
 
 # Jinja2 template for a unary function for hyper-dual numbers inside a fypp macro
 _unary_fun_hd_template = '''
-    ${elemental_purity}$ function {{interface_name}}__{{usn}}(u) result(res)
+    ${i.elemental}$ function {{interface_name}}__{{usn}}(u) result(res)
         {{u_type}}, intent(in) :: u
         {{res_type}} :: res
         integer :: i, j, k
@@ -174,10 +164,10 @@ _unary_fun_hd_template = '''
 # Jinja2 template for a unary function for hyper-dual numbers inside a fypp macro
 #  Version with unrolled loop options for small sizes
 _unary_fun_hd_unroll_template = '''
-    ${elemental_purity}$ function {{interface_name}}__{{usn}}(u) result(res)
+    ${i.elemental}$ function {{interface_name}}__{{usn}}(u) result(res)
         {{u_type}}, intent(in) :: u
         {{res_type}} :: res
-      #:if gdim is None
+      #:if i.gdim is None
         integer :: i, j, k
       #:endif
         {% if temp_assigns|length > 0 -%}
@@ -188,11 +178,11 @@ _unary_fun_hd_unroll_template = '''
         {%- endif %}
         {{f_assign}}
         {{g_assign}}
-      #:if gdim == 2
+      #:if i.gdim == 2
         {% for ha in h_assigns2 %}
         {{ha}}
         {%- endfor %}
-      #:elif gdim == 3
+      #:elif i.gdim == 3
         {% for ha in h_assigns3 %}
         {{ha}}
         {%- endfor %}
@@ -210,7 +200,7 @@ _unary_fun_hd_unroll_template = '''
 # Jinja2 template for a unary function for hyper-dual numbers inside a fypp macro
 #  Version without loop. Applies when ddx is not dependent on dx(i) and dx(j)
 _unary_fun_hd_noloop_template = '''
-    ${elemental_purity}$ function {{interface_name}}__{{usn}}(u) result(res)
+    ${i.elemental}$ function {{interface_name}}__{{usn}}(u) result(res)
         {{u_type}}, intent(in) :: u
         {{res_type}} :: res
         {% if temp_assigns|length > 0 -%}
@@ -434,14 +424,14 @@ def replacements_ddx_no_loop(c, u_type, v_type):
 
 def uv_types(num_types, is_hyper_dual):
     if num_types[0] == 'dual':
-        ut = "type(${dual_type}$)" 
-        uts = "${dual_sn}$"
+        ut = "type(${i.type_name}$)" 
+        uts = "${i.sn}$"
         if is_hyper_dual:
             utsc = 'hd'
         else:
             utsc = 'd'
     elif num_types[0] == 'real':
-        ut = "real(${real_kind}$)"
+        ut = "real(${i.real_kind}$)"
         uts = 'r'
         utsc = 'r'
     elif num_types[0] == 'integer':
@@ -450,14 +440,14 @@ def uv_types(num_types, is_hyper_dual):
         utsc = 'i'
 
     if num_types[1] == 'dual':
-        vt = "type(${dual_type}$)" 
-        vts = "${dual_sn}$"
+        vt = "type(${i.type_name}$)" 
+        vts = "${i.sn}$"
         if is_hyper_dual:
             vtsc = 'hd'
         else:
             vtsc = 'd'
     elif num_types[1] == 'real':
-        vt = "real(${real_kind}$)"
+        vt = "real(${i.real_kind}$)"
         vts = 'r'
         vtsc = 'r'
     elif num_types[1] == 'integer':
@@ -490,7 +480,7 @@ def binary_overload(fun, is_hyper_dual=True, arg_class=('dual','dual'), unroll_h
 
     # Create type string and type suffix for the u and v arguments
     u_type, usn, usnc, v_type, vsn, vsnc = uv_types(arg_class, is_hyper_dual)
-    res_type = 'type(${dual_type}$)'
+    res_type = 'type(${i.type_name}$)'
 
     if u_class == "integer":
         u_assumption = {'integer':True}
@@ -572,7 +562,7 @@ def binary_overload(fun, is_hyper_dual=True, arg_class=('dual','dual'), unroll_h
     
     # Decalaration of temporary variables
     if len(rvar) > 0:
-        temp_decl = 'real(${real_kind}$) :: ' + ','.join(str(var) for (var, _) in rvar)
+        temp_decl = 'real(${i.real_kind}$) :: ' + ','.join(str(var) for (var, _) in rvar)
     else:
         temp_decl = ''
 
@@ -704,14 +694,14 @@ def unary_overload(fun, is_hyper_dual=True, u_class='dual', unroll_hessian=False
 
     # Create type string and type suffix for the u argument
     if u_class == 'dual':
-        u_type = "type(${dual_type}$)" 
-        usn = "${dual_sn}$"
+        u_type = "type(${i.type_name}$)" 
+        usn = "${i.sn}$"
         if is_hyper_dual:
             usnc = 'hd'
         else:
             usnc = 'd'
     elif u_class == 'real':
-        u_type = "real(${real_kind}$)"
+        u_type = "real(${i.real_kind}$)"
         usn = 'r'
         usnc = 'r'
     elif u_class == 'integer':
@@ -719,7 +709,7 @@ def unary_overload(fun, is_hyper_dual=True, u_class='dual', unroll_hessian=False
         usn = 'i'
         usnc = 'i'
 
-    res_type = 'type(${dual_type}$)'
+    res_type = 'type(${i.type_name}$)'
 
     u = Symbol('u_x', **u_assumption)
 
@@ -769,7 +759,7 @@ def unary_overload(fun, is_hyper_dual=True, u_class='dual', unroll_hessian=False
     
     # Decalaration of temporary variables
     if len(rvar) > 0:
-        temp_decl = 'real(${real_kind}$) :: ' + ','.join(str(var) for (var, _) in rvar)
+        temp_decl = 'real(${i.real_kind}$) :: ' + ','.join(str(var) for (var, _) in rvar)
     else:
         temp_decl = ''
 

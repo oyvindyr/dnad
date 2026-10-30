@@ -1,26 +1,24 @@
     
-#:def dnad_initialize_interface(type_specs)
+#:def dnad_initialize_interface(kinds)
     interface initialize 
         !! Initialize a dual or hyper dual number
-      #:for type_spec in type_specs
-        #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)[0:2]
-        module procedure initialize__d_${type_suffix}$_scalar
-        module procedure initialize__d_${type_suffix}$_vector
-       #:if has_hdual
-        module procedure initialize__hd_${type_suffix}$_scalar
-        module procedure initialize__hd_${type_suffix}$_vector
+      #:for k in kinds
+        module procedure initialize__d_${k.suffix}$_scalar
+        module procedure initialize__d_${k.suffix}$_vector
+       #:if k.hyper
+        module procedure initialize__hd_${k.suffix}$_scalar
+        module procedure initialize__hd_${k.suffix}$_vector
        #:endif
       #:endfor
     end interface
 #:enddef
 
-#:def dnad_initialize_implementations(type_specs, real_kind)
-  #:for type_spec in type_specs
-    #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)[0:2]
-    pure subroutine initialize__d_${type_suffix}$_scalar(dual, val, idiff)
+#:def dnad_initialize_implementations(kinds, config)
+  #:for k in kinds
+    pure subroutine initialize__d_${k.suffix}$_scalar(dual, val, idiff)
         !! Initialize a single dual number, whose derivative with respect to design variable 'idiff' is 1
-        type(dual__${type_suffix}$_t), intent(out) :: dual
-        real(${real_kind}$), intent(in) :: val
+        type(dual__${k.suffix}$_t), intent(out) :: dual
+        real(${config.real_kind}$), intent(in) :: val
         integer, intent(in) :: idiff
         
         dual%f = val
@@ -28,11 +26,11 @@
         dual%g(idiff) = 1
 
     end subroutine
-    pure subroutine initialize__d_${type_suffix}$_vector(dual, val)
+    pure subroutine initialize__d_${k.suffix}$_vector(dual, val)
         !! Initialize a vector of dual numbers, where the derivative of 
         !! number i with respect to design variable i is 1
-        type(dual__${type_suffix}$_t), intent(out) :: dual(:)
-        real(${real_kind}$), intent(in) :: val(:)
+        type(dual__${k.suffix}$_t), intent(out) :: dual(:)
+        real(${config.real_kind}$), intent(in) :: val(:)
 
         integer :: i
 
@@ -43,11 +41,11 @@
         end do
 
     end subroutine
-   #:if has_hdual
-    pure subroutine initialize__hd_${type_suffix}$_scalar(hdual, val, idiff)
+   #:if k.hyper
+    pure subroutine initialize__hd_${k.suffix}$_scalar(hdual, val, idiff)
         !! Initialize a single hyper-dual number, whose derivative with respect to design variable 'idiff' is 1
-        type(hdual__${type_suffix}$_t), intent(out) :: hdual
-        real(${real_kind}$), intent(in) :: val
+        type(hdual__${k.suffix}$_t), intent(out) :: hdual
+        real(${config.real_kind}$), intent(in) :: val
         integer, intent(in) :: idiff
         
         hdual%d%f = val
@@ -56,11 +54,11 @@
         hdual%d%g(idiff) = 1
 
     end subroutine
-    pure subroutine initialize__hd_${type_suffix}$_vector(hdual, val)
+    pure subroutine initialize__hd_${k.suffix}$_vector(hdual, val)
         !! Initialize a vector of hyper-dual numbers, where the derivative of 
         !! number i with respect to design variable i is 1
-        type(hdual__${type_suffix}$_t), intent(out) :: hdual(:)
-        real(${real_kind}$), intent(in) :: val(:)
+        type(hdual__${k.suffix}$_t), intent(out) :: hdual(:)
+        real(${config.real_kind}$), intent(in) :: val(:)
 
         integer :: i
         

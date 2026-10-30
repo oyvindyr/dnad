@@ -1,25 +1,24 @@
 
-#:def dnad_chain_duals_interface(chain_types_specs)
+#:def dnad_chain_duals_interface(chains)
     interface chain_duals
         !! Generic function for converting a dual or hyper-dual number from one dual-type to another by applying the chain rule of derivation
         module procedure chain_duals__real
-      #:for chain_types_spec in chain_types_specs
-        #:set y_type_suffix, x_type_suffix, has_hdual = dnad.decode_chain_types_spec(chain_types_spec)
-        module procedure chain_duals__d_${y_type_suffix}$_${x_type_suffix}$
-       #:if has_hdual
-        module procedure chain_duals__hd_${y_type_suffix}$_${x_type_suffix}$
+      #:for y, x in chains
+        module procedure chain_duals__d_${y.suffix}$_${x.suffix}$
+       #:if y.hyper and x.hyper
+        module procedure chain_duals__hd_${y.suffix}$_${x.suffix}$
        #:endif
       #:endfor
     end interface
 #:enddef
 
-#:def dnad_chain_duals_implementations(chain_types_specs, real_kind)
-    $:dnad_chain_duals_implementation_r(real_kind)
-    #:for chain_types_spec in chain_types_specs
-        #:set y_type_suffix, x_type_suffix, has_hdual = dnad.decode_chain_types_spec(chain_types_spec)
-        $:dnad_chain_duals_implementation_d(y_type_suffix, x_type_suffix, real_kind)
-        #:if has_hdual
-            $:dnad_chain_duals_implementation_hd(y_type_suffix, x_type_suffix, real_kind)
+#! chains: (y, x) Kind pairs, for numbers differentiated wrt y to be converted to wrt x
+#:def dnad_chain_duals_implementations(chains, config)
+    $:dnad_chain_duals_implementation_r(config.real_kind)
+    #:for y, x in chains
+        $:dnad_chain_duals_implementation_d(y.suffix, x.suffix, config.real_kind)
+        #:if y.hyper and x.hyper
+            $:dnad_chain_duals_implementation_hd(y.suffix, x.suffix, config.real_kind)
         #:endif
     #:endfor
 #:enddef

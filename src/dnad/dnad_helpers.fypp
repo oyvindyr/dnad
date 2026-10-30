@@ -1,0 +1,28 @@
+#! The two macros that turn a list of instances into Fortran. An instance has
+#!   interface  the generic's name: 'calc_pos', 'operator (+)'
+#!   specifics  the procedure names it adds to the interface
+#!   doc        lines of documentation for the interface
+#! and is what the macro passed to instances() takes.
+
+#! The interface over the specifics of insts, all of one generic
+#:def generic(insts)
+  #:if insts
+    interface ${insts[0].interface}$
+    #:for line in insts[0].doc
+        !! ${line}$
+    #:endfor
+    #:for i in insts
+      #:for name in i.specifics
+        module procedure ${name}$
+      #:endfor
+    #:endfor
+    end interface
+  #:endif
+#:enddef
+
+#! macro(i) for each instance i
+#:def instances(macro, insts)
+  #:for i in insts
+$:macro(i)
+  #:endfor
+#:enddef

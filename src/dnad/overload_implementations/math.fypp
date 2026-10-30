@@ -1,0 +1,426 @@
+#! The overloaded intrinsic functions of dual numbers that are not generated from sympy
+
+#:def abs_d(i)
+    ${i.elemental}$  function abs__${i.sn}$(u) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        type(${i.type_name}$) :: res
+        integer :: i
+
+      #:if i.stringent
+        ! We need this!
+        if (u%f > 0) then
+            res%f = u%f
+            res%g = u%g
+        else if (u%f < 0) then
+            res%f = -u%f
+            res%g = -u%g
+        else
+            res%f = 0.0_${i.real_kind}$
+            do i = 1, size(u%g)
+                if (u%g(i) .eq. 0.0_${i.real_kind}$) then
+                    res%g(i) = 0.0_${i.real_kind}$
+                else
+                    res%g(i) = set_NaN()
+                end if
+            end do
+        end if
+      #:else 
+        res%f = abs(u%f)
+        res%g = sign(1.0_dp, u%f)*u%g
+      #:endif
+
+    end function
+#:enddef
+
+#:def acos_d(i)
+    ${i.elemental}$  function acos__${i.sn}$(u) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        type(${i.type_name}$) :: res
+
+        res%f = acos(u%f)
+    
+      #:if i.stringent
+        if (u%f == 1.0_${i.real_kind}$ .or. u%f == -1.0_${i.real_kind}$) then
+            res%g = set_Nan()  ! Undefined derivative
+        else
+            res%g = -u%g / sqrt(1.0_${i.real_kind}$ - u%f**2)
+        end if
+      #:else 
+        res%g = -u%g / sqrt(1.0_${i.real_kind}$ - u%f**2)
+      #:endif
+
+    end function
+#:enddef
+
+#:def asin_d(i)
+    ${i.elemental}$  function asin__${i.sn}$(u) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        type(${i.type_name}$) :: res
+
+        res%f = asin(u%f)
+      #:if i.stringent
+        if (u%f == 1.0_${i.real_kind}$ .or. u%f == -1.0_${i.real_kind}$) then
+            res%g = set_NaN()  ! Undefined derivative
+        else
+            res%g = u%g / sqrt(1.0_${i.real_kind}$ - u%f**2)
+        end if
+      #:else 
+        res%g = u%g / sqrt(1.0_${i.real_kind}$ - u%f**2)
+      #:endif
+
+    end function
+#:enddef
+
+#:def atan_d(i)
+    ${i.elemental}$  function atan__${i.sn}$(u) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        type(${i.type_name}$) :: res
+
+        res%f = atan(u%f)
+        res%g = u%g / (1.0_${i.real_kind}$ + u%f**2)
+
+    end function
+#:enddef
+
+#:def atan2_d(i)
+    ${i.elemental}$  function atan2__${i.sn}$(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u, v
+        type(${i.type_name}$) :: res
+
+        real(${i.real_kind}$) :: usq_plus_vsq
+
+        res%f = atan2(u%f, v%f)
+
+        usq_plus_vsq = u%f**2 + v%f**2
+        res%g = v%f / usq_plus_vsq * u%g - u%f / usq_plus_vsq * v%g
+
+    end function
+#:enddef
+
+#:def cos_d(i)
+    ${i.elemental}$  function cos__${i.sn}$(u) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        type(${i.type_name}$) :: res
+
+        res%f = cos(u%f)
+        res%g = -sin(u%f) * u%g
+
+    end function
+#:enddef
+
+#:def dot_product_d(i)
+    ${i.purity}$  function dot_product__${i.sn}$_${i.sn}$(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u(:), v(:)
+        type(${i.type_name}$) :: res
+
+        integer :: i
+
+        res%f = dot_product(u%f, v%f)
+        do i = 1, size(res%g)
+            res%g(i) = dot_product(u%f, v%g(i)) + dot_product(v%f, u%g(i))
+        end do
+
+    end function
+#:enddef
+
+#:def exp_d(i)
+    ${i.elemental}$  function exp__${i.sn}$(u) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        type(${i.type_name}$) :: res
+
+        real(${i.real_kind}$) :: exp_x
+
+        exp_x = exp(u%f)
+        res%f = exp_x
+        res%g = u%g * exp_x
+
+    end function
+#:enddef
+
+#:def int_d(i)
+    ${i.elemental}$  function int__${i.sn}$(u) result(res)
+         type(${i.type_name}$), intent(in) :: u
+         integer :: res
+
+         res = int(u%f)
+
+    end function
+#:enddef
+
+#:def log10_d(i)
+    ${i.elemental}$  function log10__${i.sn}$(u) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        type(${i.type_name}$) :: res
+
+        real(${i.real_kind}$) :: inv
+
+        inv = 1.0_${i.real_kind}$ / (u%f * log(10.0_${i.real_kind}$))
+        res%f = log10(u%f)
+        res%g = u%g * inv
+
+    end function
+#:enddef
+
+#:def matmul_d(i)
+    ${i.purity}$  function matmul__${i.sn}$_${i.sn}$(u,v) result(res)
+        type(${i.type_name}$), intent(in) :: u(:,:), v(:,:)
+        type(${i.type_name}$) :: res(size(u,1), size(v,2))
+
+        integer :: i
+
+        res%f = matmul(u%f, v%f)
+        do i = 1, size(res(1,1)%g)
+            res%g(i) = matmul(u%g(i), v%f) + matmul(u%f, v%g(i))
+        end do
+
+    end function
+    ${i.purity}$  function matmul__${i.sn}$_v(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u(:,:), v(:)
+        type(${i.type_name}$) :: res(size(u,1))
+        integer :: i
+
+        res%f = matmul(u%f, v%f)
+        do i = 1, size(res(1)%g)
+            res%g(i) = matmul(u%g(i), v%f) + matmul(u%f, v%g(i))
+        end do
+
+    end function
+    ${i.purity}$  function matmul__v_${i.sn}$(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u(:), v(:,:)
+        type(${i.type_name}$) :: res(size(v, 2))
+        integer::i
+
+        res%f = matmul(u%f, v%f)
+        do i = 1, size(res(1)%g)
+            res%g(i) = matmul(u%g(i), v%f) + matmul(u%f, v%g(i))
+        end do
+
+    end function
+#:enddef
+
+#:def max_d(i)
+    ${i.elemental}$  function max__${i.sn}$_${i.sn}$(val1, val2) result(res)
+        type(${i.type_name}$), intent(in) :: val1, val2
+        type(${i.type_name}$) :: res
+
+        if (val1%f > val2%f) then
+            res = val1
+        else
+            res = val2
+        endif
+
+    end function
+    ${i.elemental}$  function max__${i.sn}$_i(u, i) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        integer, intent(in) :: i
+        type(${i.type_name}$) :: res
+
+        if (u%f > i) then
+            res = u
+        else
+            res = i
+        endif
+
+    end function
+    ${i.elemental}$  function max__${i.sn}$_r(u, r) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        real(${i.real_kind}$), intent(in) :: r
+        type(${i.type_name}$) :: res
+
+        if (u%f > r) then
+            res = u
+        else
+            res = r
+        endif
+
+    end function
+     ${i.elemental}$  function max__r_${i.sn}$(n, u) result(res)
+        real(${i.real_kind}$), intent(in) :: n
+        type(${i.type_name}$), intent(in) :: u
+        type(${i.type_name}$) :: res
+
+        if (u%f > n) then
+            res = u
+        else
+            res = n
+        endif
+
+    end function
+#:enddef
+
+#:def dmax1_d(i)
+    ${i.elemental}$  function dmax1__${i.sn}$_${i.sn}$(val1, val2, val3, val4,val5) result(res)
+        type(${i.type_name}$), intent(in) :: val1, val2
+        type(${i.type_name}$), intent(in), optional :: val3, val4,val5
+        type(${i.type_name}$) :: res
+
+        if (val1%f > val2%f) then
+            res = val1
+        else
+            res = val2
+        endif
+        if(present(val3))then
+           if(res%f < val3%f) res = val3
+        endif
+        if(present(val4))then
+           if(res%f < val4%f) res = val4
+        endif
+        if(present(val5))then
+           if(res%f < val5%f) res = val5
+        endif
+
+    end function
+#:enddef
+
+#:def maxval_d(i)
+    ${i.purity}$  function maxval__${i.sn}$(u) result(res)
+        type(${i.type_name}$), intent(in) :: u(:)
+        integer :: iloc(1)
+        type(${i.type_name}$) :: res
+
+        iloc=maxloc(u%f)
+        res=u(iloc(1))
+
+    end function
+#:enddef
+
+#:def min_d(i)
+    ${i.elemental}$  function min__${i.sn}$_${i.sn}$(val1, val2) result(res)
+        type(${i.type_name}$), intent(in) :: val1, val2
+        type(${i.type_name}$) :: res
+
+        if (val1%f < val2%f) then
+            res = val1
+        else
+            res = val2
+        endif
+
+    end function
+    ${i.elemental}$  function min__${i.sn}$_r(u, r) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        real(${i.real_kind}$), intent(in) :: r
+        type(${i.type_name}$) :: res
+
+        if (u%f < r) then
+            res = u
+        else
+            res = r
+        endif
+
+    end function
+#:enddef
+
+#:def dmin1_d(i)
+    ${i.elemental}$  function dmin1__${i.sn}$_${i.sn}$(val1, val2, val3, val4) result(res)
+        type(${i.type_name}$), intent(in) :: val1, val2
+        type(${i.type_name}$), intent(in), optional :: val3, val4
+        type(${i.type_name}$) :: res
+
+        if (val1%f < val2%f) then
+            res = val1
+        else
+            res = val2
+        endif
+        if(present(val3))then
+           if(res%f > val3%f) res = val3
+        endif
+        if(present(val4))then
+           if(res%f > val4%f) res = val4
+        endif
+
+    end function
+#:enddef
+
+#:def minval_d(i)
+    ${i.purity}$  function minval__${i.sn}$(u) result(res)
+        type(${i.type_name}$), intent(in) :: u(:)
+        integer :: iloc(1)
+        type(${i.type_name}$) :: res
+
+        iloc=minloc(u%f)
+        res=u(iloc(1))
+
+    end function
+#:enddef
+
+#:def nint_d(i)
+    ${i.elemental}$  function nint__${i.sn}$(u) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        integer :: res
+
+        res=nint(u%f)
+
+    end function
+#:enddef
+
+#:def sign_d(i)
+    ${i.elemental}$  function sign__${i.sn}$_${i.sn}$(val1, val2) result(res)
+        type(${i.type_name}$), intent(in) :: val1, val2
+        type(${i.type_name}$) :: res
+
+        if (val2%f < 0.0_${i.real_kind}$) then
+            res = -abs(val1)
+        else
+            res =  abs(val1)
+        endif
+
+     end function
+    ${i.elemental}$  function sign__r_${i.sn}$(val1, val2) result(res)
+        real(${i.real_kind}$), intent(in) :: val1
+        type(${i.type_name}$), intent(in) :: val2
+        type(${i.type_name}$) :: res
+
+        if (val2%f < 0.0_${i.real_kind}$) then
+            res = -abs(val1)
+        else
+            res = abs(val1)
+        endif
+
+     end function
+#:enddef
+
+#:def sin_d(i)
+    ${i.elemental}$  function sin__${i.sn}$(u) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        type(${i.type_name}$) :: res
+
+        res%f = sin(u%f)
+        res%g = cos(u%f) * u%g
+
+    end function
+#:enddef
+
+#:def tan_d(i)
+    ${i.elemental}$  function tan__${i.sn}$(u) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        type(${i.type_name}$) :: res
+
+        res%f = tan(u%f)
+        res%g = u%g / cos(u%f)**2
+
+    end function
+#:enddef
+
+#:def sum_d(i)
+    ${i.purity}$  function sum__${i.sn}$(u) result(res)
+        type(${i.type_name}$), intent(in) :: u(:)
+        type(${i.type_name}$) :: res
+        integer :: i
+
+        res%f = sum(u%f)
+        do i = 1, size(res%g)
+            res%g(i) = sum(u%g(i))
+        end do
+
+    end function
+#:enddef
+
+#:def maxloc_d(i)
+    ${i.purity}$  function maxloc__${i.sn}$(array) result(ind)
+        type(${i.type_name}$), intent(in) :: array(:)
+        integer :: ind(1)
+
+        ind = maxloc(array%f)
+
+    end function
+#:enddef

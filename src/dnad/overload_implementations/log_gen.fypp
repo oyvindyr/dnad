@@ -1,42 +1,32 @@
 
-#:def log_d(dual_type, dual_sn, real_kind, is_pure)
-    #:if is_pure
-        #:set elemental_purity = "elemental"
-    #:else
-        #:set elemental_purity = "impure elemental"
-    #:endif
-    ${elemental_purity}$ function log__${dual_sn}$(u) result(res)
-        type(${dual_type}$), intent(in) :: u
-        type(${dual_type}$) :: res
+#:def log_d(i)
+    ${i.elemental}$ function log__${i.sn}$(u) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        type(${i.type_name}$) :: res
         
         res%f = log(u%f)
         res%g = u%g/u%f
     end function
 #:enddef
 
-#:def log_hd(dual_type, dual_sn, real_kind, is_pure, gdim=None)
-    #:if is_pure
-        #:set elemental_purity = "elemental"
-    #:else
-        #:set elemental_purity = "impure elemental"
-    #:endif
-    ${elemental_purity}$ function log__${dual_sn}$(u) result(res)
-        type(${dual_type}$), intent(in) :: u
-        type(${dual_type}$) :: res
-      #:if gdim is None
+#:def log_hd(i)
+    ${i.elemental}$ function log__${i.sn}$(u) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        type(${i.type_name}$) :: res
+      #:if i.gdim is None
         integer :: i, j, k
       #:endif
-        real(${real_kind}$) :: t0
+        real(${i.real_kind}$) :: t0
         
-        t0 = 1.0_${real_kind}$/u%d%f
+        t0 = 1.0_${i.real_kind}$/u%d%f
         res%d%f = log(u%d%f)
         res%d%g = t0*u%d%g
-      #:if gdim == 2
+      #:if i.gdim == 2
         
         res%h(1) = t0*(-t0*u%d%g(1)*u%d%g(1) + u%h(1))
         res%h(2) = t0*(-t0*u%d%g(2)*u%d%g(1) + u%h(2))
         res%h(3) = t0*(-t0*u%d%g(2)*u%d%g(2) + u%h(3))
-      #:elif gdim == 3
+      #:elif i.gdim == 3
         
         res%h(1) = t0*(-t0*u%d%g(1)*u%d%g(1) + u%h(1))
         res%h(2) = t0*(-t0*u%d%g(2)*u%d%g(1) + u%h(2))

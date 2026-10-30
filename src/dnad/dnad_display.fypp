@@ -1,48 +1,46 @@
-#:def dnad_display_interface(type_specs)
+#:def dnad_display_interface(kinds)
     interface display
         !! Pretty-print one or more dual or hyper dual numbers
-      #:for type_spec in type_specs
-       #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)[0:2]
-        module procedure display__d_${type_suffix}$_1input
-        module procedure display__d_${type_suffix}$_1input_vec
-        module procedure display__d_${type_suffix}$_1input_mat
-        module procedure display__d_${type_suffix}$_2input
-       #:if has_hdual
-        module procedure display__hd_${type_suffix}$_1input
-        module procedure display__hd_${type_suffix}$_1input_vec
-        module procedure display__hd_${type_suffix}$_2input
+      #:for k in kinds
+        module procedure display__d_${k.suffix}$_1input
+        module procedure display__d_${k.suffix}$_1input_vec
+        module procedure display__d_${k.suffix}$_1input_mat
+        module procedure display__d_${k.suffix}$_2input
+       #:if k.hyper
+        module procedure display__hd_${k.suffix}$_1input
+        module procedure display__hd_${k.suffix}$_1input_vec
+        module procedure display__hd_${k.suffix}$_2input
        #:endif
       #:endfor
     end interface
 #:enddef
 
-#:def dnad_display_implementations(type_specs)
-  #:for type_spec in type_specs
-    #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)[0:2]
-    #:set dual_type = "dual__" + type_suffix + "_t"
-    #:set hdual_type = "hdual__" + type_suffix + "_t"
-    subroutine display__d_${type_suffix}$_1input(d, name)
+#:def dnad_display_implementations(kinds)
+  #:for k in kinds
+    #:set dual_type = "dual__" + k.suffix + "_t"
+    #:set hdual_type = "hdual__" + k.suffix + "_t"
+    subroutine display__d_${k.suffix}$_1input(d, name)
         type(${dual_type}$), intent(in) :: d
         character(len=*), intent(in) :: name
         integer :: i
 
         $:print_dpart_1input(dual_type, False)
     end subroutine
-    subroutine display__d_${type_suffix}$_1input_vec(d, name)
+    subroutine display__d_${k.suffix}$_1input_vec(d, name)
         type(${dual_type}$), intent(in) :: d(:)
         character(len=*), intent(in) :: name
         integer :: i, p
 
         $:print_dpart_1input_vec(dual_type, False)
     end subroutine
-    subroutine display__d_${type_suffix}$_1input_mat(d, name)
+    subroutine display__d_${k.suffix}$_1input_mat(d, name)
         type(${dual_type}$), intent(in) :: d(:, :)
         character(len=*), intent(in) :: name
         integer :: i, p, q
 
         $:print_dpart_1input_mat(dual_type, False)
     end subroutine
-    subroutine display__d_${type_suffix}$_2input(d1, d2, name1, name2)
+    subroutine display__d_${k.suffix}$_2input(d1, d2, name1, name2)
         type(${dual_type}$), intent(in) :: d1
         type(${dual_type}$), intent(in) :: d2
         character(len=*), intent(in) :: name1
@@ -51,8 +49,8 @@
 
         $:print_dpart_2input(dual_type, False)
     end subroutine
-   #:if has_hdual
-    subroutine display__hd_${type_suffix}$_1input(d, name)
+   #:if k.hyper
+    subroutine display__hd_${k.suffix}$_1input(d, name)
         type(${hdual_type}$), intent(in) :: d
         character(len=*), intent(in) :: name
         integer :: i, j, k
@@ -70,7 +68,7 @@
         end do
 
     end subroutine
-    subroutine display__hd_${type_suffix}$_1input_vec(d, name)
+    subroutine display__hd_${k.suffix}$_1input_vec(d, name)
         type(${hdual_type}$), intent(in) :: d(:)
         character(len=*), intent(in) :: name
         integer :: i, j, k, p
@@ -90,7 +88,7 @@
         end do
 
     end subroutine
-    subroutine display__hd_${type_suffix}$_2input(d1, d2, name1, name2)
+    subroutine display__hd_${k.suffix}$_2input(d1, d2, name1, name2)
       type(${hdual_type}$), intent(in) :: d1
       type(${hdual_type}$), intent(in) :: d2
       character(len=*), intent(in) :: name1

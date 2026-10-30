@@ -1,21 +1,19 @@
-#:def dnad_jacobi_interfaces(type_specs)
+#:def dnad_jacobi_interfaces(kinds)
     interface jacobi
         !! Extract Jacobi matrix from a vector of dual or hyper-dual numbers.
-      #:for type_spec in type_specs
-        #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)[0:2]
-        module procedure jacobi__d${type_suffix}$
-       #:if has_hdual
-        module procedure jacobi__hd${type_suffix}$
+      #:for k in kinds
+        module procedure jacobi__d${k.suffix}$
+       #:if k.hyper
+        module procedure jacobi__hd${k.suffix}$
        #:endif
       #:endfor
     end interface
     interface jacobi_tr
         !! Extract transpose of Jacobi matrix from a vector of dual or hyper-dual numbers.
-      #:for type_spec in type_specs
-        #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)[0:2]
-        module procedure jacobi_tr__d${type_suffix}$
-       #:if has_hdual
-        module procedure jacobi_tr__hd${type_suffix}$
+      #:for k in kinds
+        module procedure jacobi_tr__d${k.suffix}$
+       #:if k.hyper
+        module procedure jacobi_tr__hd${k.suffix}$
        #:endif
       #:endfor
     end interface
@@ -23,11 +21,10 @@
         !! Extract Jacobi matrix from a vector of dual or hyper-dual numbers.
         !! - A hyper-dual vector results in a dual matrix
         !! - A dual vector results in a real matrix (same as jacobi)
-      #:for type_spec in type_specs
-        #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)[0:2]
-        module procedure jacobi__d${type_suffix}$
-       #:if has_hdual
-        module procedure jacobi_d__hd${type_suffix}$
+      #:for k in kinds
+        module procedure jacobi__d${k.suffix}$
+       #:if k.hyper
+        module procedure jacobi_d__hd${k.suffix}$
        #:endif
       #:endfor
     end interface
@@ -35,22 +32,20 @@
         !! Extract transpose of Jacobi matrix from a vector of dual or hyper-dual numbers.
         !! - A hyper-dual vector results in a dual matrix
         !! - A dual vector results in a real matrix (same as jacobi_tr)
-      #:for type_spec in type_specs
-        #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)[0:2]
-        module procedure jacobi_tr__d${type_suffix}$
-       #:if has_hdual
-        module procedure jacobi_tr_d__hd${type_suffix}$
+      #:for k in kinds
+        module procedure jacobi_tr__d${k.suffix}$
+       #:if k.hyper
+        module procedure jacobi_tr_d__hd${k.suffix}$
        #:endif
       #:endfor
     end interface
 #:enddef
 
-#:def dnad_jacobi_implementations(type_specs, real_kind)
-  #:for type_spec in type_specs
-    #:set type_suffix, has_hdual = dnad.decode_type_spec(type_spec)[0:2]
-    pure function jacobi__d${type_suffix}$(x) result(y)
-        type(dual__${type_suffix}$_t), intent(in) :: x(:)
-        real(${real_kind}$) :: y(size(x),size(x(1)%g))
+#:def dnad_jacobi_implementations(kinds, config)
+  #:for k in kinds
+    pure function jacobi__d${k.suffix}$(x) result(y)
+        type(dual__${k.suffix}$_t), intent(in) :: x(:)
+        real(${config.real_kind}$) :: y(size(x),size(x(1)%g))
 
         integer :: j
 
@@ -59,9 +54,9 @@
         end do
 
     end function
-    pure function jacobi_tr__d${type_suffix}$(x) result(y)
-        type(dual__${type_suffix}$_t), intent(in) :: x(:)
-        real(${real_kind}$) :: y(size(x(1)%g),size(x))
+    pure function jacobi_tr__d${k.suffix}$(x) result(y)
+        type(dual__${k.suffix}$_t), intent(in) :: x(:)
+        real(${config.real_kind}$) :: y(size(x(1)%g),size(x))
 
         integer :: j
 
@@ -70,10 +65,10 @@
         end do
 
     end function
-   #:if has_hdual
-    pure function jacobi__hd${type_suffix}$(x) result(y)
-        type(hdual__${type_suffix}$_t), intent(in) :: x(:)
-        real(${real_kind}$) :: y(size(x),size(x(1)%d%g))
+   #:if k.hyper
+    pure function jacobi__hd${k.suffix}$(x) result(y)
+        type(hdual__${k.suffix}$_t), intent(in) :: x(:)
+        real(${config.real_kind}$) :: y(size(x),size(x(1)%d%g))
 
         integer :: j
 
@@ -82,11 +77,11 @@
         end do
 
     end function
-    pure function jacobi_d__hd${type_suffix}$(x) result(y)
-        type(hdual__${type_suffix}$_t), intent(in) :: x(:)
-        type(dual__${type_suffix}$_t) :: y(size(x),size(x(1)%d%g))
+    pure function jacobi_d__hd${k.suffix}$(x) result(y)
+        type(hdual__${k.suffix}$_t), intent(in) :: x(:)
+        type(dual__${k.suffix}$_t) :: y(size(x),size(x(1)%d%g))
 
-        real(${real_kind}$) :: hess(size(x(1)%d%g), size(x(1)%d%g))
+        real(${config.real_kind}$) :: hess(size(x(1)%d%g), size(x(1)%d%g))
         integer :: i, j
 
         do j = 1, size(x)
@@ -98,9 +93,9 @@
         end do
 
     end function
-    pure function jacobi_tr__hd${type_suffix}$(x) result(y)
-        type(hdual__${type_suffix}$_t), intent(in) :: x(:)
-        real(${real_kind}$) :: y(size(x(1)%d%g),size(x))
+    pure function jacobi_tr__hd${k.suffix}$(x) result(y)
+        type(hdual__${k.suffix}$_t), intent(in) :: x(:)
+        real(${config.real_kind}$) :: y(size(x(1)%d%g),size(x))
 
         integer :: j
 
@@ -109,11 +104,11 @@
         end do
 
     end function
-    pure function jacobi_tr_d__hd${type_suffix}$(x) result(y)
-        type(hdual__${type_suffix}$_t), intent(in) :: x(:)
-        type(dual__${type_suffix}$_t) :: y(size(x(1)%d%g),size(x))
+    pure function jacobi_tr_d__hd${k.suffix}$(x) result(y)
+        type(hdual__${k.suffix}$_t), intent(in) :: x(:)
+        type(dual__${k.suffix}$_t) :: y(size(x(1)%d%g),size(x))
 
-        real(${real_kind}$) :: hess(size(x(1)%d%g), size(x(1)%d%g))
+        real(${config.real_kind}$) :: hess(size(x(1)%d%g), size(x(1)%d%g))
         integer :: i, j
 
         do j = 1, size(x)

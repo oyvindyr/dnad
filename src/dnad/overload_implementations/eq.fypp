@@ -1,49 +1,44 @@
 
-#:def eq(dual_type, dual_sn, real_kind, is_pure, is_hyper_dual)
-    #:if is_pure
-        #:set elemental_purity = "elemental"
-    #:else
-        #:set elemental_purity = "impure elemental"
-    #:endif
-    #:if is_hyper_dual
+#:def eq(i)
+    #:if i.hyper
         #:set f = "d%f"
     #:else
         #:set f = "f"
     #:endif
-    ${elemental_purity}$  function eq__${dual_sn}$_${dual_sn}$(lhs, rhs) result(res)
-         type(${dual_type}$), intent(in) :: lhs, rhs
+    ${i.elemental}$  function eq__${i.sn}$_${i.sn}$(lhs, rhs) result(res)
+         type(${i.type_name}$), intent(in) :: lhs, rhs
          logical :: res
 
          res = (lhs%${f}$ == rhs%${f}$)
 
     end function
-    ${elemental_purity}$  function eq__${dual_sn}$_i(lhs, rhs) result(res)
-         type(${dual_type}$), intent(in) :: lhs
+    ${i.elemental}$  function eq__${i.sn}$_i(lhs, rhs) result(res)
+         type(${i.type_name}$), intent(in) :: lhs
          integer, intent(in) :: rhs
          logical :: res
 
          res = (lhs%${f}$ == rhs)
 
     end function
-    ${elemental_purity}$  function eq__${dual_sn}$_r(lhs, rhs) result(res)
-         type(${dual_type}$), intent(in) :: lhs
-         real(${real_kind}$), intent(in) :: rhs
+    ${i.elemental}$  function eq__${i.sn}$_r(lhs, rhs) result(res)
+         type(${i.type_name}$), intent(in) :: lhs
+         real(${i.real_kind}$), intent(in) :: rhs
          logical :: res
 
          res = (lhs%${f}$ == rhs)
 
     end function
-    ${elemental_purity}$  function eq__i_${dual_sn}$(lhs, rhs) result(res)
+    ${i.elemental}$  function eq__i_${i.sn}$(lhs, rhs) result(res)
          integer, intent(in) :: lhs
-         type(${dual_type}$), intent(in) :: rhs
+         type(${i.type_name}$), intent(in) :: rhs
          logical :: res
 
          res = (lhs == rhs%${f}$)
 
     end function
-    ${elemental_purity}$  function eq__r_${dual_sn}$(lhs, rhs) result(res)
-         real(${real_kind}$), intent(in) :: lhs
-         type(${dual_type}$), intent(in) :: rhs
+    ${i.elemental}$  function eq__r_${i.sn}$(lhs, rhs) result(res)
+         real(${i.real_kind}$), intent(in) :: lhs
+         type(${i.type_name}$), intent(in) :: rhs
          logical :: res
 
          res = (lhs == rhs%${f}$)

@@ -1,79 +1,69 @@
 
-#:def div_d(dual_type, dual_sn, real_kind, is_pure)
-    #:if is_pure
-        #:set elemental_purity = "elemental"
-    #:else
-        #:set elemental_purity = "impure elemental"
-    #:endif
-    ${elemental_purity}$ function div__${dual_sn}$_${dual_sn}$(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
-        real(${real_kind}$) :: t0,t1
+#:def div_d(i)
+    ${i.elemental}$ function div__${i.sn}$_${i.sn}$(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        type(${i.type_name}$), intent(in) :: v
+        type(${i.type_name}$) :: res
+        real(${i.real_kind}$) :: t0,t1
         
-        t0 = 1.0_${real_kind}$/v%f
+        t0 = 1.0_${i.real_kind}$/v%f
         t1 = t0*u%f
         res%f = t1
         res%g = t0*(-t1*v%g + u%g)
     end function
-    ${elemental_purity}$ function div__${dual_sn}$_r(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
-        real(${real_kind}$), intent(in) :: v
-        type(${dual_type}$) :: res
-        real(${real_kind}$) :: t0
+    ${i.elemental}$ function div__${i.sn}$_r(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        real(${i.real_kind}$), intent(in) :: v
+        type(${i.type_name}$) :: res
+        real(${i.real_kind}$) :: t0
         
-        t0 = 1.0_${real_kind}$/v
+        t0 = 1.0_${i.real_kind}$/v
         res%f = t0*u%f
         res%g = t0*u%g
     end function
-    ${elemental_purity}$ function div__r_${dual_sn}$(u, v) result(res)
-        real(${real_kind}$), intent(in) :: u
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
+    ${i.elemental}$ function div__r_${i.sn}$(u, v) result(res)
+        real(${i.real_kind}$), intent(in) :: u
+        type(${i.type_name}$), intent(in) :: v
+        type(${i.type_name}$) :: res
         
         res%f = u/v%f
         res%g = -u*v%g/v%f**2
     end function
-    ${elemental_purity}$ function div__${dual_sn}$_i(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
+    ${i.elemental}$ function div__${i.sn}$_i(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
         integer, intent(in) :: v
-        type(${dual_type}$) :: res
-        real(${real_kind}$) :: t0
+        type(${i.type_name}$) :: res
+        real(${i.real_kind}$) :: t0
         
-        t0 = 1.0_${real_kind}$/v
+        t0 = 1.0_${i.real_kind}$/v
         res%f = t0*u%f
         res%g = t0*u%g
     end function
-    ${elemental_purity}$ function div__i_${dual_sn}$(u, v) result(res)
+    ${i.elemental}$ function div__i_${i.sn}$(u, v) result(res)
         integer, intent(in) :: u
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
+        type(${i.type_name}$), intent(in) :: v
+        type(${i.type_name}$) :: res
         
         res%f = u/v%f
         res%g = -u*v%g/v%f**2
     end function
 #:enddef
 
-#:def div_hd(dual_type, dual_sn, real_kind, is_pure, gdim=None)
-    #:if is_pure
-        #:set elemental_purity = "elemental"
-    #:else
-        #:set elemental_purity = "impure elemental"
-    #:endif
-    ${elemental_purity}$ function div__${dual_sn}$_${dual_sn}$(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
-      #:if gdim is None
+#:def div_hd(i)
+    ${i.elemental}$ function div__${i.sn}$_${i.sn}$(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        type(${i.type_name}$), intent(in) :: v
+        type(${i.type_name}$) :: res
+      #:if i.gdim is None
         integer :: i, j, k
       #:endif
-        real(${real_kind}$) :: t0,t1
+        real(${i.real_kind}$) :: t0,t1
         
-        t0 = 1.0_${real_kind}$/v%d%f
+        t0 = 1.0_${i.real_kind}$/v%d%f
         t1 = t0*u%d%f
         res%d%f = t1
         res%d%g = t0*(-t1*v%d%g + u%d%g)
-      #:if gdim == 2
+      #:if i.gdim == 2
         
         res%h(1) = t0*(-t0*u%d%g(1)*v%d%g(1) - t0*v%d%g(1)*(-2*t1*v%d%g(1) + u%d%g(1)) - t1* &
       v%h(1) + u%h(1))
@@ -81,7 +71,7 @@
       v%h(2) + u%h(2))
         res%h(3) = t0*(-t0*u%d%g(2)*v%d%g(2) - t0*v%d%g(2)*(-2*t1*v%d%g(2) + u%d%g(2)) - t1* &
       v%h(3) + u%h(3))
-      #:elif gdim == 3
+      #:elif i.gdim == 3
         
         res%h(1) = t0*(-t0*u%d%g(1)*v%d%g(1) - t0*v%d%g(1)*(-2*t1*v%d%g(1) + u%d%g(1)) - t1* &
       v%h(1) + u%h(1))
@@ -106,36 +96,36 @@
         end do
       #:endif
     end function
-    ${elemental_purity}$ function div__${dual_sn}$_r(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
-        real(${real_kind}$), intent(in) :: v
-        type(${dual_type}$) :: res
-        real(${real_kind}$) :: t0
+    ${i.elemental}$ function div__${i.sn}$_r(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        real(${i.real_kind}$), intent(in) :: v
+        type(${i.type_name}$) :: res
+        real(${i.real_kind}$) :: t0
         
-        t0 = 1.0_${real_kind}$/v
+        t0 = 1.0_${i.real_kind}$/v
         res%d%f = t0*u%d%f
         res%d%g = t0*u%d%g
         res%h = t0*u%h
     end function
-    ${elemental_purity}$ function div__r_${dual_sn}$(u, v) result(res)
-        real(${real_kind}$), intent(in) :: u
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
-      #:if gdim is None
+    ${i.elemental}$ function div__r_${i.sn}$(u, v) result(res)
+        real(${i.real_kind}$), intent(in) :: u
+        type(${i.type_name}$), intent(in) :: v
+        type(${i.type_name}$) :: res
+      #:if i.gdim is None
         integer :: i, j, k
       #:endif
-        real(${real_kind}$) :: t0,t1
+        real(${i.real_kind}$) :: t0,t1
         
-        t0 = 1.0_${real_kind}$/v%d%f
+        t0 = 1.0_${i.real_kind}$/v%d%f
         t1 = u/v%d%f**2
         res%d%f = t0*u
         res%d%g = -t1*v%d%g
-      #:if gdim == 2
+      #:if i.gdim == 2
         
         res%h(1) = t1*(2*t0*v%d%g(1)*v%d%g(1) - v%h(1))
         res%h(2) = t1*(2*t0*v%d%g(2)*v%d%g(1) - v%h(2))
         res%h(3) = t1*(2*t0*v%d%g(2)*v%d%g(2) - v%h(3))
-      #:elif gdim == 3
+      #:elif i.gdim == 3
         
         res%h(1) = t1*(2*t0*v%d%g(1)*v%d%g(1) - v%h(1))
         res%h(2) = t1*(2*t0*v%d%g(2)*v%d%g(1) - v%h(2))
@@ -153,36 +143,36 @@
         end do
       #:endif
     end function
-    ${elemental_purity}$ function div__${dual_sn}$_i(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
+    ${i.elemental}$ function div__${i.sn}$_i(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
         integer, intent(in) :: v
-        type(${dual_type}$) :: res
-        real(${real_kind}$) :: t0
+        type(${i.type_name}$) :: res
+        real(${i.real_kind}$) :: t0
         
-        t0 = 1.0_${real_kind}$/v
+        t0 = 1.0_${i.real_kind}$/v
         res%d%f = t0*u%d%f
         res%d%g = t0*u%d%g
         res%h = t0*u%h
     end function
-    ${elemental_purity}$ function div__i_${dual_sn}$(u, v) result(res)
+    ${i.elemental}$ function div__i_${i.sn}$(u, v) result(res)
         integer, intent(in) :: u
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
-      #:if gdim is None
+        type(${i.type_name}$), intent(in) :: v
+        type(${i.type_name}$) :: res
+      #:if i.gdim is None
         integer :: i, j, k
       #:endif
-        real(${real_kind}$) :: t0,t1
+        real(${i.real_kind}$) :: t0,t1
         
-        t0 = 1.0_${real_kind}$/v%d%f
+        t0 = 1.0_${i.real_kind}$/v%d%f
         t1 = u/v%d%f**2
         res%d%f = t0*u
         res%d%g = -t1*v%d%g
-      #:if gdim == 2
+      #:if i.gdim == 2
         
         res%h(1) = t1*(2*t0*v%d%g(1)*v%d%g(1) - v%h(1))
         res%h(2) = t1*(2*t0*v%d%g(2)*v%d%g(1) - v%h(2))
         res%h(3) = t1*(2*t0*v%d%g(2)*v%d%g(2) - v%h(3))
-      #:elif gdim == 3
+      #:elif i.gdim == 3
         
         res%h(1) = t1*(2*t0*v%d%g(1)*v%d%g(1) - v%h(1))
         res%h(2) = t1*(2*t0*v%d%g(2)*v%d%g(1) - v%h(2))

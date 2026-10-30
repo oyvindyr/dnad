@@ -1,35 +1,30 @@
 
-#:def pow_d(dual_type, dual_sn, real_kind, is_pure)
-    #:if is_pure
-        #:set elemental_purity = "elemental"
-    #:else
-        #:set elemental_purity = "impure elemental"
-    #:endif
-    ${elemental_purity}$ function pow__${dual_sn}$_i(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
+#:def pow_d(i)
+    ${i.elemental}$ function pow__${i.sn}$_i(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
         integer, intent(in) :: v
-        type(${dual_type}$) :: res
-        real(${real_kind}$) :: t0
+        type(${i.type_name}$) :: res
+        real(${i.real_kind}$) :: t0
         
         t0 = u%f**v
         res%f = t0
         res%g = t0*u%g*v/u%f
     end function
-    ${elemental_purity}$ function pow__${dual_sn}$_r(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
-        real(${real_kind}$), intent(in) :: v
-        type(${dual_type}$) :: res
-        real(${real_kind}$) :: t0
+    ${i.elemental}$ function pow__${i.sn}$_r(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        real(${i.real_kind}$), intent(in) :: v
+        type(${i.type_name}$) :: res
+        real(${i.real_kind}$) :: t0
         
         t0 = u%f**v
         res%f = t0
         res%g = t0*u%g*v/u%f
     end function
-    ${elemental_purity}$ function pow__${dual_sn}$_${dual_sn}$(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
-        real(${real_kind}$) :: t0
+    ${i.elemental}$ function pow__${i.sn}$_${i.sn}$(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        type(${i.type_name}$), intent(in) :: v
+        type(${i.type_name}$) :: res
+        real(${i.real_kind}$) :: t0
         
         t0 = u%f**v%f
         res%f = t0
@@ -37,21 +32,16 @@
     end function
 #:enddef
 
-#:def pow_hd(dual_type, dual_sn, real_kind, is_pure)
-    #:if is_pure
-        #:set elemental_purity = "elemental"
-    #:else
-        #:set elemental_purity = "impure elemental"
-    #:endif
-    ${elemental_purity}$ function pow__${dual_sn}$_i(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
+#:def pow_hd(i)
+    ${i.elemental}$ function pow__${i.sn}$_i(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
         integer, intent(in) :: v
-        type(${dual_type}$) :: res
+        type(${i.type_name}$) :: res
         integer :: i, j, k
-        real(${real_kind}$) :: t0,t1,t2
+        real(${i.real_kind}$) :: t0,t1,t2
         
         t0 = u%d%f**v
-        t1 = 1.0_${real_kind}$/u%d%f
+        t1 = 1.0_${i.real_kind}$/u%d%f
         t2 = t0*v
         res%d%f = t0
         res%d%g = t1*t2*u%d%g
@@ -63,15 +53,15 @@
             end do
         end do
     end function
-    ${elemental_purity}$ function pow__${dual_sn}$_r(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
-        real(${real_kind}$), intent(in) :: v
-        type(${dual_type}$) :: res
+    ${i.elemental}$ function pow__${i.sn}$_r(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        real(${i.real_kind}$), intent(in) :: v
+        type(${i.type_name}$) :: res
         integer :: i, j, k
-        real(${real_kind}$) :: t0,t1,t2
+        real(${i.real_kind}$) :: t0,t1,t2
         
         t0 = u%d%f**v
-        t1 = 1.0_${real_kind}$/u%d%f
+        t1 = 1.0_${i.real_kind}$/u%d%f
         t2 = t0*v
         res%d%f = t0
         res%d%g = t1*t2*u%d%g
@@ -83,16 +73,16 @@
             end do
         end do
     end function
-    ${elemental_purity}$ function pow__${dual_sn}$_${dual_sn}$(u, v) result(res)
-        type(${dual_type}$), intent(in) :: u
-        type(${dual_type}$), intent(in) :: v
-        type(${dual_type}$) :: res
+    ${i.elemental}$ function pow__${i.sn}$_${i.sn}$(u, v) result(res)
+        type(${i.type_name}$), intent(in) :: u
+        type(${i.type_name}$), intent(in) :: v
+        type(${i.type_name}$) :: res
         integer :: i, j, k
-        real(${real_kind}$) :: t0,t1,t2,t3
+        real(${i.real_kind}$) :: t0,t1,t2,t3
         
         t0 = u%d%f**v%d%f
         t1 = log(u%d%f)
-        t2 = 1.0_${real_kind}$/u%d%f
+        t2 = 1.0_${i.real_kind}$/u%d%f
         t3 = t1*v%d%f + 1
         res%d%f = t0
         res%d%g = t0*(t1*v%d%g + t2*u%d%g*v%d%f)
