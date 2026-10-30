@@ -1,6 +1,6 @@
 
-#:def hypot_d(dual_type, dual_sn, real_kind, is_pure, test_coverage)
-    #:if is_pure and not test_coverage
+#:def hypot_d(dual_type, dual_sn, real_kind, is_pure)
+    #:if is_pure
         #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"
@@ -14,9 +14,6 @@
         t0 = hypot(u%f, v%f)
         res%f = t0
         res%g = (u%g*u%f + v%g*v%f)/t0
-      #:if test_coverage
-        hypot__d_d_counter = hypot__d_d_counter + 1
-      #:endif
     end function
     ${elemental_purity}$ function hypot__${dual_sn}$_r(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -27,9 +24,6 @@
         t0 = hypot(u%f, v)
         res%f = t0
         res%g = u%g*u%f/t0
-      #:if test_coverage
-        hypot__d_r_counter = hypot__d_r_counter + 1
-      #:endif
     end function
     ${elemental_purity}$ function hypot__r_${dual_sn}$(u, v) result(res)
         real(${real_kind}$), intent(in) :: u
@@ -40,14 +34,11 @@
         t0 = hypot(u, v%f)
         res%f = t0
         res%g = v%g*v%f/t0
-      #:if test_coverage
-        hypot__r_d_counter = hypot__r_d_counter + 1
-      #:endif
     end function
 #:enddef
 
-#:def hypot_hd(dual_type, dual_sn, real_kind, is_pure, test_coverage, gdim = None)
-    #:if is_pure and not test_coverage
+#:def hypot_hd(dual_type, dual_sn, real_kind, is_pure, gdim = None)
+    #:if is_pure
         #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"
@@ -100,9 +91,6 @@
             end do
         end do
       #:endif
-      #:if test_coverage
-        hypot__hd_hd_counter = hypot__hd_hd_counter + 1
-      #:endif
     end function
     ${elemental_purity}$ function hypot__${dual_sn}$_r(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -138,9 +126,6 @@
                 res%h(k) = t3*(u%h(k)*u%d%f - u%d%g(i)*u%d%g(j)*(t0/t1 - 1))
             end do
         end do
-      #:endif
-      #:if test_coverage
-        hypot__hd_r_counter = hypot__hd_r_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function hypot__r_${dual_sn}$(u, v) result(res)
@@ -178,9 +163,6 @@
                 res%h(k) = t3*(v%h(k)*v%d%f - v%d%g(i)*v%d%g(j)*(t0/t1 - 1))
             end do
         end do
-      #:endif
-      #:if test_coverage
-        hypot__r_hd_counter = hypot__r_hd_counter + 1
       #:endif
     end function
 #:enddef

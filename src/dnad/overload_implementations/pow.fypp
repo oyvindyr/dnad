@@ -1,6 +1,6 @@
 
-#:def pow_d(dual_type, dual_sn, real_kind, is_pure, test_coverage)
-    #:if is_pure and not test_coverage
+#:def pow_d(dual_type, dual_sn, real_kind, is_pure)
+    #:if is_pure
         #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"
@@ -12,9 +12,6 @@
         
         res%f = u%f**v
         res%g = u%f**(v - 1)*u%g*v
-      #:if test_coverage
-        pow__d_i_counter = pow__d_i_counter + 1
-      #:endif
     end function
     ${elemental_purity}$ function pow__${dual_sn}$_r(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -23,9 +20,6 @@
         
         res%f = u%f**v
         res%g = u%f**(v - 1)*u%g*v
-      #:if test_coverage
-        pow__d_r_counter = pow__d_r_counter + 1
-      #:endif
     end function
     ${elemental_purity}$ function pow__${dual_sn}$_${dual_sn}$(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -37,14 +31,11 @@
         res%f = t0
         res%g = t0*(u%g*v%f/u%f + v%g*log(u%f))
 
-      #:if test_coverage
-        pow__d_d_counter = pow__d_d_counter + 1
-      #:endif
     end function
 #:enddef
 
-#:def pow_hd(dual_type, dual_sn, real_kind, is_pure, test_coverage, gdim = None)
-    #:if is_pure and not test_coverage
+#:def pow_hd(dual_type, dual_sn, real_kind, is_pure, gdim = None)
+    #:if is_pure
         #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"
@@ -79,9 +70,6 @@
             end do
         end do
       #:endif
-      #:if test_coverage
-        pow__hd_i_counter = pow__hd_i_counter + 1
-      #:endif
     end function
     ${elemental_purity}$ function pow__${dual_sn}$_r(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -112,9 +100,6 @@
                 res%h(k) = v*(u%d%g(i)*u%d%g(j)*(v - 1)*u%d%f**(v-2) + u%h(k)*u%d%f**(v-1))
             end do
         end do
-      #:endif
-      #:if test_coverage
-        pow__hd_r_counter = pow__hd_r_counter + 1
       #:endif
     end function
     ${elemental_purity}$ function pow__${dual_sn}$_${dual_sn}$(u, v) result(res)
@@ -162,9 +147,6 @@
       1) + t3*v%d%g(i)) + v%d%g(j)*(t1**2*v%d%g(i) + t2*t3*u%d%g(i)))
             end do
         end do
-      #:endif
-      #:if test_coverage
-        pow__hd_hd_counter = pow__hd_hd_counter + 1
       #:endif
     end function
 #:enddef

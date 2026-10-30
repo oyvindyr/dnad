@@ -16,8 +16,8 @@ _literal_replacements = {
 
 # Jinja2 template for a fypp macro
 _macro_template = '''
-#:def {{interface_name}}_{{sn}}(dual_type, dual_sn, real_kind, is_pure, test_coverage)
-    #:if is_pure and not test_coverage
+#:def {{interface_name}}_{{sn}}(dual_type, dual_sn, real_kind, is_pure)
+    #:if is_pure
         #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"
@@ -27,8 +27,8 @@ _macro_template = '''
     {%- endfor %}
 #:enddef'''
 _macro_template_with_gdim = '''
-#:def {{interface_name}}_{{sn}}(dual_type, dual_sn, real_kind, is_pure, test_coverage, gdim=None)
-    #:if is_pure and not test_coverage
+#:def {{interface_name}}_{{sn}}(dual_type, dual_sn, real_kind, is_pure, gdim=None)
+    #:if is_pure
         #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"
@@ -52,9 +52,6 @@ _binary_fun_d_template = '''
         {%- endif %}
         {{f_assign}}
         {{g_assign}}
-      #:if test_coverage
-        {{interface_name}}__{{usnc}}_{{vsnc}}_counter = {{interface_name}}__{{usnc}}_{{vsnc}}_counter + 1
-      #:endif
     end function'''
 
 # Jinja2 template for binary function for dual numbers inside a fypp macro
@@ -70,9 +67,6 @@ _unary_fun_d_template = '''
         {%- endif %}
         {{f_assign}}
         {{g_assign}}
-      #:if test_coverage
-        {{interface_name}}__{{usnc}}_counter = {{interface_name}}__{{usnc}}_counter + 1
-      #:endif
     end function'''
 
 # Jinja2 template for a binary function for hyper-dual numbers inside a fypp macro
@@ -97,9 +91,6 @@ _binary_fun_hd_template = '''
                 {{h_assign}}
             end do
         end do
-      #:if test_coverage
-        {{interface_name}}__{{usnc}}_{{vsnc}}_counter = {{interface_name}}__{{usnc}}_{{vsnc}}_counter + 1
-      #:endif
     end function'''
 
 # Jinja2 template for a binary function for hyper-dual numbers inside a fypp macro
@@ -137,9 +128,6 @@ _binary_fun_hd_unroll_template = '''
             end do
         end do
       #:endif
-      #:if test_coverage
-        {{interface_name}}__{{usnc}}_{{vsnc}}_counter = {{interface_name}}__{{usnc}}_{{vsnc}}_counter + 1
-      #:endif
     end function'''
 
 # Jinja2 template for a binary function for hyper-dual numbers inside a fypp macro
@@ -158,9 +146,6 @@ _binary_fun_hd_noloop_template = '''
         {{f_assign}}
         {{g_assign}}
         {{h_assign}}
-      #:if test_coverage
-        {{interface_name}}__{{usnc}}_{{vsnc}}_counter = {{interface_name}}__{{usnc}}_{{vsnc}}_counter + 1
-      #:endif
     end function'''
 
 # Jinja2 template for a unary function for hyper-dual numbers inside a fypp macro
@@ -184,9 +169,6 @@ _unary_fun_hd_template = '''
                 {{h_assign}}
             end do
         end do
-      #:if test_coverage
-        {{interface_name}}__{{usnc}}_counter = {{interface_name}}__{{usnc}}_counter + 1
-      #:endif
     end function'''
 
 # Jinja2 template for a unary function for hyper-dual numbers inside a fypp macro
@@ -223,9 +205,6 @@ _unary_fun_hd_unroll_template = '''
             end do
         end do
       #:endif
-      #:if test_coverage
-        {{interface_name}}__{{usnc}}_counter = {{interface_name}}__{{usnc}}_counter + 1
-      #:endif
     end function'''
 
 # Jinja2 template for a unary function for hyper-dual numbers inside a fypp macro
@@ -243,9 +222,6 @@ _unary_fun_hd_noloop_template = '''
         {{f_assign}}
         {{g_assign}}
         {{h_assign}}
-      #:if test_coverage
-        {{interface_name}}__{{usnc}}_counter = {{interface_name}}__{{usnc}}_counter + 1
-      #:endif
     end function'''
 
 def generate_macros():

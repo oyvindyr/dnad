@@ -1,6 +1,6 @@
 
-#:def eq(dual_type, dual_sn, real_kind, is_pure, is_hyper_dual, test_coverage)
-    #:if is_pure and not test_coverage
+#:def eq(dual_type, dual_sn, real_kind, is_pure, is_hyper_dual)
+    #:if is_pure
         #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"

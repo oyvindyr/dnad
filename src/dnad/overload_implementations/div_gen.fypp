@@ -1,6 +1,6 @@
 
-#:def div_d(dual_type, dual_sn, real_kind, is_pure, test_coverage)
-    #:if is_pure and not test_coverage
+#:def div_d(dual_type, dual_sn, real_kind, is_pure)
+    #:if is_pure
         #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"
@@ -15,9 +15,6 @@
         t1 = t0*u%f
         res%f = t1
         res%g = t0*(-t1*v%g + u%g)
-      #:if test_coverage
-        div__d_d_counter = div__d_d_counter + 1
-      #:endif
     end function
     ${elemental_purity}$ function div__${dual_sn}$_r(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -28,9 +25,6 @@
         t0 = 1.0_${real_kind}$/v
         res%f = t0*u%f
         res%g = t0*u%g
-      #:if test_coverage
-        div__d_r_counter = div__d_r_counter + 1
-      #:endif
     end function
     ${elemental_purity}$ function div__r_${dual_sn}$(u, v) result(res)
         real(${real_kind}$), intent(in) :: u
@@ -39,9 +33,6 @@
         
         res%f = u/v%f
         res%g = -u*v%g/v%f**2
-      #:if test_coverage
-        div__r_d_counter = div__r_d_counter + 1
-      #:endif
     end function
     ${elemental_purity}$ function div__${dual_sn}$_i(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -52,9 +43,6 @@
         t0 = 1.0_${real_kind}$/v
         res%f = t0*u%f
         res%g = t0*u%g
-      #:if test_coverage
-        div__d_i_counter = div__d_i_counter + 1
-      #:endif
     end function
     ${elemental_purity}$ function div__i_${dual_sn}$(u, v) result(res)
         integer, intent(in) :: u
@@ -63,14 +51,11 @@
         
         res%f = u/v%f
         res%g = -u*v%g/v%f**2
-      #:if test_coverage
-        div__i_d_counter = div__i_d_counter + 1
-      #:endif
     end function
 #:enddef
 
-#:def div_hd(dual_type, dual_sn, real_kind, is_pure, test_coverage, gdim=None)
-    #:if is_pure and not test_coverage
+#:def div_hd(dual_type, dual_sn, real_kind, is_pure, gdim=None)
+    #:if is_pure
         #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"
@@ -120,9 +105,6 @@
             end do
         end do
       #:endif
-      #:if test_coverage
-        div__hd_hd_counter = div__hd_hd_counter + 1
-      #:endif
     end function
     ${elemental_purity}$ function div__${dual_sn}$_r(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -134,9 +116,6 @@
         res%d%f = t0*u%d%f
         res%d%g = t0*u%d%g
         res%h = t0*u%h
-      #:if test_coverage
-        div__hd_r_counter = div__hd_r_counter + 1
-      #:endif
     end function
     ${elemental_purity}$ function div__r_${dual_sn}$(u, v) result(res)
         real(${real_kind}$), intent(in) :: u
@@ -173,9 +152,6 @@
             end do
         end do
       #:endif
-      #:if test_coverage
-        div__r_hd_counter = div__r_hd_counter + 1
-      #:endif
     end function
     ${elemental_purity}$ function div__${dual_sn}$_i(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -187,9 +163,6 @@
         res%d%f = t0*u%d%f
         res%d%g = t0*u%d%g
         res%h = t0*u%h
-      #:if test_coverage
-        div__hd_i_counter = div__hd_i_counter + 1
-      #:endif
     end function
     ${elemental_purity}$ function div__i_${dual_sn}$(u, v) result(res)
         integer, intent(in) :: u
@@ -225,9 +198,6 @@
                 res%h(k) = t1*(2*t0*v%d%g(i)*v%d%g(j) - v%h(k))
             end do
         end do
-      #:endif
-      #:if test_coverage
-        div__i_hd_counter = div__i_hd_counter + 1
       #:endif
     end function
 #:enddef

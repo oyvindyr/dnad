@@ -1,6 +1,6 @@
 
-#:def minus_d(dual_type, dual_sn, real_kind, is_pure, test_coverage)
-    #:if is_pure and not test_coverage
+#:def minus_d(dual_type, dual_sn, real_kind, is_pure)
+    #:if is_pure
         #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"
@@ -11,9 +11,6 @@
         
         res%f = -u%f
         res%g = -u%g
-      #:if test_coverage
-        minus__d_counter = minus__d_counter + 1
-      #:endif
     end function
     ${elemental_purity}$ function minus__${dual_sn}$_${dual_sn}$(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -22,9 +19,6 @@
         
         res%f = u%f - v%f
         res%g = u%g - v%g
-      #:if test_coverage
-        minus__d_d_counter = minus__d_d_counter + 1
-      #:endif
     end function
     ${elemental_purity}$ function minus__${dual_sn}$_r(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -33,9 +27,6 @@
         
         res%f = u%f - v
         res%g = u%g
-      #:if test_coverage
-        minus__d_r_counter = minus__d_r_counter + 1
-      #:endif
     end function
     ${elemental_purity}$ function minus__r_${dual_sn}$(u, v) result(res)
         real(${real_kind}$), intent(in) :: u
@@ -44,9 +35,6 @@
         
         res%f = u - v%f
         res%g = -v%g
-      #:if test_coverage
-        minus__r_d_counter = minus__r_d_counter + 1
-      #:endif
     end function
     ${elemental_purity}$ function minus__${dual_sn}$_i(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -55,9 +43,6 @@
         
         res%f = u%f - v
         res%g = u%g
-      #:if test_coverage
-        minus__d_i_counter = minus__d_i_counter + 1
-      #:endif
     end function
     ${elemental_purity}$ function minus__i_${dual_sn}$(u, v) result(res)
         integer, intent(in) :: u
@@ -66,14 +51,11 @@
         
         res%f = u - v%f
         res%g = -v%g
-      #:if test_coverage
-        minus__i_d_counter = minus__i_d_counter + 1
-      #:endif
     end function
 #:enddef
 
-#:def minus_hd(dual_type, dual_sn, real_kind, is_pure, test_coverage)
-    #:if is_pure and not test_coverage
+#:def minus_hd(dual_type, dual_sn, real_kind, is_pure)
+    #:if is_pure
         #:set elemental_purity = "elemental"
     #:else
         #:set elemental_purity = "impure elemental"
@@ -85,9 +67,6 @@
         res%d%f = -u%d%f
         res%d%g = -u%d%g
         res%h = -u%h
-      #:if test_coverage
-        minus__hd_counter = minus__hd_counter + 1
-      #:endif
     end function
     ${elemental_purity}$ function minus__${dual_sn}$_${dual_sn}$(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -97,9 +76,6 @@
         res%d%f = u%d%f - v%d%f
         res%d%g = u%d%g - v%d%g
         res%h = u%h - v%h
-      #:if test_coverage
-        minus__hd_hd_counter = minus__hd_hd_counter + 1
-      #:endif
     end function
     ${elemental_purity}$ function minus__${dual_sn}$_r(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -109,9 +85,6 @@
         res%d%f = u%d%f - v
         res%d%g = u%d%g
         res%h = u%h
-      #:if test_coverage
-        minus__hd_r_counter = minus__hd_r_counter + 1
-      #:endif
     end function
     ${elemental_purity}$ function minus__r_${dual_sn}$(u, v) result(res)
         real(${real_kind}$), intent(in) :: u
@@ -121,9 +94,6 @@
         res%d%f = u - v%d%f
         res%d%g = -v%d%g
         res%h = -v%h
-      #:if test_coverage
-        minus__r_hd_counter = minus__r_hd_counter + 1
-      #:endif
     end function
     ${elemental_purity}$ function minus__${dual_sn}$_i(u, v) result(res)
         type(${dual_type}$), intent(in) :: u
@@ -133,9 +103,6 @@
         res%d%f = u%d%f - v
         res%d%g = u%d%g
         res%h = u%h
-      #:if test_coverage
-        minus__hd_i_counter = minus__hd_i_counter + 1
-      #:endif
     end function
     ${elemental_purity}$ function minus__i_${dual_sn}$(u, v) result(res)
         integer, intent(in) :: u
@@ -145,9 +112,6 @@
         res%d%f = u - v%d%f
         res%d%g = -v%d%g
         res%h = -v%h
-      #:if test_coverage
-        minus__i_hd_counter = minus__i_hd_counter + 1
-      #:endif
     end function
 #:enddef
 

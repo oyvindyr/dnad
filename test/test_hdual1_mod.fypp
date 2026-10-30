@@ -6,9 +6,6 @@
 #:include '../src/dnad/dnad_initialize.fypp'
 #:include '../src/dnad/dnad_getters.fypp'
 
-#! Include call counters to check test coverage:
-#: set test_coverage = True
-
 #! When stringent = False, the dnad functions assume that the derivative exists. It is does not exist (for instance for abs(0.0))
 #! the result will be undefined. When stringent = True (or not defined) some logic is included in the mathematical functions to
 #! determine if the derivative exists of not, and call a function set_NaN() when it does not exist. Using stringent = False is 
@@ -25,11 +22,6 @@ module test_hdual1_mod
     implicit none
 
     integer, parameter :: num_deriv = 2
-
-    ! Implementation call counters to show test coverage:
-  #:for impl in dnad.all_implementations
-    integer :: ${impl+"_counter"}$ = 0
-  #:endfor
 
   #:if stringent
     ! Workaround to make pure functions produce NaN's deliberately:
@@ -114,11 +106,6 @@ contains
             print*, ddfh - ddf_fasit
         end if
 
-        #:if test_coverage == True
-        #:for impl in dnad.all_implementations
-        print*, ${'"'+impl+'_counter: ", ' + impl+'_counter'}$
-        #:endfor
-        #:endif
 
         if (is_ok) then
             print *, "test_hdual: ok"
@@ -141,12 +128,12 @@ contains
       
     end function
 
-    impure elemental function test_function_dual(x, y) result(f)
+    elemental function test_function_dual(x, y) result(f)
         type(dual__xy_t), intent(in) :: x, y
         type(dual__xy_t) :: f
         f = sqrt(x)*log(y)
     end function
-    impure elemental function test_function_hdual(x, y) result(f)
+    elemental function test_function_hdual(x, y) result(f)
         type(hdual__xy_t), intent(in) :: x, y
         type(hdual__xy_t) :: f
         f = sqrt(x)*log(y)
@@ -168,7 +155,7 @@ contains
 
     $:dnad_initialize_implementations(["xy:h"], "dp")
     $:dnad_getter_implementations(["xy:h"], "dp")
-    $:dnad_overload_implementations(["xy:h"], "dp", selected_interfaces=selected_interfaces, stringent=stringent, test_coverage=test_coverage)
+    $:dnad_overload_implementations(["xy:h"], "dp", selected_interfaces=selected_interfaces, stringent=stringent)
     
   #:if stringent
     ! Workaround to make pure functions produce NaN's deliberately:
