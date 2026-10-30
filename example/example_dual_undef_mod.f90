@@ -56,21 +56,24 @@ module example_dual_undef_mod
         module procedure initialize__d_uvw_vector
     end interface
     interface assignment (=)
-        module procedure assign__duvw_i  ! dual=integer, elemental
-        module procedure assign__duvw_r  ! dual=real, elemental
-        module procedure assign__i_duvw  ! integer=dual, elemental
-        module procedure assign__r_duvw  ! real=dual, elemental
+        !! Assign an integer or a real to a dual number, or the function value to them
+        module procedure assign__duvw_i
+        module procedure assign__duvw_r
+        module procedure assign__i_duvw
+        module procedure assign__r_duvw
     end interface
     interface operator (+)
-        module procedure add__duvw   ! +dual number, elemental
-        module procedure add__duvw_duvw       ! dual + dual, elemental
-        module procedure add__duvw_i       ! dual + integer, elemental
-        module procedure add__duvw_r       ! dual + real, elemental
-        module procedure add__i_duvw       ! integer + dual, elemental
-        module procedure add__r_duvw       ! real + dual, elemental
+        !! Unary plus and addition
+        module procedure add__duvw
+        module procedure add__duvw_duvw
+        module procedure add__duvw_i
+        module procedure add__duvw_r
+        module procedure add__i_duvw
+        module procedure add__r_duvw
     end interface
     interface acos
-        module procedure acos__duvw ! arccosine of a dual number, elemental
+        !! Arccosine
+        module procedure acos__duvw
     end interface
     
 contains
@@ -196,6 +199,7 @@ contains
         r = v%f
 
     end subroutine
+
     elemental function add__duvw(u) result(res)
         type(dual__uvw_t), intent(in) :: u
         type(dual__uvw_t) :: res
@@ -243,6 +247,30 @@ contains
         res%f = u + v%f
         res%g = v%g
     end function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     elemental  function acos__duvw(u) result(res)
         type(dual__uvw_t), intent(in) :: u
         type(dual__uvw_t) :: res
@@ -256,6 +284,31 @@ contains
         end if
 
     end function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
     ! Workaround to make pure functions produce NaN's deliberately:
     elemental function set_NaN() result(res)

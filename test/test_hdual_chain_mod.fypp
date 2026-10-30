@@ -15,10 +15,13 @@
 #! determine if the derivative exists of not, and call a function set_NaN() when it does not exist. Using stringent = False is 
 #! believed to be faster.
 #:set stringent = False
+#:set config = dnad.Config('dp', stringent=False)
+#:set k_x, k_y = dnad.Kind('x', 3, hyper=True), dnad.Kind('y', 2, hyper=True)
+#:set kinds = [k_x, k_y]
 
-#! selected_interfaces is a comma separated list or "--all"
-#:set selected_interfaces = "=,+,-,*,**,log,sqrt"
-#!set selected_interfaces = "--all"
+#! selection: a list of keys from dnad.all_interfaces, or None for all
+#:set selection = ['=', '+', '-', '*', '**', 'log', 'sqrt']
+#!set selection = None
 
 #:endmute
 module test_hdual_chain_mod
@@ -36,21 +39,20 @@ module test_hdual_chain_mod
     real(dp) :: negative_one = -1.0_dp
   #:endif
     
-    @:dnad_dual_type(y:h, dp, ny, sequence)
-    @:dnad_dual_type(x:h, dp, nx, sequence)
+    $:dnad_dual_type(k_y, 'dp', 'ny', 'sequence')
+    $:dnad_dual_type(k_x, 'dp', 'nx', 'sequence')
 
     interface  f_of_y
         module procedure f_of_y__x ! Function of y, with derivatives wrt x
         module procedure f_of_y__y ! Function of y, with derivatives wrt y
     end interface
 
-    #:set dual_type_specs = ['x:h', 'y:h']
-    $:dnad_initialize_interface(dual_type_specs)
-    $:dnad_display_interface(dual_type_specs)
-    $:dnad_getter_interfaces(dual_type_specs)
-    $:dnad_jacobi_interfaces(dual_type_specs)
-    $:dnad_chain_duals_interface(["y->x:h"])
-    $:dnad_overload_interfaces(dual_type_specs, selected_interfaces)
+    $:dnad_initialize_interface(kinds)
+    $:dnad_display_interface(kinds)
+    $:dnad_getter_interfaces(kinds)
+    $:dnad_jacobi_interfaces(kinds)
+    $:dnad_chain_duals_interface([(k_y, k_x)])
+    $:dnad_overload_interfaces(kinds, config, selection)
     
 contains
 
@@ -144,12 +146,12 @@ contains
         f = f_of_y(y_of_x(x))
     end function
 
-    $:dnad_initialize_implementations(dual_type_specs, "dp")
-    $:dnad_display_implementations(dual_type_specs)
-    $:dnad_getter_implementations(dual_type_specs, "dp")
-    $:dnad_jacobi_implementations(dual_type_specs, "dp")
-    $:dnad_chain_duals_implementations(["y->x:h"], "dp")
-    $:dnad_overload_implementations(dual_type_specs, "dp", selected_interfaces=selected_interfaces, stringent=stringent)
+    $:dnad_initialize_implementations(kinds, config)
+    $:dnad_display_implementations(kinds)
+    $:dnad_getter_implementations(kinds, config)
+    $:dnad_jacobi_implementations(kinds, config)
+    $:dnad_chain_duals_implementations([(k_y, k_x)], config)
+    $:dnad_overload_implementations(kinds, config, selection)
     
   #:if stringent
     ! Workaround to make pure functions produce NaN's deliberately:

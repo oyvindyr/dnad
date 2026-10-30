@@ -7,6 +7,8 @@ In this fork, the dnad repository have been refactored into fypp macros. See htt
 The benefit of this approach is that interfaces and implementations of mathematical functions can be "injected" into
 the modules where they is used. Thereby inlining can be achieved without resorting to inter-procedural optimizations. 
 
+How the macros are organized, and how to extend them: [doc/templating.md](doc/templating.md).
+
 ## Tests
 
 `test/gen_tests.py` writes a test of every procedure the module macros emit, with reference values from sympy.

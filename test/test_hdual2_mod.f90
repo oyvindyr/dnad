@@ -66,242 +66,292 @@ module test_hdual2_mod
         module procedure hessian__hd_uvw
     end interface
     interface assignment (=)
-        module procedure assign__duvw_i  ! dual=integer, elemental
-        module procedure assign__duvw_r  ! dual=real, elemental
-        module procedure assign__i_duvw  ! integer=dual, elemental
-        module procedure assign__r_duvw  ! real=dual, elemental
-        module procedure assign__hduvw_i  ! dual=integer, elemental
-        module procedure assign__hduvw_r  ! dual=real, elemental
-        module procedure assign__i_hduvw  ! integer=dual, elemental
-        module procedure assign__r_hduvw  ! real=dual, elemental
+        !! Assign an integer or a real to a dual number, or the function value to them
+        module procedure assign__duvw_i
+        module procedure assign__duvw_r
+        module procedure assign__i_duvw
+        module procedure assign__r_duvw
+        module procedure assign__hduvw_i
+        module procedure assign__hduvw_r
+        module procedure assign__i_hduvw
+        module procedure assign__r_hduvw
     end interface
     interface operator (+)
-        module procedure add__duvw   ! +dual number, elemental
-        module procedure add__duvw_duvw       ! dual + dual, elemental
-        module procedure add__duvw_i       ! dual + integer, elemental
-        module procedure add__duvw_r       ! dual + real, elemental
-        module procedure add__i_duvw       ! integer + dual, elemental
-        module procedure add__r_duvw       ! real + dual, elemental
-        module procedure add__hduvw  ! +dual number, elemental
-        module procedure add__hduvw_hduvw     ! dual + dual, elemental
-        module procedure add__hduvw_i      ! dual + integer, elemental
-        module procedure add__hduvw_r      ! dual + real, elemental
-        module procedure add__i_hduvw      ! integer + dual, elemental
-        module procedure add__r_hduvw      ! real + dual, elemental
+        !! Unary plus and addition
+        module procedure add__duvw
+        module procedure add__duvw_duvw
+        module procedure add__duvw_i
+        module procedure add__duvw_r
+        module procedure add__i_duvw
+        module procedure add__r_duvw
+        module procedure add__hduvw
+        module procedure add__hduvw_hduvw
+        module procedure add__hduvw_i
+        module procedure add__hduvw_r
+        module procedure add__i_hduvw
+        module procedure add__r_hduvw
     end interface
     interface operator (-)
-        module procedure minus__duvw  ! negate a dual number,elemental
-        module procedure minus__duvw_duvw      ! dual -dual,elemental
-        module procedure minus__duvw_i      ! dual-integer,elemental
-        module procedure minus__duvw_r      ! dual-real,elemental
-        module procedure minus__i_duvw      ! integer-dual,elemental
-        module procedure minus__r_duvw      ! real-dual,elemental
-        module procedure minus__hduvw ! negate a dual number,elemental
-        module procedure minus__hduvw_hduvw    ! dual -dual,elemental
-        module procedure minus__hduvw_i     ! dual-integer,elemental
-        module procedure minus__hduvw_r     ! dual-real,elemental
-        module procedure minus__i_hduvw     ! integer-dual,elemental
-        module procedure minus__r_hduvw     ! real-dual,elemental
+        !! Negation and subtraction
+        module procedure minus__duvw
+        module procedure minus__duvw_duvw
+        module procedure minus__duvw_i
+        module procedure minus__duvw_r
+        module procedure minus__i_duvw
+        module procedure minus__r_duvw
+        module procedure minus__hduvw
+        module procedure minus__hduvw_hduvw
+        module procedure minus__hduvw_i
+        module procedure minus__hduvw_r
+        module procedure minus__i_hduvw
+        module procedure minus__r_hduvw
     end interface
     interface operator (*)
-        module procedure mult__duvw_duvw    ! dual*dual, elemental
-        module procedure mult__duvw_i    ! dual*integer,elemental
-        module procedure mult__duvw_r    ! dual*real,elemental
-        module procedure mult__i_duvw    ! integer*dual,elemental
-        module procedure mult__r_duvw    ! real*dual,elemental
-        module procedure mult__hduvw_hduvw  ! dual*dual, elemental
-        module procedure mult__hduvw_i   ! dual*integer,elemental
-        module procedure mult__hduvw_r   ! dual*real,elemental
-        module procedure mult__i_hduvw   ! integer*dual,elemental
-        module procedure mult__r_hduvw   ! real*dual,elemental
+        !! Multiplication
+        module procedure mult__duvw_duvw
+        module procedure mult__duvw_i
+        module procedure mult__duvw_r
+        module procedure mult__i_duvw
+        module procedure mult__r_duvw
+        module procedure mult__hduvw_hduvw
+        module procedure mult__hduvw_i
+        module procedure mult__hduvw_r
+        module procedure mult__i_hduvw
+        module procedure mult__r_hduvw
     end interface
     interface operator (/)
-        module procedure div__duvw_duvw    ! dual/dual, elemental
-        module procedure div__duvw_r    ! dual/real, elemental
-        module procedure div__r_duvw    ! real/dual, elemental
-        module procedure div__duvw_i    ! dual/integer, elemental
-        module procedure div__i_duvw    ! integer/dual, elemental
-        module procedure div__hduvw_hduvw  ! hdual/hdual, elemental
-        module procedure div__hduvw_r   ! hdual/real, elemental
-        module procedure div__r_hduvw   ! real/hdual, elemental
-        module procedure div__hduvw_i   ! hdual/integer, elemental
-        module procedure div__i_hduvw   ! integer/hdual, elemental
+        !! Division
+        module procedure div__duvw_duvw
+        module procedure div__duvw_r
+        module procedure div__r_duvw
+        module procedure div__duvw_i
+        module procedure div__i_duvw
+        module procedure div__hduvw_hduvw
+        module procedure div__hduvw_r
+        module procedure div__r_hduvw
+        module procedure div__hduvw_i
+        module procedure div__i_hduvw
     end interface
     interface operator (**)
-        module procedure pow__duvw_i ! dual number to an integer power,elemental
-        module procedure pow__duvw_r ! dual number to a real power, elemental
-        module procedure pow__duvw_duvw ! dual number to a dual power, elemental
-        module procedure pow__hduvw_i ! hdual number to an integer power,elemental
-        module procedure pow__hduvw_r ! hdual number to a real power, elemental
-        module procedure pow__hduvw_hduvw ! hdual number to a hdual power, elemental
+        !! Power
+        module procedure pow__duvw_i
+        module procedure pow__duvw_r
+        module procedure pow__duvw_duvw
+        module procedure pow__hduvw_i
+        module procedure pow__hduvw_r
+        module procedure pow__hduvw_hduvw
+    end interface
+    interface hypot
+        !! Euclidean distance sqrt(x**2 + y**2)
+        module procedure hypot__duvw_duvw
+        module procedure hypot__duvw_r
+        module procedure hypot__r_duvw
+        module procedure hypot__hduvw_hduvw
+        module procedure hypot__hduvw_r
+        module procedure hypot__r_hduvw
     end interface
     interface operator (==)
-        module procedure eq__duvw_duvw ! compare two dual numbers, elemental
-        module procedure eq__duvw_i ! compare a dual and an integer, elemental
-        module procedure eq__duvw_r ! compare a dual and a real, elemental
-        module procedure eq__i_duvw ! compare integer with a dual number, elemental
-        module procedure eq__r_duvw ! compare a real with a dual number, elemental
-        module procedure eq__hduvw_hduvw ! compare two hdual numbers, elemental
-        module procedure eq__hduvw_i ! compare a hdual and an integer, elemental
-        module procedure eq__hduvw_r ! compare a hdual and a real, elemental
-        module procedure eq__i_hduvw ! compare integer with a hdual number, elemental
-        module procedure eq__r_hduvw ! compare a real with a hdual number, elemental
+        !! Equality of the function values
+        module procedure eq__duvw_duvw
+        module procedure eq__duvw_i
+        module procedure eq__duvw_r
+        module procedure eq__i_duvw
+        module procedure eq__r_duvw
+        module procedure eq__hduvw_hduvw
+        module procedure eq__hduvw_i
+        module procedure eq__hduvw_r
+        module procedure eq__i_hduvw
+        module procedure eq__r_hduvw
     end interface
     interface operator (<=)
-        module procedure le__duvw_duvw ! compare two dual numbers, elemental
-        module procedure le__duvw_i ! compare a dual and an integer, elemental
-        module procedure le__duvw_r ! compare a dual and a real, elemental
-        module procedure le__i_duvw ! compare integer with a dual number, elemental
-        module procedure le__r_duvw ! compare a real with a dual number, elemental
-        module procedure le__hduvw_hduvw ! compare two hdual numbers, elemental
-        module procedure le__hduvw_i ! compare a hdual and an integer, elemental
-        module procedure le__hduvw_r ! compare a hdual and a real, elemental
-        module procedure le__i_hduvw ! compare integer with a hdual number, elemental
-        module procedure le__r_hduvw ! compare a real with a hdual number, elemental
+        !! Less than or equal of the function values
+        module procedure le__duvw_duvw
+        module procedure le__duvw_i
+        module procedure le__duvw_r
+        module procedure le__i_duvw
+        module procedure le__r_duvw
+        module procedure le__hduvw_hduvw
+        module procedure le__hduvw_i
+        module procedure le__hduvw_r
+        module procedure le__i_hduvw
+        module procedure le__r_hduvw
     end interface
     interface operator (<)
-        module procedure lt__duvw_duvw ! compare two dual numbers, elemental
-        module procedure lt__duvw_i ! compare a dual and an integer, elemental
-        module procedure lt__duvw_r ! compare a dual and a real, elemental
-        module procedure lt__i_duvw ! compare integer with a dual number, elemental
-        module procedure lt__r_duvw ! compare a real with a dual number, elemental
-        module procedure lt__hduvw_hduvw ! compare two hdual numbers, elemental
-        module procedure lt__hduvw_i ! compare a hdual and an integer, elemental
-        module procedure lt__hduvw_r ! compare a hdual and a real, elemental
-        module procedure lt__i_hduvw ! compare integer with a hdual number, elemental
-        module procedure lt__r_hduvw ! compare a real with a hdual number, elemental
+        !! Less than of the function values
+        module procedure lt__duvw_duvw
+        module procedure lt__duvw_i
+        module procedure lt__duvw_r
+        module procedure lt__i_duvw
+        module procedure lt__r_duvw
+        module procedure lt__hduvw_hduvw
+        module procedure lt__hduvw_i
+        module procedure lt__hduvw_r
+        module procedure lt__i_hduvw
+        module procedure lt__r_hduvw
     end interface
     interface operator (>=)
-        module procedure ge__duvw_duvw ! compare two dual numbers, elemental
-        module procedure ge__duvw_i ! compare a dual and an integer, elemental
-        module procedure ge__duvw_r ! compare a dual and a real, elemental
-        module procedure ge__i_duvw ! compare integer with a dual number, elemental
-        module procedure ge__r_duvw ! compare a real with a dual number, elemental
-        module procedure ge__hduvw_hduvw ! compare two hdual numbers, elemental
-        module procedure ge__hduvw_i ! compare a hdual and an integer, elemental
-        module procedure ge__hduvw_r ! compare a hdual and a real, elemental
-        module procedure ge__i_hduvw ! compare integer with a hdual number, elemental
-        module procedure ge__r_hduvw ! compare a real with a hdual number, elemental
+        !! Greater than or equal of the function values
+        module procedure ge__duvw_duvw
+        module procedure ge__duvw_i
+        module procedure ge__duvw_r
+        module procedure ge__i_duvw
+        module procedure ge__r_duvw
+        module procedure ge__hduvw_hduvw
+        module procedure ge__hduvw_i
+        module procedure ge__hduvw_r
+        module procedure ge__i_hduvw
+        module procedure ge__r_hduvw
     end interface
     interface operator (>)
-        module procedure gt__duvw_duvw ! compare two dual numbers, elemental
-        module procedure gt__duvw_i ! compare a dual and an integer, elemental
-        module procedure gt__duvw_r ! compare a dual and a real, elemental
-        module procedure gt__i_duvw ! compare integer with a dual number, elemental
-        module procedure gt__r_duvw ! compare a real with a dual number, elemental
-        module procedure gt__hduvw_hduvw ! compare two hdual numbers, elemental
-        module procedure gt__hduvw_i ! compare a hdual and an integer, elemental
-        module procedure gt__hduvw_r ! compare a hdual and a real, elemental
-        module procedure gt__i_hduvw ! compare integer with a hdual number, elemental
-        module procedure gt__r_hduvw ! compare a real with a hdual number, elemental
+        !! Greater than of the function values
+        module procedure gt__duvw_duvw
+        module procedure gt__duvw_i
+        module procedure gt__duvw_r
+        module procedure gt__i_duvw
+        module procedure gt__r_duvw
+        module procedure gt__hduvw_hduvw
+        module procedure gt__hduvw_i
+        module procedure gt__hduvw_r
+        module procedure gt__i_hduvw
+        module procedure gt__r_hduvw
     end interface
     interface operator (/=)
-        module procedure ne__duvw_duvw ! compare two dual numbers, elemental
-        module procedure ne__duvw_i ! compare a dual and an integer, elemental
-        module procedure ne__duvw_r ! compare a dual and a real, elemental
-        module procedure ne__i_duvw ! compare integer with a dual number, elemental
-        module procedure ne__r_duvw ! compare a real with a dual number, elemental
-        module procedure ne__hduvw_hduvw ! compare two hdual numbers, elemental
-        module procedure ne__hduvw_i ! compare a hdual and an integer, elemental
-        module procedure ne__hduvw_r ! compare a hdual and a real, elemental
-        module procedure ne__i_hduvw ! compare integer with a hdual number, elemental
-        module procedure ne__r_hduvw ! compare a real with a hdual number, elemental
+        !! Inequality of the function values
+        module procedure ne__duvw_duvw
+        module procedure ne__duvw_i
+        module procedure ne__duvw_r
+        module procedure ne__i_duvw
+        module procedure ne__r_duvw
+        module procedure ne__hduvw_hduvw
+        module procedure ne__hduvw_i
+        module procedure ne__hduvw_r
+        module procedure ne__i_hduvw
+        module procedure ne__r_hduvw
     end interface
     interface abs
-        module procedure abs__duvw  ! absolute value of a dual number, elemental
+        !! Absolute value
+        module procedure abs__duvw
     end interface
     interface dabs
-        module procedure abs__duvw ! same as abs, used for some old fortran commands
+        !! Absolute value (old Fortran name)
+        module procedure abs__duvw
     end interface
     interface acos
-        module procedure acos__duvw ! arccosine of a dual number, elemental
+        !! Arccosine
+        module procedure acos__duvw
     end interface
     interface asin
-        module procedure asin__duvw ! arcsine of a dual number, elemental
+        !! Arcsine
+        module procedure asin__duvw
     end interface
     interface atan
-        module procedure atan__duvw ! arctan of a dual number, elemental
+        !! Arctangent
+        module procedure atan__duvw
     end interface
     interface atan2
-        module procedure atan2__duvw ! arctan of a dual number, elemental
+        !! Arctangent of y/x in the quadrant of (x, y)
+        module procedure atan2__duvw
     end interface
     interface cos
-        module procedure cos__duvw ! cosine of a dual number, elemental
+        !! Cosine
+        module procedure cos__duvw
     end interface
     interface dcos
-        module procedure cos__duvw ! cosine of a dual number, elemental
+        !! Cosine (old Fortran name)
+        module procedure cos__duvw
     end interface
     interface dot_product
-        module procedure dot_product__duvw_duvw ! dot product two dual number vectors
+        !! Dot product of two dual vectors
+        module procedure dot_product__duvw_duvw
     end interface
     interface exp
-        module procedure exp__duvw ! exponential of a dual number, elemental
+        !! Exponential
+        module procedure exp__duvw
     end interface
     interface int
-        module procedure int__duvw ! integer part of a dual number, elemental
+        !! Integer part of the function value
+        module procedure int__duvw
     end interface
     interface log
-        module procedure log__duvw ! log of a dual number, elemental
-        module procedure log__hduvw ! log of a dual number, elemental
+        !! Natural logarithm
+        module procedure log__duvw
+        module procedure log__hduvw
     end interface
     interface log10
-        module procedure log10__duvw ! log of a dual number, elemental
+        !! Base-10 logarithm
+        module procedure log10__duvw
     end interface
     interface matmul
-        module procedure matmul__duvw_duvw ! multiply two dual matrices
-        module procedure matmul__duvw_v ! multiply a dual matrix with a dual vector
-        module procedure matmul__v_duvw ! multiply a dual vector with a dual matrix
+        !! Matrix product of dual matrices and vectors
+        module procedure matmul__duvw_duvw
+        module procedure matmul__duvw_v
+        module procedure matmul__v_duvw
     end interface
     interface max
-        module procedure max__duvw_duvw ! max of two dual numbers, elemental
-        module procedure max__duvw_i ! max of a dual number and an integer, elemental
-        module procedure max__duvw_r ! max of a dual number and a real, elemental
-        module procedure max__r_duvw ! max of a real,and a dual number,  elemental
+        !! The larger of two numbers
+        module procedure max__duvw_duvw
+        module procedure max__duvw_i
+        module procedure max__duvw_r
+        module procedure max__r_duvw
     end interface
     interface dmax1
-        module procedure dmax1__duvw_duvw ! max of from two to four dual numbers, elemental
+        !! The largest of two to five dual numbers
+        module procedure dmax1__duvw_duvw
     end interface
     interface maxval
-        module procedure maxval__duvw ! maxval of a dual number vector
+        !! The largest element of a dual vector
+        module procedure maxval__duvw
     end interface
     interface min
-        module procedure min__duvw_duvw ! min of from two to four dual numbers, elemental
-        module procedure min__duvw_r ! min of a dual and a real, elemental
+        !! The smaller of two numbers
+        module procedure min__duvw_duvw
+        module procedure min__duvw_r
     end interface
     interface dmin1
-        module procedure dmin1__duvw_duvw ! min of from two to four dual numbers, elemental
+        !! The smallest of two to four dual numbers
+        module procedure dmin1__duvw_duvw
     end interface
     interface minval
-        module procedure minval__duvw ! obtain the maxval  of a dual number vectgor
+        !! The smallest element of a dual vector
+        module procedure minval__duvw
     end interface
     interface nint
-        module procedure nint__duvw ! nearest integer to the argument, elemental
+        !! Nearest integer to the function value
+        module procedure nint__duvw
     end interface
-    interface  sign
-        module procedure  sign__duvw_duvw ! sign(a,b) with two dual numbers, elemental
-        module procedure  sign__r_duvw ! sign(a,b) with a real and a dual, elemental
+    interface sign
+        !! abs(a) with the sign of b
+        module procedure sign__duvw_duvw
+        module procedure sign__r_duvw
     end interface
     interface sin
-        module procedure sin__duvw ! obtain sine of a dual number, elemental
+        !! Sine
+        module procedure sin__duvw
     end interface
     interface dsin
-        module procedure sin__duvw ! obtain sine of a dual number, elemental
+        !! Sine (old Fortran name)
+        module procedure sin__duvw
     end interface
     interface tan
-        module procedure tan__duvw ! obtain sine of a dual number, elemental
+        !! Tangent
+        module procedure tan__duvw
     end interface
     interface dtan
-        module procedure tan__duvw ! obtain sine of a dual number, elemental
+        !! Tangent (old Fortran name)
+        module procedure tan__duvw
     end interface
     interface sqrt
-        module procedure sqrt__duvw ! obtain the sqrt of a dual number, elemental
-        module procedure sqrt__hduvw ! obtain the sqrt of a dual number, elemental
+        !! Square root
+        module procedure sqrt__duvw
+        module procedure sqrt__hduvw
     end interface
     interface sum
-        module procedure sum__duvw ! sum a dual array
+        !! Sum of a dual vector
+        module procedure sum__duvw
     end interface
     interface maxloc
-        module procedure maxloc__duvw ! location of max in a dual array
+        !! Location of the largest element of a dual vector
+        module procedure maxloc__duvw
     end interface
     
 contains
@@ -1167,6 +1217,104 @@ contains
                 k = k + 1
                 res%h(k) = t0*(t1*v%h(k) + t2*u%h(k)*v%d%f + t2*u%d%g(j)*(t2*u%d%g(i)*v%d%f*(v%d%f - &
       1) + t3*v%d%g(i)) + v%d%g(j)*(t1**2*v%d%g(i) + t2*t3*u%d%g(i)))
+            end do
+        end do
+    end function
+    elemental function hypot__duvw_duvw(u, v) result(res)
+        type(dual__uvw_t), intent(in) :: u
+        type(dual__uvw_t), intent(in) :: v
+        type(dual__uvw_t) :: res
+        real(dp) :: t0
+        
+        t0 = hypot(u%f, v%f)
+        res%f = t0
+        res%g = (u%g*u%f + v%g*v%f)/t0
+    end function
+    elemental function hypot__duvw_r(u, v) result(res)
+        type(dual__uvw_t), intent(in) :: u
+        real(dp), intent(in) :: v
+        type(dual__uvw_t) :: res
+        real(dp) :: t0
+        
+        t0 = hypot(u%f, v)
+        res%f = t0
+        res%g = u%g*u%f/t0
+    end function
+    elemental function hypot__r_duvw(u, v) result(res)
+        real(dp), intent(in) :: u
+        type(dual__uvw_t), intent(in) :: v
+        type(dual__uvw_t) :: res
+        real(dp) :: t0
+        
+        t0 = hypot(u, v%f)
+        res%f = t0
+        res%g = v%g*v%f/t0
+    end function
+    elemental function hypot__hduvw_hduvw(u, v) result(res)
+        type(hdual__uvw_t), intent(in) :: u
+        type(hdual__uvw_t), intent(in) :: v
+        type(hdual__uvw_t) :: res
+        integer :: i, j, k
+        real(dp) :: t0,t1,t2,t3,t4,t5
+        
+        t0 = u%d%f**2
+        t1 = v%d%f**2
+        t2 = t0 + t1
+        t3 = sqrt(t2)
+        t4 = 1.0_dp/t3
+        t5 = 1.0_dp/t2
+        res%d%f = t3
+        res%d%g = t4*(u%d%g*u%d%f + v%d%g*v%d%f)
+
+        k = 0
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
+                k = k + 1
+                res%h(k) = t4*(u%h(k)*u%d%f - u%d%g(j)*(t5*u%d%f*v%d%g(i)*v%d%f + u%d%g(i)*(t0*t5 - 1)) &
+      + v%h(k)*v%d%f - v%d%g(j)*(t5*u%d%g(i)*u%d%f*v%d%f + v%d%g(i)*(t1*t5 - 1)))
+            end do
+        end do
+    end function
+    elemental function hypot__hduvw_r(u, v) result(res)
+        type(hdual__uvw_t), intent(in) :: u
+        real(dp), intent(in) :: v
+        type(hdual__uvw_t) :: res
+        integer :: i, j, k
+        real(dp) :: t0,t1,t2,t3
+        
+        t0 = u%d%f**2
+        t1 = t0 + v**2
+        t2 = sqrt(t1)
+        t3 = 1.0_dp/t2
+        res%d%f = t2
+        res%d%g = t3*u%d%g*u%d%f
+        k = 0
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
+                k = k + 1
+                res%h(k) = t3*(u%h(k)*u%d%f - u%d%g(i)*u%d%g(j)*(t0/t1 - 1))
+            end do
+        end do
+    end function
+    elemental function hypot__r_hduvw(u, v) result(res)
+        real(dp), intent(in) :: u
+        type(hdual__uvw_t), intent(in) :: v
+        type(hdual__uvw_t) :: res
+        integer :: i, j, k
+        real(dp) :: t0,t1,t2,t3
+        
+        t0 = v%d%f**2
+        t1 = t0 + u**2
+        t2 = sqrt(t1)
+        t3 = 1.0_dp/t2
+        res%d%f = t2
+        res%d%g = t3*v%d%g*v%d%f
+
+        k = 0
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
+                k = k + 1
+                res%h(k) = t3*(v%h(k)*v%d%f - v%d%g(i)*v%d%g(j)*(t0/t1 - 1))
             end do
         end do
     end function

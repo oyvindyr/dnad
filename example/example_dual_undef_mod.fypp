@@ -11,9 +11,11 @@
 #! determine if the derivative exists of not, and call a function set_NaN() when it does not exist. Using stringent = False is 
 #! believed to be faster.
 #:set stringent = True
+#:set config = dnad.Config('dp', stringent=True)
+#:set kinds = [dnad.Kind('uvw', 3)]
 
-#! selected_interfaces is a comma separated list or "--all"
-#:set selected_interfaces = "=,+,acos"
+#! selection: a list of keys from dnad.all_interfaces, or None for all
+#:set selection = ['=', '+', 'acos']
 
 #:endmute
 module example_dual_undef_mod
@@ -32,13 +34,13 @@ module example_dual_undef_mod
     
     #! Inject the dual type definitions
     #!  Note: Calling a macro with @ will convert all arguments to strings
-    @:dnad_dual_type(uvw, dp, num_deriv, sequence)
-    $:dnad_getter_interfaces(["uvw"])
+    $:dnad_dual_type(kinds[0], 'dp', 'num_deriv', 'sequence')
+    $:dnad_getter_interfaces(kinds)
 
     #! Inject interfaces
     #!  Note: Calling a macro with $ will send in python variables as arguments
-    $:dnad_initialize_interface(["uvw"])
-    $:dnad_overload_interfaces(["uvw"], selected_interfaces)
+    $:dnad_initialize_interface(kinds)
+    $:dnad_overload_interfaces(kinds, config, selection)
     
 contains
 
@@ -69,9 +71,9 @@ contains
     end function
 
     #! Inject overloaded function implementations
-    $:dnad_getter_implementations(["uvw"], "dp")
-    $:dnad_initialize_implementations(["uvw"], "dp")
-    $:dnad_overload_implementations(["uvw"], "dp", selected_interfaces=selected_interfaces, stringent=stringent)
+    $:dnad_getter_implementations(kinds, config)
+    $:dnad_initialize_implementations(kinds, config)
+    $:dnad_overload_implementations(kinds, config, selection)
     
   #:if stringent
     ! Workaround to make pure functions produce NaN's deliberately:

@@ -161,122 +161,129 @@ module test_hdual_chain_mod
         module procedure chain_duals__hd_y_x
     end interface
     interface assignment (=)
-        module procedure assign__dx_i  ! dual=integer, elemental
-        module procedure assign__dx_r  ! dual=real, elemental
-        module procedure assign__i_dx  ! integer=dual, elemental
-        module procedure assign__r_dx  ! real=dual, elemental
-        module procedure assign__dy_i  ! dual=integer, elemental
-        module procedure assign__dy_r  ! dual=real, elemental
-        module procedure assign__i_dy  ! integer=dual, elemental
-        module procedure assign__r_dy  ! real=dual, elemental
-        module procedure assign__hdx_i  ! dual=integer, elemental
-        module procedure assign__hdx_r  ! dual=real, elemental
-        module procedure assign__i_hdx  ! integer=dual, elemental
-        module procedure assign__r_hdx  ! real=dual, elemental
-        module procedure assign__hdy_i  ! dual=integer, elemental
-        module procedure assign__hdy_r  ! dual=real, elemental
-        module procedure assign__i_hdy  ! integer=dual, elemental
-        module procedure assign__r_hdy  ! real=dual, elemental
+        !! Assign an integer or a real to a dual number, or the function value to them
+        module procedure assign__dx_i
+        module procedure assign__dx_r
+        module procedure assign__i_dx
+        module procedure assign__r_dx
+        module procedure assign__dy_i
+        module procedure assign__dy_r
+        module procedure assign__i_dy
+        module procedure assign__r_dy
+        module procedure assign__hdx_i
+        module procedure assign__hdx_r
+        module procedure assign__i_hdx
+        module procedure assign__r_hdx
+        module procedure assign__hdy_i
+        module procedure assign__hdy_r
+        module procedure assign__i_hdy
+        module procedure assign__r_hdy
     end interface
     interface operator (+)
-        module procedure add__dx   ! +dual number, elemental
-        module procedure add__dx_dx       ! dual + dual, elemental
-        module procedure add__dx_i       ! dual + integer, elemental
-        module procedure add__dx_r       ! dual + real, elemental
-        module procedure add__i_dx       ! integer + dual, elemental
-        module procedure add__r_dx       ! real + dual, elemental
-        module procedure add__dy   ! +dual number, elemental
-        module procedure add__dy_dy       ! dual + dual, elemental
-        module procedure add__dy_i       ! dual + integer, elemental
-        module procedure add__dy_r       ! dual + real, elemental
-        module procedure add__i_dy       ! integer + dual, elemental
-        module procedure add__r_dy       ! real + dual, elemental
-        module procedure add__hdx  ! +dual number, elemental
-        module procedure add__hdx_hdx     ! dual + dual, elemental
-        module procedure add__hdx_i      ! dual + integer, elemental
-        module procedure add__hdx_r      ! dual + real, elemental
-        module procedure add__i_hdx      ! integer + dual, elemental
-        module procedure add__r_hdx      ! real + dual, elemental
-        module procedure add__hdy  ! +dual number, elemental
-        module procedure add__hdy_hdy     ! dual + dual, elemental
-        module procedure add__hdy_i      ! dual + integer, elemental
-        module procedure add__hdy_r      ! dual + real, elemental
-        module procedure add__i_hdy      ! integer + dual, elemental
-        module procedure add__r_hdy      ! real + dual, elemental
+        !! Unary plus and addition
+        module procedure add__dx
+        module procedure add__dx_dx
+        module procedure add__dx_i
+        module procedure add__dx_r
+        module procedure add__i_dx
+        module procedure add__r_dx
+        module procedure add__dy
+        module procedure add__dy_dy
+        module procedure add__dy_i
+        module procedure add__dy_r
+        module procedure add__i_dy
+        module procedure add__r_dy
+        module procedure add__hdx
+        module procedure add__hdx_hdx
+        module procedure add__hdx_i
+        module procedure add__hdx_r
+        module procedure add__i_hdx
+        module procedure add__r_hdx
+        module procedure add__hdy
+        module procedure add__hdy_hdy
+        module procedure add__hdy_i
+        module procedure add__hdy_r
+        module procedure add__i_hdy
+        module procedure add__r_hdy
     end interface
     interface operator (-)
-        module procedure minus__dx  ! negate a dual number,elemental
-        module procedure minus__dx_dx      ! dual -dual,elemental
-        module procedure minus__dx_i      ! dual-integer,elemental
-        module procedure minus__dx_r      ! dual-real,elemental
-        module procedure minus__i_dx      ! integer-dual,elemental
-        module procedure minus__r_dx      ! real-dual,elemental
-        module procedure minus__dy  ! negate a dual number,elemental
-        module procedure minus__dy_dy      ! dual -dual,elemental
-        module procedure minus__dy_i      ! dual-integer,elemental
-        module procedure minus__dy_r      ! dual-real,elemental
-        module procedure minus__i_dy      ! integer-dual,elemental
-        module procedure minus__r_dy      ! real-dual,elemental
-        module procedure minus__hdx ! negate a dual number,elemental
-        module procedure minus__hdx_hdx    ! dual -dual,elemental
-        module procedure minus__hdx_i     ! dual-integer,elemental
-        module procedure minus__hdx_r     ! dual-real,elemental
-        module procedure minus__i_hdx     ! integer-dual,elemental
-        module procedure minus__r_hdx     ! real-dual,elemental
-        module procedure minus__hdy ! negate a dual number,elemental
-        module procedure minus__hdy_hdy    ! dual -dual,elemental
-        module procedure minus__hdy_i     ! dual-integer,elemental
-        module procedure minus__hdy_r     ! dual-real,elemental
-        module procedure minus__i_hdy     ! integer-dual,elemental
-        module procedure minus__r_hdy     ! real-dual,elemental
+        !! Negation and subtraction
+        module procedure minus__dx
+        module procedure minus__dx_dx
+        module procedure minus__dx_i
+        module procedure minus__dx_r
+        module procedure minus__i_dx
+        module procedure minus__r_dx
+        module procedure minus__dy
+        module procedure minus__dy_dy
+        module procedure minus__dy_i
+        module procedure minus__dy_r
+        module procedure minus__i_dy
+        module procedure minus__r_dy
+        module procedure minus__hdx
+        module procedure minus__hdx_hdx
+        module procedure minus__hdx_i
+        module procedure minus__hdx_r
+        module procedure minus__i_hdx
+        module procedure minus__r_hdx
+        module procedure minus__hdy
+        module procedure minus__hdy_hdy
+        module procedure minus__hdy_i
+        module procedure minus__hdy_r
+        module procedure minus__i_hdy
+        module procedure minus__r_hdy
     end interface
     interface operator (*)
-        module procedure mult__dx_dx    ! dual*dual, elemental
-        module procedure mult__dx_i    ! dual*integer,elemental
-        module procedure mult__dx_r    ! dual*real,elemental
-        module procedure mult__i_dx    ! integer*dual,elemental
-        module procedure mult__r_dx    ! real*dual,elemental
-        module procedure mult__dy_dy    ! dual*dual, elemental
-        module procedure mult__dy_i    ! dual*integer,elemental
-        module procedure mult__dy_r    ! dual*real,elemental
-        module procedure mult__i_dy    ! integer*dual,elemental
-        module procedure mult__r_dy    ! real*dual,elemental
-        module procedure mult__hdx_hdx  ! dual*dual, elemental
-        module procedure mult__hdx_i   ! dual*integer,elemental
-        module procedure mult__hdx_r   ! dual*real,elemental
-        module procedure mult__i_hdx   ! integer*dual,elemental
-        module procedure mult__r_hdx   ! real*dual,elemental
-        module procedure mult__hdy_hdy  ! dual*dual, elemental
-        module procedure mult__hdy_i   ! dual*integer,elemental
-        module procedure mult__hdy_r   ! dual*real,elemental
-        module procedure mult__i_hdy   ! integer*dual,elemental
-        module procedure mult__r_hdy   ! real*dual,elemental
+        !! Multiplication
+        module procedure mult__dx_dx
+        module procedure mult__dx_i
+        module procedure mult__dx_r
+        module procedure mult__i_dx
+        module procedure mult__r_dx
+        module procedure mult__dy_dy
+        module procedure mult__dy_i
+        module procedure mult__dy_r
+        module procedure mult__i_dy
+        module procedure mult__r_dy
+        module procedure mult__hdx_hdx
+        module procedure mult__hdx_i
+        module procedure mult__hdx_r
+        module procedure mult__i_hdx
+        module procedure mult__r_hdx
+        module procedure mult__hdy_hdy
+        module procedure mult__hdy_i
+        module procedure mult__hdy_r
+        module procedure mult__i_hdy
+        module procedure mult__r_hdy
     end interface
     interface operator (**)
-        module procedure pow__dx_i ! dual number to an integer power,elemental
-        module procedure pow__dx_r ! dual number to a real power, elemental
-        module procedure pow__dx_dx ! dual number to a dual power, elemental
-        module procedure pow__dy_i ! dual number to an integer power,elemental
-        module procedure pow__dy_r ! dual number to a real power, elemental
-        module procedure pow__dy_dy ! dual number to a dual power, elemental
-        module procedure pow__hdx_i ! hdual number to an integer power,elemental
-        module procedure pow__hdx_r ! hdual number to a real power, elemental
-        module procedure pow__hdx_hdx ! hdual number to a hdual power, elemental
-        module procedure pow__hdy_i ! hdual number to an integer power,elemental
-        module procedure pow__hdy_r ! hdual number to a real power, elemental
-        module procedure pow__hdy_hdy ! hdual number to a hdual power, elemental
+        !! Power
+        module procedure pow__dx_i
+        module procedure pow__dx_r
+        module procedure pow__dx_dx
+        module procedure pow__dy_i
+        module procedure pow__dy_r
+        module procedure pow__dy_dy
+        module procedure pow__hdx_i
+        module procedure pow__hdx_r
+        module procedure pow__hdx_hdx
+        module procedure pow__hdy_i
+        module procedure pow__hdy_r
+        module procedure pow__hdy_hdy
     end interface
     interface log
-        module procedure log__dx ! log of a dual number, elemental
-        module procedure log__dy ! log of a dual number, elemental
-        module procedure log__hdx ! log of a dual number, elemental
-        module procedure log__hdy ! log of a dual number, elemental
+        !! Natural logarithm
+        module procedure log__dx
+        module procedure log__dy
+        module procedure log__hdx
+        module procedure log__hdy
     end interface
     interface sqrt
-        module procedure sqrt__dx ! obtain the sqrt of a dual number, elemental
-        module procedure sqrt__dy ! obtain the sqrt of a dual number, elemental
-        module procedure sqrt__hdx ! obtain the sqrt of a dual number, elemental
-        module procedure sqrt__hdy ! obtain the sqrt of a dual number, elemental
+        !! Square root
+        module procedure sqrt__dx
+        module procedure sqrt__dy
+        module procedure sqrt__hdx
+        module procedure sqrt__hdy
     end interface
     
 contains
@@ -1915,6 +1922,8 @@ contains
         res%d%g = u*v%d%g
         res%h = u*v%h
     end function
+
+
     elemental function pow__dx_i(u, v) result(res)
         type(dual__x_t), intent(in) :: u
         integer, intent(in) :: v
@@ -2079,6 +2088,29 @@ contains
             end do
         end do
     end function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     elemental function log__dx(u) result(res)
         type(dual__x_t), intent(in) :: u
         type(dual__x_t) :: res
@@ -2127,6 +2159,18 @@ contains
             end do
         end do
     end function
+
+
+
+
+
+
+
+
+
+
+
+
     elemental function sqrt__dx(u) result(res)
         type(dual__x_t), intent(in) :: u
         type(dual__x_t) :: res
@@ -2183,6 +2227,8 @@ contains
             end do
         end do
     end function
+
+
     
     
 end module

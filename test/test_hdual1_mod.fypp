@@ -11,10 +11,12 @@
 #! determine if the derivative exists of not, and call a function set_NaN() when it does not exist. Using stringent = False is 
 #! believed to be faster.
 #:set stringent = False
+#:set config = dnad.Config('dp', stringent=False)
+#:set kinds = [dnad.Kind('xy', 2, hyper=True)]
 
-#! selected_interfaces is a comma separated list or "--all"
-#!set selected_interfaces = "=,*,log,sqrt"
-#:set selected_interfaces = "--all"
+#! selection: a list of keys from dnad.all_interfaces, or None for all
+#!set selection = ['=', '*', 'log', 'sqrt']
+#:set selection = None
 
 #:endmute
 module test_hdual1_mod
@@ -28,11 +30,11 @@ module test_hdual1_mod
     real(dp) :: negative_one = -1.0_dp
   #:endif
     
-    $:dnad_dual_type("xy:h", "dp", "num_deriv", "sequence")
+    $:dnad_dual_type(kinds[0], 'dp', 'num_deriv', 'sequence')
 
-    $:dnad_initialize_interface(["xy:h"])
-    $:dnad_getter_interfaces(["xy:h"])
-    $:dnad_overload_interfaces(["xy:h"], selected_interfaces)
+    $:dnad_initialize_interface(kinds)
+    $:dnad_getter_interfaces(kinds)
+    $:dnad_overload_interfaces(kinds, config, selection)
     
 contains
 
@@ -153,9 +155,9 @@ contains
         ddf(1, 2) = ddf(2, 1)              ! d**2f/dydx
     end subroutine
 
-    $:dnad_initialize_implementations(["xy:h"], "dp")
-    $:dnad_getter_implementations(["xy:h"], "dp")
-    $:dnad_overload_implementations(["xy:h"], "dp", selected_interfaces=selected_interfaces, stringent=stringent)
+    $:dnad_initialize_implementations(kinds, config)
+    $:dnad_getter_implementations(kinds, config)
+    $:dnad_overload_implementations(kinds, config, selection)
     
   #:if stringent
     ! Workaround to make pure functions produce NaN's deliberately:

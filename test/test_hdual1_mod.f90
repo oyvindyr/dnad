@@ -66,242 +66,292 @@ module test_hdual1_mod
         module procedure hessian__hd_xy
     end interface
     interface assignment (=)
-        module procedure assign__dxy_i  ! dual=integer, elemental
-        module procedure assign__dxy_r  ! dual=real, elemental
-        module procedure assign__i_dxy  ! integer=dual, elemental
-        module procedure assign__r_dxy  ! real=dual, elemental
-        module procedure assign__hdxy_i  ! dual=integer, elemental
-        module procedure assign__hdxy_r  ! dual=real, elemental
-        module procedure assign__i_hdxy  ! integer=dual, elemental
-        module procedure assign__r_hdxy  ! real=dual, elemental
+        !! Assign an integer or a real to a dual number, or the function value to them
+        module procedure assign__dxy_i
+        module procedure assign__dxy_r
+        module procedure assign__i_dxy
+        module procedure assign__r_dxy
+        module procedure assign__hdxy_i
+        module procedure assign__hdxy_r
+        module procedure assign__i_hdxy
+        module procedure assign__r_hdxy
     end interface
     interface operator (+)
-        module procedure add__dxy   ! +dual number, elemental
-        module procedure add__dxy_dxy       ! dual + dual, elemental
-        module procedure add__dxy_i       ! dual + integer, elemental
-        module procedure add__dxy_r       ! dual + real, elemental
-        module procedure add__i_dxy       ! integer + dual, elemental
-        module procedure add__r_dxy       ! real + dual, elemental
-        module procedure add__hdxy  ! +dual number, elemental
-        module procedure add__hdxy_hdxy     ! dual + dual, elemental
-        module procedure add__hdxy_i      ! dual + integer, elemental
-        module procedure add__hdxy_r      ! dual + real, elemental
-        module procedure add__i_hdxy      ! integer + dual, elemental
-        module procedure add__r_hdxy      ! real + dual, elemental
+        !! Unary plus and addition
+        module procedure add__dxy
+        module procedure add__dxy_dxy
+        module procedure add__dxy_i
+        module procedure add__dxy_r
+        module procedure add__i_dxy
+        module procedure add__r_dxy
+        module procedure add__hdxy
+        module procedure add__hdxy_hdxy
+        module procedure add__hdxy_i
+        module procedure add__hdxy_r
+        module procedure add__i_hdxy
+        module procedure add__r_hdxy
     end interface
     interface operator (-)
-        module procedure minus__dxy  ! negate a dual number,elemental
-        module procedure minus__dxy_dxy      ! dual -dual,elemental
-        module procedure minus__dxy_i      ! dual-integer,elemental
-        module procedure minus__dxy_r      ! dual-real,elemental
-        module procedure minus__i_dxy      ! integer-dual,elemental
-        module procedure minus__r_dxy      ! real-dual,elemental
-        module procedure minus__hdxy ! negate a dual number,elemental
-        module procedure minus__hdxy_hdxy    ! dual -dual,elemental
-        module procedure minus__hdxy_i     ! dual-integer,elemental
-        module procedure minus__hdxy_r     ! dual-real,elemental
-        module procedure minus__i_hdxy     ! integer-dual,elemental
-        module procedure minus__r_hdxy     ! real-dual,elemental
+        !! Negation and subtraction
+        module procedure minus__dxy
+        module procedure minus__dxy_dxy
+        module procedure minus__dxy_i
+        module procedure minus__dxy_r
+        module procedure minus__i_dxy
+        module procedure minus__r_dxy
+        module procedure minus__hdxy
+        module procedure minus__hdxy_hdxy
+        module procedure minus__hdxy_i
+        module procedure minus__hdxy_r
+        module procedure minus__i_hdxy
+        module procedure minus__r_hdxy
     end interface
     interface operator (*)
-        module procedure mult__dxy_dxy    ! dual*dual, elemental
-        module procedure mult__dxy_i    ! dual*integer,elemental
-        module procedure mult__dxy_r    ! dual*real,elemental
-        module procedure mult__i_dxy    ! integer*dual,elemental
-        module procedure mult__r_dxy    ! real*dual,elemental
-        module procedure mult__hdxy_hdxy  ! dual*dual, elemental
-        module procedure mult__hdxy_i   ! dual*integer,elemental
-        module procedure mult__hdxy_r   ! dual*real,elemental
-        module procedure mult__i_hdxy   ! integer*dual,elemental
-        module procedure mult__r_hdxy   ! real*dual,elemental
+        !! Multiplication
+        module procedure mult__dxy_dxy
+        module procedure mult__dxy_i
+        module procedure mult__dxy_r
+        module procedure mult__i_dxy
+        module procedure mult__r_dxy
+        module procedure mult__hdxy_hdxy
+        module procedure mult__hdxy_i
+        module procedure mult__hdxy_r
+        module procedure mult__i_hdxy
+        module procedure mult__r_hdxy
     end interface
     interface operator (/)
-        module procedure div__dxy_dxy    ! dual/dual, elemental
-        module procedure div__dxy_r    ! dual/real, elemental
-        module procedure div__r_dxy    ! real/dual, elemental
-        module procedure div__dxy_i    ! dual/integer, elemental
-        module procedure div__i_dxy    ! integer/dual, elemental
-        module procedure div__hdxy_hdxy  ! hdual/hdual, elemental
-        module procedure div__hdxy_r   ! hdual/real, elemental
-        module procedure div__r_hdxy   ! real/hdual, elemental
-        module procedure div__hdxy_i   ! hdual/integer, elemental
-        module procedure div__i_hdxy   ! integer/hdual, elemental
+        !! Division
+        module procedure div__dxy_dxy
+        module procedure div__dxy_r
+        module procedure div__r_dxy
+        module procedure div__dxy_i
+        module procedure div__i_dxy
+        module procedure div__hdxy_hdxy
+        module procedure div__hdxy_r
+        module procedure div__r_hdxy
+        module procedure div__hdxy_i
+        module procedure div__i_hdxy
     end interface
     interface operator (**)
-        module procedure pow__dxy_i ! dual number to an integer power,elemental
-        module procedure pow__dxy_r ! dual number to a real power, elemental
-        module procedure pow__dxy_dxy ! dual number to a dual power, elemental
-        module procedure pow__hdxy_i ! hdual number to an integer power,elemental
-        module procedure pow__hdxy_r ! hdual number to a real power, elemental
-        module procedure pow__hdxy_hdxy ! hdual number to a hdual power, elemental
+        !! Power
+        module procedure pow__dxy_i
+        module procedure pow__dxy_r
+        module procedure pow__dxy_dxy
+        module procedure pow__hdxy_i
+        module procedure pow__hdxy_r
+        module procedure pow__hdxy_hdxy
+    end interface
+    interface hypot
+        !! Euclidean distance sqrt(x**2 + y**2)
+        module procedure hypot__dxy_dxy
+        module procedure hypot__dxy_r
+        module procedure hypot__r_dxy
+        module procedure hypot__hdxy_hdxy
+        module procedure hypot__hdxy_r
+        module procedure hypot__r_hdxy
     end interface
     interface operator (==)
-        module procedure eq__dxy_dxy ! compare two dual numbers, elemental
-        module procedure eq__dxy_i ! compare a dual and an integer, elemental
-        module procedure eq__dxy_r ! compare a dual and a real, elemental
-        module procedure eq__i_dxy ! compare integer with a dual number, elemental
-        module procedure eq__r_dxy ! compare a real with a dual number, elemental
-        module procedure eq__hdxy_hdxy ! compare two hdual numbers, elemental
-        module procedure eq__hdxy_i ! compare a hdual and an integer, elemental
-        module procedure eq__hdxy_r ! compare a hdual and a real, elemental
-        module procedure eq__i_hdxy ! compare integer with a hdual number, elemental
-        module procedure eq__r_hdxy ! compare a real with a hdual number, elemental
+        !! Equality of the function values
+        module procedure eq__dxy_dxy
+        module procedure eq__dxy_i
+        module procedure eq__dxy_r
+        module procedure eq__i_dxy
+        module procedure eq__r_dxy
+        module procedure eq__hdxy_hdxy
+        module procedure eq__hdxy_i
+        module procedure eq__hdxy_r
+        module procedure eq__i_hdxy
+        module procedure eq__r_hdxy
     end interface
     interface operator (<=)
-        module procedure le__dxy_dxy ! compare two dual numbers, elemental
-        module procedure le__dxy_i ! compare a dual and an integer, elemental
-        module procedure le__dxy_r ! compare a dual and a real, elemental
-        module procedure le__i_dxy ! compare integer with a dual number, elemental
-        module procedure le__r_dxy ! compare a real with a dual number, elemental
-        module procedure le__hdxy_hdxy ! compare two hdual numbers, elemental
-        module procedure le__hdxy_i ! compare a hdual and an integer, elemental
-        module procedure le__hdxy_r ! compare a hdual and a real, elemental
-        module procedure le__i_hdxy ! compare integer with a hdual number, elemental
-        module procedure le__r_hdxy ! compare a real with a hdual number, elemental
+        !! Less than or equal of the function values
+        module procedure le__dxy_dxy
+        module procedure le__dxy_i
+        module procedure le__dxy_r
+        module procedure le__i_dxy
+        module procedure le__r_dxy
+        module procedure le__hdxy_hdxy
+        module procedure le__hdxy_i
+        module procedure le__hdxy_r
+        module procedure le__i_hdxy
+        module procedure le__r_hdxy
     end interface
     interface operator (<)
-        module procedure lt__dxy_dxy ! compare two dual numbers, elemental
-        module procedure lt__dxy_i ! compare a dual and an integer, elemental
-        module procedure lt__dxy_r ! compare a dual and a real, elemental
-        module procedure lt__i_dxy ! compare integer with a dual number, elemental
-        module procedure lt__r_dxy ! compare a real with a dual number, elemental
-        module procedure lt__hdxy_hdxy ! compare two hdual numbers, elemental
-        module procedure lt__hdxy_i ! compare a hdual and an integer, elemental
-        module procedure lt__hdxy_r ! compare a hdual and a real, elemental
-        module procedure lt__i_hdxy ! compare integer with a hdual number, elemental
-        module procedure lt__r_hdxy ! compare a real with a hdual number, elemental
+        !! Less than of the function values
+        module procedure lt__dxy_dxy
+        module procedure lt__dxy_i
+        module procedure lt__dxy_r
+        module procedure lt__i_dxy
+        module procedure lt__r_dxy
+        module procedure lt__hdxy_hdxy
+        module procedure lt__hdxy_i
+        module procedure lt__hdxy_r
+        module procedure lt__i_hdxy
+        module procedure lt__r_hdxy
     end interface
     interface operator (>=)
-        module procedure ge__dxy_dxy ! compare two dual numbers, elemental
-        module procedure ge__dxy_i ! compare a dual and an integer, elemental
-        module procedure ge__dxy_r ! compare a dual and a real, elemental
-        module procedure ge__i_dxy ! compare integer with a dual number, elemental
-        module procedure ge__r_dxy ! compare a real with a dual number, elemental
-        module procedure ge__hdxy_hdxy ! compare two hdual numbers, elemental
-        module procedure ge__hdxy_i ! compare a hdual and an integer, elemental
-        module procedure ge__hdxy_r ! compare a hdual and a real, elemental
-        module procedure ge__i_hdxy ! compare integer with a hdual number, elemental
-        module procedure ge__r_hdxy ! compare a real with a hdual number, elemental
+        !! Greater than or equal of the function values
+        module procedure ge__dxy_dxy
+        module procedure ge__dxy_i
+        module procedure ge__dxy_r
+        module procedure ge__i_dxy
+        module procedure ge__r_dxy
+        module procedure ge__hdxy_hdxy
+        module procedure ge__hdxy_i
+        module procedure ge__hdxy_r
+        module procedure ge__i_hdxy
+        module procedure ge__r_hdxy
     end interface
     interface operator (>)
-        module procedure gt__dxy_dxy ! compare two dual numbers, elemental
-        module procedure gt__dxy_i ! compare a dual and an integer, elemental
-        module procedure gt__dxy_r ! compare a dual and a real, elemental
-        module procedure gt__i_dxy ! compare integer with a dual number, elemental
-        module procedure gt__r_dxy ! compare a real with a dual number, elemental
-        module procedure gt__hdxy_hdxy ! compare two hdual numbers, elemental
-        module procedure gt__hdxy_i ! compare a hdual and an integer, elemental
-        module procedure gt__hdxy_r ! compare a hdual and a real, elemental
-        module procedure gt__i_hdxy ! compare integer with a hdual number, elemental
-        module procedure gt__r_hdxy ! compare a real with a hdual number, elemental
+        !! Greater than of the function values
+        module procedure gt__dxy_dxy
+        module procedure gt__dxy_i
+        module procedure gt__dxy_r
+        module procedure gt__i_dxy
+        module procedure gt__r_dxy
+        module procedure gt__hdxy_hdxy
+        module procedure gt__hdxy_i
+        module procedure gt__hdxy_r
+        module procedure gt__i_hdxy
+        module procedure gt__r_hdxy
     end interface
     interface operator (/=)
-        module procedure ne__dxy_dxy ! compare two dual numbers, elemental
-        module procedure ne__dxy_i ! compare a dual and an integer, elemental
-        module procedure ne__dxy_r ! compare a dual and a real, elemental
-        module procedure ne__i_dxy ! compare integer with a dual number, elemental
-        module procedure ne__r_dxy ! compare a real with a dual number, elemental
-        module procedure ne__hdxy_hdxy ! compare two hdual numbers, elemental
-        module procedure ne__hdxy_i ! compare a hdual and an integer, elemental
-        module procedure ne__hdxy_r ! compare a hdual and a real, elemental
-        module procedure ne__i_hdxy ! compare integer with a hdual number, elemental
-        module procedure ne__r_hdxy ! compare a real with a hdual number, elemental
+        !! Inequality of the function values
+        module procedure ne__dxy_dxy
+        module procedure ne__dxy_i
+        module procedure ne__dxy_r
+        module procedure ne__i_dxy
+        module procedure ne__r_dxy
+        module procedure ne__hdxy_hdxy
+        module procedure ne__hdxy_i
+        module procedure ne__hdxy_r
+        module procedure ne__i_hdxy
+        module procedure ne__r_hdxy
     end interface
     interface abs
-        module procedure abs__dxy  ! absolute value of a dual number, elemental
+        !! Absolute value
+        module procedure abs__dxy
     end interface
     interface dabs
-        module procedure abs__dxy ! same as abs, used for some old fortran commands
+        !! Absolute value (old Fortran name)
+        module procedure abs__dxy
     end interface
     interface acos
-        module procedure acos__dxy ! arccosine of a dual number, elemental
+        !! Arccosine
+        module procedure acos__dxy
     end interface
     interface asin
-        module procedure asin__dxy ! arcsine of a dual number, elemental
+        !! Arcsine
+        module procedure asin__dxy
     end interface
     interface atan
-        module procedure atan__dxy ! arctan of a dual number, elemental
+        !! Arctangent
+        module procedure atan__dxy
     end interface
     interface atan2
-        module procedure atan2__dxy ! arctan of a dual number, elemental
+        !! Arctangent of y/x in the quadrant of (x, y)
+        module procedure atan2__dxy
     end interface
     interface cos
-        module procedure cos__dxy ! cosine of a dual number, elemental
+        !! Cosine
+        module procedure cos__dxy
     end interface
     interface dcos
-        module procedure cos__dxy ! cosine of a dual number, elemental
+        !! Cosine (old Fortran name)
+        module procedure cos__dxy
     end interface
     interface dot_product
-        module procedure dot_product__dxy_dxy ! dot product two dual number vectors
+        !! Dot product of two dual vectors
+        module procedure dot_product__dxy_dxy
     end interface
     interface exp
-        module procedure exp__dxy ! exponential of a dual number, elemental
+        !! Exponential
+        module procedure exp__dxy
     end interface
     interface int
-        module procedure int__dxy ! integer part of a dual number, elemental
+        !! Integer part of the function value
+        module procedure int__dxy
     end interface
     interface log
-        module procedure log__dxy ! log of a dual number, elemental
-        module procedure log__hdxy ! log of a dual number, elemental
+        !! Natural logarithm
+        module procedure log__dxy
+        module procedure log__hdxy
     end interface
     interface log10
-        module procedure log10__dxy ! log of a dual number, elemental
+        !! Base-10 logarithm
+        module procedure log10__dxy
     end interface
     interface matmul
-        module procedure matmul__dxy_dxy ! multiply two dual matrices
-        module procedure matmul__dxy_v ! multiply a dual matrix with a dual vector
-        module procedure matmul__v_dxy ! multiply a dual vector with a dual matrix
+        !! Matrix product of dual matrices and vectors
+        module procedure matmul__dxy_dxy
+        module procedure matmul__dxy_v
+        module procedure matmul__v_dxy
     end interface
     interface max
-        module procedure max__dxy_dxy ! max of two dual numbers, elemental
-        module procedure max__dxy_i ! max of a dual number and an integer, elemental
-        module procedure max__dxy_r ! max of a dual number and a real, elemental
-        module procedure max__r_dxy ! max of a real,and a dual number,  elemental
+        !! The larger of two numbers
+        module procedure max__dxy_dxy
+        module procedure max__dxy_i
+        module procedure max__dxy_r
+        module procedure max__r_dxy
     end interface
     interface dmax1
-        module procedure dmax1__dxy_dxy ! max of from two to four dual numbers, elemental
+        !! The largest of two to five dual numbers
+        module procedure dmax1__dxy_dxy
     end interface
     interface maxval
-        module procedure maxval__dxy ! maxval of a dual number vector
+        !! The largest element of a dual vector
+        module procedure maxval__dxy
     end interface
     interface min
-        module procedure min__dxy_dxy ! min of from two to four dual numbers, elemental
-        module procedure min__dxy_r ! min of a dual and a real, elemental
+        !! The smaller of two numbers
+        module procedure min__dxy_dxy
+        module procedure min__dxy_r
     end interface
     interface dmin1
-        module procedure dmin1__dxy_dxy ! min of from two to four dual numbers, elemental
+        !! The smallest of two to four dual numbers
+        module procedure dmin1__dxy_dxy
     end interface
     interface minval
-        module procedure minval__dxy ! obtain the maxval  of a dual number vectgor
+        !! The smallest element of a dual vector
+        module procedure minval__dxy
     end interface
     interface nint
-        module procedure nint__dxy ! nearest integer to the argument, elemental
+        !! Nearest integer to the function value
+        module procedure nint__dxy
     end interface
-    interface  sign
-        module procedure  sign__dxy_dxy ! sign(a,b) with two dual numbers, elemental
-        module procedure  sign__r_dxy ! sign(a,b) with a real and a dual, elemental
+    interface sign
+        !! abs(a) with the sign of b
+        module procedure sign__dxy_dxy
+        module procedure sign__r_dxy
     end interface
     interface sin
-        module procedure sin__dxy ! obtain sine of a dual number, elemental
+        !! Sine
+        module procedure sin__dxy
     end interface
     interface dsin
-        module procedure sin__dxy ! obtain sine of a dual number, elemental
+        !! Sine (old Fortran name)
+        module procedure sin__dxy
     end interface
     interface tan
-        module procedure tan__dxy ! obtain sine of a dual number, elemental
+        !! Tangent
+        module procedure tan__dxy
     end interface
     interface dtan
-        module procedure tan__dxy ! obtain sine of a dual number, elemental
+        !! Tangent (old Fortran name)
+        module procedure tan__dxy
     end interface
     interface sqrt
-        module procedure sqrt__dxy ! obtain the sqrt of a dual number, elemental
-        module procedure sqrt__hdxy ! obtain the sqrt of a dual number, elemental
+        !! Square root
+        module procedure sqrt__dxy
+        module procedure sqrt__hdxy
     end interface
     interface sum
-        module procedure sum__dxy ! sum a dual array
+        !! Sum of a dual vector
+        module procedure sum__dxy
     end interface
     interface maxloc
-        module procedure maxloc__dxy ! location of max in a dual array
+        !! Location of the largest element of a dual vector
+        module procedure maxloc__dxy
     end interface
     
 contains
@@ -1132,6 +1182,104 @@ contains
                 k = k + 1
                 res%h(k) = t0*(t1*v%h(k) + t2*u%h(k)*v%d%f + t2*u%d%g(j)*(t2*u%d%g(i)*v%d%f*(v%d%f - &
       1) + t3*v%d%g(i)) + v%d%g(j)*(t1**2*v%d%g(i) + t2*t3*u%d%g(i)))
+            end do
+        end do
+    end function
+    elemental function hypot__dxy_dxy(u, v) result(res)
+        type(dual__xy_t), intent(in) :: u
+        type(dual__xy_t), intent(in) :: v
+        type(dual__xy_t) :: res
+        real(dp) :: t0
+        
+        t0 = hypot(u%f, v%f)
+        res%f = t0
+        res%g = (u%g*u%f + v%g*v%f)/t0
+    end function
+    elemental function hypot__dxy_r(u, v) result(res)
+        type(dual__xy_t), intent(in) :: u
+        real(dp), intent(in) :: v
+        type(dual__xy_t) :: res
+        real(dp) :: t0
+        
+        t0 = hypot(u%f, v)
+        res%f = t0
+        res%g = u%g*u%f/t0
+    end function
+    elemental function hypot__r_dxy(u, v) result(res)
+        real(dp), intent(in) :: u
+        type(dual__xy_t), intent(in) :: v
+        type(dual__xy_t) :: res
+        real(dp) :: t0
+        
+        t0 = hypot(u, v%f)
+        res%f = t0
+        res%g = v%g*v%f/t0
+    end function
+    elemental function hypot__hdxy_hdxy(u, v) result(res)
+        type(hdual__xy_t), intent(in) :: u
+        type(hdual__xy_t), intent(in) :: v
+        type(hdual__xy_t) :: res
+        integer :: i, j, k
+        real(dp) :: t0,t1,t2,t3,t4,t5
+        
+        t0 = u%d%f**2
+        t1 = v%d%f**2
+        t2 = t0 + t1
+        t3 = sqrt(t2)
+        t4 = 1.0_dp/t3
+        t5 = 1.0_dp/t2
+        res%d%f = t3
+        res%d%g = t4*(u%d%g*u%d%f + v%d%g*v%d%f)
+
+        k = 0
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
+                k = k + 1
+                res%h(k) = t4*(u%h(k)*u%d%f - u%d%g(j)*(t5*u%d%f*v%d%g(i)*v%d%f + u%d%g(i)*(t0*t5 - 1)) &
+      + v%h(k)*v%d%f - v%d%g(j)*(t5*u%d%g(i)*u%d%f*v%d%f + v%d%g(i)*(t1*t5 - 1)))
+            end do
+        end do
+    end function
+    elemental function hypot__hdxy_r(u, v) result(res)
+        type(hdual__xy_t), intent(in) :: u
+        real(dp), intent(in) :: v
+        type(hdual__xy_t) :: res
+        integer :: i, j, k
+        real(dp) :: t0,t1,t2,t3
+        
+        t0 = u%d%f**2
+        t1 = t0 + v**2
+        t2 = sqrt(t1)
+        t3 = 1.0_dp/t2
+        res%d%f = t2
+        res%d%g = t3*u%d%g*u%d%f
+        k = 0
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
+                k = k + 1
+                res%h(k) = t3*(u%h(k)*u%d%f - u%d%g(i)*u%d%g(j)*(t0/t1 - 1))
+            end do
+        end do
+    end function
+    elemental function hypot__r_hdxy(u, v) result(res)
+        real(dp), intent(in) :: u
+        type(hdual__xy_t), intent(in) :: v
+        type(hdual__xy_t) :: res
+        integer :: i, j, k
+        real(dp) :: t0,t1,t2,t3
+        
+        t0 = v%d%f**2
+        t1 = t0 + u**2
+        t2 = sqrt(t1)
+        t3 = 1.0_dp/t2
+        res%d%f = t2
+        res%d%g = t3*v%d%g*v%d%f
+
+        k = 0
+        do j = 1, size(res%d%g)
+            do i = j, size(res%d%g)
+                k = k + 1
+                res%h(k) = t3*(v%h(k)*v%d%f - v%d%g(i)*v%d%g(j)*(t0/t1 - 1))
             end do
         end do
     end function

@@ -69,56 +69,62 @@ module example_hdual_mod
         module procedure hessian__hd_uvw
     end interface
     interface assignment (=)
-        module procedure assign__duvw_i  ! dual=integer, elemental
-        module procedure assign__duvw_r  ! dual=real, elemental
-        module procedure assign__i_duvw  ! integer=dual, elemental
-        module procedure assign__r_duvw  ! real=dual, elemental
-        module procedure assign__hduvw_i  ! dual=integer, elemental
-        module procedure assign__hduvw_r  ! dual=real, elemental
-        module procedure assign__i_hduvw  ! integer=dual, elemental
-        module procedure assign__r_hduvw  ! real=dual, elemental
+        !! Assign an integer or a real to a dual number, or the function value to them
+        module procedure assign__duvw_i
+        module procedure assign__duvw_r
+        module procedure assign__i_duvw
+        module procedure assign__r_duvw
+        module procedure assign__hduvw_i
+        module procedure assign__hduvw_r
+        module procedure assign__i_hduvw
+        module procedure assign__r_hduvw
     end interface
     interface operator (+)
-        module procedure add__duvw   ! +dual number, elemental
-        module procedure add__duvw_duvw       ! dual + dual, elemental
-        module procedure add__duvw_i       ! dual + integer, elemental
-        module procedure add__duvw_r       ! dual + real, elemental
-        module procedure add__i_duvw       ! integer + dual, elemental
-        module procedure add__r_duvw       ! real + dual, elemental
-        module procedure add__hduvw  ! +dual number, elemental
-        module procedure add__hduvw_hduvw     ! dual + dual, elemental
-        module procedure add__hduvw_i      ! dual + integer, elemental
-        module procedure add__hduvw_r      ! dual + real, elemental
-        module procedure add__i_hduvw      ! integer + dual, elemental
-        module procedure add__r_hduvw      ! real + dual, elemental
+        !! Unary plus and addition
+        module procedure add__duvw
+        module procedure add__duvw_duvw
+        module procedure add__duvw_i
+        module procedure add__duvw_r
+        module procedure add__i_duvw
+        module procedure add__r_duvw
+        module procedure add__hduvw
+        module procedure add__hduvw_hduvw
+        module procedure add__hduvw_i
+        module procedure add__hduvw_r
+        module procedure add__i_hduvw
+        module procedure add__r_hduvw
     end interface
     interface operator (*)
-        module procedure mult__duvw_duvw    ! dual*dual, elemental
-        module procedure mult__duvw_i    ! dual*integer,elemental
-        module procedure mult__duvw_r    ! dual*real,elemental
-        module procedure mult__i_duvw    ! integer*dual,elemental
-        module procedure mult__r_duvw    ! real*dual,elemental
-        module procedure mult__hduvw_hduvw  ! dual*dual, elemental
-        module procedure mult__hduvw_i   ! dual*integer,elemental
-        module procedure mult__hduvw_r   ! dual*real,elemental
-        module procedure mult__i_hduvw   ! integer*dual,elemental
-        module procedure mult__r_hduvw   ! real*dual,elemental
+        !! Multiplication
+        module procedure mult__duvw_duvw
+        module procedure mult__duvw_i
+        module procedure mult__duvw_r
+        module procedure mult__i_duvw
+        module procedure mult__r_duvw
+        module procedure mult__hduvw_hduvw
+        module procedure mult__hduvw_i
+        module procedure mult__hduvw_r
+        module procedure mult__i_hduvw
+        module procedure mult__r_hduvw
     end interface
     interface operator (**)
-        module procedure pow__duvw_i ! dual number to an integer power,elemental
-        module procedure pow__duvw_r ! dual number to a real power, elemental
-        module procedure pow__duvw_duvw ! dual number to a dual power, elemental
-        module procedure pow__hduvw_i ! hdual number to an integer power,elemental
-        module procedure pow__hduvw_r ! hdual number to a real power, elemental
-        module procedure pow__hduvw_hduvw ! hdual number to a hdual power, elemental
+        !! Power
+        module procedure pow__duvw_i
+        module procedure pow__duvw_r
+        module procedure pow__duvw_duvw
+        module procedure pow__hduvw_i
+        module procedure pow__hduvw_r
+        module procedure pow__hduvw_hduvw
     end interface
     interface log
-        module procedure log__duvw ! log of a dual number, elemental
-        module procedure log__hduvw ! log of a dual number, elemental
+        !! Natural logarithm
+        module procedure log__duvw
+        module procedure log__hduvw
     end interface
     interface sqrt
-        module procedure sqrt__duvw ! obtain the sqrt of a dual number, elemental
-        module procedure sqrt__hduvw ! obtain the sqrt of a dual number, elemental
+        !! Square root
+        module procedure sqrt__duvw
+        module procedure sqrt__hduvw
     end interface
     
 contains
@@ -494,6 +500,8 @@ contains
         res%d%g = v%d%g
         res%h = v%h
     end function
+
+
     elemental function mult__duvw_duvw(u, v) result(res)
         type(dual__uvw_t), intent(in) :: u
         type(dual__uvw_t), intent(in) :: v
@@ -586,6 +594,8 @@ contains
         res%d%g = u*v%d%g
         res%h = u*v%h
     end function
+
+
     elemental function pow__duvw_i(u, v) result(res)
         type(dual__uvw_t), intent(in) :: u
         integer, intent(in) :: v
@@ -668,6 +678,29 @@ contains
             end do
         end do
     end function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     elemental function log__duvw(u) result(res)
         type(dual__uvw_t), intent(in) :: u
         type(dual__uvw_t) :: res
@@ -692,6 +725,18 @@ contains
             end do
         end do
     end function
+
+
+
+
+
+
+
+
+
+
+
+
     elemental function sqrt__duvw(u) result(res)
         type(dual__uvw_t), intent(in) :: u
         type(dual__uvw_t) :: res
@@ -720,6 +765,8 @@ contains
             end do
         end do
     end function
+
+
     
     
 end module
